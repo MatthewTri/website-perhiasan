@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('is_admin')->default(false);
+            // --- Fitur Kuota AI ---
+            $table->integer('ai_quota')->default(20); // Kuota default, bisa di-update oleh Admin
+            $table->integer('ai_prompt_count')->default(0); // Menghitung jumlah prompt yg sudah dipakai
             $table->rememberToken();
             $table->timestamps();
         });

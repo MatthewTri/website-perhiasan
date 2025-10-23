@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -18,9 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 'email', 'password', 'role', 'ai_quota', 'ai_prompt_count',
     ];
 
     /**
@@ -45,4 +44,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relasi: User punya banyak order
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // Relasi: User punya banyak permintaan kustom
+    public function customRequests()
+    {
+        return $this->hasMany(CustomRequest::class);
+    }
+    
+    // Relasi: User punya banyak log prompt AI
+    // public function aiPromptLogs()
+    // {
+    //     return $this->hasMany(AiPromptLog::class);
+    // }
 }
