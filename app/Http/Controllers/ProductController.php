@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProductRequest;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\ProductImage;
 
 class ProductController extends Controller
 {
@@ -34,7 +35,30 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        Product::create($request->validated());
+        // Create product
+        $product = Product::create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'category_id' => $request->category_id,
+        ]);
+
+        // Handle multiple images upload
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $imageName = time() . '_' . $index . '.' . $image->getClientOriginalExtension();
+                $imagePath = $image->storeAs('product-images', $imageName, 'public');
+                
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image' => $imagePath,
+                    'is_featured' => $index === 0, // First image as featured
+                    'sort_order' => $index
+                ]);
+            }
+        }
 
         return redirect()->route('products.index')->with('success', 'Product successfully added!');
     }
