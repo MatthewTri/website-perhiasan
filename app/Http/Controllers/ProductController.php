@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -62,5 +64,11 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+    }
+
+    public function checkSlug(Request $r) {
+        // slug akan berisi dari title dan check di database dari Post::class apakah slugnya unique atau tidak
+        $slug = SlugService::createSlug(Product::class, 'slug', $r->name);
+        return response()->json(['slug' => $slug]);
     }
 }
