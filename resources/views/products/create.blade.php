@@ -213,7 +213,7 @@
     let selectedFiles = [];
     let currentMainIndex = 0;
 
-    // Handle main image upload (first image)
+    // Handle main image upload (first image ONLY)
     function handleMainImageUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
@@ -221,6 +221,10 @@
             currentMainIndex = 0;
             updateImageDisplay();
             updateFormFiles();
+            
+            // DISABLE main image input setelah ada gambar
+            input.disabled = true;
+            input.style.pointerEvents = 'none';
         }
     }
 
@@ -284,11 +288,16 @@
             // Show add more button
             addMoreButton.classList.remove('hidden');
         } else {
-            // Show no image state
+            // Show no image state & re-enable main image input
             noImageState.classList.remove('hidden');
             mainImage.classList.add('hidden');
             thumbnailContainer.innerHTML = '';
             addMoreButton.classList.add('hidden');
+            
+            // RE-ENABLE main image input saat tidak ada gambar
+            const mainImageInput = document.getElementById('mainImageInput');
+            mainImageInput.disabled = false;
+            mainImageInput.style.pointerEvents = 'auto';
         }
     }
 
@@ -315,7 +324,6 @@
 
     // Update form files for submission
     function updateFormFiles() {
-        const formFiles = document.getElementById('formFiles');
         const dt = new DataTransfer();
         
         selectedFiles.forEach(file => {
@@ -324,26 +332,6 @@
         
         document.getElementById('formImages').files = dt.files;
     }
-
-    // Form submission validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        if (selectedFiles.length === 0) {
-            e.preventDefault();
-            alert('Please add at least one product image.');
-            return;
-        }
-        
-        // Ensure slug is generated
-        if (name.value && !slug.value) {
-            e.preventDefault();
-            fetch('/products/checkSlug?name=' + encodeURIComponent(name.value))
-            .then(response => response.json())
-            .then(data => {
-                slug.value = data.slug;
-                this.submit();
-            });
-        }
-    });
 </script>
 
 <style>
