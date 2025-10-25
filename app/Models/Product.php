@@ -11,7 +11,7 @@ class Product extends Model
     /** @use HasFactory<\Database\Factories\ProductFactory> */
     use Sluggable;
 
-    protected $fillable = ['name', 'slug', 'description', 'price', 'image', 'stock'];
+    protected $fillable = ['name', 'slug', 'description', 'price', 'image', 'stock','category_id'];
     protected $with = ['category'];
 
     public function category()

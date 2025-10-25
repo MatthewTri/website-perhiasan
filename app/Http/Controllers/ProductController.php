@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
@@ -24,7 +25,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return view('products.create', compact('categories'));
     }
 
     /**
@@ -32,7 +34,9 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        Product::create($request->validated());
+
+        return redirect()->route('products.index')->with('success', 'Product successfully added!');
     }
 
     /**
