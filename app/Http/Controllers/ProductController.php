@@ -15,7 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::with(['category', 'featuredImage'])->latest()->get();
+        return view('products.index', compact('products'));
     }
 
     /**
