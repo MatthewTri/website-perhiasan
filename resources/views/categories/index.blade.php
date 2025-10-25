@@ -46,8 +46,11 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $category->created_at->format('d M Y') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <span class="text-gray-400">Edit | Delete (Coming Soon)</span>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="{{ route('categories.edit', $category->slug) }}" 
+                               class="text-blue-600 hover:text-blue-900">
+                                Edit
+                            </a>
                         </td>
                     </tr>
                 @empty

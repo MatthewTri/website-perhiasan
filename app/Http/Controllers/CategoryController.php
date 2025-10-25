@@ -42,7 +42,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        
     }
 
     /**
@@ -50,7 +50,10 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('categories.edit', [
+            'category' => $category,
+            'categories' => Category::all()
+        ]);
     }
 
     /**
@@ -58,7 +61,9 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $category->update($request->validated());
+
+        return redirect()->route('categories.index')->with('success', 'Category successfully updated!');
     }
 
     /**
@@ -66,7 +71,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        
+        return redirect()->route('categories.index')->with('success', 'Category successfully deleted!');
     }
 
     public function checkSlug(Request $r) {
