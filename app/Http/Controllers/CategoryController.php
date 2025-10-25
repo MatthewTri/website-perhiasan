@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -13,7 +15,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::latest()->get();
+        return view('categories.index', compact('categories'));
     }
 
     /**
@@ -21,7 +24,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -29,7 +32,9 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        Category::create($request->validated());
+
+        return redirect()->route('categories.index')->with('success', 'Category successfully added!');
     }
 
     /**
@@ -62,5 +67,11 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+    }
+
+    public function checkSlug(Request $r) {
+        // slug akan berisi dari title dan check di database dari Post::class apakah slugnya unique atau tidak
+        $slug = SlugService::createSlug(Category::class, 'slug', $r->name);
+        return response()->json(['slug' => $slug]);
     }
 }

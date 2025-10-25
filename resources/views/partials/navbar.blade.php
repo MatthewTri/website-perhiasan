@@ -32,8 +32,8 @@
             </a>
           </li>
           <li class="shrink-0">
-            <a href="#" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
-              Sell
+            <a href="{{ route('categories.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
+              Manage Categories
             </a>
           </li>
         </ul>
