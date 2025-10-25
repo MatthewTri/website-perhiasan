@@ -19,6 +19,21 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function images()
+    {
+        // Satu Produk 'hasMany' (punya banyak) Gambar
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Shortcut untuk mengambil HANYA gambar utama (thumbnail).
+     */
+    public function featuredImage()
+    {
+        // Ambil satu gambar yang ditandai 'is_featured'
+        return $this->hasOne(ProductImage::class)->where('is_featured', true);
+    }
+
     public function getRouteKeyName() {
         return 'slug';
     }

@@ -12,3 +12,4 @@ Route::get('/categories/checkSlug', [CategoryController::class, 'checkSlug']);
 Route::resource('categories', CategoryController::class);
 
 Route::get('/products/checkSlug', [ProductController::class, 'checkSlug']);
+Route::resource('products', ProductController::class);
