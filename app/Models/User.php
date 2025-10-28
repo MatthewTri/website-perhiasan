@@ -56,6 +56,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(CustomRequest::class);
     }
+
+    public function cart()
+    {
+        // Satu User 'hasOne' (punya satu) Keranjang
+        return $this->hasOne(Cart::class);
+    }
     
     // Relasi: User punya banyak log prompt AI
     // public function aiPromptLogs()
