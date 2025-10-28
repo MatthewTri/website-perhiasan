@@ -67,9 +67,10 @@
                         <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded transition duration-200">
                             View
                         </button>
-                        <button class="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition duration-200">
+                        <a href="{{ route('products.edit', $product) }}" 
+                        class="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition duration-200">
                             Edit
-                        </button>
+                        </a>
                         <!-- Delete Button dengan Konfirmasi -->
                         <form action="{{ route('products.destroy', $product) }}" 
                               method="POST" 
