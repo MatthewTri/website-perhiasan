@@ -170,7 +170,7 @@
                     </div>
 
                     <!-- Submit Buttons -->
-                    <div class="flex space-x-4 pt-4">
+                    <div class="flex space-x-4 pt-1">
                         <button type="submit" 
                                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 text-lg">
                             Save Product
@@ -274,10 +274,10 @@
                         </div>
                         <button type="button" 
                                 onclick="removeImage(${index})"
-                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
+                                class="absolute top-0 right-0 bg-red-500 text-white rounded-tr-lg
+                                rounded-bl-xs font-bold w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
                             ×
                         </button>
-                        ${index === 0 ? '<span class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-blue-500 font-medium">Main</span>' : ''}
                     `;
                 };
                 reader.readAsDataURL(file);
