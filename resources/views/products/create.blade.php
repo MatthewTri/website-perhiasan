@@ -37,7 +37,7 @@
                     
                     <!-- Thumbnail Gallery -->
                     <div class="flex space-x-2 overflow-x-auto pb-2">
-                        <div id="thumbnailContainer" class="flex space-x-2">
+                        <div id="thumbnailContainer" class="flex space-x-2 pb-3">
                             <!-- Thumbnails will be added here dynamically -->
                         </div>
                         
@@ -278,6 +278,8 @@
                                 rounded-bl-xs font-bold w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
                             ×
                         </button>
+                        ${index === 0 ? '<span class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-blue-500 font-medium">Featured</span>' : ''}
+
                     `;
                 };
                 reader.readAsDataURL(file);
