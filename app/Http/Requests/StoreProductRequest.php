@@ -28,7 +28,7 @@ class StoreProductRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'images' => 'required|array|min:1',
+            'images' => 'array|min:1',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ];
     }
@@ -36,7 +36,7 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'images.required' => 'At least one product image is required.',
+            // 'images.required' => 'At least one product image is required.',
             'images.*.image' => 'Each file must be an image.',
             'images.*.mimes' => 'Images must be jpeg, png, jpg, or gif.',
             'images.*.max' => 'Each image must be less than 2MB.'
