@@ -70,9 +70,18 @@
                         <button class="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition duration-200">
                             Edit
                         </button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white text-sm py-2 px-3 rounded transition duration-200">
-                            Del
-                        </button>
+                        <!-- Delete Button dengan Konfirmasi -->
+                        <form action="{{ route('products.destroy', $product) }}" 
+                              method="POST" 
+                              class="inline"
+                              onsubmit="return confirmDelete('{{ $product->name }}')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="bg-red-500 hover:bg-red-600 text-white text-sm py-2 px-3 rounded transition duration-200">
+                                Del
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -95,4 +104,11 @@
         @endforelse
     </div>
 </div>
+
+
+<script>
+    function confirmDelete(productName) {
+        return confirm(`Are you sure you want to delete "${productName}"?\n\nThis action cannot be undone and will also delete all associated images.`);
+    }
+</script>
 @endsection

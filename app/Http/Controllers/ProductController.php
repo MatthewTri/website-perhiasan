@@ -9,6 +9,7 @@ use \Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\ProductImage;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -92,7 +93,22 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        // Delete associated images first
+        if ($product->images()->exists()) {
+            foreach ($product->images as $image) {
+                // Delete file from storage
+                if (Storage::disk('public')->exists($image->image)) {
+                    Storage::disk('public')->delete($image->image);
+                }
+                // Delete from database
+                $image->delete();
+            }
+        }
+        
+        // Delete the product
+        $product->delete();
+        
+        return redirect()->route('products.index')->with('success', 'Product successfully deleted!');
     }
 
     public function checkSlug(Request $r) {
