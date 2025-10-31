@@ -147,7 +147,7 @@
             <div class="text-center">
                 <p class="text-sm text-gray-600">
                     Already have an account?
-                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                    <a href="/login" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
                         Sign in here
                     </a>
                 </p>
