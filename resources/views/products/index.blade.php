@@ -18,7 +18,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($products as $product)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
                 <!-- Product Image -->
                 <div class="aspect-square bg-gray-100 relative">
                     @if($product->featuredImage)
@@ -35,12 +35,22 @@
                     
                     <!-- Category Badge -->
                     @if($product->category)
-                        <div class="absolute top-2 left-2">
+                        <div class="absolute top-3 left-3">
                             <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
                                 {{ $product->category->name }}
                             </span>
                         </div>
                     @endif
+
+                    <!-- Add to Cart Icon "+" -->
+                    <div class="absolute bottom-3 right-3">
+                        <button onclick="addToCartLater({{ $product->id }})" 
+                                class="bg-white hover:bg-blue-500 text-gray-800 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
+                            <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Product Info -->
@@ -106,10 +116,15 @@
     </div>
 </div>
 
-
 <script>
     function confirmDelete(productName) {
         return confirm(`Are you sure you want to delete "${productName}"?\n\nThis action cannot be undone and will also delete all associated images.`);
+    }
+
+    // Placeholder function untuk nanti
+    function addToCartLater(productId) {
+        console.log('Add to cart will be implemented later for product ID:', productId);
+        alert('Add to cart feature coming soon!');
     }
 </script>
 @endsection
