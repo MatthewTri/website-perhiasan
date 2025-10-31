@@ -2,65 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Cart;
-use App\Http\Requests\StoreCartRequest;
-use App\Http\Requests\UpdateCartRequest;
+use App\Models\CartItem;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        // Ambil cart user yang sedang login
+        $cart = Cart::with(['cartItems.product.featuredImage'])
+                    ->where('user_id', Auth::id())
+                    ->first();
+
+        $cartItems = $cart ? $cart->cartItems : collect();
+        
+        // Hitung total
+        $total = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        return view('cart.index', compact('cartItems', 'total'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function addToCart(Request $request, $productId)
     {
-        //
+        // Cek apakah user sudah login
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Please login first'], 401);
+        }
+
+        // Cari atau buat cart untuk user
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+
+        // Cek apakah produk sudah ada di cart
+        $cartItem = CartItem::where('cart_id', $cart->id)
+                            ->where('product_id', $productId)
+                            ->first();
+
+        if ($cartItem) {
+            // Jika sudah ada, tambah quantity
+            $cartItem->increment('quantity');
+        } else {
+            // Jika belum ada, buat cart item baru
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'product_id' => $productId,
+                'quantity' => 1
+            ]);
+        }
+
+        return response()->json(['success' => 'Product added to cart!']);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCartRequest $request)
+    public function removeFromCart($cartItemId)
     {
-        //
-    }
+        $cartItem = CartItem::where('id', $cartItemId)
+                           ->whereHas('cart', function($query) {
+                               $query->where('user_id', Auth::id());
+                           })
+                           ->first();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
+        if ($cartItem) {
+            $cartItem->delete();
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCartRequest $request, Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cart $cart)
-    {
-        //
+        return redirect()->route('cart.index')->with('success', 'Item removed from cart');
     }
 }

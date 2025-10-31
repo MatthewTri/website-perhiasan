@@ -121,10 +121,34 @@
         return confirm(`Are you sure you want to delete "${productName}"?\n\nThis action cannot be undone and will also delete all associated images.`);
     }
 
-    // Placeholder function untuk nanti
     function addToCartLater(productId) {
-        console.log('Add to cart will be implemented later for product ID:', productId);
-        alert('Add to cart feature coming soon!');
+        // Cek apakah user sudah login
+        @guest
+            alert('Please login first to add items to cart!');
+            return;
+        @endguest
+
+        // Kirim AJAX request untuk menambah ke cart
+        fetch(`/cart/add/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Product added to cart successfully!');
+                // Optional: Update cart counter di navbar jika ada
+            } else {
+                alert(data.error || 'Something went wrong!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong!');
+        });
     }
 </script>
 @endsection

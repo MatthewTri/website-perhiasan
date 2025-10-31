@@ -19,7 +19,7 @@ class Cart extends Model
     }
 
     // Relasi ke item di dalam keranjang
-    public function items()
+    public function cartItems()
     {
         return $this->hasMany(CartItem::class);
     }
