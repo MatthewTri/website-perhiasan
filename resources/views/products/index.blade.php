@@ -122,12 +122,6 @@
     }
 
     function addToCartLater(productId) {
-        // Cek apakah user sudah login
-        @guest
-            alert('Please login first to add items to cart!');
-            return;
-        @endguest
-
         // Kirim AJAX request untuk menambah ke cart
         fetch(`/cart/add/${productId}`, {
             method: 'POST',
@@ -139,8 +133,20 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Jika guest user dan ada product data, simpan ke localStorage
+                @guest
+                if (data.product) {
+                    const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
+                    if (cart[productId]) {
+                        cart[productId]++;
+                    } else {
+                        cart[productId] = 1;
+                    }
+                    localStorage.setItem('guest_cart', JSON.stringify(cart));
+                }
+                @endguest
+
                 alert('Product added to cart successfully!');
-                // Optional: Update cart counter di navbar jika ada
             } else {
                 alert(data.error || 'Something went wrong!');
             }

@@ -12,63 +12,118 @@ class CartController extends Controller
 {
     public function index()
     {
-        // Ambil cart user yang sedang login
-        $cart = Cart::with(['cartItems.product.featuredImage'])
-                    ->where('user_id', Auth::id())
-                    ->first();
+        if (Auth::check()) {
+            // User authenticated - ambil dari database
+            $cart = Cart::with(['cartItems.product.featuredImage'])
+                        ->where('user_id', Auth::id())
+                        ->first();
 
-        $cartItems = $cart ? $cart->cartItems : collect();
-        
-        // Hitung total
-        $total = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+            $cartItems = $cart ? $cart->cartItems : collect();
+            
+            // Hitung total
+            $total = $cartItems->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
+        } else {
+            // Guest user - data akan diambil dari localStorage via JavaScript
+            $cartItems = collect();
+            $total = 0;
+        }
 
         return view('cart.index', compact('cartItems', 'total'));
     }
 
     public function addToCart(Request $request, $productId)
     {
-        // Cek apakah user sudah login
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Please login first'], 401);
-        }
+        if (Auth::check()) {
+            // User authenticated - simpan ke database
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
-        // Cari atau buat cart untuk user
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                                ->where('product_id', $productId)
+                                ->first();
 
-        // Cek apakah produk sudah ada di cart
-        $cartItem = CartItem::where('cart_id', $cart->id)
-                            ->where('product_id', $productId)
-                            ->first();
+            if ($cartItem) {
+                $cartItem->increment('quantity');
+            } else {
+                CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $productId,
+                    'quantity' => 1
+                ]);
+            }
 
-        if ($cartItem) {
-            // Jika sudah ada, tambah quantity
-            $cartItem->increment('quantity');
+            return response()->json(['success' => 'Product added to cart!']);
         } else {
-            // Jika belum ada, buat cart item baru
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $productId,
-                'quantity' => 1
+            // Guest user - return product info untuk localStorage
+            $product = Product::find($productId);
+            
+            if (!$product) {
+                return response()->json(['error' => 'Product not found'], 404);
+            }
+
+            return response()->json([
+                'success' => 'Product added to cart!',
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'description' => $product->description
+                ]
             ]);
         }
-
-        return response()->json(['success' => 'Product added to cart!']);
     }
 
     public function removeFromCart($cartItemId)
     {
-        $cartItem = CartItem::where('id', $cartItemId)
-                           ->whereHas('cart', function($query) {
-                               $query->where('user_id', Auth::id());
-                           })
-                           ->first();
+        if (Auth::check()) {
+            $cartItem = CartItem::where('id', $cartItemId)
+                               ->whereHas('cart', function($query) {
+                                   $query->where('user_id', Auth::id());
+                               })
+                               ->first();
 
-        if ($cartItem) {
-            $cartItem->delete();
+            if ($cartItem) {
+                $cartItem->delete();
+            }
+
+            return redirect()->route('cart.index')->with('success', 'Item removed from cart');
+        } else {
+            // Guest user - redirect back, removal akan handled by JavaScript
+            return redirect()->route('cart.index')->with('success', 'Item removed from cart');
+        }
+    }
+
+    // API endpoint untuk get guest cart items
+    public function getGuestCartItems(Request $request)
+    {
+        $productIds = $request->input('product_ids', []);
+        
+        if (empty($productIds)) {
+            return response()->json(['items' => []]);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Item removed from cart');
+        // Tambahkan eager loading untuk featuredImage
+        $products = Product::with('featuredImage')->whereIn('id', array_keys($productIds))->get();
+        
+        $cartItems = $products->map(function($product) use ($productIds) {
+            return [
+                'id' => 'guest_' . $product->id,
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'description' => $product->description,
+                    // Tambahkan image data
+                    'featured_image' => $product->featuredImage ? [
+                        'image' => $product->featuredImage->image,
+                        'alt' => $product->featuredImage->alt ?? $product->name
+                    ] : null
+                ],
+                'quantity' => $productIds[$product->id]
+            ];
+        });
+
+        return response()->json(['items' => $cartItems]);
     }
 }
