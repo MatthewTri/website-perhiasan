@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use Xendit\Configuration;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        Configuration::setXenditKey(env('XENDIT_API_KEY'));
+    }
     /**
      * Display a listing of the resource.
      */
