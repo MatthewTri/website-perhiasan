@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\SettingController;
 
 // Home Page
 Route::get('/', function () {
@@ -36,3 +37,9 @@ Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart
 
 // API untuk guest cart
 Route::post('/api/cart/guest-items', [CartController::class, 'getGuestCartItems'])->name('cart.guest.items');
+
+// Settings routes (only Admin access)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+});
