@@ -23,7 +23,7 @@
           </li>
           <li class="shrink-0">
             <a href="#" title="" class="flex text-sm font-medium text-gray-900 hover:text-primary-700">
-              Gift Ideas
+              Gemma AI
             </a>
           </li>
           <li class="shrink-0">
@@ -90,28 +90,7 @@
       </div>
     </div>
 
-    <div id="ecommerce-navbar-menu-1" class="bg-gray-50 border border-gray-200 rounded-lg py-3 hidden px-4 mt-4">
-      <ul class="text-gray-900 text-sm font-medium space-y-3">
-        <li>
-          <a href="#" class="hover:text-primary-700">Home</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-primary-700">Best Sellers</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-primary-700">Gift Ideas</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-primary-700">Games</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-primary-700">Electronics</a>
-        </li>
-        <li>
-          <a href="#" class="hover:text-primary-700">Home & Garden</a>
-        </li>
-      </ul>
-    </div>
+
   </div>
 </nav>
 
