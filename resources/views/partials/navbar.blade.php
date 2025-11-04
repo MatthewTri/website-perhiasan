@@ -21,11 +21,13 @@
               Best Sellers
             </a>
           </li>
-          <li class="shrink-0">
-            <a href="#" title="" class="flex text-sm font-medium text-gray-900 hover:text-primary-700">
-              Gemma AI
-            </a>
-          </li>
+          @auth
+            <li class="shrink-0">
+              <a href="{{ route('gemma.index') }}" title="" class="flex text-sm font-medium text-gray-900 hover:text-primary-700">
+                Gemma AI
+              </a>
+            </li>
+          @endauth
           <li class="shrink-0">
             <a href="{{ route('products.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
               Manage products

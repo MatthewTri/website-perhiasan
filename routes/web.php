@@ -7,6 +7,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\GemmaController;
 
 // Home Page
 Route::get('/', function () {
@@ -42,4 +43,13 @@ Route::post('/api/cart/guest-items', [CartController::class, 'getGuestCartItems'
 Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+});
+
+// Gemma AI route
+Route::middleware(['auth'])->group(function () {
+    // Halaman untuk menampilkan UI chat
+    Route::get('/gemma', [GemmaController::class, 'index'])->name('gemma.index');
+    
+    // Endpoint yang akan dipanggil oleh AJAX
+    Route::post('/gemma/generate', [GemmaController::class, 'generate'])->name('gemma.generate');
 });
