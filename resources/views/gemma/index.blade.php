@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <!-- Chat Container - Flexible height -->
+    <!-- Chat Container -->
     <div class="flex-1 bg-gray-50 overflow-y-auto p-6 space-y-4" id="chatContainer">
         <!-- Welcome Message -->
         <div class="flex items-start space-x-3">
@@ -29,13 +29,62 @@
             </div>
             <div class="bg-white rounded-lg px-4 py-3 shadow-sm max-w-md">
                 <p class="text-gray-700 text-sm">
-                    Hi! I'm your AI jewelry image generator. Send me a description of the jewelry you'd like to see, and I'll create a beautiful image for you!
+                    Hi! I'm your AI jewelry image generator. 
+                    @auth
+                        Send me a description of the jewelry you'd like to see, and I'll create a beautiful image for you!
+                    @else
+                        Please <a href="{{ route('login') }}" class="text-blue-600 hover:underline">login</a> to generate images and save your chat history.
+                    @endauth
                 </p>
                 <span class="text-xs text-gray-400 mt-1 block">Just now</span>
             </div>
         </div>
 
-        <!-- Chat messages will be appended here -->
+        <!-- Load Chat History -->
+        @auth
+            @foreach($history as $chat)
+                <!-- User Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-600 text-white rounded-lg px-4 py-3 max-w-md">
+                        <p class="text-sm">{{ $chat->prompt }}</p>
+                        <span class="text-xs text-blue-100 mt-1 block">{{ $chat->created_at->format('H:i') }}</span>
+                    </div>
+                </div>
+
+                <!-- AI Response -->
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-sm">🤖</span>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 shadow-sm max-w-md">
+                        <p class="text-gray-700 text-sm mb-3">Here's your generated jewelry image:</p>
+                        <div class="relative">
+                            <img src="{{ $chat->image_url }}" 
+                                 alt="Generated jewelry image" 
+                                 class="w-full rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition"
+                                 onclick="this.requestFullscreen()">
+                            <div class="absolute top-2 right-2 flex space-x-1">
+                                <button onclick="window.open('{{ $chat->image_url }}', '_blank')" 
+                                        class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-70">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </button>
+                                <button onclick="deleteChat({{ $chat->id }})" 
+                                        class="bg-red-500 bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-70">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <span class="text-xs text-gray-400 mt-2 block">{{ $chat->created_at->format('H:i') }}</span>
+                    </div>
+                </div>
+            @endforeach
+        @endauth
+
+        <!-- New messages will be appended here -->
     </div>
 
     <!-- Input Area - Fixed at bottom -->
@@ -149,46 +198,89 @@ class AIChat {
     }
 
     async sendMessage() {
-        const prompt = this.promptInput.value.trim();
-        if (!prompt) return;
+    const prompt = this.promptInput.value.trim();
+    if (!prompt) return;
 
-        // Disable input while processing
-        this.setLoading(true);
+    // Disable input while processing
+    this.setLoading(true);
 
-        // Add user message to chat
-        this.addUserMessage(prompt);
+    // Add user message to chat
+    this.addUserMessage(prompt);
 
-        // Clear input
-        this.promptInput.value = '';
-        this.charCount.textContent = '0';
-        this.promptInput.style.height = 'auto'; // Reset height
-        this.toggleSendButton();
+    // Clear input
+    this.promptInput.value = '';
+    this.charCount.textContent = '0';
+    this.promptInput.style.height = 'auto'; // Reset height
+    this.toggleSendButton();
 
-        try {
-            // Send to backend
-            const response = await fetch('{{ route("gemma.generate") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ prompt: prompt })
-            });
+    try {
+        // Send to backend
+        const response = await fetch('{{ route("gemma.generate") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ prompt: prompt })
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (data.success) {
-                this.addAIImageMessage(data.image_url);
-            } else {
-                this.addAIMessage('Sorry, I encountered an error while generating the image. Please try again.');
+        if (data.success) {
+            this.addAIImageMessage(data.image_url);
+        } else {
+            // Handle specific error messages from Node.js backend
+            let errorMessage = 'Sorry, I encountered an error while generating the image. Please try again.';
+            
+            if (data.error) {
+                // Map specific backend errors to user-friendly messages
+                switch (data.error) {
+                    case 'Prompt cannot be empty.':
+                        errorMessage = 'Please provide a description for the jewelry you want to generate.';
+                        break;
+                    case 'Your prompt contains inappropriate content.':
+                        errorMessage = 'I cannot generate images with inappropriate content. Please try a different description.';
+                        break;
+                    case 'Prompt should focus on jewelry.':
+                        errorMessage = 'Please describe jewelry items only. I specialize in creating jewelry images like rings, necklaces, earrings, etc.';
+                        break;
+                    case 'Server belum siap, coba beberapa saat lagi.':
+                        errorMessage = 'AI service is starting up. Please try again in a moment.';
+                        break;
+                    case 'Prompt tidak relevan dengan perhiasan.':
+                        errorMessage = 'Your description doesn\'t seem to be about jewelry. Please describe jewelry items like rings, necklaces, bracelets, etc.';
+                        break;
+                    case 'Sorry, there\'s an issue with the AI service.':
+                        errorMessage = 'The AI service is temporarily unavailable. Please try again later.';
+                        break;
+                    default:
+                        // Use the exact error message from backend if it's user-friendly
+                        if (data.error.length < 150) {
+                            errorMessage = data.error;
+                        }
+                        break;
+                }
             }
-        } catch (error) {
-            console.error('Error:', error);
-            this.addAIMessage('Sorry, something went wrong. Please check your connection and try again.');
-        } finally {
-            this.setLoading(false);
+            
+            this.addAIMessage(errorMessage);
         }
+    } catch (error) {
+        console.error('Error:', error);
+        
+        // Handle network/connection errors
+        let networkErrorMessage = 'Sorry, something went wrong. Please check your connection and try again.';
+        
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            networkErrorMessage = 'Cannot connect to AI service. Please check if the service is running on port 3001.';
+        } else if (error.name === 'AbortError') {
+            networkErrorMessage = 'Request timed out. The AI service might be busy. Please try again.';
+        }
+        
+        this.addAIMessage(networkErrorMessage);
+    } finally {
+        this.setLoading(false);
     }
+}
 
 
     addUserMessage(message) {
@@ -322,6 +414,29 @@ class AIChat {
         link.click();
         document.body.removeChild(link);
     }
+}
+
+function deleteChat(chatId) {
+    if (!confirm('Are you sure you want to delete this chat?')) return;
+    
+    fetch(`/gemma/delete/${chatId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Refresh page
+        } else {
+            alert('Failed to delete chat');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong');
+    });
 }
 
 // Initialize chat when page loads

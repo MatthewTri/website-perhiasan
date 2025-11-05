@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use App\Models\ChatHistory;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GemmaController extends Controller
 {
@@ -15,7 +20,13 @@ class GemmaController extends Controller
             return redirect()->back()->with('error', 'AI feature is currently disabled.');
         }
 
-        return view('gemma.index');
+        // Ambil chat history untuk user yang login
+        $history = collect(); // Default empty collection untuk guest
+        if (Auth::check()) {
+            $history = Auth::user()->chatHistory;
+        }
+
+        return view('gemma.index', compact('history'));
     }
 
     public function generate(Request $request)
@@ -24,12 +35,107 @@ class GemmaController extends Controller
             'prompt' => 'required|string|max:500'
         ]);
 
-        // TODO: Implementasi call ke Node.js API di port 3001
-        // Untuk sekarang return dummy response
-        return response()->json([
-            'success' => true,
-            'message' => 'Image generated successfully!',
-            'image_url' => asset('img/jewel.png')
-        ]);
+        // Cek apakah user login (untuk save history)
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You must be logged in to generate images.'
+            ], 401);
+        }
+
+        try {
+            // Call ke Node.js API di port 3001
+            $response = Http::timeout(60)->post('http://localhost:3001/generate-image', [
+                'prompt' => $request->prompt
+            ]);
+
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to generate image. Please try again.'
+                ], 500);
+            }
+
+            $tempUrl = $response->json('image_url'); // URL dari Node.js
+
+            if (!$tempUrl) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No image URL received from AI service.'
+                ], 500);
+            }
+
+            // Download gambar dari Node.js
+            $imageResponse = Http::timeout(30)->get($tempUrl);
+            
+            if (!$imageResponse->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to download generated image.'
+                ], 500);
+            }
+
+            $imageContents = $imageResponse->body();
+
+            // Buat direktori jika belum ada
+            if (!Storage::disk('public')->exists('ai_generations')) {
+                Storage::disk('public')->makeDirectory('ai_generations');
+            }
+
+            // Buat nama file unik
+            $fileName = 'ai_generations/' . Str::uuid() . '.png';
+
+            // Simpan ke storage/app/public/ai_generations
+            Storage::disk('public')->put($fileName, $imageContents);
+
+            // URL permanen
+            $permanentUrl = asset('storage/' . $fileName);
+
+            // Simpan ke chat history
+            $chatHistory = ChatHistory::create([
+                'user_id' => Auth::id(),
+                'prompt' => $request->prompt,
+                'image_url' => $permanentUrl,
+                'original_filename' => $fileName
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image generated successfully!',
+                'image_url' => $permanentUrl,
+                'chat_id' => $chatHistory->id
+            ]);
+
+        } catch (\Exception $e) {            
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again later.'
+            ], 500);
+        }
+    }
+
+    // Method untuk hapus chat history
+    public function deleteHistory($id)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false], 401);
+        }
+
+        $chatHistory = ChatHistory::where('id', $id)
+                                 ->where('user_id', Auth::id())
+                                 ->first();
+
+        if ($chatHistory) {
+            // Hapus file gambar juga
+            if (Storage::disk('public')->exists($chatHistory->original_filename)) {
+                Storage::disk('public')->delete($chatHistory->original_filename);
+            }
+            
+            $chatHistory->delete();
+            
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }

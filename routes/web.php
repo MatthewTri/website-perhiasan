@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Halaman untuk menampilkan UI chat
     Route::get('/gemma', [GemmaController::class, 'index'])->name('gemma.index');
-    
     // Endpoint yang akan dipanggil oleh AJAX
     Route::post('/gemma/generate', [GemmaController::class, 'generate'])->name('gemma.generate');
+    Route::delete('/gemma/delete/{id}', [GemmaController::class, 'deleteHistory'])->name('gemma.delete');
 });
