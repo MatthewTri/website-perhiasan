@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class);
     }
     
+    public function chatHistory()
+    {
+        return $this->hasMany(ChatHistory::class)->orderBy('created_at', 'asc');
+    }
+    
     // Relasi: User punya banyak log prompt AI
     // public function aiPromptLogs()
     // {
