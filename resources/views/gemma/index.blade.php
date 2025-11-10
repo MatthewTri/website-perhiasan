@@ -198,89 +198,77 @@ class AIChat {
     }
 
     async sendMessage() {
-    const prompt = this.promptInput.value.trim();
-    if (!prompt) return;
+        const prompt = this.promptInput.value.trim();
+        if (!prompt) return;
 
-    // Disable input while processing
-    this.setLoading(true);
+        // Disable input while processing
+        this.setLoading(true);
 
-    // Add user message to chat
-    this.addUserMessage(prompt);
+        // Add user message to chat
+        this.addUserMessage(prompt);
 
-    // Clear input
-    this.promptInput.value = '';
-    this.charCount.textContent = '0';
-    this.promptInput.style.height = 'auto'; // Reset height
-    this.toggleSendButton();
+        // Clear input
+        this.promptInput.value = '';
+        this.charCount.textContent = '0';
+        this.promptInput.style.height = 'auto'; // Reset height
+        this.toggleSendButton();
 
-    try {
-        // Send to backend
-        const response = await fetch('{{ route("gemma.generate") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ prompt: prompt })
-        });
+        try {
+            // Send to backend
+            const response = await fetch('{{ route("gemma.generate") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data.success) {
-            this.addAIImageMessage(data.image_url);
-        } else {
-            // Handle specific error messages from Node.js backend
-            let errorMessage = 'Sorry, I encountered an error while generating the image. Please try again.';
+            if (data.success) {
+                this.addAIImageMessage(data.image_url);
+            } else {
+                // Langsung pakai error message dari backend
+                // Backend sudah handle mapping error dari Node.js
+                const errorMessage = this.getUserFriendlyErrorMessage(data.error);
+                this.addAIMessage(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error:', error);
             
-            if (data.error) {
-                // Map specific backend errors to user-friendly messages
-                switch (data.error) {
-                    case 'Prompt cannot be empty.':
-                        errorMessage = 'Please provide a description for the jewelry you want to generate.';
-                        break;
-                    case 'Your prompt contains inappropriate content.':
-                        errorMessage = 'I cannot generate images with inappropriate content. Please try a different description.';
-                        break;
-                    case 'Prompt should focus on jewelry.':
-                        errorMessage = 'Please describe jewelry items only. I specialize in creating jewelry images like rings, necklaces, earrings, etc.';
-                        break;
-                    case 'Server belum siap, coba beberapa saat lagi.':
-                        errorMessage = 'AI service is starting up. Please try again in a moment.';
-                        break;
-                    case 'Prompt tidak relevan dengan perhiasan.':
-                        errorMessage = 'Your description doesn\'t seem to be about jewelry. Please describe jewelry items like rings, necklaces, bracelets, etc.';
-                        break;
-                    case 'Sorry, there\'s an issue with the AI service.':
-                        errorMessage = 'The AI service is temporarily unavailable. Please try again later.';
-                        break;
-                    default:
-                        // Use the exact error message from backend if it's user-friendly
-                        if (data.error.length < 150) {
-                            errorMessage = data.error;
-                        }
-                        break;
-                }
+            // Handle network/connection errors
+            let networkErrorMessage = 'Sorry, something went wrong. Please check your connection and try again.';
+            
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                networkErrorMessage = 'Cannot connect to AI service. Please check if the service is running.';
+            } else if (error.name === 'AbortError') {
+                networkErrorMessage = 'Request timed out. The AI service might be busy. Please try again.';
             }
             
-            this.addAIMessage(errorMessage);
+            this.addAIMessage(networkErrorMessage);
+        } finally {
+            this.setLoading(false);
         }
-    } catch (error) {
-        console.error('Error:', error);
-        
-        // Handle network/connection errors
-        let networkErrorMessage = 'Sorry, something went wrong. Please check your connection and try again.';
-        
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            networkErrorMessage = 'Cannot connect to AI service. Please check if the service is running on port 3001.';
-        } else if (error.name === 'AbortError') {
-            networkErrorMessage = 'Request timed out. The AI service might be busy. Please try again.';
-        }
-        
-        this.addAIMessage(networkErrorMessage);
-    } finally {
-        this.setLoading(false);
     }
-}
+
+    // Helper method untuk convert technical error ke user-friendly message
+    getUserFriendlyErrorMessage(error) {
+        // Map error dari Node.js ke pesan yang user-friendly
+        const errorMap = {
+            'Prompt cannot be empty.': 'Please provide a description for the jewelry you want to generate.',
+            'Your prompt contains inappropriate content.': 'I cannot generate images with inappropriate content. Please try a different description.',
+            'Prompt should focus on jewelry.': 'Please describe jewelry items only. I specialize in creating jewelry images like rings, necklaces, earrings, etc.',
+            'Server belum siap, coba beberapa saat lagi.': 'AI service is starting up. Please try again in a moment.',
+            'Prompt tidak relevan dengan perhiasan.': 'Your description doesn\'t seem to be about jewelry. Please describe jewelry items like rings, necklaces, bracelets, etc.',
+            'Sorry, there\'s an issue with the AI service.': 'The AI service is temporarily unavailable. Please try again later.',
+            'AI service is not available. Please make sure the Node.js server is running on port 3001.': 'The AI service is temporarily unavailable. Please try again later.',
+            'You must be logged in to generate images.': 'Please log in to generate images and save your chat history.'
+        };
+
+        // Return mapped message atau default message
+        return errorMap[error] || (error.length < 150 ? error : 'Sorry, something went wrong. Please try again.');
+    }
 
 
     addUserMessage(message) {

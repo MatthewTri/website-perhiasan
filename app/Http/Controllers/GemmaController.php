@@ -39,7 +39,7 @@ class GemmaController extends Controller
         if (!Auth::check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'You must be logged in to generate images.'
+                'error' => 'You must be logged in to generate images.'
             ], 401);
         }
 
@@ -49,67 +49,84 @@ class GemmaController extends Controller
                 'prompt' => $request->prompt
             ]);
 
-            if (!$response->successful()) {
+            if ($response->successful()) {
+                // Success - dapat gambar
+                $data = $response->json();
+                
+                if (!isset($data['image_url'])) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'No image URL received from AI service.'
+                    ], 500);
+                }
+
+                $tempUrl = $data['image_url'];
+
+                // Download gambar dari Node.js
+                $imageResponse = Http::timeout(30)->get($tempUrl);
+                
+                if (!$imageResponse->successful()) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Failed to download generated image.'
+                    ], 500);
+                }
+
+                $imageContents = $imageResponse->body();
+
+                // Buat direktori jika belum ada
+                if (!Storage::disk('public')->exists('ai_generations')) {
+                    Storage::disk('public')->makeDirectory('ai_generations');
+                }
+
+                // Buat nama file unik
+                $fileName = 'ai_generations/' . Str::uuid() . '.png';
+
+                // Simpan ke storage/app/public/ai_generations
+                Storage::disk('public')->put($fileName, $imageContents);
+
+                // URL permanen
+                $permanentUrl = asset('storage/' . $fileName);
+
+                // Simpan ke chat history
+                $chatHistory = ChatHistory::create([
+                    'user_id' => Auth::id(),
+                    'prompt' => $request->prompt,
+                    'image_url' => $permanentUrl,
+                    'original_filename' => $fileName
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image generated successfully!',
+                    'image_url' => $permanentUrl,
+                    'chat_id' => $chatHistory->id
+                ]);
+
+            } else {
+                // Error dari microservice (400, 500, dll)
+                $errorData = $response->json();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to generate image. Please try again.'
-                ], 500);
+                    'error' => $errorData['error'] ?? 'Unknown error from AI service',
+                    'status_code' => $response->status()
+                ], $response->status());
             }
 
-            $tempUrl = $response->json('image_url'); // URL dari Node.js
-
-            if (!$tempUrl) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No image URL received from AI service.'
-                ], 500);
-            }
-
-            // Download gambar dari Node.js
-            $imageResponse = Http::timeout(30)->get($tempUrl);
+        } catch (\Exception $e) {
             
-            if (!$imageResponse->successful()) {
+            // Handle specific connection errors
+            if (str_contains($e->getMessage(), 'Connection refused') || 
+                str_contains($e->getMessage(), 'cURL error 7')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to download generated image.'
-                ], 500);
+                    'error' => 'AI service is not available. Please make sure the Node.js server is running on port 3001.'
+                ], 503);
             }
-
-            $imageContents = $imageResponse->body();
-
-            // Buat direktori jika belum ada
-            if (!Storage::disk('public')->exists('ai_generations')) {
-                Storage::disk('public')->makeDirectory('ai_generations');
-            }
-
-            // Buat nama file unik
-            $fileName = 'ai_generations/' . Str::uuid() . '.png';
-
-            // Simpan ke storage/app/public/ai_generations
-            Storage::disk('public')->put($fileName, $imageContents);
-
-            // URL permanen
-            $permanentUrl = asset('storage/' . $fileName);
-
-            // Simpan ke chat history
-            $chatHistory = ChatHistory::create([
-                'user_id' => Auth::id(),
-                'prompt' => $request->prompt,
-                'image_url' => $permanentUrl,
-                'original_filename' => $fileName
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Image generated successfully!',
-                'image_url' => $permanentUrl,
-                'chat_id' => $chatHistory->id
-            ]);
-
-        } catch (\Exception $e) {            
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong. Please try again later.'
+                'error' => 'Something went wrong. Please try again later.'
             ], 500);
         }
     }
