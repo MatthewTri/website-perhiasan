@@ -201,18 +201,19 @@ class AIChat {
         const prompt = this.promptInput.value.trim();
         if (!prompt) return;
 
-        // Disable input while processing
-        this.setLoading(true);
-
+        
         // Add user message to chat
         this.addUserMessage(prompt);
-
+        
         // Clear input
         this.promptInput.value = '';
         this.charCount.textContent = '0';
         this.promptInput.style.height = 'auto'; // Reset height
         this.toggleSendButton();
-
+        
+        // Disable input while processing
+        this.setLoading(true);
+        
         try {
             // Send to backend
             const response = await fetch('{{ route("gemma.generate") }}', {
