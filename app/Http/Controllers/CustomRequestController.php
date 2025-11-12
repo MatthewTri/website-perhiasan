@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewConsultationRequestMail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CustomRequestController extends Controller
 {
@@ -21,9 +25,30 @@ class CustomRequestController extends Controller
      */
     public function store(Request $request)
     {
-        // (Logika validasi, simpan ke DB, dan kirim notifikasi ke Admin)
-        // ...
-        return redirect()->back()->with('success', 'Permintaan terkirim!');
+        // Validasi input
+        $validated = $request->validate([
+            'user_name' => 'required|string|max:255',
+            'user_email' => 'required|email|max:255',
+            'country' => 'required|string|max:255',
+            'notes' => 'nullable|string|max:2000',
+        ]);
+
+        // Tambahkan user_id jika login
+        $validated['user_id'] = Auth::id();
+
+        // Simpan ke database
+        $customRequest = CustomRequest::create($validated);
+
+        // Kirim email ke admin
+        try {
+            Mail::to(config('mail.admin_email', 'admin@yoursite.com'))
+                ->send(new NewConsultationRequestMail($customRequest));
+        } catch (\Exception $e) {
+            // Log error tapi tetap lanjut
+            Log::error('Failed to send consultation email: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
     }
 
     /**

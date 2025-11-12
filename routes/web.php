@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\GemmaController;
+use App\Http\Controllers\CustomRequestController;
 
 // Home Page
 Route::get('/', function () {
@@ -52,4 +53,15 @@ Route::middleware(['auth'])->group(function () {
     // Endpoint yang akan dipanggil oleh AJAX
     Route::post('/gemma/generate', [GemmaController::class, 'generate'])->name('gemma.generate');
     Route::delete('/gemma/delete/{id}', [GemmaController::class, 'deleteHistory'])->name('gemma.delete');
+});
+
+// Consultation routes
+Route::get('/consultation', [CustomRequestController::class, 'create'])->name('consultation.create');
+Route::post('/consultation', [CustomRequestController::class, 'store'])->name('consultation.store');
+
+// Admin routes (tambahkan middleware admin nanti)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/consultation', [CustomRequestController::class, 'index'])->name('admin.consultation.index');
+    Route::get('/admin/consultation/{customRequest}', [CustomRequestController::class, 'show'])->name('admin.consultation.show');
+    Route::delete('/admin/consultation/{customRequest}', [CustomRequestController::class, 'destroy'])->name('admin.consultation.destroy');
 });
