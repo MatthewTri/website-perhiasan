@@ -23,8 +23,10 @@ return new class extends Migration
             $table->string('generated_image_url');
             $table->string('status')->default('BARU'); // BARU, DISKUSSI, INVOICE_SENT, LUNAS, DITOLAK
 
-            // --- Diisi Admin Saat Buat Invoice ---
-            $table->string('paypal_invoice_id')->nullable(); // ID dari PayPal (untuk dicocokkan Webhook)
+            // --- REVISI UNTUK MULTI-GATEWAY ---
+            $table->string('payment_gateway')->nullable(); // Akan diisi 'xendit' atau 'paypal'
+            $table->string('gateway_invoice_id')->nullable(); // ID dari Xendit/PayPal
+            $table->text('payment_link')->nullable(); // URL bayar (Xendit/PayPal)
             
             // --- REVISI PENTING (Menjawab "Lebih dari 1 Produk") ---
             // Kita simpan detail invoice (yang diisi admin) sebagai JSON.
