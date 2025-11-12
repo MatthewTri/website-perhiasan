@@ -1,17 +1,13 @@
 <div class="content">
     <div class="field">
-        <div class="field-label">👤 Customer Name:</div>
-        <div class="field-value">{{ $customRequest->user_name }}</div>
+        <div class="field-label">👤 Customer Name: {{ $customRequest->user_name }}</div>
     </div>
 
     <div class="field">
-        <div class="field-label">📧 Email Address:</div>
-        <div class="field-value">{{ $customRequest->user_email }}</div>
+        <div class="field-label">📧 Email Address: {{ $customRequest->user_email }}</div>
     </div>
-
     <div class="field">
-        <div class="field-label">🌍 Country:</div>
-        <div class="field-value">{{ $customRequest->country }}</div>
+        <div class="field-label">🌍 Country: {{ $customRequest->country }}</div>
     </div>
 
     <div class="field">
@@ -26,8 +22,7 @@
     </div>
 
     <div class="field">
-        <div class="field-label">📅 Submitted:</div>
-        <div class="field-value">{{ $customRequest->created_at->format('F j, Y \a\t g:i A') }}</div>
+        <div class="field-label">📅 Submitted: {{ $customRequest->created_at->format('F j, Y \a\t g:i A') }}</div>
     </div>
 
     @if($customRequest->notes)
