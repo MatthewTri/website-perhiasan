@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('custom_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade')->nullable(); // Wajib user login
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // Wajib user login
             
             // --- Data dari Form Awal (Saat Submit) ---
             $table->string('user_name');
