@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('user_email');
             $table->string('country');
             $table->text('notes')->nullable();
-            $table->string('generated_image_url');
+            // $table->string('generated_image_url');
             $table->string('status')->default('BARU'); // BARU, DISKUSSI, INVOICE_SENT, LUNAS, DITOLAK
 
             // --- REVISI UNTUK MULTI-GATEWAY ---

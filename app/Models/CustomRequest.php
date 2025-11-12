@@ -24,4 +24,10 @@ class CustomRequest extends Model
         // Sebuah CustomRequest 'hasOne' Order
         return $this->hasOne(Order::class);
     }
+
+    public function images()
+    {
+        // Satu Request 'hasMany' (punya banyak) Gambar
+        return $this->hasMany(CustomRequestImage::class);
+    }
 }
