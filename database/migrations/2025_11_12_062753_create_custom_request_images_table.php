@@ -15,14 +15,8 @@ return new class extends Migration
             $table->id();
             // Relasi: Gambar ini milik konsultasi yang mana
             $table->foreignId('custom_request_id')->constrained()->onDelete('cascade');
-            
             // URL permanen gambar (yang sudah Anda simpan di storage)
             $table->string('image_url');
-            
-            // (SANGAT DIREKOMENDASIKAN)
-            // Untuk membedakan mana gambar AI, mana gambar upload
-            $table->string('source')->default('user_upload'); // 'user_upload' atau 'ai_generated'
-
             $table->timestamps();
         });
     }
