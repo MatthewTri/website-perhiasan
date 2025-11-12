@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomRequestImage extends Model
 {
-    protected $fillable = ['custom_request_id', 'image_url', 'source'];
+    protected $fillable = ['custom_request_id', 'image_url'];
 
     public function customRequest()
     {
