@@ -1,5 +1,4 @@
 <?php
-// app/Mail/NewConsultationRequestMail.php
 
 namespace App\Mail;
 
@@ -32,7 +31,7 @@ class NewConsultationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            html: 'emails.consultation.new-request',
+            html: 'mail.new-consultation-mail',
         );
     }
 
