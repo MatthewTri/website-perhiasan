@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    // TAMBAHKAN INI
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'c14220080@john.petra.ac.id'),
+
 ];

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NewConsultationRequestMail;
+use App\Mail\NewConsultationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -42,7 +42,7 @@ class CustomRequestController extends Controller
         // Kirim email ke admin
         try {
             Mail::to(config('mail.admin_email', 'admin@yoursite.com'))
-                ->send(new NewConsultationRequestMail($customRequest));
+                ->send(new NewConsultationMail($customRequest));
         } catch (\Exception $e) {
             // Log error tapi tetap lanjut
             Log::error('Failed to send consultation email: ' . $e->getMessage());

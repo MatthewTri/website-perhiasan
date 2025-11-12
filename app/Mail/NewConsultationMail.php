@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\CustomRequest;
 
-class NewConsultationRequestMail extends Mailable
+class NewConsultationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
