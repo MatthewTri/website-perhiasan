@@ -116,6 +116,6 @@ return [
     ],
 
     // TAMBAHKAN INI
-    'admin_email' => env('MAIL_ADMIN_EMAIL', 'c14220080@john.petra.ac.id'),
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'matthew.tricahyo2@gmail.com'),
 
 ];

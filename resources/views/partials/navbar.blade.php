@@ -17,8 +17,8 @@
             </a>
           </li>
           <li class="shrink-0">
-            <a href="#" title="" class="flex text-sm font-medium text-gray-900 hover:text-primary-700">
-              Best Sellers
+            <a href="{{ route('consultation.create') }}" title="" class="flex text-sm font-medium text-gray-900 hover:text-primary-700">
+              Book consultation
             </a>
           </li>
           @auth
