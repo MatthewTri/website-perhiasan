@@ -66,6 +66,32 @@
                     placeholder="Enter your email address">
             </div>
 
+            <!-- Phone Field - Tambahkan setelah Email Field -->
+            <div>
+                <label for="user_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number <span class="text-red-500">*</span>
+                </label>
+                
+                <!-- Visible input untuk intl-tel-input (TANPA name attribute) -->
+                <input 
+                    type="tel" 
+                    id="user_phone"
+                    value="{{ old('user_phone', Auth::user()->phone ?? '') }}" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                    placeholder="Enter your phone number">
+                
+                <!-- Hidden input yang akan di-submit (DENGAN name attribute) -->
+                <input type="hidden" name="user_phone" id="hidden_phone_input" value="{{ old('user_phone', Auth::user()->phone ?? '') }}">
+                
+                <p class="text-sm text-gray-500 mt-1">
+                    📞 Select your phone's country code and enter your number
+                </p>
+                
+                <!-- Error display untuk phone -->
+                <div id="phone-error" class="hidden"></div>
+            </div>
+
             <!-- Country Field -->
             <div>
                 <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
@@ -292,20 +318,149 @@ function removeImage(button, index) {
 
 // Form submission with loading state
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize phone number input
+    const phoneInputField = document.querySelector("#user_phone");
+    const hiddenPhoneInput = document.querySelector("#hidden_phone_input");
+    
+    // ✅ Initialize intl-tel-input
+    const phoneInput = window.intlTelInput(phoneInputField, {
+        initialCountry: "auto",
+        geoIpLookup: function(callback) {
+            fetch('https://ipapi.co/json/')
+                .then(function(res) { return res.json(); })
+                .then(function(data) { callback(data.country_code); })
+                .catch(function() { callback("id"); }); // Default to Indonesia
+        },
+        preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
+        separateDialCode: true,
+        formatOnDisplay: true,
+        nationalMode: false,
+        placeholderNumberType: "MOBILE",
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+    });
+
+    // ✅ Input restriction - hanya angka
+    phoneInputField.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        e.target.value = value;
+        
+        // Update hidden input realtime
+        updateHiddenPhone();
+    });
+
+    phoneInputField.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let paste = (e.clipboardData || window.clipboardData).getData('text');
+        let numericPaste = paste.replace(/[^0-9]/g, '');
+        e.target.value = numericPaste;
+        
+        // Update hidden input setelah paste
+        setTimeout(() => updateHiddenPhone(), 100);
+    });
+
+    phoneInputField.addEventListener('keypress', function(e) {
+        // Allow control keys
+        if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+            return;
+        }
+        // Only allow numbers
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    // ✅ Update hidden input saat country berubah
+    phoneInputField.addEventListener("countrychange", function() {
+        updateHiddenPhone();
+    });
+
+    // ✅ Function untuk update hidden input
+    function updateHiddenPhone() {
+        if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
+            const fullNumber = phoneInput.getNumber();
+            hiddenPhoneInput.value = fullNumber;
+            console.log('📞 Phone updated:', fullNumber);
+            hidePhoneError();
+        } else if (phoneInputField.value.trim()) {
+            // Ada input tapi tidak valid
+            const selectedCountryData = phoneInput.getSelectedCountryData();
+            const dialCode = selectedCountryData.dialCode;
+            const nationalNumber = phoneInputField.value;
+            const fullNumber = `+${dialCode}${nationalNumber}`;
+            hiddenPhoneInput.value = fullNumber;
+            console.log('📞 Phone updated (may be invalid):', fullNumber);
+        }
+    }
+
+    // ✅ Form submission
     const form = document.querySelector('form');
     const submitBtn = document.getElementById('submit-btn');
     const submitText = document.getElementById('submit-text');
     
-    form.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        submitText.textContent = 'Uploading...';
+    form.addEventListener('submit', function(e) {
+        console.log('🔄 Form submission started...');
+        console.log('📞 Visible input value:', phoneInputField.value);
+        console.log('📞 Hidden input value:', hiddenPhoneInput.value);
         
-        // Show upload progress for images
-        const imageCount = document.getElementById('reference_images').files.length;
-        if (imageCount > 0) {
-            submitText.textContent = `Uploading ${imageCount} image(s)...`;
+        // Cek apakah phone number diisi
+        if (phoneInputField.value.trim() === '') {
+            e.preventDefault();
+            showPhoneError('Please enter your phone number.');
+            return;
+        }
+        
+        // Update final hidden input
+        updateHiddenPhone();
+        
+        // Validasi phone number
+        if (phoneInput.isValidNumber()) {
+            console.log('✅ Valid phone number, proceeding with submission');
+            console.log('📞 Final phone to submit:', hiddenPhoneInput.value);
+            
+            // Continue submission
+            submitBtn.disabled = true;
+            submitText.textContent = 'Submitting...';
+            
+            const imageCount = document.getElementById('reference_images').files.length;
+            if (imageCount > 0) {
+                submitText.textContent = `Uploading ${imageCount} image(s)...`;
+            }
+        } else {
+            e.preventDefault();
+            console.log('❌ Invalid phone number');
+            showPhoneError('Please enter a valid phone number for the selected country.');
         }
     });
+
+    // ✅ Show phone error function
+    function showPhoneError(message) {
+        hidePhoneError();
+        
+        const errorDiv = document.getElementById('phone-error');
+        errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-2';
+        errorDiv.innerHTML = `
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                ${message}
+            </div>
+        `;
+        
+        phoneInputField.scrollIntoView({ behavior: 'smooth' });
+        phoneInputField.focus();
+    }
+
+    // ✅ Hide phone error function
+    function hidePhoneError() {
+        const errorDiv = document.getElementById('phone-error');
+        errorDiv.className = 'hidden';
+        errorDiv.innerHTML = '';
+    }
 });
 </script>
 @endsection

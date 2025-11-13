@@ -18,6 +18,7 @@ return new class extends Migration
             // --- Data dari Form Awal (Saat Submit) ---
             $table->string('user_name');
             $table->string('user_email');
+            $table->string('user_phone')->nullable();
             $table->string('country');
             $table->text('notes')->nullable();
             $table->string('status')->default('BARU'); // BARU, DISKUSI, INVOICE_SENT, LUNAS, DITOLAK
