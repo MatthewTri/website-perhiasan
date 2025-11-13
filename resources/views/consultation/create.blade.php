@@ -33,7 +33,7 @@
         @endif
 
         <!-- Form -->
-        <form action="{{ route('consultation.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('consultation.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <!-- Name Field -->
@@ -93,6 +93,46 @@
                 </select>
             </div>
 
+            <!-- Reference Images Upload -->
+            <div>
+                <label for="reference_images" class="block text-sm font-medium text-gray-700 mb-2">
+                    Reference Images (Optional)
+                </label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors duration-200">
+                    <div class="space-y-1 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm text-gray-600">
+                            <label for="reference_images" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                <span>Upload images</span>
+                                <input 
+                                    id="reference_images" 
+                                    name="reference_images[]" 
+                                    type="file" 
+                                    class="sr-only" 
+                                    multiple 
+                                    accept="image/*"
+                                    onchange="previewImages(this)">
+                            </label>
+                            <p class="pl-1">or drag and drop</p>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            PNG, JPG, JPEG up to 5MB each (max 5 images)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Image Preview Container -->
+                <div id="image-preview-container" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 hidden">
+                    <!-- Preview images will be inserted here -->
+                </div>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    💡 <strong>Tips:</strong> Upload reference images of jewelry styles you like, sketches, or inspiration photos to help us understand your vision better.
+                </p>
+            </div>
+
             <!-- Notes Field -->
             <div>
                 <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
@@ -118,7 +158,7 @@
                     <div>
                         <h3 class="text-sm font-medium text-blue-800 mb-1">What happens next?</h3>
                         <p class="text-sm text-blue-700">
-                            After you submit this consultation request, our jewelry experts will review your requirements and contact you within 24-48 hours with a personalized proposal and pricing.
+                            After you submit this consultation request, our jewelry experts will review your requirements and reference images, then contact you within 24-48 hours with a personalized proposal and pricing.
                         </p>
                     </div>
                 </div>
@@ -128,11 +168,12 @@
             <div class="pt-4">
                 <button 
                     type="submit" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
+                    id="submit-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                     </svg>
-                    <span>Submit Consultation Request</span>
+                    <span id="submit-text">Submit Consultation Request</span>
                 </button>
             </div>
 
@@ -157,4 +198,114 @@
         </form>
     </div>
 </div>
+
+<script>
+function previewImages(input) {
+    const container = document.getElementById('image-preview-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    
+    container.innerHTML = ''; // Clear previous previews
+    
+    if (input.files.length > 0) {
+        container.classList.remove('hidden');
+        
+        // Check file count limit
+        if (input.files.length > 5) {
+            alert('Maximum 5 images allowed. Only the first 5 images will be uploaded.');
+        }
+        
+        // Process up to 5 files
+        const filesToProcess = Math.min(input.files.length, 5);
+        
+        for (let i = 0; i < filesToProcess; i++) {
+            const file = input.files[i];
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                continue;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`${file.name} is too large. Maximum size is 5MB.`);
+                continue;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'relative group';
+                previewDiv.innerHTML = `
+                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                        <img src="${e.target.result}" 
+                             alt="Preview ${i + 1}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                    </div>
+                    <div class="absolute top-2 right-2">
+                        <button type="button" 
+                                onclick="removeImage(this, ${i})"
+                                class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xs text-gray-600 truncate">${file.name}</p>
+                        <p class="text-xs text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</p>
+                    </div>
+                `;
+                container.appendChild(previewDiv);
+            };
+            reader.readAsDataURL(file);
+        }
+    } else {
+        container.classList.add('hidden');
+    }
+}
+
+function removeImage(button, index) {
+    const container = document.getElementById('image-preview-container');
+    const input = document.getElementById('reference_images');
+    
+    // Remove the preview element
+    button.closest('.relative').remove();
+    
+    // Create a new FileList without the removed file
+    const dt = new DataTransfer();
+    const files = input.files;
+    
+    for (let i = 0; i < files.length; i++) {
+        if (i !== index) {
+            dt.items.add(files[i]);
+        }
+    }
+    
+    input.files = dt.files;
+    
+    // Hide container if no images left
+    if (input.files.length === 0) {
+        container.classList.add('hidden');
+    }
+}
+
+// Form submission with loading state
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitText.textContent = 'Uploading...';
+        
+        // Show upload progress for images
+        const imageCount = document.getElementById('reference_images').files.length;
+        if (imageCount > 0) {
+            submitText.textContent = `Uploading ${imageCount} image(s)...`;
+        }
+    });
+});
+</script>
 @endsection

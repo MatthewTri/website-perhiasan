@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\CustomRequest;
+use Illuminate\Support\Facades\Storage;
 
 class NewConsultationMail extends Mailable
 {
@@ -37,6 +38,19 @@ class NewConsultationMail extends Mailable
 
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        
+        foreach ($this->customRequest->images as $index => $image) {
+            // Extract file path from URL
+            $imagePath = str_replace(asset('storage/'), '', $image->image_url);
+            
+            // Check if file exists
+            if (Storage::disk('public')->exists($imagePath)) {
+                $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorageDisk('public', $imagePath)
+                    ->as("reference_image_" . ($index + 1) . ".jpg");
+            }
+        }
+        
+        return $attachments;
     }
 }
