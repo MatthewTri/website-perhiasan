@@ -50,6 +50,64 @@
                         </p>
                     </div>
 
+                    <!-- ✅ AI Generation Dropdown - TAMBAHAN BARU -->
+                    @auth
+                        @if(Auth::user()->chatHistory->count() > 0)
+                        <div class="mb-6">
+                            <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+                                <div class="flex items-center mb-3">
+                                    <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    <h3 class="text-sm font-semibold text-purple-800">✨ AI Generated Designs</h3>
+                                </div>
+                                <p class="text-xs text-purple-600 mb-3">Choose from your previously generated AI designs</p>
+                                
+                                <!-- Custom Dropdown -->
+                                <div class="relative">
+                                    <button type="button" id="ai-dropdown-toggle" class="w-full px-3 py-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-left flex items-center justify-between">
+                                        <span id="selected-text" class="text-gray-500">Select an AI generated design...</span>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Dropdown Menu -->
+                                    <div id="ai-dropdown-menu" class="hidden absolute z-10 w-full mt-1 bg-white border border-purple-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                        @foreach(Auth::user()->chatHistory->sortByDesc('created_at') as $chat)
+                                            <div class="ai-option flex items-center p-3 hover:bg-purple-50 cursor-pointer border-b border-gray-100 last:border-b-0" 
+                                                data-image="{{ $chat->image_url }}" 
+                                                data-prompt="{{ $chat->prompt }}" 
+                                                data-date="{{ $chat->created_at->format('M j, Y H:i') }}">
+                                                <!-- Thumbnail Image -->
+                                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 mr-3 flex-shrink-0">
+                                                    <img src="{{ $chat->image_url }}" 
+                                                        alt="AI Design" 
+                                                        class="w-full h-full object-cover"
+                                                        onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yNCAzMkMzMC42Mjc0IDMyIDM2IDI2LjYyNzQgMzYgMjBDMzYgMTMuMzcyNiAzMC42Mjc0IDggMjQgOEMxNy4zNzI2IDggMTIgMTMuMzcyNiAxMiAyMEMxMiAyNi42Mjc0IDE3LjM3MjYgMzIgMjQgMzJaIiBzdHJva2U9IiM5Q0E0QUYiIHN0cm9rZS13aWR0aD0iMiIvPgo8cGF0aCBkPSJNMjQgMjRIMjQiIHN0cm9rZT0iIzlDQTRBRiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cg=='; this.classList.add('opacity-50');">
+                                                </div>
+                                                
+                                                <!-- Text Content -->
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900 truncate">{{ Str::limit($chat->prompt, 30) }}</p>
+                                                    <p class="text-xs text-gray-500 mt-1">{{ $chat->created_at->format('M j, Y H:i') }}</p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                
+                                <button type="button" id="add-ai-image-btn" class="mt-3 w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add to References
+                                </button>
+                            </div>
+                        </div>
+                        @endif
+                    @endauth
+
                     <!-- Upload Area -->
                     <div class="flex-1 flex flex-col">
                         <div class="border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors duration-200 flex-1 min-h-[100px]">
@@ -276,253 +334,296 @@
 </div>
 
 <script>
-// Global variable untuk menyimpan semua files
-let selectedFiles = [];
+    // Global variable untuk menyimpan semua files
+    let selectedFiles = [];
 
-function previewImages(input) {
-    const container = document.getElementById('image-preview-container');
-    
-    // Tambah files baru ke array existing files (bukan replace)
-    const newFiles = Array.from(input.files);
-    
-    // Gabungkan dengan files yang sudah ada
-    for (let newFile of newFiles) {
-        // Cek duplikasi berdasarkan nama dan ukuran
-        const isDuplicate = selectedFiles.some(existingFile => 
-            existingFile.name === newFile.name && existingFile.size === newFile.size
-        );
+    function previewImages(input) {
+        const container = document.getElementById('image-preview-container');
         
-        if (!isDuplicate && selectedFiles.length < 6) {
-            selectedFiles.push(newFile);
-        }
-    }
-    
-    // Limit maksimal 6 files
-    if (selectedFiles.length > 6) {
-        alert('Maximum 6 images allowed. Only the first 6 images will be kept.');
-        selectedFiles = selectedFiles.slice(0, 6);
-    }
-    
-    // Update tampilan
-    updateImagePreview();
-    
-    // Update file input dengan semua selected files
-    updateFileInput();
-}
-
-function updateImagePreview() {
-    const container = document.getElementById('image-preview-container');
-    container.innerHTML = ''; // Clear previous previews
-    
-    if (selectedFiles.length > 0) {
-        container.classList.remove('hidden');
+        // Tambah files baru ke array existing files (bukan replace)
+        const newFiles = Array.from(input.files);
         
-        selectedFiles.forEach((file, index) => {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                return;
-            }
+        // Gabungkan dengan files yang sudah ada
+        for (let newFile of newFiles) {
+            // Cek duplikasi berdasarkan nama dan ukuran
+            const isDuplicate = selectedFiles.some(existingFile => 
+                existingFile.name === newFile.name && existingFile.size === newFile.size
+            );
             
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert(`${file.name} is too large. Maximum size is 5MB.`);
-                return;
+            if (!isDuplicate && selectedFiles.length < 6) {
+                selectedFiles.push(newFile);
             }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewDiv = document.createElement('div');
-                previewDiv.className = 'relative group';
-                previewDiv.innerHTML = `
-                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                        <img src="${e.target.result}" 
-                             alt="Preview ${index + 1}" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
-                    </div>
-                    <div class="absolute top-2 right-2">
-                        <button type="button" 
-                                onclick="removeImage(${index})"
-                                class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mt-2">
-                        <p class="text-xs text-gray-600 truncate">${file.name}</p>
-                        <p class="text-xs text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</p>
-                    </div>
-                `;
-                container.appendChild(previewDiv);
-            };
-            reader.readAsDataURL(file);
-        });
-    } else {
-        container.classList.add('hidden');
-    }
-}
-
-function removeImage(index) {
-    // Remove file dari array
-    selectedFiles.splice(index, 1);
-    
-    // Update preview
-    updateImagePreview();
-    
-    // Update file input
-    updateFileInput();
-}
-
-function updateFileInput() {
-    const input = document.getElementById('reference_images');
-    
-    // Create new DataTransfer object
-    const dt = new DataTransfer();
-    
-    // Add all selected files to DataTransfer
-    selectedFiles.forEach(file => {
-        dt.items.add(file);
-    });
-    
-    // Set files to input
-    input.files = dt.files;
-}
-
-// Form submission with loading state
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize phone number input
-    const phoneInputField = document.querySelector("#user_phone");
-    const hiddenPhoneInput = document.querySelector("#hidden_phone_input");
-    
-    // ✅ Initialize intl-tel-input
-    const phoneInput = window.intlTelInput(phoneInputField, {
-        initialCountry: "auto",
-        geoIpLookup: function(callback) {
-            fetch('https://ipapi.co/json/')
-                .then(function(res) { return res.json(); })
-                .then(function(data) { callback(data.country_code); })
-                .catch(function() { callback("id"); }); // Default to Indonesia
-        },
-        preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
-        separateDialCode: true,
-        formatOnDisplay: true,
-        nationalMode: false,
-        placeholderNumberType: "MOBILE",
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-    });
-
-    // ✅ Input restriction - hanya angka
-    phoneInputField.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = value;
+        }
         
-        // Update hidden input realtime
-        updateHiddenPhone();
-    });
-
-    phoneInputField.addEventListener('paste', function(e) {
-        e.preventDefault();
-        let paste = (e.clipboardData || window.clipboardData).getData('text');
-        let numericPaste = paste.replace(/[^0-9]/g, '');
-        e.target.value = numericPaste;
+        // Limit maksimal 6 files
+        if (selectedFiles.length > 6) {
+            alert('Maximum 6 images allowed. Only the first 6 images will be kept.');
+            selectedFiles = selectedFiles.slice(0, 6);
+        }
         
-        // Update hidden input setelah paste
-        setTimeout(() => updateHiddenPhone(), 100);
-    });
-
-    phoneInputField.addEventListener('keypress', function(e) {
-        // Allow control keys
-        if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-            (e.keyCode === 65 && e.ctrlKey === true) ||
-            (e.keyCode === 67 && e.ctrlKey === true) ||
-            (e.keyCode === 86 && e.ctrlKey === true) ||
-            (e.keyCode === 88 && e.ctrlKey === true)) {
-            return;
-        }
-        // Only allow numbers
-        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-            e.preventDefault();
-        }
-    });
-
-    // ✅ Update hidden input saat country berubah
-    phoneInputField.addEventListener("countrychange", function() {
-        updateHiddenPhone();
-    });
-
-    // ✅ Function untuk update hidden input
-    function updateHiddenPhone() {
-        if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
-            const fullNumber = phoneInput.getNumber();
-            hiddenPhoneInput.value = fullNumber;
-            hidePhoneError();
-        } else if (phoneInputField.value.trim()) {
-            // Ada input tapi tidak valid
-            const selectedCountryData = phoneInput.getSelectedCountryData();
-            const dialCode = selectedCountryData.dialCode;
-            const nationalNumber = phoneInputField.value;
-            const fullNumber = `+${dialCode}${nationalNumber}`;
-            hiddenPhoneInput.value = fullNumber;
-        }
+        // Update tampilan
+        updateImagePreview();
+        
+        // Update file input dengan semua selected files
+        updateFileInput();
     }
 
-    // ✅ Form submission
-    const form = document.querySelector('form');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    
-    form.addEventListener('submit', function(e) {
-        // Cek apakah phone number diisi
-        if (phoneInputField.value.trim() === '') {
-            e.preventDefault();
-            showPhoneError('Please enter your phone number.');
-            return;
-        }
+    function updateImagePreview() {
+        const container = document.getElementById('image-preview-container');
+        container.innerHTML = ''; // Clear previous previews
         
-        // Update final hidden input
-        updateHiddenPhone();
-        
-        // Validasi phone number
-        if (phoneInput.isValidNumber()) {
-            // Continue submission
-            submitBtn.disabled = true;
-            submitText.textContent = 'Submitting...';
+        if (selectedFiles.length > 0) {
+            container.classList.remove('hidden');
             
-            const imageCount = selectedFiles.length;
-            if (imageCount > 0) {
-                submitText.textContent = `Uploading ${imageCount} image(s)...`;
-            }
+            selectedFiles.forEach((file, index) => {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    return;
+                }
+                
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name} is too large. Maximum size is 5MB.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'relative group';
+                    previewDiv.innerHTML = `
+                        <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <img src="${e.target.result}" 
+                                alt="Preview ${index + 1}" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                        </div>
+                        <div class="absolute top-2 right-2">
+                            <button type="button" 
+                                    onclick="removeImage(${index})"
+                                    class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-xs text-gray-600 truncate">${file.name}</p>
+                            <p class="text-xs text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</p>
+                        </div>
+                    `;
+                    container.appendChild(previewDiv);
+                };
+                reader.readAsDataURL(file);
+            });
         } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    function removeImage(index) {
+        // Remove file dari array
+        selectedFiles.splice(index, 1);
+        
+        // Update preview
+        updateImagePreview();
+        
+        // Update file input
+        updateFileInput();
+    }
+
+    function updateFileInput() {
+        const input = document.getElementById('reference_images');
+        
+        // Create new DataTransfer object
+        const dt = new DataTransfer();
+        
+        // Add all selected files to DataTransfer
+        selectedFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        
+        // Set files to input
+        input.files = dt.files;
+    }
+
+    // Form submission with loading state
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggle = document.getElementById('ai-dropdown-toggle');
+        const dropdownMenu = document.getElementById('ai-dropdown-menu');
+        const selectedText = document.getElementById('selected-text');
+        const addAiImageBtn = document.getElementById('add-ai-image-btn');
+        let selectedAiData = null;
+
+        if (dropdownToggle && dropdownMenu) {
+            // Toggle dropdown
+            dropdownToggle.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+
+            // Handle option selection
+            const options = document.querySelectorAll('.ai-option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const prompt = this.dataset.prompt;
+                    const imageUrl = this.dataset.image;
+                    const date = this.dataset.date;
+                    
+                    // Update selected text
+                    selectedText.textContent = prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt;
+                    selectedText.classList.remove('text-gray-500');
+                    selectedText.classList.add('text-gray-900');
+                    
+                    // Store selected data
+                    selectedAiData = { imageUrl, prompt, date };
+                    
+                    // Enable add button
+                    addAiImageBtn.disabled = false;
+                    
+                    // Close dropdown
+                    dropdownMenu.classList.add('hidden');
+                });
+            });
+        }
+        // Initialize phone number input
+        const phoneInputField = document.querySelector("#user_phone");
+        const hiddenPhoneInput = document.querySelector("#hidden_phone_input");
+        
+        // ✅ Initialize intl-tel-input
+        const phoneInput = window.intlTelInput(phoneInputField, {
+            initialCountry: "auto",
+            geoIpLookup: function(callback) {
+                fetch('https://ipapi.co/json/')
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) { callback(data.country_code); })
+                    .catch(function() { callback("id"); }); // Default to Indonesia
+            },
+            preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
+            separateDialCode: true,
+            formatOnDisplay: true,
+            nationalMode: false,
+            placeholderNumberType: "MOBILE",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+        });
+
+        // ✅ Input restriction - hanya angka
+        phoneInputField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = value;
+            
+            // Update hidden input realtime
+            updateHiddenPhone();
+        });
+
+        phoneInputField.addEventListener('paste', function(e) {
             e.preventDefault();
-            showPhoneError('Please enter a valid phone number for the selected country.');
+            let paste = (e.clipboardData || window.clipboardData).getData('text');
+            let numericPaste = paste.replace(/[^0-9]/g, '');
+            e.target.value = numericPaste;
+            
+            // Update hidden input setelah paste
+            setTimeout(() => updateHiddenPhone(), 100);
+        });
+
+        phoneInputField.addEventListener('keypress', function(e) {
+            // Allow control keys
+            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true)) {
+                return;
+            }
+            // Only allow numbers
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        // ✅ Update hidden input saat country berubah
+        phoneInputField.addEventListener("countrychange", function() {
+            updateHiddenPhone();
+        });
+
+        // ✅ Function untuk update hidden input
+        function updateHiddenPhone() {
+            if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
+                const fullNumber = phoneInput.getNumber();
+                hiddenPhoneInput.value = fullNumber;
+                hidePhoneError();
+            } else if (phoneInputField.value.trim()) {
+                // Ada input tapi tidak valid
+                const selectedCountryData = phoneInput.getSelectedCountryData();
+                const dialCode = selectedCountryData.dialCode;
+                const nationalNumber = phoneInputField.value;
+                const fullNumber = `+${dialCode}${nationalNumber}`;
+                hiddenPhoneInput.value = fullNumber;
+            }
+        }
+
+        // ✅ Form submission
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = document.getElementById('submit-text');
+        
+        form.addEventListener('submit', function(e) {
+            // Cek apakah phone number diisi
+            if (phoneInputField.value.trim() === '') {
+                e.preventDefault();
+                showPhoneError('Please enter your phone number.');
+                return;
+            }
+            
+            // Update final hidden input
+            updateHiddenPhone();
+            
+            // Validasi phone number
+            if (phoneInput.isValidNumber()) {
+                // Continue submission
+                submitBtn.disabled = true;
+                submitText.textContent = 'Submitting...';
+                
+                const imageCount = selectedFiles.length;
+                if (imageCount > 0) {
+                    submitText.textContent = `Uploading ${imageCount} image(s)...`;
+                }
+            } else {
+                e.preventDefault();
+                showPhoneError('Please enter a valid phone number for the selected country.');
+            }
+        });
+
+        // ✅ Show phone error function
+        function showPhoneError(message) {
+            hidePhoneError();
+            
+            const errorDiv = document.getElementById('phone-error');
+            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-2';
+            errorDiv.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            
+            phoneInputField.scrollIntoView({ behavior: 'smooth' });
+            phoneInputField.focus();
+        }
+
+        // ✅ Hide phone error function
+        function hidePhoneError() {
+            const errorDiv = document.getElementById('phone-error');
+            errorDiv.className = 'hidden';
+            errorDiv.innerHTML = '';
         }
     });
-
-    // ✅ Show phone error function
-    function showPhoneError(message) {
-        hidePhoneError();
-        
-        const errorDiv = document.getElementById('phone-error');
-        errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-2';
-        errorDiv.innerHTML = `
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-                ${message}
-            </div>
-        `;
-        
-        phoneInputField.scrollIntoView({ behavior: 'smooth' });
-        phoneInputField.focus();
-    }
-
-    // ✅ Hide phone error function
-    function hidePhoneError() {
-        const errorDiv = document.getElementById('phone-error');
-        errorDiv.className = 'hidden';
-        errorDiv.innerHTML = '';
-    }
-});
 </script>
 @endsection
