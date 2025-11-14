@@ -279,36 +279,57 @@
 </div>
 
 <script>
+// Global variable untuk menyimpan semua files
+let selectedFiles = [];
+
 function previewImages(input) {
     const container = document.getElementById('image-preview-container');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
     
+    // Tambah files baru ke array existing files (bukan replace)
+    const newFiles = Array.from(input.files);
+    
+    // Gabungkan dengan files yang sudah ada
+    for (let newFile of newFiles) {
+        // Cek duplikasi berdasarkan nama dan ukuran
+        const isDuplicate = selectedFiles.some(existingFile => 
+            existingFile.name === newFile.name && existingFile.size === newFile.size
+        );
+        
+        if (!isDuplicate && selectedFiles.length < 5) {
+            selectedFiles.push(newFile);
+        }
+    }
+    
+    // Limit maksimal 5 files
+    if (selectedFiles.length > 5) {
+        alert('Maximum 5 images allowed. Only the first 5 images will be kept.');
+        selectedFiles = selectedFiles.slice(0, 5);
+    }
+    
+    // Update tampilan
+    updateImagePreview();
+    
+    // Update file input dengan semua selected files
+    updateFileInput();
+}
+
+function updateImagePreview() {
+    const container = document.getElementById('image-preview-container');
     container.innerHTML = ''; // Clear previous previews
     
-    if (input.files.length > 0) {
+    if (selectedFiles.length > 0) {
         container.classList.remove('hidden');
         
-        // Check file count limit
-        if (input.files.length > 5) {
-            alert('Maximum 5 images allowed. Only the first 5 images will be uploaded.');
-        }
-        
-        // Process up to 5 files
-        const filesToProcess = Math.min(input.files.length, 5);
-        
-        for (let i = 0; i < filesToProcess; i++) {
-            const file = input.files[i];
-            
+        selectedFiles.forEach((file, index) => {
             // Validate file type
             if (!file.type.startsWith('image/')) {
-                continue;
+                return;
             }
             
             // Validate file size (5MB)
             if (file.size > 5 * 1024 * 1024) {
                 alert(`${file.name} is too large. Maximum size is 5MB.`);
-                continue;
+                return;
             }
             
             const reader = new FileReader();
@@ -318,12 +339,12 @@ function previewImages(input) {
                 previewDiv.innerHTML = `
                     <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
                         <img src="${e.target.result}" 
-                             alt="Preview ${i + 1}" 
+                             alt="Preview ${index + 1}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
                     </div>
                     <div class="absolute top-2 right-2">
                         <button type="button" 
-                                onclick="removeImage(this, ${i})"
+                                onclick="removeImage(${index})"
                                 class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -338,35 +359,36 @@ function previewImages(input) {
                 container.appendChild(previewDiv);
             };
             reader.readAsDataURL(file);
-        }
+        });
     } else {
         container.classList.add('hidden');
     }
 }
 
-function removeImage(button, index) {
-    const container = document.getElementById('image-preview-container');
+function removeImage(index) {
+    // Remove file dari array
+    selectedFiles.splice(index, 1);
+    
+    // Update preview
+    updateImagePreview();
+    
+    // Update file input
+    updateFileInput();
+}
+
+function updateFileInput() {
     const input = document.getElementById('reference_images');
     
-    // Remove the preview element
-    button.closest('.relative').remove();
-    
-    // Create a new FileList without the removed file
+    // Create new DataTransfer object
     const dt = new DataTransfer();
-    const files = input.files;
     
-    for (let i = 0; i < files.length; i++) {
-        if (i !== index) {
-            dt.items.add(files[i]);
-        }
-    }
+    // Add all selected files to DataTransfer
+    selectedFiles.forEach(file => {
+        dt.items.add(file);
+    });
     
+    // Set files to input
     input.files = dt.files;
-    
-    // Hide container if no images left
-    if (input.files.length === 0) {
-        container.classList.add('hidden');
-    }
 }
 
 // Form submission with loading state
@@ -453,7 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitText = document.getElementById('submit-text');
     
     form.addEventListener('submit', function(e) {
-    
         // Cek apakah phone number diisi
         if (phoneInputField.value.trim() === '') {
             e.preventDefault();
@@ -466,12 +487,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validasi phone number
         if (phoneInput.isValidNumber()) {
-            
             // Continue submission
             submitBtn.disabled = true;
             submitText.textContent = 'Submitting...';
             
-            const imageCount = document.getElementById('reference_images').files.length;
+            const imageCount = selectedFiles.length;
             if (imageCount > 0) {
                 submitText.textContent = `Uploading ${imageCount} image(s)...`;
             }
