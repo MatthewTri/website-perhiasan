@@ -50,7 +50,7 @@
                         </p>
                     </div>
 
-                    <!-- ✅ AI Generation Dropdown - TAMBAHAN BARU -->
+                    <!-- ✅ AI Generation Dropdown - HAPUS BUTTON -->
                     @auth
                         @if(Auth::user()->chatHistory->count() > 0)
                         <div class="mb-6">
@@ -61,7 +61,7 @@
                                     </svg>
                                     <h3 class="text-sm font-semibold text-purple-800">✨ AI Generated Designs</h3>
                                 </div>
-                                <p class="text-xs text-purple-600 mb-3">Choose from your previously generated AI designs</p>
+                                <p class="text-xs text-purple-600 mb-3">Click to add your AI designs to references</p>
                                 
                                 <!-- Custom Dropdown -->
                                 <div class="relative">
@@ -74,10 +74,11 @@
                                     
                                     <!-- Dropdown Menu -->
                                     <div id="ai-dropdown-menu" class="hidden absolute z-10 w-full mt-1 bg-white border border-purple-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                        @foreach(Auth::user()->chatHistory->sortByDesc('created_at') as $chat)
+                                        @foreach(Auth::user()->chatHistory->sortByDesc('created_at') as $index => $chat)
                                             <div class="ai-option flex items-center p-3 hover:bg-purple-50 cursor-pointer border-b border-gray-100 last:border-b-0" 
                                                 data-image="{{ $chat->image_url }}" 
                                                 data-prompt="{{ $chat->prompt }}" 
+                                                data-index="{{ $index + 1 }}"
                                                 data-date="{{ $chat->created_at->format('M j, Y H:i') }}">
                                                 <!-- Thumbnail Image -->
                                                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 mr-3 flex-shrink-0">
@@ -89,20 +90,13 @@
                                                 
                                                 <!-- Text Content -->
                                                 <div class="flex-1 min-w-0">
-                                                    <p class="text-sm font-medium text-gray-900 truncate">{{ Str::limit($chat->prompt, 30) }}</p>
+                                                    <p class="text-sm font-medium text-gray-900">Image generation {{ $index + 1 }}</p>
                                                     <p class="text-xs text-gray-500 mt-1">{{ $chat->created_at->format('M j, Y H:i') }}</p>
                                                 </div>
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
-                                
-                                <button type="button" id="add-ai-image-btn" class="mt-3 w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Add to References
-                                </button>
                             </div>
                         </div>
                         @endif
@@ -188,7 +182,7 @@
                                 type="text" 
                                 id="user_name" 
                                 name="user_name" 
-                                value="{{ old('user_name', Auth::user()->name ?? '') }}" 
+                                value="{{ old('user_name') }}" 
                                 required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                                 placeholder="Enter your full name">
@@ -338,79 +332,51 @@
     let selectedFiles = [];
 
     // Tambahkan function baru di bagian script untuk handle AI image
-    async function addAiImageToPreview(imageUrl, prompt) {
+    async function addAiImageToPreview(imageUrl, prompt, displayName) {
         try {
-            // Show loading state
-            const addBtn = document.getElementById('add-ai-image-btn');
-            const originalText = addBtn.innerHTML;
-            addBtn.disabled = true;
-            addBtn.innerHTML = `
-                <svg class="w-4 h-4 inline mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Adding...
-            `;
-
-            // Fetch image dari URL
-            const response = await fetch(imageUrl);
-            if (!response.ok) throw new Error('Failed to fetch image');
-            
-            const blob = await response.blob();
-            
-            // Create File object from blob
-            const fileName = `ai_design_${Date.now()}.png`;
-            const file = new File([blob], fileName, { type: blob.type || 'image/png' });
-            
-            // Check if we already have 6 images
             if (selectedFiles.length >= 6) {
                 alert('Maximum 6 images allowed. Please remove some images first.');
                 return;
             }
+
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error('Failed to fetch image');
             
-            // Add to selectedFiles array
+            const blob = await response.blob();
+            const fileName = `ai_design_${Date.now()}.png`;
+            const file = new File([blob], fileName, { type: blob.type || 'image/png' });
+            
+            file.aiImageUrl = imageUrl;
+            file.displayName = displayName; // Untuk track nama display
             selectedFiles.push(file);
             
-            // Update preview
             updateImagePreview();
-            
-            // Update file input
             updateFileInput();
-            
-            
-            // Reset button state
-            addBtn.disabled = false;
-            addBtn.innerHTML = originalText;
+            updateDropdownOptions();
             
         } catch (error) {
             console.error('Error adding AI image:', error);
-            
-            // Show error message
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm mt-2';
-            errorDiv.innerHTML = `
-                <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    Failed to add image. Please try again.
-                </div>
-            `;
-            
-            addBtn.parentNode.insertBefore(errorDiv, addBtn.nextSibling);
-            
-            // Remove error message after 5 seconds
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.remove();
-                }
-            }, 5000);
-            
-            // Reset button state
-            const addBtn = document.getElementById('add-ai-image-btn');
-            addBtn.disabled = false;
-            addBtn.innerHTML = originalText;
+            alert('Failed to add image. Please try again.');
         }
+    }
+
+    // ✅ HAPUS function resetAiDropdown() - tidak perlu lagi
+
+    function updateDropdownOptions() {
+        const options = document.querySelectorAll('.ai-option');
+        
+        options.forEach(option => {
+            const imageUrl = option.dataset.image;
+            const isAlreadyAdded = selectedFiles.some(file => 
+                file.aiImageUrl && file.aiImageUrl === imageUrl
+            );
+            
+            if (isAlreadyAdded) {
+                option.style.display = 'none';
+            } else {
+                option.style.display = 'flex';
+            }
+        });
     }
 
 
@@ -524,6 +490,9 @@
         // Remove file dari array
         selectedFiles.splice(index, 1);
         
+        // ✅ UPDATE DROPDOWN: Show kembali options yang baru di-remove
+        updateDropdownOptions();
+
         // Update preview
         updateImagePreview();
         
@@ -550,9 +519,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const dropdownToggle = document.getElementById('ai-dropdown-toggle');
         const dropdownMenu = document.getElementById('ai-dropdown-menu');
-        const selectedText = document.getElementById('selected-text');
-        const addAiImageBtn = document.getElementById('add-ai-image-btn');
-        let selectedAiData = null;
 
         if (dropdownToggle && dropdownMenu) {
             // Toggle dropdown
@@ -567,40 +533,23 @@
                 }
             });
 
-            // Handle option selection
+            // ✅ LANGSUNG ADD SAAT CLICK OPTION
             const options = document.querySelectorAll('.ai-option');
             options.forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', async function() {
                     const prompt = this.dataset.prompt;
                     const imageUrl = this.dataset.image;
-                    const date = this.dataset.date;
-                    
-                    // Update selected text
-                    selectedText.textContent = prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt;
-                    selectedText.classList.remove('text-gray-500');
-                    selectedText.classList.add('text-gray-900');
-                    
-                    // Store selected data
-                    selectedAiData = { imageUrl, prompt, date };
-                    
-                    // Enable add button
-                    addAiImageBtn.disabled = false;
+                    const displayName = `Image generation ${this.dataset.index}`;
                     
                     // Close dropdown
                     dropdownMenu.classList.add('hidden');
+                    
+                    // Langsung add ke preview
+                    await addAiImageToPreview(imageUrl, prompt, displayName);
                 });
             });
         }
 
-        // Tambahkan event listener untuk button "Add to References" 
-        // di dalam document.addEventListener('DOMContentLoaded', function() {
-        if (addAiImageBtn) {
-            addAiImageBtn.addEventListener('click', function() {
-                if (selectedAiData) {
-                    addAiImageToPreview(selectedAiData.imageUrl, selectedAiData.prompt);
-                }
-            });
-        }
         // Initialize phone number input
         const phoneInputField = document.querySelector("#user_phone");
         const hiddenPhoneInput = document.querySelector("#hidden_phone_input");
