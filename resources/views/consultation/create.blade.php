@@ -337,6 +337,83 @@
     // Global variable untuk menyimpan semua files
     let selectedFiles = [];
 
+    // Tambahkan function baru di bagian script untuk handle AI image
+    async function addAiImageToPreview(imageUrl, prompt) {
+        try {
+            // Show loading state
+            const addBtn = document.getElementById('add-ai-image-btn');
+            const originalText = addBtn.innerHTML;
+            addBtn.disabled = true;
+            addBtn.innerHTML = `
+                <svg class="w-4 h-4 inline mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Adding...
+            `;
+
+            // Fetch image dari URL
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error('Failed to fetch image');
+            
+            const blob = await response.blob();
+            
+            // Create File object from blob
+            const fileName = `ai_design_${Date.now()}.png`;
+            const file = new File([blob], fileName, { type: blob.type || 'image/png' });
+            
+            // Check if we already have 6 images
+            if (selectedFiles.length >= 6) {
+                alert('Maximum 6 images allowed. Please remove some images first.');
+                return;
+            }
+            
+            // Add to selectedFiles array
+            selectedFiles.push(file);
+            
+            // Update preview
+            updateImagePreview();
+            
+            // Update file input
+            updateFileInput();
+            
+            
+            // Reset button state
+            addBtn.disabled = false;
+            addBtn.innerHTML = originalText;
+            
+        } catch (error) {
+            console.error('Error adding AI image:', error);
+            
+            // Show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm mt-2';
+            errorDiv.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Failed to add image. Please try again.
+                </div>
+            `;
+            
+            addBtn.parentNode.insertBefore(errorDiv, addBtn.nextSibling);
+            
+            // Remove error message after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+            
+            // Reset button state
+            const addBtn = document.getElementById('add-ai-image-btn');
+            addBtn.disabled = false;
+            addBtn.innerHTML = originalText;
+        }
+    }
+
+
     function previewImages(input) {
         const container = document.getElementById('image-preview-container');
         
@@ -375,6 +452,7 @@
         if (selectedFiles.length > 0) {
             container.classList.remove('hidden');
             
+            // ✅ PERBAIKAN: Process files synchronously untuk maintain urutan
             selectedFiles.forEach((file, index) => {
                 // Validate file type
                 if (!file.type.startsWith('image/')) {
@@ -387,31 +465,53 @@
                     return;
                 }
                 
+                // ✅ Create placeholder div dulu dengan index yang benar
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'relative group';
+                previewDiv.id = `preview-${index}`; // Add ID untuk referensi
+                
+                // ✅ Set loading state dulu
+                previewDiv.innerHTML = `
+                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xs text-gray-600 truncate">Loading...</p>
+                    </div>
+                `;
+                
+                // ✅ Append ke container dengan urutan yang benar
+                container.appendChild(previewDiv);
+                
+                // ✅ Baru load gambar secara async
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const previewDiv = document.createElement('div');
-                    previewDiv.className = 'relative group';
-                    previewDiv.innerHTML = `
-                        <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                            <img src="${e.target.result}" 
-                                alt="Preview ${index + 1}" 
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
-                        </div>
-                        <div class="absolute top-2 right-2">
-                            <button type="button" 
-                                    onclick="removeImage(${index})"
-                                    class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-xs text-gray-600 truncate">${file.name}</p>
-                            <p class="text-xs text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</p>
-                        </div>
-                    `;
-                    container.appendChild(previewDiv);
+                    // ✅ Update div yang sudah ada berdasarkan ID
+                    const targetDiv = document.getElementById(`preview-${index}`);
+                    if (targetDiv) {
+                        targetDiv.innerHTML = `
+                            <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                <img src="${e.target.result}" 
+                                    alt="Preview ${index + 1}" 
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button type="button" 
+                                        onclick="removeImage(${index})"
+                                        class="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors duration-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-xs text-gray-600 truncate">${file.name}</p>
+                                <p class="text-xs text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</p>
+                            </div>
+                        `;
+                    }
                 };
                 reader.readAsDataURL(file);
             });
@@ -489,6 +589,16 @@
                     // Close dropdown
                     dropdownMenu.classList.add('hidden');
                 });
+            });
+        }
+
+        // Tambahkan event listener untuk button "Add to References" 
+        // di dalam document.addEventListener('DOMContentLoaded', function() {
+        if (addAiImageBtn) {
+            addAiImageBtn.addEventListener('click', function() {
+                if (selectedAiData) {
+                    addAiImageToPreview(selectedAiData.imageUrl, selectedAiData.prompt);
+                }
             });
         }
         // Initialize phone number input
