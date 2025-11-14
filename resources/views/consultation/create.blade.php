@@ -383,7 +383,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
             const fullNumber = phoneInput.getNumber();
             hiddenPhoneInput.value = fullNumber;
-            console.log('📞 Phone updated:', fullNumber);
             hidePhoneError();
         } else if (phoneInputField.value.trim()) {
             // Ada input tapi tidak valid
@@ -392,7 +391,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const nationalNumber = phoneInputField.value;
             const fullNumber = `+${dialCode}${nationalNumber}`;
             hiddenPhoneInput.value = fullNumber;
-            console.log('📞 Phone updated (may be invalid):', fullNumber);
         }
     }
 
@@ -402,10 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitText = document.getElementById('submit-text');
     
     form.addEventListener('submit', function(e) {
-        console.log('🔄 Form submission started...');
-        console.log('📞 Visible input value:', phoneInputField.value);
-        console.log('📞 Hidden input value:', hiddenPhoneInput.value);
-        
+    
         // Cek apakah phone number diisi
         if (phoneInputField.value.trim() === '') {
             e.preventDefault();
@@ -418,8 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validasi phone number
         if (phoneInput.isValidNumber()) {
-            console.log('✅ Valid phone number, proceeding with submission');
-            console.log('📞 Final phone to submit:', hiddenPhoneInput.value);
             
             // Continue submission
             submitBtn.disabled = true;
@@ -431,7 +424,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             e.preventDefault();
-            console.log('❌ Invalid phone number');
             showPhoneError('Please enter a valid phone number for the selected country.');
         }
     });
