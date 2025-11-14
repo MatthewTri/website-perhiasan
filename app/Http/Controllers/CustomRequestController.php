@@ -35,7 +35,7 @@ class CustomRequestController extends Controller
             'country' => 'required|string|max:255',
             'notes' => 'nullable|string|max:2000',
             'reference_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'reference_images' => 'nullable|array|max:5',
+            'reference_images' => 'nullable|array|max:6',
         ]);
 
         // Tambahkan user_id jika login

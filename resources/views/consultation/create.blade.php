@@ -52,7 +52,7 @@
 
                     <!-- Upload Area -->
                     <div class="flex-1 flex flex-col">
-                        <div class="border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors duration-200 flex-1 min-h-[300px]">
+                        <div class="border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors duration-200 flex-1 min-h-[100px]">
                             <label for="reference_images" class="cursor-pointer h-full flex flex-col items-center justify-center p-6 text-center">
                                 <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -61,7 +61,7 @@
                                     Drop images here or click to upload
                                 </div>
                                 <div class="text-sm text-gray-500 mb-4">
-                                    PNG, JPG, JPEG up to 5MB each (max 5 images)
+                                    PNG, JPG, JPEG up to 5MB each (max 6 images)
                                 </div>
                                 <div class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200 text-sm font-medium">
                                     Choose Files
@@ -79,7 +79,7 @@
                         </div>
 
                         <!-- Image Preview Container -->
-                        <div id="image-preview-container" class="mt-6 grid grid-cols-2 gap-4 hidden">
+                        <div id="image-preview-container" class="mt-6 grid grid-cols-3 gap-4 hidden">
                             <!-- Preview images will be inserted here -->
                         </div>
 
@@ -245,9 +245,6 @@
                             type="submit" 
                             id="submit-btn"
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                            </svg>
                             <span id="submit-text">Submit Consultation Request</span>
                         </button>
 
@@ -295,15 +292,15 @@ function previewImages(input) {
             existingFile.name === newFile.name && existingFile.size === newFile.size
         );
         
-        if (!isDuplicate && selectedFiles.length < 5) {
+        if (!isDuplicate && selectedFiles.length < 6) {
             selectedFiles.push(newFile);
         }
     }
     
-    // Limit maksimal 5 files
-    if (selectedFiles.length > 5) {
-        alert('Maximum 5 images allowed. Only the first 5 images will be kept.');
-        selectedFiles = selectedFiles.slice(0, 5);
+    // Limit maksimal 6 files
+    if (selectedFiles.length > 6) {
+        alert('Maximum 6 images allowed. Only the first 6 images will be kept.');
+        selectedFiles = selectedFiles.slice(0, 6);
     }
     
     // Update tampilan
