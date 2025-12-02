@@ -228,7 +228,7 @@
     const originalName = "{{ $product->name }}";
     let timeout = null;
 
-    name.addEventListener('change', function() {
+    name.addEventListener('input', function() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             // Only update slug if name changed from original
