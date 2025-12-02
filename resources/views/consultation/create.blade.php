@@ -627,7 +627,7 @@
         }
 
         // ✅ Form submission
-        const form = document.querySelector('form');
+        const form = document.querySelector('consultation-form');
         const submitBtn = document.getElementById('submit-btn');
         const submitText = document.getElementById('submit-text');
         
