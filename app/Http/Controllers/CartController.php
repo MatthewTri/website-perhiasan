@@ -126,4 +126,54 @@ class CartController extends Controller
 
         return response()->json(['items' => $cartItems]);
     }
+
+    // Merge guest cart items into authenticated user's cart
+    public function migrateGuestCart(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $guestCart = $request->all();
+        
+        if (empty($guestCart)) {
+            return response()->json(['success' => true, 'message' => 'No items to migrate']);
+        }
+
+        // Get or create user cart
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        
+        $migratedCount = 0;
+        
+        foreach ($guestCart as $productId => $quantity) {
+            // Validate product exists
+            if (!Product::find($productId)) {
+                continue;
+            }
+            
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                            ->where('product_id', $productId)
+                            ->first();
+            
+            if ($cartItem) {
+                // Add to existing quantity
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+            } else {
+                // Create new cart item
+                CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $productId,
+                    'quantity' => $quantity
+                ]);
+            }
+            
+            $migratedCount++;
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully migrated {$migratedCount} items to your cart"
+        ]);
+    }
 }

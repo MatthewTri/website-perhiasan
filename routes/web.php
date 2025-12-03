@@ -39,6 +39,8 @@ Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart
 
 // API untuk guest cart
 Route::post('/api/cart/guest-items', [CartController::class, 'getGuestCartItems'])->name('cart.guest.items');
+// Merge guest cart to user login
+Route::post('/cart/migrate', [CartController::class, 'migrateGuestCart'])->name('cart.migrate');
 
 // Settings routes (only Admin access)
 Route::middleware(['auth'])->group(function () {

@@ -322,6 +322,46 @@ class GuestCart {
 
 // Initialize guest cart
 const guestCart = new GuestCart();
+
+async function migrateGuestCartToUser() {
+    const guestCart = localStorage.getItem('guest_cart');
+    
+    if (!guestCart) {
+        return;
+    }
+    
+    const cartData = JSON.parse(guestCart);
+    
+    if (Object.keys(cartData).length === 0) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/cart/migrate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content || '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(cartData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Clear localStorage setelah berhasil migrate
+            localStorage.removeItem('guest_cart');
+            console.log('Cart migration successful:', result.message);
+        } else {
+            console.error('Cart migration failed:', result.error);
+        }
+    } catch (error) {
+        console.error('Error during cart migration:', error);
+    }
+}
+
+// ✅ Make function globally available
+window.migrateGuestCartToUser = migrateGuestCartToUser;
 </script>
 @endguest
 @endsection
