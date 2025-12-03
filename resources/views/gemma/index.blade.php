@@ -220,7 +220,7 @@ class AIChat {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({ prompt: prompt })
             });
@@ -411,7 +411,7 @@ function deleteChat(chatId) {
     fetch(`/gemma/delete/${chatId}`, {
         method: 'DELETE',
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         }
     })
     .then(response => response.json())
