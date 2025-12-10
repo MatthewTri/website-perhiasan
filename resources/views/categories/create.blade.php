@@ -5,7 +5,7 @@
     <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-6">Add New Category</h1>
         
-        <form id="form" action="{{ route('categories.store') }}" method="POST">
+        <form id="form-category" action="{{ route('categories.store') }}" method="POST">
             @csrf
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -46,7 +46,7 @@
 <script>
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
-    const form = document.querySelector('form');
+    const form = document.querySelector('#form-category');
 
     name.addEventListener('change' , function() {
         fetch('/categories/checkSlug?name=' + name.value)

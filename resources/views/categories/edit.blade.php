@@ -5,7 +5,7 @@
     <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Category</h1>
 
-        <form id="form" action="{{ route('categories.update', $category->slug) }}" method="POST">
+        <form id="form-category-edit" action="{{ route('categories.update', $category->slug) }}" method="POST">
             @method('PUT')
             @csrf
             <div class="mb-4">
@@ -47,7 +47,7 @@
 <script>
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
-    const form = document.querySelector('form');
+    const form = document.querySelector('#form-category-edit');
     let timeout = null;
 
     // Ganti 'change' menjadi 'input' agar real-time update
