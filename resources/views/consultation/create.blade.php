@@ -6,7 +6,7 @@
         <!-- Header -->
         <div class="text-center py-8 px-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Book a Consultation</h1>
-            <p class="text-gray-600">Tell us about your dream jewelry and we'll help bring it to life</p>
+            <p class="text-gray-600">Tell us about your dream jewellery and we'll help bring it to life</p>
         </div>
 
         <!-- Success Message -->
@@ -46,7 +46,7 @@
                             Reference Images
                         </h2>
                         <p class="text-gray-600 text-sm">
-                            Upload images of jewelry styles you like, sketches, or inspiration photos to help us understand your vision better.
+                            Upload images of jewellery styles you like, sketches, or inspiration photos to help us understand your vision better.
                         </p>
                     </div>
 
@@ -59,7 +59,7 @@
                                     <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                                     </svg>
-                                    <h3 class="text-sm font-semibold text-purple-800">✨ AI Generated Designs</h3>
+                                    <h3 class="text-sm font-semibold text-purple-800">AI Generated Designs</h3>
                                 </div>
                                 <p class="text-xs text-purple-600 mb-3">Click to add your AI designs to references</p>
                                 
@@ -215,42 +215,13 @@
                                 value="{{ old('user_phone', Auth::user()->phone ?? '') }}" 
                                 required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                                placeholder="Enter your phone number">
+                                placeholder="Enter phone number">
                             
                             <input type="hidden" name="user_phone" id="hidden_phone_input" value="{{ old('user_phone', Auth::user()->phone ?? '') }}">
                             
                             <div id="phone-error" class="hidden"></div>
                         </div>
 
-                        <!-- Country Field -->
-                        <div>
-                            <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
-                                Shipping Country <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                id="country" 
-                                name="country" 
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
-                                <option value="">Where should we ship your jewelry?</option>
-                                <option value="Indonesia" {{ old('country') == 'Indonesia' ? 'selected' : '' }}>Indonesia</option>
-                                <option value="Malaysia" {{ old('country') == 'Malaysia' ? 'selected' : '' }}>Malaysia</option>
-                                <option value="Singapore" {{ old('country') == 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                                <option value="Thailand" {{ old('country') == 'Thailand' ? 'selected' : '' }}>Thailand</option>
-                                <option value="Philippines" {{ old('country') == 'Philippines' ? 'selected' : '' }}>Philippines</option>
-                                <option value="Vietnam" {{ old('country') == 'Vietnam' ? 'selected' : '' }}>Vietnam</option>
-                                <option value="United States" {{ old('country') == 'United States' ? 'selected' : '' }}>United States</option>
-                                <option value="United Kingdom" {{ old('country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
-                                <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada</option>
-                                <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia</option>
-                                <option value="Japan" {{ old('country') == 'Japan' ? 'selected' : '' }}>Japan</option>
-                                <option value="South Korea" {{ old('country') == 'South Korea' ? 'selected' : '' }}>South Korea</option>
-                                <option value="Other" {{ old('country') == 'Other' ? 'selected' : '' }}>Other</option>
-                            </select>
-                            <p class="text-sm text-gray-500 mt-1">
-                                🌍 This can be different from your phone number's country
-                            </p>
-                        </div>
 
                         <!-- Notes Field -->
                         <div>
@@ -262,9 +233,9 @@
                                 name="notes" 
                                 rows="5"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-none"
-                                placeholder="Tell us about your dream jewelry... What type of jewelry do you want? What materials? Any specific design ideas? Budget range? Special occasions? Be as detailed as possible to help us understand your vision.">{{ old('notes') }}</textarea>
+                                placeholder="Tell us about your dream jewellery... What type of jewelry do you want? What materials? Any specific design ideas? Budget range? Special occasions? Be as detailed as possible to help us understand your vision.">{{ old('notes') }}</textarea>
                             <p class="text-sm text-gray-500 mt-2">
-                                💡 Include: jewelry type, materials, style, budget range, special occasions
+                                💡 Include: jewellery type, materials, style, budget range, special occasions
                             </p>
                         </div>
 
@@ -282,7 +253,7 @@
                                 <div>
                                     <h3 class="text-sm font-medium text-blue-800 mb-1">What happens next?</h3>
                                     <p class="text-sm text-blue-700">
-                                        Our jewelry experts will review your requirements and reference images, then contact you within 24-48 hours with a personalized proposal and pricing.
+                                        Our jewellery experts will review your requirements and reference images, then contact you within 24-48 hours with a personalized proposal and pricing.
                                     </p>
                                 </div>
                             </div>

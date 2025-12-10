@@ -25,7 +25,7 @@ class NewConsultationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Jewelry Consultation Request - ' . $this->customRequest->user_name,
+            subject: 'New Jewellery Consultation Request - ' . $this->customRequest->user_name,
         );
     }
 

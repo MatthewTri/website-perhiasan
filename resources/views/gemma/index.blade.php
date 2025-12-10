@@ -11,7 +11,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-semibold text-gray-900">AI Image Generator</h1>
-                    <p class="text-sm text-gray-500">Generate beautiful jewelry images with AI</p>
+                    <p class="text-sm text-gray-500">Generate beautiful jewellery images with AI</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -57,7 +57,7 @@
                         <span class="text-white text-sm">🤖</span>
                     </div>
                     <div class="bg-white rounded-lg p-4 shadow-sm max-w-md">
-                        <p class="text-gray-700 text-sm mb-3">Here's your generated jewelry image:</p>
+                        <p class="text-gray-700 text-sm mb-3">Here's your generated jewellery image:</p>
                         <div class="relative">
                             <img src="{{ $chat->image_url }}" 
                                  alt="Generated jewelry image" 

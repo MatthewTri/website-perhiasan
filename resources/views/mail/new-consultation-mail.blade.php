@@ -163,7 +163,7 @@
     <div class="email-container">
         <div class="header">
             <h1>New Consultation Request</h1>
-            <p>A new jewelry consultation request has been submitted</p>
+            <p>A new jewellery consultation request has been submitted</p>
         </div>
 
         <div class="content">
