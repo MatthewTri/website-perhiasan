@@ -32,7 +32,6 @@ class CustomRequestController extends Controller
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|email|max:255',
             'user_phone' => 'required|string|max:20',
-            'country' => 'required|string|max:255',
             'notes' => 'nullable|string|max:2000',
             'reference_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'reference_images' => 'nullable|array|max:6',

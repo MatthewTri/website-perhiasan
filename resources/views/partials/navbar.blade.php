@@ -38,6 +38,11 @@
               Manage Categories
             </a>
           </li>
+          <li class="shrink-0">
+            <a href="{{ route('admin.consultation.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
+              Customer's Orders
+            </a>
+          </li>
         </ul>
       </div>
 

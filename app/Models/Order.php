@@ -26,12 +26,6 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // Relasi: Alamat pengiriman order ini
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
-    }
-
     // Relasi: Pembayaran untuk order ini
     public function payment()
     {
