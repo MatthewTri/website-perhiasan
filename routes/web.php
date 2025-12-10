@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\GemmaController;
 use App\Http\Controllers\CustomRequestController;
+use App\Http\Controllers\CheckoutController;
 
 // Home Page
 Route::get('/', function () {
@@ -41,6 +42,10 @@ Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart
 Route::post('/api/cart/guest-items', [CartController::class, 'getGuestCartItems'])->name('cart.guest.items');
 // Merge guest cart to user login
 Route::post('/cart/migrate', [CartController::class, 'migrateGuestCart'])->name('cart.migrate');
+
+// Checkout routes
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 // Settings routes (only Admin access)
 Route::middleware(['auth'])->group(function () {

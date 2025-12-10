@@ -96,9 +96,10 @@
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
-                        <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                            Proceed to Checkout
-                        </button>
+                        <a href="{{ route('checkout.index') }}" 
+                        class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
+                            Pre Order
+                        </a>
                     </div>
                 </div>
             </div>
@@ -151,8 +152,12 @@
 
 @guest
 <script>
+
+const checkoutUrl = "{{ route('checkout.index') }}";
+
 // Guest Cart Management
 class GuestCart {
+
     constructor() {
         this.storageKey = 'guest_cart';
         this.init();
@@ -225,6 +230,7 @@ class GuestCart {
             document.getElementById('empty-cart').classList.remove('hidden');
         }
     }
+
 
     // Display cart items
     displayCart(items) {
@@ -306,9 +312,10 @@ class GuestCart {
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
-                        <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                            Proceed to Checkout
-                        </button>
+                        <a href="${checkoutUrl}" 
+                        class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
+                            Pre Order
+                        </a>
                     </div>
                 </div>
             </div>
