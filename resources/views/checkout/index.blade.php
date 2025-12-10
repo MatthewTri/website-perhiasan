@@ -240,9 +240,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <svg class="absolute top-4 right-4 w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
                             </label>
 
                             <!-- PayPal Option -->
@@ -267,9 +264,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <svg class="absolute top-4 right-4 w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
                             </label>
                         </div>
                         
@@ -526,14 +520,12 @@ document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
         // Remove selected state from all options
         document.querySelectorAll('.payment-option').forEach(option => {
             option.classList.remove('border-blue-500', 'bg-blue-50');
-            option.querySelector('.check-icon').classList.add('hidden');
         });
         
         // Add selected state to chosen option
         if (this.checked) {
             const label = this.closest('.payment-option');
             label.classList.add('border-blue-500', 'bg-blue-50');
-            label.querySelector('.check-icon').classList.remove('hidden');
         }
     });
 });
