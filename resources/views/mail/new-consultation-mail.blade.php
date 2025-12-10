@@ -6,198 +6,226 @@
     <title>New Consultation Request</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            color: #333333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 650px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            background: #ffd8d8;
+            padding: 40px 30px;
             text-align: center;
-            border-radius: 10px 10px 0 0;
+            border-bottom: 3px solid #FF9999;
+        }
+        .header h1 {
+            margin: 0;
+            color: #000000;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            color: #000000;
+            font-size: 15px;
         }
         .content {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 0 0 10px 10px;
+            padding: 40px 30px;
         }
-        .field {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-left: 4px solid #667eea;
-            border-radius: 5px;
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #8B0000;
+            margin: 30px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #FFCCCC;
         }
-        .field-label {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
+        .section-title:first-child {
+            margin-top: 0;
         }
-        .field-value {
-            color: #333;
+        .info-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 12px;
         }
-        .notes {
-            background: white;
+        .info-label {
+            display: table-cell;
+            width: 35%;
+            font-weight: 600;
+            color: #555555;
+            padding: 8px 12px 8px 0;
+            vertical-align: top;
+        }
+        .info-value {
+            display: table-cell;
+            width: 65%;
+            color: #333333;
+            padding: 8px 0;
+            vertical-align: top;
+        }
+        .notes-section {
+            background-color: #FFF5F5;
+            border-left: 4px solid #FFCCCC;
             padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .notes-title {
+            font-weight: 600;
+            color: #8B0000;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .notes-content {
+            color: #333333;
+            line-height: 1.8;
             white-space: pre-wrap;
-            word-wrap: break-word;
         }
-        .attachment-info {
-            background: #e3f2fd;
-            border: 1px solid #bbdefb;
-            border-radius: 8px;
+        .images-section {
+            background-color: #FFFAFA;
+            border: 2px solid #FFCCCC;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .images-count {
+            font-weight: 600;
+            color: #8B0000;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .image-item {
+            background-color: #ffffff;
+            border: 1px solid #FFE0E0;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            color: #555555;
+        }
+        .image-item:last-child {
+            margin-bottom: 0;
+        }
+        .no-images {
+            color: #999999;
+            font-style: italic;
             padding: 15px;
-            margin-top: 10px;
             text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 4px;
         }
-        .attachment-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        .footer {
+        .button-container {
             text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 14px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
         }
         .button {
             display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
+            padding: 14px 35px;
+            background: #ffd8d8;
+            color: #000000;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 20px;
+            font-weight: 600;
+            font-size: 16px;
+            border: 2px solid #FF9999;
+            transition: all 0.3s ease;
         }
-        .highlight-box {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
+        .button:hover {
+            background: linear-gradient(135deg, #FFB3B3 0%, #FF9999 100%);
         }
-        .row {
-            display: flex;
-            gap: 20px;
+        .footer {
+            background-color: #f9f9f9;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            color: #777777;
+            font-size: 13px;
         }
-
-        .row .field {
-            flex: 1;
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #FFCCCC, transparent);
+            margin: 25px 0;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎯 New Consultation Request</h1>
-        <p>A new jewelry consultation request has been submitted</p>
-    </div>
+    <div class="email-container">
+        <div class="header">
+            <h1>New Consultation Request</h1>
+            <p>A new jewelry consultation request has been submitted</p>
+        </div>
 
-    <div class="content">
-        <div class="row">
-            <div class="field">
-                <div class="field-label">👤 Customer Name:</div>
-                <div class="field-value">{{ $customRequest->user_name }}</div>
-            </div>
-
-            <div class="field">
-                <div class="field-label">📧 Email Address:</div>
-                <div class="field-value">{{ $customRequest->user_email }}</div>
-            </div>
-
+        <div class="content">
+            <div class="section-title">Customer Information</div>
             
-            <div class="field">
-                <div class="field-label">🌍 Country:</div>
-                <div class="field-value">{{ $customRequest->country }}</div>
+            <div class="info-row">
+                <div class="info-label">Customer Name:</div>
+                <div class="info-value">{{ $customRequest->user_name }}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Email Address:</div>
+                <div class="info-value">{{ $customRequest->user_email }}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Phone Number:</div>
+                <div class="info-value">{{ $customRequest->user_phone }}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Request Date:</div>
+                <div class="info-value">{{ $customRequest->created_at->format('l, F j, Y \a\t g:i A') }}</div>
             </div>
 
-            <div class="field">
-                <div class="field-label">👤 Account Status:</div>
-                <div class="field-value">
-                    @if($customRequest->user_id)
-                        ✅ Registered User (ID: {{ $customRequest->user_id }})
-                    @else
-                        🔄 Guest User
-                    @endif
-                </div>
+            @if($customRequest->notes)
+            <div class="divider"></div>
+            
+            <div class="section-title">Additional Notes</div>
+            <div class="notes-section">
+                <div class="notes-content">{{ $customRequest->notes }}</div>
             </div>
+            @endif
 
-        </div>
+            <div class="divider"></div>
 
-
-        <div class="field">
-            <div class="field-label">📅 Submitted:</div>
-            <div class="field-value">{{ $customRequest->created_at->format('F j, Y \a\t g:i A') }}</div>
-        </div>
-
-        @if($customRequest->notes)
-        <div class="field">
-            <div class="field-label">💎 Jewelry Description:</div>
-            <div class="notes">{{ $customRequest->notes }}</div>
-        </div>
-        @endif
-
-        @if($customRequest->images->count() > 0)
-        <div class="field">
-            <div class="field-label">📸 Reference Images:</div>
-            <div class="attachment-info">
-                <div class="attachment-icon">🖼️</div>
-                <div style="font-weight: bold; color: #1976d2; font-size: 16px;">
-                    {{ $customRequest->images->count() }} Reference Image{{ $customRequest->images->count() > 1 ? 's' : '' }} Attached
+            <div class="section-title">Design References</div>
+            
+            @if($customRequest->images->count() > 0)
+                <div class="images-section">
+                    <div class="images-count">
+                        Total Attached Images: {{ $customRequest->images->count() }}
+                    </div>
                 </div>
-                <div style="color: #666; font-size: 14px; margin-top: 5px;">
-                    Please check the attachments below to view customer's reference images
+            @else
+                <div class="no-images">
+                    No reference images attached
                 </div>
-                <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                    @foreach($customRequest->images as $index => $image)
-                        📎 reference_image_{{ $index + 1 }}.jpg{{ !$loop->last ? ' • ' : '' }}
-                    @endforeach
-                </div>
+            @endif
+
+            <div class="button-container">
+                <a href="{{ route('admin.consultation.show', $customRequest->id) }}" 
+                    class="button" 
+                    style="color: #000000 !important; text-decoration: none !important;">
+                    View Full Details
+                </a>
             </div>
         </div>
-        
-        <div class="highlight-box">
-            <div style="display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 20px; margin-right: 10px;">💡</span>
-                <div>
-                    <strong style="color: #856404;">Important:</strong>
-                    <span style="color: #856404;">Scroll down to view the attached reference images. These images will help you understand the customer's vision and preferences.</span>
-                </div>
-            </div>
-        </div>
-        @else
-        <div class="field">
-            <div class="field-label">📸 Reference Images:</div>
-            <div class="field-value" style="color: #666; font-style: italic;">
-                No reference images provided by the customer.
-            </div>
-        </div>
-        @endif
 
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="{{ url('/admin/consultation/' . $customRequest->id) }}" 
-               class="button">
-               View Full Details & Respond
-            </a>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>This is an automated notification from your jewelry website.</p>
-        <p><strong>Request ID: #{{ $customRequest->id }}</strong></p>
-        @if($customRequest->images->count() > 0)
-            <p style="color: #1976d2; font-weight: bold;">
-                📎 {{ $customRequest->images->count() }} attachment{{ $customRequest->images->count() > 1 ? 's' : '' }} included
-            </p>
-        @endif
-        
-        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #999;">
-            <p>💌 Auto-generated from Cecile Private Collection consultation system</p>
+        <div class="footer">
+            <p>This is an automated notification from Cecile Private Collection</p>
+            <p>Please do not reply directly to this email</p>
         </div>
     </div>
 </body>

@@ -219,10 +219,6 @@
                             
                             <input type="hidden" name="user_phone" id="hidden_phone_input" value="{{ old('user_phone', Auth::user()->phone ?? '') }}">
                             
-                            <p class="text-sm text-gray-500 mt-1">
-                                📞 Select your phone's country code and enter your number
-                            </p>
-                            
                             <div id="phone-error" class="hidden"></div>
                         </div>
 
