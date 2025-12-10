@@ -48,6 +48,23 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        // Will be implemented later for processing the order
+            $validated = $request->validate([
+            'contact_email' => 'required|email',
+            'shipping_name' => 'required|string|max:255',
+            'shipping_phone' => 'required|string|max:20',
+            'shipping_address_line1' => 'required|string',
+            'shipping_city' => 'required|string|max:100',
+            'shipping_province' => 'nullable|string|max:100',
+            'shipping_postal_code' => 'nullable|string|max:20',
+            'shipping_country' => 'required|string|max:100',
+            'payment_gateway' => 'required|in:xendit,paypal',
+            'order_notes' => 'nullable|string',
+            'cart_data' => 'nullable|json', // untuk guest
+        ]);
+
+            // Proses pembuatan order di sini (baik untuk user terautentikasi maupun guest)
+            // ...
+
+            return redirect()->route('order.confirmation')->with('success', 'Order placed successfully!');
     }
 }

@@ -207,6 +207,92 @@
                         </div>
                     </div>
 
+                    <!-- Payment Method Section (Tambahkan setelah Shipping Information, sebelum Additional Notes) -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                            Payment Method <span class="text-red-500 ml-1">*</span>
+                        </h2>
+                        
+                        <p class="text-sm text-gray-600 mb-4">
+                            Select your preferred payment method. Admin will send you a payment link via email.
+                        </p>
+                        
+                        <div class="space-y-3">
+                            <!-- Xendit Option -->
+                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option">
+                                <input type="radio" 
+                                    name="payment_gateway" 
+                                    value="xendit" 
+                                    required
+                                    class="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                    {{ old('payment_gateway') == 'xendit' ? 'checked' : '' }}>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-base font-semibold text-gray-900">Xendit</p>
+                                            <p class="text-sm text-gray-600">Bank Transfer, E-Wallet, Credit Card</p>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://dashboard.xendit.co/favicon.ico" alt="Xendit" class="h-8 w-8 object-contain">
+                                        </div>
+                                    </div>
+                                </div>
+                                <svg class="absolute top-4 right-4 w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </label>
+
+                            <!-- PayPal Option -->
+                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option">
+                                <input type="radio" 
+                                    name="payment_gateway" 
+                                    value="paypal" 
+                                    required
+                                    class="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                    {{ old('payment_gateway') == 'paypal' ? 'checked' : '' }}>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-base font-semibold text-gray-900">PayPal</p>
+                                            <p class="text-sm text-gray-600">International Payment Gateway</p>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none">
+                                                <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.028.15a.805.805 0 01-.794.679H8.088a.483.483 0 01-.476-.568l1.145-7.25.007-.045c.07-.448.458-.783.914-.783h1.873c3.896 0 6.944-1.582 7.833-6.155.023-.12.044-.237.064-.352a5.76 5.76 0 01.619.984z" fill="#139AD6"/>
+                                                <path d="M18.768 3.345c-.213-.093-.433-.173-.66-.24A10.758 10.758 0 0015.938 3h-5.12a.916.916 0 00-.905.773L8.607 11.58l-.026.178a.916.916 0 01.905-.773h1.873c3.896 0 6.944-1.582 7.833-6.155.023-.12.044-.237.064-.352.293-.03.578-.068.854-.117a6.028 6.028 0 00-1.342-1.016z" fill="#263B80"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <svg class="absolute top-4 right-4 w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </label>
+                        </div>
+                        
+                        @error('payment_gateway')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        
+                        <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-blue-700">
+                                        After submitting your order, our admin will create a payment link and send it to your email within 24 hours.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Additional Notes (Optional) -->
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
@@ -234,7 +320,7 @@
                         <div id="summary-items" class="space-y-4 mb-6 max-h-96 overflow-y-auto">
                             @auth
                             @foreach($cartItems as $item)
-                            <div class="flex items-start space-x-4 pb-4 border-b border-gray-200">
+                            <div class="flex items-start space-x-4 pt-4 pb-4 border-b border-gray-200">
                                 <div class="flex-shrink-0 w-16 h-16 relative">
                                     @if($item->product->featuredImage)
                                         <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
@@ -373,7 +459,7 @@ function displayCheckoutSummary(items) {
             </div>`;
         
         return `
-            <div class="flex items-start space-x-4 pb-4 border-b border-gray-200">
+            <div class="flex items-start space-x-4 pt-4 pb-4 border-b border-gray-200">
                 <div class="flex-shrink-0 w-16 h-16 relative">
                     ${imageHtml}
                     <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
@@ -399,25 +485,66 @@ function displayCheckoutSummary(items) {
 @endguest
 
 <script>
-// Form validation
+// Form validation script
 document.getElementById('checkout-form').addEventListener('submit', function(e) {
     const requiredFields = this.querySelectorAll('[required]');
     let isValid = true;
+    let errors = [];
 
     requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.classList.add('border-red-500');
+        if (field.type === 'radio') {
+            const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
+            const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+            if (!isChecked && !errors.includes(field.name)) {
+                isValid = false;
+                errors.push(field.name);
+            }
         } else {
-            field.classList.remove('border-red-500');
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('border-red-500');
+            } else {
+                field.classList.remove('border-red-500');
+            }
         }
     });
 
     if (!isValid) {
         e.preventDefault();
-        alert('Please fill in all required fields');
+        if (errors.includes('payment_gateway')) {
+            alert('Please select a payment method');
+        } else {
+            alert('Please fill in all required fields');
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 });
+
+// Payment method selection visual feedback
+document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Remove selected state from all options
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.classList.remove('border-blue-500', 'bg-blue-50');
+            option.querySelector('.check-icon').classList.add('hidden');
+        });
+        
+        // Add selected state to chosen option
+        if (this.checked) {
+            const label = this.closest('.payment-option');
+            label.classList.add('border-blue-500', 'bg-blue-50');
+            label.querySelector('.check-icon').classList.remove('hidden');
+        }
+    });
+});
+
+// Trigger change on page load if there's a selected option
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedRadio = document.querySelector('input[name="payment_gateway"]:checked');
+    if (selectedRadio) {
+        selectedRadio.dispatchEvent(new Event('change'));
+    }
+});
+
 </script>
 @endsection
