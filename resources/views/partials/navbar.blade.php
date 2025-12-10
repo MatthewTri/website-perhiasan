@@ -40,7 +40,12 @@
           </li>
           <li class="shrink-0">
             <a href="{{ route('admin.consultation.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
-              Customer's Orders
+              Customer's Consultation
+            </a>
+          </li>
+          <li class="shrink-0">
+            <a href="{{ route('admin.orders.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
+              Customers's Orders
             </a>
           </li>
         </ul>

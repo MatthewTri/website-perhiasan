@@ -67,3 +67,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/consultation/{customRequest}', [CustomRequestController::class, 'show'])->name('admin.consultation.show');
     Route::delete('/admin/consultation/{customRequest}', [CustomRequestController::class, 'destroy'])->name('admin.consultation.destroy');
 });
+
+// Admin Order Management routes
+Route::middleware(['auth'])->group(function () { // tambahkan middleware admin nanti
+    Route::get('/admin/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    Route::post('/admin/orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.updateShipping');
+});
