@@ -140,23 +140,25 @@
                                 @enderror
                             </div>
 
-                            <!-- City & Province -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="shipping_country" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Country <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="shipping_country" 
-                                            id="shipping_country" 
-                                            required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_country') border-red-500 @enderror">
-                                        <option value="">Loading countries...</option>
-                                    </select>
-                                    @error('shipping_country')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <!-- Country -->
+                            <div>
+                                <label for="shipping_country" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Country <span class="text-red-500">*</span>
+                                </label>
+                                <select name="shipping_country" 
+                                        id="shipping_country" 
+                                        required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_country') border-red-500 @enderror">
+                                    <option value="">Select Country</option>
+                                </select>
+                                @error('shipping_country')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
+                            <!-- Province, City, Postal Code (Hidden by default) -->
+                            <div id="address-details" class="hidden space-y-4">
+                                <!-- Province -->
                                 <div>
                                     <label for="shipping_province" class="block text-sm font-medium text-gray-700 mb-1">
                                         Province / State
@@ -164,44 +166,44 @@
                                     <select name="shipping_province" 
                                             id="shipping_province" 
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_province') border-red-500 @enderror">
-                                        <option value="">Select country first...</option>
+                                        <option value="">Select Province/State</option>
                                     </select>
                                     @error('shipping_province')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <!-- Postal Code & Country -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="shipping_postal_code" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Postal Code
-                                    </label>
-                                    <input type="text" 
-                                           name="shipping_postal_code" 
-                                           id="shipping_postal_code" 
-                                           value="{{ old('shipping_postal_code') }}"
-                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_postal_code') border-red-500 @enderror"
-                                           placeholder="Enter Postal Code">
-                                    @error('shipping_postal_code')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label for="shipping_city" class="block text-sm font-medium text-gray-700 mb-1">
-                                        City <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" 
-                                           name="shipping_city" 
-                                           id="shipping_city" 
-                                           value="{{ old('shipping_city') }}"
-                                           required
-                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_city') border-red-500 @enderror"
-                                           placeholder="Jakarta">
-                                    @error('shipping_city')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                <!-- City & Postal Code -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="shipping_city" class="block text-sm font-medium text-gray-700 mb-1">
+                                            City <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" 
+                                            name="shipping_city" 
+                                            id="shipping_city" 
+                                            value="{{ old('shipping_city') }}"
+                                            required
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_city') border-red-500 @enderror"
+                                            placeholder="Jakarta">
+                                        @error('shipping_city')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="shipping_postal_code" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Postal Code
+                                        </label>
+                                        <input type="text" 
+                                            name="shipping_postal_code" 
+                                            id="shipping_postal_code" 
+                                            value="{{ old('shipping_postal_code') }}"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_postal_code') border-red-500 @enderror"
+                                            placeholder="12345">
+                                        @error('shipping_postal_code')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -654,6 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Load provinces jika ada old value
                     @if(old('shipping_country'))
+                        addressDetails.classList.remove('hidden');
                         loadProvinces('{{ old("shipping_country") }}', '{{ old("shipping_province") }}');
                     @endif
                 }
@@ -671,12 +674,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
         // ===== LOAD PROVINCES WHEN COUNTRY CHANGES =====
+        const addressDetails = document.getElementById('address-details');
+
         countrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
             if (selectedCountry) {
+                // Show address details
+                addressDetails.classList.remove('hidden');
+                
+                // Load provinces
                 loadProvinces(selectedCountry);
             } else {
-                provinceSelect.innerHTML = '<option value="">Select country first...</option>';
+                // Hide address details
+                addressDetails.classList.add('hidden');
+                
+                // Reset province
+                provinceSelect.innerHTML = '<option value="">Select Province/State</option>';
                 provinceSelect.disabled = true;
             }
         });
