@@ -57,7 +57,10 @@ return new class extends Migration
             $table->string('transaction_id')->nullable(); // Capture ID dari PayPal / Invoice ID Xendit
             $table->string('payment_url')->nullable(); // Link bayar yang dikirim ke email
 
-            // 8. Review (Pencegahan Double Review)
+            // 8. Catatan Pelanggan
+            $table->text('order_notes')->nullable(); // Catatan dari customer saat checkout
+
+            // 9. Review (Pencegahan Double Review)`
             $table->boolean('is_reviewed')->default(false);
 
             $table->timestamps();

@@ -14,7 +14,7 @@ use App\Http\Controllers\CheckoutController;
 // Home Page
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 // Categories
 Route::get('/categories/checkSlug', [CategoryController::class, 'checkSlug']);

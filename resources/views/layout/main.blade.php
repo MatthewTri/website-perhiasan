@@ -27,6 +27,28 @@
     {{-- Phone number country --}}
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 
+    <!-- CLEAR GUEST CART SCRIPT - HARUS DI ATAS -->
+    <script>
+        // Clear guest cart via query parameter (reliable)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('clear_cart') === '1') {
+            localStorage.removeItem('guest_cart');
+            const cartBadge = document.querySelector('.cart-badge');
+            if (cartBadge) {
+                cartBadge.textContent = '0';
+                cartBadge.classList.add('hidden');
+            }
+            document.querySelectorAll('[data-cart-count]').forEach(el => {
+                el.textContent = '0';
+                el.classList.add('hidden');
+            });
+            window.dispatchEvent(new Event('cart-cleared'));
+            console.log('✅ Guest cart cleared via query param!');
+            // Bersihkan query param dari URL agar tidak eksekusi ulang
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
+
     <!-- CART MIGRATION SCRIPT -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -65,5 +87,34 @@
         @endauth
     });
     </script>
+
+    <script>
+        // Clear guest cart after successful checkout
+        @if(session('clear_guest_cart'))
+            // Clear localStorage
+            localStorage.removeItem('guest_cart');
+            
+            // Update cart badge di navbar
+            const cartBadge = document.querySelector('.cart-badge');
+            if (cartBadge) {
+                cartBadge.textContent = '0';
+                cartBadge.classList.add('hidden');
+            }
+
+            // Update semua cart count elements
+            const cartCounts = document.querySelectorAll('[data-cart-count]');
+            cartCounts.forEach(element => {
+                element.textContent = '0';
+                element.classList.add('hidden');
+            });
+
+            // Dispatch event untuk component lain
+            window.dispatchEvent(new Event('cart-cleared'));
+
+            console.log('✅ Guest cart cleared successfully after checkout');
+        @endif
+    </script>
+
+    @stack('scripts')
 </body>
 </html>

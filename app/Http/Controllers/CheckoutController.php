@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -48,7 +52,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-            $validated = $request->validate([
+        $validated = $request->validate([
             'contact_email' => 'required|email',
             'shipping_name' => 'required|string|max:255',
             'shipping_phone' => 'required|string|max:20',
@@ -62,9 +66,131 @@ class CheckoutController extends Controller
             'cart_data' => 'nullable|json', // untuk guest
         ]);
 
-            // Proses pembuatan order di sini (baik untuk user terautentikasi maupun guest)
-            // ...
+        try {
+            // 1. Tentukan user_id dan guest_token
+            $userId = Auth::check() ? Auth::id() : null;
+            $guestToken = Str::random(64);
+            $isGuest = !Auth::check();
 
-            return redirect()->route('order.confirmation')->with('success', 'Order placed successfully!');
+            // 2. Ambil cart items
+            if (Auth::check()) {
+                // User login
+                $cart = Cart::with('cartItems.product')->where('user_id', $userId)->first();
+                
+                if (!$cart || $cart->cartItems->isEmpty()) {
+                    return back()->with('error', 'Your cart is empty');
+                }
+                
+                $cartItems = $cart->cartItems;
+                
+            } else {
+                // Guest user
+                if (!$request->cart_data) {
+                    return back()->with('error', 'Cart data is missing');
+                }
+                
+                $guestCart = json_decode($request->cart_data, true);
+                $productIds = array_keys($guestCart);
+                $products = Product::whereIn('id', $productIds)->get();
+                
+                // Transform ke collection
+                $cartItems = collect($products)->map(function ($product) use ($guestCart) {
+                    return (object)[
+                        'product' => $product,
+                        'quantity' => $guestCart[$product->id]
+                    ];
+                });
+            }
+
+            // 3. Hitung subtotal
+            $subtotal = $cartItems->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
+
+            // 4. Generate order number
+            $lastOrder = Order::latest('id')->first();
+            $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
+            $orderNumber = 'INV-' . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+            // 5. Tentukan currency
+            $currency = $validated['payment_gateway'] === 'paypal' ? 'USD' : 'IDR';
+
+            // 6. Create Order
+            $order = Order::create([
+                'order_number' => $orderNumber,
+                'order_type' => 'CATALOG',
+                'user_id' => $userId,
+                'contact_email' => $validated['contact_email'],
+                'guest_token' => $guestToken,
+                'custom_request_id' => null,
+                
+                'status' => 'PENDING_REVIEW',
+                'currency' => $currency,
+                'subtotal' => $subtotal,
+                'shipping_cost' => 0,
+                'tax_amount' => 0,
+                'total_amount' => $subtotal,
+                
+                'shipping_name' => $validated['shipping_name'],
+                'shipping_phone' => $validated['shipping_phone'],
+                'shipping_address_line1' => $validated['shipping_address_line1'],
+                'shipping_city' => $validated['shipping_city'],
+                'shipping_province' => $validated['shipping_province'],
+                'shipping_postal_code' => $validated['shipping_postal_code'],
+                'shipping_country' => $validated['shipping_country'],
+                
+                'courier_name' => null,
+                'tracking_number' => null,
+                
+                'payment_gateway' => strtoupper($validated['payment_gateway']),
+                'transaction_id' => null,
+                'payment_url' => null,
+                
+                'order_notes' => $validated['order_notes'],
+                'is_reviewed' => false,
+            ]);
+
+            // 7. Create Order Items
+            foreach ($cartItems as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product->id,
+                    'item_name' => $item->product->name,
+                    'item_description' => $item->product->description,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                ]);
+            }
+
+            // 8. Clear cart
+            if (Auth::check() && isset($cart)) {
+                // User login - hapus dari database
+                $cart->cartItems()->delete();
+            }
+            // Guest cart akan di-clear via JavaScript
+            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment link to your email within 24 hours.';
+            
+            if ($isGuest) {
+                // Untuk guest, redirect dengan query parameter agar JS bisa clear localStorage
+                return redirect()->route('home', ['clear_cart' => '1'])
+                    ->with('success', $successMessage);
+            } else {
+                return redirect()->route('home')
+                    ->with('success', $successMessage);
+            }
+
+            // 9. Redirect ke halaman konfirmasi
+            // if (Auth::check()) {
+            //     return redirect()->route('order.confirmation', $order->order_number)
+            //         ->with('success', 'Order placed successfully! We will send payment link to your email within 24 hours.');
+            // } else {
+            //     return redirect()->route('order.guest.confirmation', $guestToken)
+            //         ->with('success', 'Order placed successfully! We will send payment link to your email within 24 hours.');
+            // }
+
+        } catch (\Exception $e) {
+            Log::error('Checkout Error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to place order: ' . $e->getMessage());
+        }
     }
 }
