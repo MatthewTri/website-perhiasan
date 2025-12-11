@@ -21,7 +21,7 @@ class Order extends Model
     }
 
     // Relasi: Item apa saja di order ini
-    public function items()
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }

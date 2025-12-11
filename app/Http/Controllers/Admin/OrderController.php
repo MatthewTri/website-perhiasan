@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin; // Perhatikan Namespace ini
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -13,19 +13,19 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        // Filter Tab (Opsional tapi bagus)
+        // Filter Tab (Opsional)
         $status = $request->query('status');
 
-        $query = Order::query();
+        $query = Order::with(['user', 'orderItems']);
 
         if ($status) {
             $query->where('status', $status);
         } else {
-            // Default: Tampilkan yang butuh perhatian (Pending Review) dulu
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED')");
+            // Default: Urutkan berdasarkan prioritas status
+            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
         }
 
-        $orders = $query->latest()->paginate(10);
+        $orders = $query->latest()->get();
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -35,10 +35,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // Admin boleh melihat order milik SIAPA SAJA
-        // Load relasi user dan items
-        $order->load('user', 'items', 'customRequest');
-
+        $order->load('user', 'orderItems.product', 'customRequest');
         return view('admin.orders.show', compact('order'));
     }
 
@@ -58,10 +55,6 @@ class OrderController extends Controller
             'status' => 'SHIPPED'
         ]);
 
-        // (Opsional) Kirim Email "Paket Dikirim" di sini
-
-        return back()->with('success', 'Resi berhasil diupdate!');
+        return back()->with('success', 'Tracking information updated successfully!');
     }
-    
-    // Method createInvoice() dll bisa ditaruh di sini juga atau di controller khusus
 }
