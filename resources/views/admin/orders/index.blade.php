@@ -205,7 +205,9 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-semibold text-gray-900">{{ $order->currency }} {{ number_format($order->total_amount, 2) }}</div>
-                            <div class="text-xs text-gray-500">{{ $order->orderItems->count() }} {{ Str::plural('item', $order->orderItems->count()) }}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ $order->orderItems->sum('quantity') }} {{ Str::plural('item', $order->orderItems->sum('quantity')) }}
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @php
