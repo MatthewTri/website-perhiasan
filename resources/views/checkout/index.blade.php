@@ -436,10 +436,10 @@
                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
                         
                         <!-- Cart Items -->
-                        <div id="summary-items" class="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                        <div id="summary-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto">
                             @auth
                             @foreach($cartItems as $item)
-                            <div class="flex items-start space-x-4 pt-4 pb-4 border-b border-gray-200">
+                            <div class="flex items-start space-x-4 pt-2 pb-4 border-b border-gray-200">
                                 <div class="flex-shrink-0 w-16 h-16 relative">
                                     @if($item->product->featuredImage)
                                         <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
@@ -578,7 +578,7 @@ function displayCheckoutSummary(items) {
             </div>`;
         
         return `
-            <div class="flex items-start space-x-4 pt-4 pb-4 border-b border-gray-200">
+            <div class="flex items-start space-x-4 pt-2 pb-4 border-b border-gray-200">
                 <div class="flex-shrink-0 w-16 h-16 relative">
                     ${imageHtml}
                     <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
