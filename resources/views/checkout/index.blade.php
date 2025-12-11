@@ -143,17 +143,16 @@
                             <!-- City & Province -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="shipping_city" class="block text-sm font-medium text-gray-700 mb-1">
-                                        City <span class="text-red-500">*</span>
+                                    <label for="shipping_country" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Country <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" 
-                                           name="shipping_city" 
-                                           id="shipping_city" 
-                                           value="{{ old('shipping_city') }}"
-                                           required
-                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_city') border-red-500 @enderror"
-                                           placeholder="Jakarta">
-                                    @error('shipping_city')
+                                    <select name="shipping_country" 
+                                            id="shipping_country" 
+                                            required
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_country') border-red-500 @enderror">
+                                        <option value="">Loading countries...</option>
+                                    </select>
+                                    @error('shipping_country')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -162,12 +161,11 @@
                                     <label for="shipping_province" class="block text-sm font-medium text-gray-700 mb-1">
                                         Province / State
                                     </label>
-                                    <input type="text" 
-                                           name="shipping_province" 
-                                           id="shipping_province" 
-                                           value="{{ old('shipping_province') }}"
-                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_province') border-red-500 @enderror"
-                                           placeholder="DKI Jakarta">
+                                    <select name="shipping_province" 
+                                            id="shipping_province" 
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_province') border-red-500 @enderror">
+                                        <option value="">Select country first...</option>
+                                    </select>
                                     @error('shipping_province')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -185,28 +183,23 @@
                                            id="shipping_postal_code" 
                                            value="{{ old('shipping_postal_code') }}"
                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_postal_code') border-red-500 @enderror"
-                                           placeholder="12345">
+                                           placeholder="Enter Postal Code">
                                     @error('shipping_postal_code')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-
                                 <div>
-                                    <label for="shipping_country" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Country <span class="text-red-500">*</span>
+                                    <label for="shipping_city" class="block text-sm font-medium text-gray-700 mb-1">
+                                        City <span class="text-red-500">*</span>
                                     </label>
-                                    <select name="shipping_country" 
-                                            id="shipping_country" 
-                                            required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_country') border-red-500 @enderror">
-                                        <option value="">Select Country</option>
-                                        <option value="Indonesia" {{ old('shipping_country') == 'Indonesia' ? 'selected' : '' }}>Indonesia</option>
-                                        <option value="Singapore" {{ old('shipping_country') == 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                                        <option value="Malaysia" {{ old('shipping_country') == 'Malaysia' ? 'selected' : '' }}>Malaysia</option>
-                                        <option value="United States" {{ old('shipping_country') == 'United States' ? 'selected' : '' }}>United States</option>
-                                        <option value="United Kingdom" {{ old('shipping_country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
-                                    </select>
-                                    @error('shipping_country')
+                                    <input type="text" 
+                                           name="shipping_city" 
+                                           id="shipping_city" 
+                                           value="{{ old('shipping_city') }}"
+                                           required
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_city') border-red-500 @enderror"
+                                           placeholder="Jakarta">
+                                    @error('shipping_city')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -632,6 +625,105 @@ document.addEventListener('DOMContentLoaded', function() {
             placeholderNumberType: "MOBILE",
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
         });
+
+        // ===== POPULATE COUNTRIES FROM COUNTRIESNOW API =====
+        const countrySelect = document.getElementById('shipping_country');
+        const provinceSelect = document.getElementById('shipping_province');
+
+        // Fetch countries
+        fetch('https://countriesnow.space/api/v0.1/countries/positions')
+            .then(res => res.json())
+            .then(data => {
+                if (data.error === false && data.data) {
+                    countrySelect.innerHTML = '<option value="">Select Country</option>';
+                    
+                    // Sort countries alphabetically
+                    const sortedCountries = data.data.sort((a, b) => 
+                        a.name.localeCompare(b.name)
+                    );
+                    
+                    sortedCountries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.name;
+                        option.textContent = country.name;
+                        if ('{{ old("shipping_country") }}' === country.name) {
+                            option.selected = true;
+                        }
+                        countrySelect.appendChild(option);
+                    });
+
+                    // Load provinces jika ada old value
+                    @if(old('shipping_country'))
+                        loadProvinces('{{ old("shipping_country") }}', '{{ old("shipping_province") }}');
+                    @endif
+                }
+            })
+            .catch(error => {
+                console.error('Error loading countries:', error);
+                countrySelect.innerHTML = `
+                    <option value="">Select Country</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="United States">United States</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                `;
+            });
+
+        // ===== LOAD PROVINCES WHEN COUNTRY CHANGES =====
+        countrySelect.addEventListener('change', function() {
+            const selectedCountry = this.value;
+            if (selectedCountry) {
+                loadProvinces(selectedCountry);
+            } else {
+                provinceSelect.innerHTML = '<option value="">Select country first...</option>';
+                provinceSelect.disabled = true;
+            }
+        });
+
+        // Function to load provinces
+        function loadProvinces(countryName, selectedProvince = '') {
+            provinceSelect.innerHTML = '<option value="">Loading provinces...</option>';
+            provinceSelect.disabled = true;
+
+            fetch('https://countriesnow.space/api/v0.1/countries/states', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ country: countryName })
+            })
+            .then(res => res.json())
+            .then(data => {
+                provinceSelect.innerHTML = '<option value="">Select Province/State</option>';
+                
+                if (data.error === false && data.data && data.data.states && data.data.states.length > 0) {
+                    provinceSelect.disabled = false;
+                    
+                    // Sort provinces alphabetically
+                    const sortedStates = data.data.states.sort((a, b) => 
+                        a.name.localeCompare(b.name)
+                    );
+                    
+                    sortedStates.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state.name;
+                        option.textContent = state.name;
+                        if (selectedProvince === state.name) {
+                            option.selected = true;
+                        }
+                        provinceSelect.appendChild(option);
+                    });
+                } else {
+                    // Jika tidak ada data province, biarkan input manual
+                    provinceSelect.innerHTML = '<option value="">No provinces available</option>';
+                    provinceSelect.disabled = true;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading provinces:', error);
+                provinceSelect.innerHTML = '<option value="">Failed to load provinces</option>';
+                provinceSelect.disabled = true;
+            });
+        }
 
         // Input restriction - hanya angka
         phoneInputField.addEventListener('input', function(e) {
