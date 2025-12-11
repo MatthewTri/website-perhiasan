@@ -105,13 +105,20 @@
                                 <label for="shipping_phone" class="block text-sm font-medium text-gray-700 mb-1">
                                     Phone Number <span class="text-red-500">*</span>
                                 </label>
-                                <input type="tel" 
-                                       name="shipping_phone" 
-                                       id="shipping_phone" 
-                                       value="{{ old('shipping_phone') }}"
-                                       required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_phone') border-red-500 @enderror"
-                                       placeholder="+62 812 3456 7890">
+                                
+                                <input 
+                                    type="tel" 
+                                    id="shipping_phone"
+                                    value="{{ old('shipping_phone') }}" 
+                                    required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_phone') border-red-500 @enderror"
+                                    placeholder="Enter phone number">
+                                
+                                <!-- Hidden input untuk full international number -->
+                                <input type="hidden" name="shipping_phone" id="hidden_shipping_phone" value="{{ old('shipping_phone') }}">
+                                
+                                <div id="phone-error" class="hidden"></div>
+                                
                                 @error('shipping_phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -603,37 +610,165 @@ function displayCheckoutSummary(items) {
 
 <script>
 // Form validation script
-document.getElementById('checkout-form').addEventListener('submit', function(e) {
-    const requiredFields = this.querySelectorAll('[required]');
-    let isValid = true;
-    let errors = [];
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== PHONE INPUT SETUP =====
+    const phoneInputField = document.querySelector("#shipping_phone");
+    const hiddenPhoneInput = document.querySelector("#hidden_shipping_phone");
+    
+    if (phoneInputField) {
+        // Initialize intl-tel-input
+        const phoneInput = window.intlTelInput(phoneInputField, {
+            initialCountry: "auto",
+            geoIpLookup: function(callback) {
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => callback(data.country_code))
+                    .catch(() => callback("id")); // Default Indonesia
+            },
+            preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
+            separateDialCode: true,
+            formatOnDisplay: true,
+            nationalMode: false,
+            placeholderNumberType: "MOBILE",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+        });
 
-    requiredFields.forEach(field => {
-        if (field.type === 'radio') {
-            const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
-            const isChecked = Array.from(radioGroup).some(radio => radio.checked);
-            if (!isChecked && !errors.includes(field.name)) {
-                isValid = false;
-                errors.push(field.name);
+        // Input restriction - hanya angka
+        phoneInputField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = value;
+            updateHiddenPhone();
+        });
+
+        phoneInputField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let paste = (e.clipboardData || window.clipboardData).getData('text');
+            let numericPaste = paste.replace(/[^0-9]/g, '');
+            e.target.value = numericPaste;
+            setTimeout(() => updateHiddenPhone(), 100);
+        });
+
+        phoneInputField.addEventListener('keypress', function(e) {
+            // Allow control keys
+            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true)) {
+                return;
             }
-        } else {
-            if (!field.value.trim()) {
+            // Only allow numbers
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        // Update hidden input saat country berubah
+        phoneInputField.addEventListener("countrychange", function() {
+            updateHiddenPhone();
+        });
+
+        // Function untuk update hidden input
+        function updateHiddenPhone() {
+            if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
+                const fullNumber = phoneInput.getNumber();
+                hiddenPhoneInput.value = fullNumber;
+                hidePhoneError();
+            } else if (phoneInputField.value.trim()) {
+                const selectedCountryData = phoneInput.getSelectedCountryData();
+                const dialCode = selectedCountryData.dialCode;
+                const nationalNumber = phoneInputField.value;
+                const fullNumber = `+${dialCode}${nationalNumber}`;
+                hiddenPhoneInput.value = fullNumber;
+            }
+        }
+
+        // Show phone error function
+        function showPhoneError(message) {
+            hidePhoneError();
+            
+            const errorDiv = document.getElementById('phone-error');
+            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-2 text-sm';
+            errorDiv.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            
+            phoneInputField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            phoneInputField.focus();
+        }
+
+        // Hide phone error function
+        function hidePhoneError() {
+            const errorDiv = document.getElementById('phone-error');
+            errorDiv.className = 'hidden';
+            errorDiv.innerHTML = '';
+        }
+
+        // ===== FORM VALIDATION ON SUBMIT =====
+        const checkoutForm = document.getElementById('checkout-form');
+        
+        checkoutForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate phone number
+            if (phoneInputField.value.trim() === '') {
+                e.preventDefault();
+                showPhoneError('Please enter your phone number.');
                 isValid = false;
-                field.classList.add('border-red-500');
             } else {
-                field.classList.remove('border-red-500');
+                updateHiddenPhone();
+                
+                if (!phoneInput.isValidNumber()) {
+                    e.preventDefault();
+                    showPhoneError('Please enter a valid phone number for the selected country.');
+                    isValid = false;
+                }
             }
-        }
-    });
+            
+            // Validate required fields
+            const requiredFields = checkoutForm.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (field.type === 'radio') {
+                    const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!isChecked) {
+                        isValid = false;
+                    }
+                } else if (field.id !== 'shipping_phone') { // Skip karena sudah di-check di atas
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('border-red-500');
+                    } else {
+                        field.classList.remove('border-red-500');
+                    }
+                }
+            });
 
-    if (!isValid) {
-        e.preventDefault();
-        if (errors.includes('payment_gateway')) {
-            alert('Please select a payment method');
-        } else {
-            alert('Please fill in all required fields');
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields correctly');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return false;
+            }
+            
+            // If valid, show loading state
+            if (isValid) {
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing Order...
+                `;
+            }
+        });
     }
 });
 
