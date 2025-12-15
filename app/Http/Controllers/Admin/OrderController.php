@@ -46,13 +46,20 @@ class OrderController extends Controller
     /**
      * ACTION: Create Invoice (Xendit/PayPal)
      */
-    public function createInvoice(Order $order)
+    public function createInvoice(Request $request, Order $order)
     {
         // Cek apakah order sudah ada invoice
         if ($order->status !== 'PENDING_REVIEW') {
             return back()->with('error', 'Invoice already created or order status invalid!');
         }
 
+        $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
+
+        // Update payment_gateway di order
+        $order->update([
+            'payment_gateway' => $paymentGateway
+        ]);
+        
         // Create invoice berdasarkan payment gateway
         if ($order->payment_gateway === 'XENDIT') {
             $result = $this->paymentService->createXenditInvoice($order);

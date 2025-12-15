@@ -147,7 +147,8 @@ class CheckoutController extends Controller
                 'courier_name' => null,
                 'tracking_number' => null,
                 
-                'payment_gateway' => strtoupper($validated['payment_gateway']),
+                'payment_preference' => strtoupper($validated['payment_gateway']),
+                'payment_gateway' => null,
                 'transaction_id' => null,
                 'payment_url' => null,
                 

@@ -56,9 +56,12 @@ return new class extends Migration
             $table->string('tracking_number')->nullable(); // Nomor Resi
 
             // 7. Data Pembayaran (Untuk keperluan Refund nanti)
+            $table->string('payment_preference')->default('XENDIT'); // Preferensi Pembeli
             $table->string('payment_gateway')->nullable(); // 'XENDIT' atau 'PAYPAL'
+            $table->string('payment_method')->nullable(); // 'BCA', 'MANDIRI', 'OVO', 'VISA'
             $table->string('transaction_id')->nullable(); // Capture ID dari PayPal / Invoice ID Xendit
             $table->string('payment_url')->nullable(); // Link bayar yang dikirim ke email
+            $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
 
             // 8. Catatan Pelanggan
             $table->text('order_notes')->nullable(); // Catatan dari customer saat checkout

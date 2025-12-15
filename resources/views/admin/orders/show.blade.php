@@ -14,10 +14,10 @@
                     </svg>
                     Back to Orders
                 </a>
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
-                    <p class="text-gray-600 mt-1">Review and process order #{{ $order->order_number }}</p>
-                </div>
+            </div>
+            <div class="text-center flex-1">
+                <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
+                <p class="text-gray-600 mt-1">Review and process order #{{ $order->order_number }}</p>
             </div>
             
             <!-- Order Status Badge -->
@@ -190,34 +190,102 @@
                         <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
-                        Payment Method
+                        Payment Information
                     </h2>
                     
-                    <div class="space-y-3">
-                        @if($order->payment_gateway === 'XENDIT')
-                        <div class="p-4 border-2 border-blue-500 bg-blue-50 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-base font-semibold text-gray-900">Indonesia Payment (Xendit)</p>
-                                    <p class="text-sm text-gray-600">Bank Transfer, E-Wallet, QRIS, Credit Card</p>
-                                    <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
+                    <div class="space-y-4">
+                        <!-- Customer's Payment Preference -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Customer's Payment Preference
+                            </label>
+                            <div class="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        @if($order->payment_preference === 'XENDIT')
+                                        <p class="text-base font-semibold text-gray-900">Indonesia Payment (Xendit)</p>
+                                        <p class="text-sm text-gray-600">Bank Transfer, E-Wallet, QRIS, Credit Card</p>
+                                        @else
+                                        <p class="text-base font-semibold text-gray-900">International Payment (PayPal)</p>
+                                        <p class="text-sm text-gray-600">PayPal, Credit Card (Visa, Mastercard, Amex)</p>
+                                        @endif
+                                        <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
+                                    </div>
+                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
                                 </div>
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
                             </div>
                         </div>
-                        @else
-                        <div class="p-4 border-2 border-blue-500 bg-blue-50 rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-base font-semibold text-gray-900">International Payment (PayPal)</p>
-                                    <p class="text-sm text-gray-600">PayPal, Credit Card (Visa, Mastercard, Amex)</p>
-                                    <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
+
+                        <!-- Payment Gateway (if invoice created) -->
+                        @if($order->payment_gateway)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Payment Gateway Used
+                            </label>
+                            <div class="p-4 border border-gray-300 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        @if($order->payment_gateway === 'XENDIT')
+                                        <p class="text-base font-medium text-gray-900">Xendit</p>
+                                        @else
+                                        <p class="text-base font-medium text-gray-900">PayPal</p>
+                                        @endif
+                                        @if($order->payment_url)
+                                        <a href="{{ $order->payment_url }}" target="_blank" class="text-sm text-blue-600 hover:underline mt-1 inline-block">
+                                            View Payment Link →
+                                        </a>
+                                        @endif
+                                    </div>
+                                    @if($order->status === 'INVOICE_SENT')
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                        Invoice Sent
+                                    </span>
+                                    @elseif($order->status === 'PAID')
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                        Paid
+                                    </span>
+                                    @endif
                                 </div>
-                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Change Payment Gateway (Only if PENDING_REVIEW) -->
+                        @if($order->status === 'PENDING_REVIEW')
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-yellow-800 mb-2">
+                                        Customer wants {{ $order->payment_preference }}. Change payment gateway if customer requests.
+                                    </p>
+                                    <form action="{{ route('admin.orders.createInvoice', $order) }}" method="POST" id="invoice-form">
+                                        @csrf
+                                        <div class="space-y-2">
+                                            <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" 
+                                                    name="payment_gateway_override" 
+                                                    value="XENDIT"
+                                                    {{ $order->payment_preference === 'XENDIT' ? 'checked' : '' }}
+                                                    class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                                                <span class="ml-3 text-sm font-medium text-gray-900">Xendit (Indonesia Payment)</span>
+                                            </label>
+                                            
+                                            <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" 
+                                                    name="payment_gateway_override" 
+                                                    value="PAYPAL"
+                                                    {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
+                                                    class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                                                <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International Payment)</span>
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         @endif
