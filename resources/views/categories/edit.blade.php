@@ -50,31 +50,40 @@
     const form = document.querySelector('#form-category-edit');
     let timeout = null;
 
-    // Ganti 'change' menjadi 'input' agar real-time update
+    // Debounced slug update saat input
     name.addEventListener('input', function() {
         clearTimeout(timeout);
-        timeout = setTimeout(() => {
+        timeout = setTimeout(async () => {
             if (name.value.length > 0) {
-                fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value))
-                .then(response => response.json())
-                .then(data => slug.value = data.slug)
-                .catch(error => console.log('Error:', error));
+                try {
+                    const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value));
+                    const data = await response.json();
+                    slug.value = data.slug;
+                } catch (error) {
+                    slug.value = '';
+                }
             } else {
                 slug.value = '';
             }
-        }, 300); // Debounce 300ms
+        }, 300);
     });
 
-    // Pastikan slug update sebelum submit
-    form.addEventListener('submit', function(e) {
-        if (name.value && !slug.value) {
-            e.preventDefault();
-            fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value))
-            .then(response => response.json())
-            .then(data => {
+    // Force slug update sebelum submit
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (name.value.length > 0) {
+            try {
+                const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value));
+                const data = await response.json();
                 slug.value = data.slug;
                 form.submit();
-            });
+            } catch (error) {
+                alert('Failed to generate slug. Please try again.');
+            }
+        } else {
+            slug.value = '';
+            form.submit();
         }
     });
 </script>

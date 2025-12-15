@@ -5,7 +5,7 @@
     <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit Product</h1>
         
-        <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
+        <form id="editProductForm" action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -221,6 +221,7 @@
     let currentMainIndex = 0;
     let deletedImageIds = [];
     let hasExistingImages = {{ $product->images->count() > 0 ? 'true' : 'false' }};
+    const form = document.querySelector('#editProductForm');
 
     // Auto-generate slug
     const name = document.querySelector('#name');
@@ -465,13 +466,30 @@
     }
 
     // Form submission validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const hasActiveExisting = hasActiveExistingImage();
-        const hasNewImages = selectedFiles.length > 0;
-        
-        // Ensure form data is updated
-        updateFormFiles();
-    });
+    form.addEventListener('submit', async function(e) {
+    const hasActiveExisting = hasActiveExistingImage();
+    const hasNewImages = selectedFiles.length > 0;
+
+    // Ensure form data is updated
+    updateFormFiles();
+
+    // Always fetch slug before submit
+    if (name.value.length > 0) {
+        try {
+            const response = await fetch('/products/checkSlug?name=' + encodeURIComponent(name.value));
+            const data = await response.json();
+            slug.value = data.slug;
+        } catch (error) {
+            alert('Failed to generate slug. Please try again.');
+            return;
+        }
+    } else {
+        slug.value = '';
+    }
+
+    // Submit after slug is ready
+    this.submit();
+});
 </script>
 
 <style>

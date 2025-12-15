@@ -5,7 +5,7 @@
     <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Add New Product</h1>
         
-        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="productForm" action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -189,7 +189,7 @@
 <script>
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
-    const form = document.querySelector('form');
+    const form = document.querySelector('#productForm');
 
     name.addEventListener('change' , function() {
         fetch('/products/checkSlug?name=' + name.value)
