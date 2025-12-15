@@ -79,3 +79,12 @@ Route::middleware(['auth'])->group(function () { // tambahkan middleware admin n
     Route::get('/admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/admin/orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.updateShipping');
 });
+
+// Admin Orders
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show']);
+    
+    // ⬅️ TAMBAHKAN ROUTE INI
+    Route::post('orders/{order}/create-invoice', [App\Http\Controllers\Admin\OrderController::class, 'createInvoice'])->name('orders.createInvoice');
+    Route::post('orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('orders.updateShipping');
+});
