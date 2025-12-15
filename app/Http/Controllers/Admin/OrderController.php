@@ -55,7 +55,7 @@ class OrderController extends Controller
 
         $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
 
-        // Update payment_gateway di order
+        // Update payment_gateway dan admin_notes di order
         $order->update([
             'payment_gateway' => $paymentGateway,
             'admin_notes' => $request->input('admin_notes'),

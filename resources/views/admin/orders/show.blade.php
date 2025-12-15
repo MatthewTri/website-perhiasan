@@ -252,6 +252,21 @@
                         </div>
                         @endif
 
+                        <!-- Admin Notes - Display (after invoice created) -->
+                        @if($order->admin_notes && $order->status !== 'PENDING_REVIEW')
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Admin Notes for Customer
+                            </label>
+                            <div class="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                                <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ $order->admin_notes }}</p>
+                            </div>
+                        </div>
+                        @endif
+                        
                         <!-- Change Payment Gateway (Only if PENDING_REVIEW) -->
                         @if($order->status === 'PENDING_REVIEW')
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -260,12 +275,14 @@
                                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
                                 <div class="flex-1">
-                                    <p class="text-sm font-medium text-yellow-800 mb-2">
+                                    <p class="text-sm font-medium text-yellow-800 mb-3">
                                         Customer wants {{ $order->payment_preference }}. Change payment gateway if customer requests.
                                     </p>
                                     <form action="{{ route('admin.orders.createInvoice', $order) }}" method="POST" id="invoice-form">
                                         @csrf
-                                        <div class="space-y-2">
+                                        
+                                        <!-- Payment Gateway Selection -->
+                                        <div class="space-y-2 mb-4">
                                             <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
                                                 <input type="radio" 
                                                     name="payment_gateway_override" 
@@ -283,6 +300,22 @@
                                                     class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
                                                 <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International Payment)</span>
                                             </label>
+                                        </div>
+
+                                        <!-- Admin Notes (PINDAHKAN KE DALAM FORM) -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                Notes for Customer (Optional)
+                                            </label>
+                                            <textarea 
+                                                name="admin_notes" 
+                                                rows="3"
+                                                placeholder="e.g., Thank you for your order! Payment invoice will be sent to your email."
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('admin_notes', $order->admin_notes) }}</textarea>
+                                            <p class="text-xs text-gray-500 mt-1">This note will be included in the invoice email.</p>
                                         </div>
                                     </form>
                                 </div>
@@ -305,22 +338,6 @@
                     <div class="w-full px-4 py-3 bg-yellow-50 border border-yellow-200 rounded-lg text-gray-900 whitespace-pre-wrap">{{ $order->order_notes }}</div>
                 </div>
                 @endif
-
-                <!-- Admin Notes -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Notes for Customer (Optional)
-                    </label>
-                    <textarea 
-                        name="admin_notes" 
-                        rows="3"
-                        placeholder="e.g., Thank you for your order! Payment invoice will be sent to your email."
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('admin_notes', $order->admin_notes) }}</textarea>
-                    <p class="text-xs text-gray-500 mt-1">This note will be included in the invoice email.</p>
-                </div>
             </div>
 
             <!-- Right Side - Order Summary (1/3 width) -->
@@ -406,16 +423,16 @@
                     <!-- Action Buttons -->
                     @if($order->status === 'PENDING_REVIEW')
                     <div class="space-y-3">
-                        <form action="{{ route('admin.orders.createInvoice', $order) }}" method="POST" onsubmit="return confirm('Are you sure you want to create invoice for this order?')">
-                            @csrf
-                            <button type="submit" 
-                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                Create Invoice
-                            </button>
-                        </form>
+                        <!-- ⬅️ HAPUS <form>, GUNAKAN button dengan form="invoice-form" -->
+                        <button type="submit" 
+                                form="invoice-form"
+                                onclick="return confirm('Are you sure you want to create invoice for this order?')"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Create Invoice
+                        </button>
                         
                         <button type="button" 
                                 class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
