@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
+
 
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
-    use HasFactory;
+    use Sluggable;
 
     protected $guarded = [
         'id'
@@ -42,5 +44,18 @@ class Order extends Model
     {
         // Sebuah Order 'belongsTo' satu CustomRequest (tapi bisa jadi null)
         return $this->belongsTo(CustomRequest::class);
+    }
+
+    public function getRouteKeyName() {
+        return 'slug';
+    }
+
+     public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'order_number'
+            ]
+        ];
     }
 }

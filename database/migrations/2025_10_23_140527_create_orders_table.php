@@ -15,6 +15,9 @@ return new class extends Migration
             // 1. Identitas Pesanan
             $table->id();
             $table->string('order_number')->unique(); // Contoh: INV-2025-001
+
+            // slug per order
+            $table->string('slug')->unique();
             
             // Penanda Tipe: Apakah dari 'CATALOG' (Cart) atau 'CUSTOM' (Konsultasi)
             $table->string('order_type')->default('CATALOG'); 

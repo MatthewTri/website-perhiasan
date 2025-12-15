@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class CheckoutController extends Controller
 {
@@ -112,12 +113,16 @@ class CheckoutController extends Controller
             $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
             $orderNumber = 'INV-' . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
-            // 5. Tentukan currency
+            // 5. Generate slug dari order_number
+            $slug = SlugService::createSlug(Order::class, 'slug', $orderNumber);
+
+            // 6. Tentukan currency
             $currency = $validated['payment_gateway'] === 'paypal' ? 'USD' : 'IDR';
 
-            // 6. Create Order
+            // 7. Create Order
             $order = Order::create([
                 'order_number' => $orderNumber,
+                'slug' => $slug,
                 'order_type' => 'CATALOG',
                 'user_id' => $userId,
                 'contact_email' => $validated['contact_email'],
@@ -150,7 +155,7 @@ class CheckoutController extends Controller
                 'is_reviewed' => false,
             ]);
 
-            // 7. Create Order Items
+            // 8. Create Order Items
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -162,7 +167,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // 8. Clear cart
+            // 9. Clear cart
             if (Auth::check() && isset($cart)) {
                 // User login - hapus dari database
                 $cart->cartItems()->delete();
@@ -178,15 +183,6 @@ class CheckoutController extends Controller
                 return redirect()->route('home')
                     ->with('success', $successMessage);
             }
-
-            // 9. Redirect ke halaman konfirmasi
-            // if (Auth::check()) {
-            //     return redirect()->route('order.confirmation', $order->order_number)
-            //         ->with('success', 'Order placed successfully! We will send payment link to your email within 24 hours.');
-            // } else {
-            //     return redirect()->route('order.guest.confirmation', $guestToken)
-            //         ->with('success', 'Order placed successfully! We will send payment link to your email within 24 hours.');
-            // }
 
         } catch (\Exception $e) {
             Log::error('Checkout Error: ' . $e->getMessage());
