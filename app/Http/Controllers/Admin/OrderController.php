@@ -57,7 +57,8 @@ class OrderController extends Controller
 
         // Update payment_gateway di order
         $order->update([
-            'payment_gateway' => $paymentGateway
+            'payment_gateway' => $paymentGateway,
+            'admin_notes' => $request->input('admin_notes'),
         ]);
         
         // Create invoice berdasarkan payment gateway

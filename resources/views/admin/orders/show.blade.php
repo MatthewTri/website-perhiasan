@@ -306,6 +306,21 @@
                 </div>
                 @endif
 
+                <!-- Admin Notes -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Notes for Customer (Optional)
+                    </label>
+                    <textarea 
+                        name="admin_notes" 
+                        rows="3"
+                        placeholder="e.g., Thank you for your order! Payment invoice will be sent to your email."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('admin_notes', $order->admin_notes) }}</textarea>
+                    <p class="text-xs text-gray-500 mt-1">This note will be included in the invoice email.</p>
+                </div>
             </div>
 
             <!-- Right Side - Order Summary (1/3 width) -->

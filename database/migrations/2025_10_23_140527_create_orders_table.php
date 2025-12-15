@@ -66,7 +66,10 @@ return new class extends Migration
             // 8. Catatan Pelanggan
             $table->text('order_notes')->nullable(); // Catatan dari customer saat checkout
 
-            // 9. Review (Pencegahan Double Review)`
+            // 9. Catatan Admin untuk pelanggan
+            $table->text('admin_notes')->nullable(); // Catatan dari admin untuk customer
+
+            // 10. Review (Pencegahan Double Review)`
             $table->boolean('is_reviewed')->default(false);
 
             $table->timestamps();
