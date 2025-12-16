@@ -278,7 +278,7 @@
                 @foreach($order->orderItems as $item)
                 <div class="flex items-center space-x-4 pb-4 border-b last:border-b-0">
                     @if($item->product && $item->product->images->first())
-                    <img src="{{ Storage::url($item->product->images->first()->image_path) }}" 
+                    <img src="{{ Storage::url($item->product->images->first()->image) }}" 
                          alt="{{ $item->product_name }}"
                          class="w-20 h-20 object-cover rounded-lg">
                     @else
