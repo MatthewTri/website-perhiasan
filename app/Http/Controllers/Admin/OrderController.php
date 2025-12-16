@@ -44,47 +44,39 @@ class OrderController extends Controller
     }
 
     /**
-     * ACTION: Create Invoice (Xendit/PayPal)
+     * ACTION: Send Payment Details (BCA / PayPal)
      */
-    public function createInvoice(Request $request, Order $order)
+    public function sendPaymentDetails(Request $request, Order $order)
     {
-        // Cek apakah order sudah ada invoice
+        // Cek apakah order sudah dikirim payment details
         if ($order->status !== 'PENDING_REVIEW') {
-            return back()->with('error', 'Invoice already created or order status invalid!');
+            return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 
+        // Ambil payment gateway dari form atau gunakan preference customer
         $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
 
-        // Update payment_gateway dan admin_notes di order
+        // Update order dengan payment details
         $order->update([
             'payment_gateway' => $paymentGateway,
+            'payment_method' => $paymentGateway === 'MANUAL' ? 'BCA' : 'PAYPAL',
             'admin_notes' => $request->input('admin_notes'),
+            'status' => 'INVOICE_SENT', // Status berubah
         ]);
-        
-        // Create invoice berdasarkan payment gateway
-        if ($order->payment_gateway === 'XENDIT') {
-            $result = $this->paymentService->createXenditInvoice($order);
-        } else {
-            // PayPal implementation (nanti)
-            return back()->with('error', 'PayPal integration not implemented yet!');
-        }
 
-        // Handle response
-        if ($result['success']) {
-            // Update order dengan invoice data
-            $order->update([
-                'status' => 'INVOICE_SENT',
-                'transaction_id' => $result['invoice_id'],
-                'payment_url' => $result['invoice_url'],
-            ]);
+        // TODO: Kirim email ke customer dengan payment details
+        // if ($paymentGateway === 'MANUAL') {
+        //     Mail::to($order->contact_email)->send(new BCAPaymentDetails($order));
+        // } else {
+        //     // Create PayPal invoice dan kirim link
+        //     Mail::to($order->contact_email)->send(new PayPalInvoice($order));
+        // }
 
-            // TODO: Kirim email ke customer dengan payment link
-            // Mail::to($order->contact_email)->send(new InvoiceCreated($order));
+        $message = $paymentGateway === 'MANUAL' 
+            ? 'BCA payment details will be sent to customer email!' 
+            : 'PayPal invoice will be sent to customer email!';
 
-            return back()->with('success', 'Invoice created successfully! Payment link: ' . $result['invoice_url']);
-        } else {
-            return back()->with('error', 'Failed to create invoice: ' . $result['message']);
-        }
+        return back()->with('success', $message);
     }
 
     /**

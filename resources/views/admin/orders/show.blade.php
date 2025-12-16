@@ -202,12 +202,12 @@
                             <div class="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        @if($order->payment_preference === 'XENDIT')
-                                        <p class="text-base font-semibold text-gray-900">Indonesia Payment (Xendit)</p>
-                                        <p class="text-sm text-gray-600">Bank Transfer, E-Wallet, QRIS, Credit Card</p>
+                                        @if($order->payment_preference === 'MANUAL')
+                                        <p class="text-base font-semibold text-gray-900">BCA Bank Transfer (Indonesia)</p>
+                                        <p class="text-sm text-gray-600">Manual bank transfer to BCA account</p>
                                         @else
-                                        <p class="text-base font-semibold text-gray-900">International Payment (PayPal)</p>
-                                        <p class="text-sm text-gray-600">PayPal, Credit Card (Visa, Mastercard, Amex)</p>
+                                        <p class="text-base font-semibold text-gray-900">PayPal (International)</p>
+                                        <p class="text-sm text-gray-600">PayPal invoice payment</p>
                                         @endif
                                         <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
                                     </div>
@@ -222,25 +222,27 @@
                         @if($order->payment_gateway)
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Payment Gateway Used
+                                Payment Method Used
                             </label>
                             <div class="p-4 border border-gray-300 bg-gray-50 rounded-lg">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        @if($order->payment_gateway === 'XENDIT')
-                                        <p class="text-base font-medium text-gray-900">Xendit</p>
+                                        @if($order->payment_gateway === 'MANUAL')
+                                        <p class="text-base font-medium text-gray-900">BCA Bank Transfer</p>
+                                        <p class="text-sm text-gray-500">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
+                                        <p class="text-sm text-gray-500">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
                                         @else
                                         <p class="text-base font-medium text-gray-900">PayPal</p>
-                                        @endif
                                         @if($order->payment_url)
                                         <a href="{{ $order->payment_url }}" target="_blank" class="text-sm text-blue-600 hover:underline mt-1 inline-block">
-                                            View Payment Link →
+                                            View PayPal Invoice →
                                         </a>
+                                        @endif
                                         @endif
                                     </div>
                                     @if($order->status === 'INVOICE_SENT')
                                     <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                                        Invoice Sent
+                                        Payment Details Sent
                                     </span>
                                     @elseif($order->status === 'PAID')
                                     <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
@@ -276,20 +278,20 @@
                                 </svg>
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-yellow-800 mb-3">
-                                        Customer wants {{ $order->payment_preference }}. Change payment gateway if customer requests.
+                                        Customer prefers {{ $order->payment_preference }}. Change payment method if customer requests.
                                     </p>
-                                    <form action="{{ route('admin.orders.createInvoice', $order) }}" method="POST" id="invoice-form">
+                                    <form action="{{ route('admin.orders.sendPaymentDetails', $order) }}" method="POST" id="invoice-form">
                                         @csrf
                                         
-                                        <!-- Payment Gateway Selection -->
+                                        <!-- Payment Method Selection -->
                                         <div class="space-y-2 mb-4">
                                             <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
                                                 <input type="radio" 
                                                     name="payment_gateway_override" 
-                                                    value="XENDIT"
-                                                    {{ $order->payment_preference === 'XENDIT' ? 'checked' : '' }}
+                                                    value="MANUAL"
+                                                    {{ $order->payment_preference === 'MANUAL' ? 'checked' : '' }}
                                                     class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                                                <span class="ml-3 text-sm font-medium text-gray-900">Xendit (Indonesia Payment)</span>
+                                                <span class="ml-3 text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</span>
                                             </label>
                                             
                                             <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
@@ -298,11 +300,11 @@
                                                     value="PAYPAL"
                                                     {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
                                                     class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                                                <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International Payment)</span>
+                                                <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International)</span>
                                             </label>
                                         </div>
 
-                                        <!-- Admin Notes (PINDAHKAN KE DALAM FORM) -->
+                                        <!-- Admin Notes -->
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,9 +315,9 @@
                                             <textarea 
                                                 name="admin_notes" 
                                                 rows="3"
-                                                placeholder="e.g., Thank you for your order! Payment invoice will be sent to your email."
+                                                placeholder="e.g., Thank you for your order! Payment details will be sent to your email."
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('admin_notes', $order->admin_notes) }}</textarea>
-                                            <p class="text-xs text-gray-500 mt-1">This note will be included in the invoice email.</p>
+                                            <p class="text-xs text-gray-500 mt-1">This note will be included in the payment email.</p>
                                         </div>
                                     </form>
                                 </div>

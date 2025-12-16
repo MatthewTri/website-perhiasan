@@ -34,7 +34,7 @@ return new class extends Migration
             $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
 
             // 4. Status & Keuangan
-            $table->string('status')->default('PENDING_REVIEW'); // Alur: PENDING -> INVOICE_SENT -> PAID -> SHIPPED -> COMPLETED
+            $table->string('status')->default('PENDING_REVIEW'); // Alur: PENDING_REVIEW -> INVOICE_SENT -> PAID -> SHIPPED -> COMPLETED
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'
             
             $table->decimal('subtotal', 15, 2); // Harga Barang Total
@@ -56,12 +56,14 @@ return new class extends Migration
             $table->string('tracking_number')->nullable(); // Nomor Resi
 
             // 7. Data Pembayaran (Untuk keperluan Refund nanti)
-            $table->string('payment_preference')->default('XENDIT'); // Preferensi Pembeli
-            $table->string('payment_gateway')->nullable(); // 'XENDIT' atau 'PAYPAL'
-            $table->string('payment_method')->nullable(); // 'BCA', 'MANDIRI', 'OVO', 'VISA'
-            $table->string('transaction_id')->nullable(); // Capture ID dari PayPal / Invoice ID Xendit
-            $table->string('payment_url')->nullable(); // Link bayar yang dikirim ke email
+            $table->string('payment_preference')->default('MANUAL'); // MANUAL atau PAYPAL
+            $table->string('payment_gateway')->nullable(); // 'MANUAL' atau 'PAYPAL'
+            $table->string('payment_method')->nullable(); // 'BCA' , 'PAYPAL'
+            $table->string('transaction_id')->nullable(); // Capture ID dari PayPal
+            $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
+
+            $table->string('proof_of_payment')->nullable(); // URL/Gambar bukti transfer manual
 
             // 8. Catatan Pelanggan
             $table->text('order_notes')->nullable(); // Catatan dari customer saat checkout

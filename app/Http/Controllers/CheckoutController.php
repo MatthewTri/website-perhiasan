@@ -62,7 +62,7 @@ class CheckoutController extends Controller
             'shipping_province' => 'nullable|string|max:100',
             'shipping_postal_code' => 'nullable|string|max:20',
             'shipping_country' => 'required|string|max:100',
-            'payment_gateway' => 'required|in:xendit,paypal',
+            'payment_gateway' => 'required|in:manual,paypal',
             'order_notes' => 'nullable|string',
             'cart_data' => 'nullable|json', // untuk guest
         ]);
@@ -147,8 +147,9 @@ class CheckoutController extends Controller
                 'courier_name' => null,
                 'tracking_number' => null,
                 
-                'payment_preference' => strtoupper($validated['payment_gateway']),
-                'payment_gateway' => null,
+                'payment_preference' => strtoupper($validated['payment_gateway']), // ⬅️ 'MANUAL' atau 'PAYPAL'
+                'payment_gateway' => null, // ⬅️ Akan diisi admin saat create invoice
+                'payment_method' => null, // ⬅️ Akan diisi 'BCA' atau 'PAYPAL' oleh admin
                 'transaction_id' => null,
                 'payment_url' => null,
                 

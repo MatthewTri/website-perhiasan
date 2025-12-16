@@ -85,6 +85,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show']);
     
     // ⬅️ TAMBAHKAN ROUTE INI
-    Route::post('orders/{order}/create-invoice', [App\Http\Controllers\Admin\OrderController::class, 'createInvoice'])->name('orders.createInvoice');
+    Route::post('orders/{order}/send-payment-details', [App\Http\Controllers\Admin\OrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
     Route::post('orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('orders.updateShipping');
 });

@@ -219,117 +219,34 @@
                         </h2>
                         
                         <p class="text-sm text-gray-600 mb-4">
-                            Select your preferred payment method. Admin will send you a payment link via email.
+                            Select your preferred payment method. Admin will send payment details via email.
                         </p>
                         
                         <div class="space-y-3">
-                            <!-- Xendit/Indonesia Payment Option -->
-                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option group">
+                            <!-- BCA Transfer Option (Indonesia) -->
+                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option">
                                 <input type="radio" 
                                     name="payment_gateway" 
-                                    value="xendit" 
+                                    value="manual" 
                                     required
                                     class="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                                    {{ old('payment_gateway') == 'xendit' ? 'checked' : '' }}>
+                                    {{ old('payment_gateway') == 'manual' ? 'checked' : '' }}>
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-base font-semibold text-gray-900">Indonesia Payment</p>
-                                            <p class="text-sm text-gray-600">Bank Transfer, E-Wallet, QRIS, Credit Card</p>
+                                            <p class="text-base font-semibold text-gray-900">BCA Bank Transfer</p>
+                                            <p class="text-sm text-gray-600">Manual bank transfer to BCA account</p>
+                                            <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">IDR</span></p>
                                         </div>
-                                        <div class="relative flex items-center space-x-1">
-                                            <!-- Logo utama yang terlihat -->
-                                            <div class="flex items-center space-x-1 payment-logos">
-                                                <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-8">
-                                                <img src="{{ asset('asset/ovo-logo.svg') }}" alt="OVO" class="h-8">
-                                                <img src="{{ asset('asset/dana-logo.svg') }}" alt="DANA" class="h-8">
-                                                <div class="w-10 h-8 bg-blue-600 rounded flex items-center justify-center shadow-sm text-white font-bold text-xs">
-                                                    +8
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Popup yang muncul saat hover -->
-                                            <div class="absolute right-0 top-10 z-50 bg-gray-900 rounded-lg shadow-2xl p-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                                                <!-- Arrow -->
-                                                <div class="absolute -top-2 right-8 w-4 h-4 bg-gray-900 transform rotate-45"></div>
-                                                
-                                                <div class="relative z-10">
-                                                    <p class="text-white text-xs font-semibold mb-3">Available Payment Methods</p>
-                                                    
-                                                    <!-- Bank Transfer -->
-                                                    <div class="mb-3">
-                                                        <p class="text-gray-400 text-xs mb-2">Bank Transfer</p>
-                                                        <div class="grid grid-cols-4 gap-2">
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/bni-logo.svg') }}" alt="BNI" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/bri-logo.svg') }}" alt="BRI" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/bsi-logo.svg') }}" alt="BSI" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/mandiri-logo.svg') }}" alt="Mandiri" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/permata-logo.svg') }}" alt="Permata" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/cimb-logo.svg') }}" alt="CIMB" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/bjb-logo.svg') }}" alt="BJB" class="h-6">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- E-Wallet -->
-                                                    <div class="mb-3">
-                                                        <p class="text-gray-400 text-xs mb-2">E-Wallet</p>
-                                                        <div class="grid grid-cols-4 gap-2">
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/ovo-logo.svg') }}" alt="OVO" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/dana-logo.svg') }}" alt="DANA" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/linkaja-logo.svg') }}" alt="LinkAja" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/shopeepay-logo.svg') }}" alt="ShopeePay" class="h-6">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- Others -->
-                                                    <div>
-                                                        <p class="text-gray-400 text-xs mb-2">Others</p>
-                                                        <div class="grid grid-cols-3 gap-2">
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/qris-logo.svg') }}" alt="QRIS" class="h-8">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/visa-logo.png') }}" alt="Visa" class="h-3">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/mastercard-logo.svg') }}" alt="Mastercard" class="h-6">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="flex items-center">
+                                            <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-10">
                                         </div>
                                     </div>
                                 </div>
                             </label>
 
-                            <!-- PayPal Option (tetap sama seperti sebelumnya) -->
-                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option group">
+                            <!-- PayPal Option (International) -->
+                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all duration-200 payment-option">
                                 <input type="radio" 
                                     name="payment_gateway" 
                                     value="paypal" 
@@ -339,53 +256,15 @@
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-base font-semibold text-gray-900">International Payment</p>
-                                            <p class="text-sm text-gray-600">PayPal, Credit Card (Visa, Mastercard, Amex)</p>
+                                            <p class="text-base font-semibold text-gray-900">PayPal</p>
+                                            <p class="text-sm text-gray-600">International payment via PayPal</p>
+                                            <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">USD</span></p>
                                         </div>
-                                        <div class="relative flex items-center space-x-1">
-                                            <!-- Logo PayPal -->
-                                            <div class="payment-logos">
-                                                <svg class="h-8 w-16" viewBox="0 0 124 33" fill="none">
-                                                    <path d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746z" fill="#253B80"/>
-                                                    <path d="M47 13.154c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906z" fill="#253B80"/>
-                                                </svg>
-                                            </div>
-                                            
-                                            <!-- Popup untuk PayPal -->
-                                            <div class="absolute right-0 top-10 z-50 bg-gray-900 rounded-lg shadow-2xl p-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                                                <!-- Arrow -->
-                                                <div class="absolute -top-2 right-8 w-4 h-4 bg-gray-900 transform rotate-45"></div>
-                                                
-                                                <div class="relative z-10">
-                                                    <p class="text-white text-xs font-semibold mb-3">Available Payment Methods</p>
-                                                    
-                                                    <!-- PayPal -->
-                                                    <div class="mb-3">
-                                                        <p class="text-gray-400 text-xs mb-2">PayPal</p>
-                                                        <div class="bg-white rounded p-2 text-center">
-                                                            <svg class="h-6 mx-auto" viewBox="0 0 124 33" fill="none">
-                                                                <path d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746z" fill="#253B80"/>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- Credit Cards -->
-                                                    <div>
-                                                        <p class="text-gray-400 text-xs mb-2">Credit/Debit Cards</p>
-                                                        <div class="grid grid-cols-3 gap-2">
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/visa-logo.png') }}" alt="Visa" class="h-3">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <img src="{{ asset('asset/mastercard-logo.svg') }}" alt="Mastercard" class="h-6">
-                                                            </div>
-                                                            <div class="bg-white rounded p-1 flex items-center justify-center">
-                                                                <span class="text-xs font-bold text-blue-500">Amex</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="flex items-center">
+                                            <svg class="h-8 w-16" viewBox="0 0 124 33" fill="none">
+                                                <path d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746z" fill="#253B80"/>
+                                                <path d="M47 13.154c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906z" fill="#253B80"/>
+                                            </svg>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +284,8 @@
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm text-blue-700">
-                                        After submitting your order, our admin will create a payment link and send it to your email within 24 hours.
+                                        <strong>BCA Transfer:</strong> Admin will send BCA account details and payment instructions to your email within 24 hours.<br>
+                                        <strong>PayPal:</strong> Admin will send PayPal invoice link to your email.
                                     </p>
                                 </div>
                             </div>
