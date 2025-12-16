@@ -11,6 +11,8 @@ use App\Http\Controllers\GemmaController;
 use App\Http\Controllers\CustomRequestController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderTrackingController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 // Home Page
 Route::get('/', function () {
@@ -81,13 +83,18 @@ Route::middleware(['auth'])->group(function () { // tambahkan middleware admin n
     Route::post('/admin/orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.updateShipping');
 });
 
+// Member Orders (Must be authenticated)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/my-orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
+});
+
 // Admin Orders
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show']);
-    
-    // ⬅️ TAMBAHKAN ROUTE INI
-    Route::post('orders/{order}/send-payment-details', [App\Http\Controllers\Admin\OrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
-    Route::post('orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('orders.updateShipping');
+    Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
+    Route::post('orders/{order}/send-payment-details', [AdminOrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
+    Route::post('orders/{order}/update-shipping', [AdminOrderController::class, 'updateShipping'])->name('orders.updateShipping');
+    Route::post('orders/{order}/confirm-payment', [AdminOrderController::class, 'confirmPayment'])->name('orders.confirmPayment');
 });
 
 // Route Magic Link (Public Access)

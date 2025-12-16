@@ -1,4 +1,3 @@
-<!-- filepath: c:\laragon\www\website-perhiasan\resources\views\admin\orders\show.blade.php -->
 @extends('layout.main')
 
 @section('content')
