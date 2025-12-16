@@ -80,8 +80,56 @@ class OrderController extends Controller
         }
     }
 
+        /**
+     * ACTION: Verify Payment Proof (Approve / Reject)
+     */
+    public function verifyPayment(Request $request, Order $order)
+    {
+        if ($order->status !== 'WAITING_VERIFICATION') {
+            return back()->with('error', 'Invalid order status for payment verification!');
+        }
+
+        $action = $request->input('action'); // 'approve' atau 'reject'
+
+        if ($action === 'approve') {
+            // Validasi shipping input
+            $validated = $request->validate([
+                'courier_name' => 'required|string|max:100',
+                'tracking_number' => 'required|string|max:100',
+            ]);
+
+            // Update order: PAID + SHIPPED
+            $order->update([
+                'status' => 'SHIPPED',
+                'paid_at' => now(),
+                'courier_name' => $validated['courier_name'],
+                'tracking_number' => $validated['tracking_number'],
+            ]);
+
+            // TODO: Kirim email shipping notification
+            // Mail::to($order->contact_email)->send(new OrderShipped($order));
+
+            return back()->with('success', 'Payment approved! Order marked as SHIPPED. Tracking: ' . $validated['tracking_number']);
+        } 
+        
+        elseif ($action === 'reject') {
+            // Update status jadi CANCELLED
+            $order->update([
+                'status' => 'CANCELLED',
+                'proof_of_payment' => null, // Hapus proof
+            ]);
+
+            // TODO: Kirim email payment rejection
+            // Mail::to($order->contact_email)->send(new PaymentRejected($order));
+
+            return back()->with('success', 'Payment rejected. Order has been CANCELLED.');
+        }
+
+        return back()->with('error', 'Invalid action!');
+    }
+
     /**
-     * ACTION: Update Resi (Shipping).
+     * ACTION: Update Resi (Shipping) - Untuk order yang sudah PAID tapi belum shipped
      */
     public function updateShipping(Request $request, Order $order)
     {

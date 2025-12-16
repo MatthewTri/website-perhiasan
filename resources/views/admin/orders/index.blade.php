@@ -136,6 +136,13 @@
                 <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $orders->where('status', 'INVOICE_SENT')->count() }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.orders.index', ['status' => 'WAITING_VERIFICATION']) }}" 
+               class="border-b-2 {{ request('status') === 'WAITING_VERIFICATION' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+                Waiting verification
+                @if($orders->where('status', 'WAITING_VERIFICATION')->count() > 0)
+                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $orders->where('status', 'WAITING_VERIFICATION')->count() }}</span>
+                @endif
+            </a>
             <a href="{{ route('admin.orders.index', ['status' => 'PAID']) }}" 
                class="border-b-2 {{ request('status') === 'PAID' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Paid

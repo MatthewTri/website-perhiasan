@@ -34,7 +34,7 @@ return new class extends Migration
             $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
 
             // 4. Status & Keuangan
-            $table->string('status')->default('PENDING_REVIEW');
+            $table->string('status')->default('PENDING_REVIEW')->index();
             // Status flow:
             // - PENDING_REVIEW: Order baru masuk, belum di-review admin
             // - INVOICE_SENT: Admin sudah kirim payment details/link
