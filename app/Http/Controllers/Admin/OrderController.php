@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentDetailsMail;
 
 class OrderController extends Controller
 {
@@ -48,35 +50,34 @@ class OrderController extends Controller
      */
     public function sendPaymentDetails(Request $request, Order $order)
     {
-        // Cek apakah order sudah dikirim payment details
         if ($order->status !== 'PENDING_REVIEW') {
             return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 
-        // Ambil payment gateway dari form atau gunakan preference customer
         $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
 
-        // Update order dengan payment details
         $order->update([
             'payment_gateway' => $paymentGateway,
             'payment_method' => $paymentGateway === 'MANUAL' ? 'BCA' : 'PAYPAL',
             'admin_notes' => $request->input('admin_notes'),
-            'status' => 'INVOICE_SENT', // Status berubah
+            'status' => 'INVOICE_SENT',
         ]);
 
-        // TODO: Kirim email ke customer dengan payment details
-        // if ($paymentGateway === 'MANUAL') {
-        //     Mail::to($order->contact_email)->send(new BCAPaymentDetails($order));
-        // } else {
-        //     // Create PayPal invoice dan kirim link
-        //     Mail::to($order->contact_email)->send(new PayPalInvoice($order));
-        // }
-
-        $message = $paymentGateway === 'MANUAL' 
-            ? 'BCA payment details will be sent to customer email!' 
-            : 'PayPal invoice will be sent to customer email!';
-
-        return back()->with('success', $message);
+        // ✅ KIRIM EMAIL
+        $magicLink = route('order.track', $order->guest_token);
+        
+        try {
+            Mail::to($order->contact_email)->send(new PaymentDetailsMail($order, $magicLink));
+            
+            $message = $paymentGateway === 'MANUAL' 
+                ? 'BCA payment details sent to ' . $order->contact_email 
+                : 'PayPal invoice sent to ' . $order->contact_email;
+                
+            return back()->with('success', $message . ' | Magic Link: ' . $magicLink);
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send email: ' . $e->getMessage());
+        }
     }
 
     /**

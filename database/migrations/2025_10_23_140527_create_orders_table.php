@@ -34,7 +34,16 @@ return new class extends Migration
             $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
 
             // 4. Status & Keuangan
-            $table->string('status')->default('PENDING_REVIEW'); // Alur: PENDING_REVIEW -> INVOICE_SENT -> PAID -> SHIPPED -> COMPLETED
+            $table->string('status')->default('PENDING_REVIEW');
+            // Status flow:
+            // - PENDING_REVIEW: Order baru masuk, belum di-review admin
+            // - INVOICE_SENT: Admin sudah kirim payment details/link
+            // - WAITING_VERIFICATION: Customer sudah upload bukti transfer (khusus MANUAL)
+            // - PAID: Payment confirmed oleh admin
+            // - SHIPPED: Barang sudah dikirim
+            // - COMPLETED: Barang sudah diterima customer
+            // - CANCELLED: Order dibatalkan
+            // - EXPIRED: Invoice expired (khusus PayPal)
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'
             
             $table->decimal('subtotal', 15, 2); // Harga Barang Total

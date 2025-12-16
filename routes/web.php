@@ -10,6 +10,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\GemmaController;
 use App\Http\Controllers\CustomRequestController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderTrackingController;
 
 // Home Page
 Route::get('/', function () {
@@ -88,3 +89,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('orders/{order}/send-payment-details', [App\Http\Controllers\Admin\OrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
     Route::post('orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('orders.updateShipping');
 });
+
+// Route Magic Link (Public Access)
+Route::get('/order/track/{token}', [OrderTrackingController::class, 'show'])->name('order.track');
+Route::post('/order/track/{token}/upload', [OrderTrackingController::class, 'uploadProof'])->name('order.track.upload');
