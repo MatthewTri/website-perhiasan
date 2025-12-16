@@ -16,6 +16,10 @@ class Order extends Model
         'id'
     ];
 
+     protected $casts = [
+        'paid_at' => 'datetime',
+    ];
+
     // Relasi: Order ini milik siapa (bisa jadi Guest)
     public function user()
     {
