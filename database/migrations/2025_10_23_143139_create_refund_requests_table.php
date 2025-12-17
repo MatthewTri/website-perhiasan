@@ -17,15 +17,22 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained(); // User yg request (jika login)
             $table->string('guest_email')->nullable(); // Email (jika guest)
 
-            // --- Data dari Form Refund ---
-            $table->string('reason');
-            $table->text('notes')->nullable();
-            $table->string('proof_image_url')->nullable(); // Link ke foto bukti
-
-            // --- Status Alur Refund ---
-            $table->string('status')->default('PENGAJUAN'); // PENGAJUAN, DISETUJUI, DITOLAK, PROSES_REFUND, DIKEMBALIKAN
+            // Detail Pengajuan
+            $table->string('reason_category'); // Enum: 'Rusak', 'Salah Kirim', 'Tidak Sesuai', 'Lainnya'
+            $table->text('reason_description'); // Penjelasan user panjang lebar
+            $table->string('proof_image')->nullable(); // Foto bukti barang rusak
             
-            $table->string('refund_id_gateway')->nullable(); // ID Refund dari Xendit/PayPal (jika ada)
+            // Status Refund itu sendiri
+            $table->enum('status', [
+                'PENDING',  // Baru diajukan
+                'APPROVED', // Admin setuju (Uang kembali)
+                'REJECTED'  // Admin tolak
+            ])->default('PENDING');
+            
+            // Respon Admin
+            $table->text('admin_note')->nullable(); // Alasan kenapa ditolak/diterima
+            $table->decimal('refund_amount', 15, 2)->nullable(); // Nominal yang direfund (bisa full/partial)
+            
             $table->timestamps();
         });
     }

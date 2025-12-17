@@ -34,16 +34,20 @@ return new class extends Migration
             $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
 
             // 4. Status & Keuangan
-            $table->string('status')->default('PENDING_REVIEW')->index();
-            // Status flow:
-            // - PENDING_REVIEW: Order baru masuk, belum di-review admin
-            // - INVOICE_SENT: Admin sudah kirim payment details/link
-            // - WAITING_VERIFICATION: Customer sudah upload bukti transfer (khusus MANUAL)
-            // - PAID: Payment confirmed oleh admin
-            // - SHIPPED: Barang sudah dikirim
-            // - COMPLETED: Barang sudah diterima customer
-            // - CANCELLED: Order dibatalkan
-            // - EXPIRED: Invoice expired (khusus PayPal)
+            $table->enum('status', [
+                'PENDING_REVIEW',       // Belum bayar
+                'INVOICE_SENT',         // Invoice sudah dikirim ke email
+                'WAITING_VERIFICATION', // Upload bukti bayar manual (khusus manual payment BCA)
+                'PAID',                 // Lunas
+                'SHIPPED',              // Dikirim
+                'COMPLETED',            // Selesai
+                'CANCELLED',            // Batal (Expired/Manual Cancel)
+                
+                // Status Refund TETAP ADA disini sebagai "Headline/Judul Besar"
+                'REFUND_REQUESTED',     // Sedang ada pengajuan (Cek tabel refunds untuk detail)
+                'REFUNDED',             // Uang sudah kembali
+                'REFUND_REJECTED'       // Pengajuan ditolak (History)
+            ])->default('PENDING_REVIEW')->index();
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'
             
             $table->decimal('subtotal', 15, 2); // Harga Barang Total
@@ -68,7 +72,7 @@ return new class extends Migration
             $table->string('payment_preference')->default('MANUAL'); // MANUAL atau PAYPAL
             $table->string('payment_gateway')->nullable(); // 'MANUAL' atau 'PAYPAL'
             $table->string('payment_method')->nullable(); // 'BCA' , 'PAYPAL'
-            $table->string('transaction_id')->nullable(); // Capture ID dari PayPal
+            $table->string('transaction_id')->nullable()->index(); // Capture ID dari PayPal
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
 
