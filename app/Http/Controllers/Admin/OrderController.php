@@ -56,12 +56,37 @@ class OrderController extends Controller
 
         $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
 
-        $order->update([
-            'payment_gateway' => $paymentGateway,
-            'payment_method' => $paymentGateway === 'MANUAL' ? 'BCA' : 'PAYPAL',
-            'admin_notes' => $request->input('admin_notes'),
-            'status' => 'INVOICE_SENT',
-        ]);
+        // ✅ JIKA PAYPAL, BUAT ORDER DULU
+        if ($paymentGateway === 'PAYPAL') {
+            $paypalResult = $this->paymentService->createPaypalOrder($order);
+            
+            if (!$paypalResult['success']) {
+                return back()->with('error', 'Failed to create PayPal order: ' . $paypalResult['message']);
+            }
+
+            // Update order dengan PayPal data
+            $order->update([
+                'payment_gateway' => 'PAYPAL',
+                'payment_method' => 'PAYPAL',
+                'payment_url' => $paypalResult['redirect_url'],
+                'transaction_id' => $paypalResult['transaction_id'],
+                'admin_notes' => $request->input('admin_notes'),
+                'status' => 'INVOICE_SENT',
+            ]);
+
+            $message = 'PayPal invoice created and sent to ' . $order->contact_email;
+        } 
+        // ✅ JIKA BCA MANUAL
+        else {
+            $order->update([
+                'payment_gateway' => 'MANUAL',
+                'payment_method' => 'BCA',
+                'admin_notes' => $request->input('admin_notes'),
+                'status' => 'INVOICE_SENT',
+            ]);
+
+            $message = 'BCA payment details sent to ' . $order->contact_email;
+        }
 
         // ✅ KIRIM EMAIL
         $magicLink = route('order.track', $order->guest_token);
@@ -69,14 +94,10 @@ class OrderController extends Controller
         try {
             Mail::to($order->contact_email)->send(new PaymentDetailsMail($order, $magicLink));
             
-            $message = $paymentGateway === 'MANUAL' 
-                ? 'BCA payment details sent to ' . $order->contact_email 
-                : 'PayPal invoice sent to ' . $order->contact_email;
-                
             return back()->with('success', $message . ' | Magic Link: ' . $magicLink);
             
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to send email: ' . $e->getMessage());
+            return back()->with('error', 'Order updated but email failed: ' . $e->getMessage());
         }
     }
 

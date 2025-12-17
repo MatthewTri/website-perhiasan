@@ -52,7 +52,21 @@
             <!-- PayPal -->
             <h3>PayPal Payment</h3>
             <p>Total Amount: <strong style="color: #3b82f6; font-size: 18px;">${{ number_format($order->total_amount, 2) }}</strong></p>
-            <p>Click the button below to pay via PayPal.</p>
+
+                @if($order->payment_url)
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href="{{ $order->payment_url }}" 
+                    class="button" 
+                    style="background: #0070ba; padding: 15px 40px; font-size: 16px;">
+                        Pay with PayPal
+                    </a>
+                </div>
+                <p style="text-align: center; color: #6b7280; font-size: 12px;">
+                    Or copy this link: <a href="{{ $order->payment_url }}" style="color: #3b82f6;">{{ $order->payment_url }}</a>
+                </p>
+                @else
+                <p>PayPal payment link will be available soon. Please check your email or order tracking page.</p>
+                @endif
             @endif
 
             @if($order->admin_notes)

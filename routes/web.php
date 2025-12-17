@@ -13,6 +13,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\PaymentController;
 
 // Home Page
 Route::get('/', function () {
@@ -100,3 +101,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // Route Magic Link (Public Access)
 Route::get('/order/track/{token}', [OrderTrackingController::class, 'show'])->name('order.track');
 Route::post('/order/track/{token}/upload', [OrderTrackingController::class, 'uploadProof'])->name('order.track.upload');
+
+// PayPal Payment Callbacks
+Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('payment.paypal.success');
+Route::get('/payment/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('payment.paypal.cancel');
