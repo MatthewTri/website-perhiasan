@@ -32,8 +32,10 @@ class OrderController extends Controller
             $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
         }
 
+        $allOrders = Order::with(['user', 'orderItems'])->get();
+
         $orders = $query->latest()->get();
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders.index', compact('orders', 'allOrders'));
     }
 
     /**

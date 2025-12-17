@@ -29,12 +29,12 @@
     @endif
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 mb-8">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Total Orders</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $orders->count() }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $allOrders->count() }}</p>
                 </div>
                 <div class="bg-blue-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Pending Review</p>
-                    <p class="text-2xl font-bold text-yellow-600">{{ $orders->where('status', 'PENDING_REVIEW')->count() }}</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
                 </div>
                 <div class="bg-yellow-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Invoice Sent</p>
-                    <p class="text-2xl font-bold text-yellow-600">{{ $orders->where('status', 'INVOICE_SENT')->count() }}</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</p>
                 </div>
                 <div class="bg-yellow-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,7 +76,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Paid</p>
-                    <p class="text-2xl font-bold text-green-600">{{ $orders->where('status', 'PAID')->count() }}</p>
+                    <p class="text-2xl font-bold text-green-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
                 </div>
                 <div class="bg-green-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Shipped</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $orders->where('status', 'SHIPPED')->count() }}</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ $allOrders->where('status', 'SHIPPED')->count() }}</p>
                 </div>
                 <div class="bg-blue-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,11 +104,25 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Completed</p>
-                    <p class="text-2xl font-bold text-purple-600">{{ $orders->where('status', 'COMPLETED')->count() }}</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ $allOrders->where('status', 'COMPLETED')->count() }}</p>
                 </div>
                 <div class="bg-purple-100 rounded-full p-3">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Cancelled</p>
+                    <p class="text-2xl font-bold text-red-600">{{ $allOrders->where('status', 'CANCELLED')->count() }}</p>
+                </div>
+                <div class="bg-red-100 rounded-full p-3">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </div>
             </div>
@@ -119,41 +133,57 @@
     <div class="mb-6 border-b border-gray-200">
         <nav class="-mb-px flex space-x-8">
             <a href="{{ route('admin.orders.index') }}" 
-               class="border-b-2 {{ !request('status') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ !request('status') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 All Orders
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'PENDING_REVIEW']) }}" 
-               class="border-b-2 {{ request('status') === 'PENDING_REVIEW' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ request('status') === 'PENDING_REVIEW' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Pending Review
-                @if($orders->where('status', 'PENDING_REVIEW')->count() > 0)
-                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $orders->where('status', 'PENDING_REVIEW')->count() }}</span>
+                @if($allOrders->where('status', 'PENDING_REVIEW')->count() > 0)
+                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'INVOICE_SENT']) }}" 
-               class="border-b-2 {{ request('status') === 'INVOICE_SENT' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ request('status') === 'INVOICE_SENT' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Invoice Sent
-                @if($orders->where('status', 'INVOICE_SENT')->count() > 0)
-                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $orders->where('status', 'INVOICE_SENT')->count() }}</span>
+                @if($allOrders->where('status', 'INVOICE_SENT')->count() > 0)
+                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'WAITING_VERIFICATION']) }}" 
-               class="border-b-2 {{ request('status') === 'WAITING_VERIFICATION' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
-                Waiting verification
-                @if($orders->where('status', 'WAITING_VERIFICATION')->count() > 0)
-                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs">{{ $orders->where('status', 'WAITING_VERIFICATION')->count() }}</span>
+            class="border-b-2 {{ request('status') === 'WAITING_VERIFICATION' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+                Waiting Verification
+                @if($allOrders->where('status', 'WAITING_VERIFICATION')->count() > 0)
+                <span class="ml-2 bg-orange-100 text-orange-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'WAITING_VERIFICATION')->count() }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'PAID']) }}" 
-               class="border-b-2 {{ request('status') === 'PAID' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ request('status') === 'PAID' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Paid
+                @if($allOrders->where('status', 'PAID')->count() > 0)
+                <span class="ml-2 bg-green-100 text-green-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'PAID')->count() }}</span>
+                @endif
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'SHIPPED']) }}" 
-               class="border-b-2 {{ request('status') === 'SHIPPED' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ request('status') === 'SHIPPED' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Shipped
+                @if($allOrders->where('status', 'SHIPPED')->count() > 0)
+                <span class="ml-2 bg-blue-100 text-blue-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'SHIPPED')->count() }}</span>
+                @endif
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'COMPLETED']) }}" 
-               class="border-b-2 {{ request('status') === 'COMPLETED' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+            class="border-b-2 {{ request('status') === 'COMPLETED' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
                 Completed
+                @if($allOrders->where('status', 'COMPLETED')->count() > 0)
+                <span class="ml-2 bg-purple-100 text-purple-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'COMPLETED')->count() }}</span>
+                @endif
+            </a>
+            <a href="{{ route('admin.orders.index', ['status' => 'CANCELLED']) }}" 
+            class="border-b-2 {{ request('status') === 'CANCELLED' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+                Cancelled
+                @if($allOrders->where('status', 'CANCELLED')->count() > 0)
+                <span class="ml-2 bg-red-100 text-red-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'CANCELLED')->count() }}</span>
+                @endif
             </a>
         </nav>
     </div>
