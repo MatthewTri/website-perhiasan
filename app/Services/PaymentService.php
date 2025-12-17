@@ -37,6 +37,7 @@ class PaymentService
                 "purchase_units" => [
                     [
                         "reference_id" => $order->order_number,
+                        "invoice_id" => $order->order_number,
                         "description" => "Order #{$order->order_number}",
                         "amount" => [
                             "currency_code" => "USD",

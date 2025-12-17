@@ -105,3 +105,12 @@ Route::post('/order/track/{token}/upload', [OrderTrackingController::class, 'upl
 // PayPal Payment Callbacks
 Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('payment.paypal.success');
 Route::get('/payment/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('payment.paypal.cancel');
+
+Route::post('/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('webhook.paypal');
+Route::get('/webhook/paypal', function () {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'PayPal webhook endpoint is ready',
+        'timestamp' => now()
+    ]);
+})->name('webhook.paypal.test');
