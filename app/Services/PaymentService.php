@@ -23,6 +23,8 @@ class PaymentService
             $token = $provider->getAccessToken();
             $provider->setAccessToken($token);
 
+            $uniqueInvoiceId = $order->order_number . '-' . time();
+
             // Buat Payload Order
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
@@ -37,7 +39,7 @@ class PaymentService
                 "purchase_units" => [
                     [
                         "reference_id" => $order->order_number,
-                        "invoice_id" => $order->order_number,
+                        "invoice_id" => $uniqueInvoiceId,
                         "description" => "Order #{$order->order_number}",
                         "amount" => [
                             "currency_code" => "USD",
@@ -166,21 +168,45 @@ class PaymentService
     /**
      * 4. Get Order Details (untuk verifikasi)
      */
-    public function getPaypalOrderDetails($orderId)
+    public function getPaypalOrderStatus($paypalOrderId)
     {
         try {
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $provider->getAccessToken();
 
-            return $provider->showOrderDetails($orderId);
+            $orderDetails = $provider->showOrderDetails($paypalOrderId);
+
+            if (!$orderDetails) {
+                return [
+                    'success' => false,
+                    'message' => 'Order not found'
+                ];
+            }
+
+            // Format data untuk admin view
+            return [
+                'success' => true,
+                'paypal_order_id' => $orderDetails['id'],
+                'status' => $orderDetails['status'], // CREATED, APPROVED, COMPLETED, etc.
+                'create_time' => $orderDetails['create_time'] ?? null,
+                'update_time' => $orderDetails['update_time'] ?? null,
+                'payer_email' => $orderDetails['payer']['email_address'] ?? 'N/A',
+                'payer_name' => $orderDetails['payer']['name']['given_name'] ?? 'N/A',
+                'amount' => $orderDetails['purchase_units'][0]['amount']['value'] ?? 0,
+                'currency' => $orderDetails['purchase_units'][0]['amount']['currency_code'] ?? 'USD',
+            ];
 
         } catch (\Exception $e) {
-            Log::error('PayPal Get Order Details Exception', [
-                'message' => $e->getMessage()
+            Log::error('PayPal Get Order Status Exception', [
+                'message' => $e->getMessage(),
+                'paypal_order_id' => $paypalOrderId
             ]);
             
-            return null;
+            return [
+                'success' => false,
+                'message' => 'Failed to fetch PayPal order status'
+            ];
         }
     }
     // protected $apiInstance;

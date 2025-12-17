@@ -44,7 +44,12 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('user', 'orderItems.product', 'customRequest');
-        return view('admin.orders.show', compact('order'));
+        $paypalStatus = null;
+        if ($order->payment_gateway === 'PAYPAL' && $order->transaction_id) {
+            $paypalStatus = $this->paymentService->getPaypalOrderStatus($order->transaction_id);
+        }
+        
+        return view('admin.orders.show', compact('order', 'paypalStatus'));
     }
 
     /**

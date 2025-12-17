@@ -220,36 +220,66 @@
                         <!-- Payment Gateway (if invoice created) -->
                         @if($order->payment_gateway)
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Payment Method Used
-                            </label>
+                            <div class="flex">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Payment Method Used
+                                </label>
+                            </div>
                             <div class="p-4 border border-gray-300 bg-gray-50 rounded-lg">
                                 <div class="flex items-center justify-between">
-                                    <div>
+                                    <div class="flex-1">
                                         @if($order->payment_gateway === 'MANUAL')
-                                        <p class="text-base font-medium text-gray-900">BCA Bank Transfer</p>
-                                        <p class="text-sm text-gray-500">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
-                                        <p class="text-sm text-gray-500">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
+                                            <p class="text-base font-medium text-gray-900">BCA Bank Transfer</p>
+                                            <p class="text-sm text-gray-500">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
+                                            <p class="text-sm text-gray-500">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
                                         @else
-                                        <p class="text-base font-medium text-gray-900">PayPal</p>
-                                        @if($order->payment_url)
-                                        <a href="{{ $order->payment_url }}" target="_blank" class="text-sm text-blue-600 hover:underline mt-1 inline-block">
-                                            View PayPal Invoice →
-                                        </a>
-                                        @endif
+                                            <p class="text-base font-medium text-gray-900">PayPal</p>
+                                            <p class="text-sm text-gray-500">Transaction ID: {{ $order->transaction_id }}</p>
+                                            
+                                            {{-- ⬅️ TAMPILKAN STATUS PAYPAL (READ-ONLY) --}}
+                                            @if(isset($paypalStatus) && $paypalStatus['success'])
+                                                <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                    <p class="text-xs font-medium text-blue-900 mb-2">PayPal Order Status:</p>
+                                                    <div class="space-y-1 text-xs text-blue-800">
+                                                        <p><span class="font-medium">Status:</span> 
+                                                            <span class="px-2 py-0.5 rounded {{ 
+                                                                $paypalStatus['status'] === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
+                                                                ($paypalStatus['status'] === 'APPROVED' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') 
+                                                            }}">
+                                                                {{ $paypalStatus['status'] }}
+                                                            </span>
+                                                        </p>
+                                                        <p><span class="font-medium">Payer Email:</span> {{ $paypalStatus['payer_email'] }}</p>
+                                                        <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2) }}</p>
+                                                    </div>
+                                                </div>
+                                            @elseif(isset($paypalStatus) && !$paypalStatus['success'])
+                                                <div class="mt-2 text-xs text-red-600">
+                                                    ⚠️ Unable to fetch PayPal status: {{ $paypalStatus['message'] }}
+                                                </div>
+                                            @endif
+
                                         @endif
                                     </div>
-                                    @if($order->status === 'INVOICE_SENT')
-                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                                        Payment Details Sent
-                                    </span>
-                                    @elseif($order->status === 'PAID')
-                                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                                        Paid
-                                    </span>
-                                    @endif
                                 </div>
                             </div>
+
+                            {{-- ⬅️ INFO BOX: Customer akan terima email --}}
+                            @if($order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
+                            <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                                <div class="flex">
+                                    <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-xs font-medium text-yellow-800">Payment Link Sent</p>
+                                        <p class="text-xs text-yellow-700 mt-1">
+                                            Customer received payment link via email to <strong>{{ $order->contact_email }}</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         @endif
 
