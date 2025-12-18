@@ -111,7 +111,7 @@
                         @enderror
                     </div>
 
-                    <!-- Category & Stock Row -->
+                    <!-- Category Row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Category -->
                         <div>
@@ -134,23 +134,6 @@
                             @enderror
                         </div>
 
-                        <!-- Stock -->
-                        <div>
-                            <label for="stock" class="block text-sm font-medium text-gray-700 mb-2">
-                                Stock *
-                            </label>
-                            <input type="number" 
-                                   id="stock" 
-                                   name="stock" 
-                                   value="{{ old('stock', 0) }}"
-                                   min="0"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="0">
-                            
-                            @error('stock')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
                     </div>
 
                     <!-- Description -->

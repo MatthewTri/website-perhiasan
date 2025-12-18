@@ -42,7 +42,6 @@ class ProductController extends Controller
             'slug' => $request->slug,
             'description' => $request->description,
             'price' => $request->price,
-            'stock' => $request->stock,
             'category_id' => $request->category_id,
         ]);
 
@@ -92,7 +91,6 @@ class ProductController extends Controller
             'slug' => $request->slug,
             'description' => $request->description,
             'price' => $request->price,
-            'stock' => $request->stock,
             'category_id' => $request->category_id,
         ]);
 

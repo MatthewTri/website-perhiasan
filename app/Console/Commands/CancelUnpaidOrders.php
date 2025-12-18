@@ -14,8 +14,8 @@ class CancelUnpaidOrders extends Command
 
     public function handle()
     {
-        // 1. Tentukan Batas Waktu (24 jam yang lalu)
-        $timeLimit = Carbon::now()->subHours(24);
+        // 1. Tentukan Batas Waktu (72 jam yang lalu)
+        $timeLimit = Carbon::now()->subHours(72);
 
         // TIPS TESTING: Untuk tes cepat (1 menit)
         // $timeLimit = Carbon::now()->subMinute(1);
@@ -23,10 +23,9 @@ class CancelUnpaidOrders extends Command
         $this->info("🔍 Mencari order INVOICE_SENT sebelum: " . $timeLimit->format('Y-m-d H:i:s'));
 
         // 2. Cari Order INVOICE_SENT yang kadaluarsa
-        // ⬅️ FIX: Gunakan 'orderItems.product' (bukan 'items.product')
         $expiredOrders = Order::where('status', 'INVOICE_SENT')
                               ->where('updated_at', '<', $timeLimit)
-                              ->with('orderItems.product') // ✅ BENAR
+                              ->with('orderItems.product')
                               ->get();
 
         if ($expiredOrders->isEmpty()) {

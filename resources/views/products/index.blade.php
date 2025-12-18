@@ -67,9 +67,6 @@
                         <span class="text-xl font-bold text-gray-900">
                             Rp {{ number_format($product->price, 0, ',', '.') }}
                         </span>
-                        <span class="text-sm text-gray-500">
-                            Stock: {{ $product->stock }}
-                        </span>
                     </div>
 
                     <!-- Action Buttons -->
