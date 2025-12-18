@@ -643,22 +643,90 @@
                         </button>
                     </div>
                     @elseif($order->status === 'PAID')
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm font-medium text-green-800">Payment Received</span>
-                        </div>
-                    </div>
-                    
+
+                    <!-- ⬅️ SHIPPING FORM (COLLAPSIBLE) -->
                     <button type="button" 
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            onclick="document.getElementById('paid-shipping-form').classList.toggle('hidden')"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center mb-3">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                         </svg>
                         Mark as Shipped
                     </button>
+
+                    <!-- Shipping Form (Hidden by default) -->
+                    <div id="paid-shipping-form" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                            </svg>
+                            Enter Shipping Details
+                        </h3>
+                        
+                        <form action="{{ route('admin.orders.updateShipping', $order) }}" method="POST">
+                            @csrf
+                            
+                            <div class="space-y-3">
+                                <!-- Courier Name -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        Courier / Shipping Service <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="courier_name" 
+                                            required
+                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Courier</option>
+                                        <option value="JNE">JNE</option>
+                                        <option value="Paxel">Paxel</option>
+                                        <option value="RPX">RPX</option>
+                                    </select>
+                                    @error('courier_name')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Tracking Number -->
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        Tracking Number / Resi <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                        name="tracking_number" 
+                                        required
+                                        placeholder="e.g., JNE1234567890"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    @error('tracking_number')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Info Box -->
+                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                                    <div class="flex">
+                                        <svg class="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <div>
+                                            <p class="text-xs font-medium text-yellow-800">Important:</p>
+                                            <p class="text-xs text-yellow-700 mt-1">
+                                                Order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" 
+                                        onclick="return confirm('Mark this order as SHIPPED with tracking number?')"
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Change Status to SHIPPED
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                     @elseif($order->status === 'SHIPPED')
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-2">

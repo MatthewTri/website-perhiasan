@@ -322,10 +322,10 @@
                     <span class="text-gray-600">Shipping Cost:</span>
                     <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between text-sm">
+                {{-- <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Tax:</span>
                     <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->tax_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
-                </div>
+                </div> --}}
                 <div class="flex justify-between text-lg font-bold pt-2 border-t">
                     <span class="text-gray-900">Total:</span>
                     <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
