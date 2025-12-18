@@ -76,6 +76,8 @@ return new class extends Migration
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
 
+            $table->timestamp('cancelled_at')->nullable(); // Waktu pembatalan order
+
             $table->string('proof_of_payment')->nullable(); // URL/Gambar bukti transfer manual
 
             // 8. Catatan Pelanggan
