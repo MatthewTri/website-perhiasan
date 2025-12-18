@@ -60,13 +60,13 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    Rp {{ number_format($item->product->price, 0, ',', '.') }}
+                                    Rp {{ number_format($item->product->price, 2, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $item->quantity }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
+                                    Rp {{ number_format($item->product->price * $item->quantity, 2, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="inline">
@@ -92,7 +92,7 @@
                             Total Items: {{ $cartItems->sum('quantity') }}
                         </div>
                         <div class="text-2xl font-bold text-gray-900">
-                            Total: Rp {{ number_format($total, 0, ',', '.') }}
+                            Total: Rp {{ number_format($total, 2, ',', '.') }}
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">

@@ -71,7 +71,7 @@
                         </div>
                         <div class="text-right">
                             <p class="font-semibold text-gray-900">
-                                {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, $order->currency === 'USD' ? 2 : 0, ',', '.') }}
+                                {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, 2, ',', '.') }}
                             </p>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                     <div>
                         <p class="text-sm text-gray-600">Total Amount</p>
                         <p class="text-xl font-bold text-blue-600">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}
+                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, 2, ',', '.') }}
                         </p>
                     </div>
                     <a href="{{ route('orders.show', $order->slug) }}" 

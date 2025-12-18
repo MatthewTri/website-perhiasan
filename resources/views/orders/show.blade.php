@@ -165,7 +165,7 @@
                         </div>
                         <div class="flex justify-between border-t pt-2 mt-2">
                             <span class="text-gray-600">Total Amount:</span>
-                            <span class="font-bold text-lg text-blue-900">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                            <span class="font-bold text-lg text-blue-900">Rp {{ number_format($order->total_amount, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -203,7 +203,7 @@
                     <div class="space-y-2 text-sm mb-4">
                         <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-600">Total Amount:</span>
-                            <span class="font-bold text-lg text-blue-900">${{ number_format($order->total_amount, 2) }}</span>
+                            <span class="font-bold text-lg text-blue-900">${{ number_format($order->total_amount, 2, ',', '.') }}</span>
                         </div>
                     </div>
                     
@@ -251,10 +251,10 @@
                     </div>
                     <div class="text-right">
                         <p class="font-semibold text-gray-900">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->price, $order->currency === 'USD' ? 2 : 0, ',', '.') }}
+                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->price, 2, ',', '.') }}
                         </p>
                         <p class="text-sm text-gray-500">
-                            Subtotal: {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, $order->currency === 'USD' ? 2 : 0, ',', '.') }}
+                            Subtotal: {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, 2, ',', '.') }}
                         </p>
                     </div>
                 </div>
@@ -265,19 +265,19 @@
             <div class="mt-6 pt-4 border-t space-y-2">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->subtotal, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->subtotal, 2, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Shipping Cost:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, 2, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between text-sm">
+                {{-- <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Tax:</span>
                     <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->tax_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
-                </div>
+                </div> --}}
                 <div class="flex justify-between text-lg font-bold pt-2 border-t">
                     <span class="text-gray-900">Total:</span>
-                    <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
+                    <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, 2, ',', '.') }}</span>
                 </div>
             </div>
         </div>

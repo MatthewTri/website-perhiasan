@@ -338,10 +338,10 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium text-gray-900 truncate">{{ $item->product->name }}</p>
-                                    <p class="text-sm text-gray-500">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                    <p class="text-sm text-gray-500">Rp {{ number_format($item->product->price, 2, ',', '.') }}</p>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900">
-                                    Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
+                                    Rp {{ number_format($item->product->price * $item->quantity, 2, ',', '.') }}
                                 </div>
                             </div>
                             @endforeach
@@ -353,7 +353,7 @@
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Subtotal</span>
                                 <span class="font-medium text-gray-900" id="summary-subtotal">
-                                    Rp {{ number_format($subtotal ?? 0, 0, ',', '.') }}
+                                    Rp {{ number_format($subtotal, 2, ',', '.') }}
                                 </span>
                             </div>
                             <div class="flex justify-between text-sm">
@@ -362,15 +362,16 @@
                                     <span class="text-blue-600">Calculated at next step</span>
                                 </span>
                             </div>
-                            <div class="flex justify-between text-sm">
+                            {{-- Tax --}}
+                            {{-- <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Tax</span>
                                 <span class="font-medium text-gray-900">Rp 0</span>
-                            </div>
+                            </div> --}}
                             <div class="border-t border-gray-200 pt-3">
                                 <div class="flex justify-between">
                                     <span class="text-base font-semibold text-gray-900">Total</span>
                                     <span class="text-xl font-bold text-gray-900" id="summary-total">
-                                        Rp {{ number_format($total ?? 0, 0, ',', '.') }}
+                                        Rp {{ number_format($total, 2, ',', '.') }}
                                     </span>
                                 </div>
                             </div>

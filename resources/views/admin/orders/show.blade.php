@@ -250,7 +250,7 @@
                                                             </span>
                                                         </p>
                                                         <p><span class="font-medium">Payer Email:</span> {{ $paypalStatus['payer_email'] }}</p>
-                                                        <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2) }}</p>
+                                                        <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2, ',', '.') }}</p>
                                                     </div>
                                                 </div>
                                             @elseif(isset($paypalStatus) && !$paypalStatus['success'])
@@ -546,10 +546,10 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $item->item_name }}</p>
-                                <p class="text-sm text-gray-500">{{ $order->currency }} {{ number_format($item->price, 2) }}</p>
+                                <p class="text-sm text-gray-500">{{ $order->currency }} {{ number_format($item->price, 2, ',', '.') }}</p>
                             </div>
                             <div class="text-sm font-medium text-gray-900">
-                                {{ $order->currency }} {{ number_format($item->price * $item->quantity, 2) }}
+                                {{ $order->currency }} {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
                             </div>
                         </div>
                         @endforeach
@@ -559,26 +559,27 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="font-medium text-gray-900">{{ $order->currency }} {{ number_format($order->subtotal, 2) }}</span>
+                            <span class="font-medium text-gray-900">{{ $order->currency }} {{ number_format($order->subtotal, 2, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Shipping</span>
                             <span class="font-medium text-gray-900">
                                 @if($order->shipping_cost > 0)
-                                    {{ $order->currency }} {{ number_format($order->shipping_cost, 2) }}
+                                    {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
                                 @else
                                     <span class="text-blue-600">To be calculated</span>
                                 @endif
                             </span>
                         </div>
-                        <div class="flex justify-between text-sm">
+                        {{-- Tax --}}
+                        {{-- <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Tax</span>
                             <span class="font-medium text-gray-900">{{ $order->currency }} {{ number_format($order->tax_amount, 2) }}</span>
-                        </div>
+                        </div> --}}
                         <div class="border-t border-gray-200 pt-3">
                             <div class="flex justify-between">
                                 <span class="text-base font-semibold text-gray-900">Total</span>
-                                <span class="text-xl font-bold text-gray-900">{{ $order->currency }} {{ number_format($order->total_amount, 2) }}</span>
+                                <span class="text-xl font-bold text-gray-900">{{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>
