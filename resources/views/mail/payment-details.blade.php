@@ -1,5 +1,3 @@
-<!-- filepath: c:\laragon\www\website-perhiasan\resources\views\emails\payment-details.blade.php -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,8 +23,8 @@
             
             <p>Thank you for your order! Here are your payment details:</p>
 
-            @if($order->payment_preference === 'MANUAL')
-            <!-- BCA Transfer -->
+            @if($order->payment_gateway === 'MANUAL')
+            <!-- BCA Transfer Instructions -->
             <h3>BCA Bank Transfer</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
@@ -48,25 +46,18 @@
             </table>
 
             <p style="margin-top: 20px;">After payment, please upload your proof of transfer via the link below.</p>
+            
             @else
-            <!-- PayPal -->
+            <!-- ⬅️ PAYPAL: HANYA INFO, TIDAK ADA CHECKOUT LINK -->
             <h3>PayPal Payment</h3>
             <p>Total Amount: <strong style="color: #3b82f6; font-size: 18px;">${{ number_format($order->total_amount, 2) }}</strong></p>
 
-                @if($order->payment_url)
-                <div style="text-align: center; margin: 20px 0;">
-                    <a href="{{ $order->payment_url }}" 
-                    class="button" 
-                    style="background: #0070ba; padding: 15px 40px; font-size: 16px;">
-                        Pay with PayPal
-                    </a>
-                </div>
-                <p style="text-align: center; color: #6b7280; font-size: 12px;">
-                    Or copy this link: <a href="{{ $order->payment_url }}" style="color: #3b82f6;">{{ $order->payment_url }}</a>
+            <div style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 15px; margin: 20px 0;">
+                <p style="margin: 0; color: #0c4a6e; font-weight: 500;">
+                    To complete your payment, please click the button below to access your order tracking page, 
+                    then click <strong>"Pay with PayPal"</strong> to proceed with checkout.
                 </p>
-                @else
-                <p>PayPal payment link will be available soon. Please check your email or order tracking page.</p>
-                @endif
+            </div>
             @endif
 
             @if($order->admin_notes)
@@ -76,6 +67,7 @@
             </div>
             @endif
 
+            <!-- ⬅️ MAIN CTA: MAGIC LINK (UNTUK SEMUA PAYMENT METHOD) -->
             <div style="text-align: center; margin-top: 30px;">
                 <a href="{{ $magicLink }}" class="button">View Order & Payment Details</a>
             </div>

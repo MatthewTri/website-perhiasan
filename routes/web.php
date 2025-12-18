@@ -101,6 +101,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // Route Magic Link (Public Access)
 Route::get('/order/track/{token}', [OrderTrackingController::class, 'show'])->name('order.track');
 Route::post('/order/track/{token}/upload', [OrderTrackingController::class, 'uploadProof'])->name('order.track.upload');
+Route::get('/order/track/{guestToken}/paypal/checkout', [OrderTrackingController::class, 'createPaypalCheckout'])
+    ->name('order.track.paypal.checkout');
 
 // PayPal Payment Callbacks
 Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('payment.paypal.success');

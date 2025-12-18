@@ -62,6 +62,16 @@ class PaymentController extends Controller
                         ->with('success', '✅ Payment successful!');
         }
 
+        if ($order->status === 'CANCELLED') {
+            Log::warning('Attempted payment on cancelled order', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number
+            ]);
+            
+            return redirect()->route('order.track', $order->guest_token)
+                        ->with('error', 'This order has been cancelled due to payment timeout. Please create a new order.');
+        }
+
         // ⬅️ CAPTURE PAYMENT DI SINI (INI YANG TRIGGER WEBHOOK!)
         try {
             Log::info('🔄 Attempting to CAPTURE PayPal payment', [

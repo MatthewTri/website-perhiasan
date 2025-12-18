@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\Storage;
+use App\Services\PaymentService;
 
 class OrderTrackingController extends Controller
 {
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
     /**
      * 1. Menampilkan Halaman Magic Link
      * URL: /order/track/{token}
@@ -57,5 +64,39 @@ class OrderTrackingController extends Controller
         }
 
         return back()->with('success', 'Bukti berhasil diupload! Admin akan segera memverifikasi.');
+    }
+
+    public function createPaypalCheckout($guestToken)
+    {
+        $order = Order::where('guest_token', $guestToken)->firstOrFail();
+
+        // Validasi status order
+        if (!in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION'])) {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'This order is not eligible for payment.');
+        }
+
+        // Validasi payment gateway
+        if ($order->payment_gateway !== 'PAYPAL') {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'This order is set for BCA bank transfer.');
+        }
+
+        // ⬅️ CREATE PAYPAL ORDER (FRESH 3 JAM!)
+        $paypalResult = $this->paymentService->createPaypalOrder($order);
+
+        if (!$paypalResult['success']) {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'Failed to create PayPal checkout: ' . $paypalResult['message']);
+        }
+
+        // Update order dengan PayPal data
+        $order->update([
+            'payment_url' => $paypalResult['redirect_url'],
+            'transaction_id' => $paypalResult['transaction_id'],
+        ]);
+
+        // ⬅️ REDIRECT LANGSUNG KE PAYPAL CHECKOUT
+        return redirect()->away($paypalResult['redirect_url']);
     }
 }
