@@ -61,16 +61,26 @@ class OrderController extends Controller
             return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 
-        $paymentGateway = $request->input('payment_gateway_override', $order->payment_preference);
+        // ⬅️ VALIDASI SHIPPING COST
+        $validated = $request->validate([
+            'payment_gateway_override' => 'required|in:MANUAL,PAYPAL',
+            'admin_notes' => 'nullable|string|max:1000',
+            'shipping_cost' => 'required|numeric|min:0',
+        ]);
 
-        // PayPal order akan dibuat nanti saat user klik "Pay with PayPal"
-        
+        $paymentGateway = $validated['payment_gateway_override'];
+        $shippingCost = $validated['shipping_cost'];
+
+        // ⬅️ HITUNG ULANG TOTAL AMOUNT
+        $newTotalAmount = $order->subtotal + $shippingCost;
+
         $order->update([
             'payment_gateway' => $paymentGateway,
             'payment_method' => $paymentGateway === 'PAYPAL' ? 'PAYPAL' : 'BCA',
-            'admin_notes' => $request->input('admin_notes'),
+            'admin_notes' => $validated['admin_notes'],
+            'shipping_cost' => $shippingCost, 
+            'total_amount' => $newTotalAmount, 
             'status' => 'INVOICE_SENT',
-            // ⬅️ HAPUS payment_url dan transaction_id (belum dibuat)
         ]);
 
         // Kirim email dengan Magic Link

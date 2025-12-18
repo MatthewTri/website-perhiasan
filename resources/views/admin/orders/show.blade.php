@@ -559,27 +559,63 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="font-medium text-gray-900">{{ $order->currency }} {{ number_format($order->subtotal, 2, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Shipping</span>
-                            <span class="font-medium text-gray-900">
-                                @if($order->shipping_cost > 0)
-                                    {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
-                                @else
-                                    <span class="text-blue-600">To be calculated</span>
-                                @endif
+                            <span class="font-medium text-gray-900" id="subtotal-display">
+                                {{ $order->currency }} {{ number_format($order->subtotal, 2, ',', '.') }}
                             </span>
                         </div>
-                        {{-- Tax --}}
-                        {{-- <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Tax</span>
-                            <span class="font-medium text-gray-900">{{ $order->currency }} {{ number_format($order->tax_amount, 2) }}</span>
-                        </div> --}}
+                        
+                        <!-- ⬅️ SHIPPING COST (EDITABLE jika PENDING_REVIEW) -->
+                        <div class="flex justify-between text-sm items-center">
+                            <span class="text-gray-600">Shipping</span>
+                            
+                            @if($order->status === 'PENDING_REVIEW')
+                                <!-- Input editable -->
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600 text-xs">{{ $order->currency }}</span>
+                                    <input type="number" 
+                                        name="shipping_cost"
+                                        id="shipping_cost_input"
+                                        form="invoice-form"
+                                        value="{{ old('shipping_cost', $order->shipping_cost) }}"
+                                        step="0.01"
+                                        min="0"
+                                        placeholder="0.00"
+                                        class="w-24 px-2 py-1 border border-gray-300 rounded text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required>
+                                </div>
+                            @else
+                                <!-- Display only -->
+                                <span class="font-medium text-gray-900">
+                                    @if($order->shipping_cost > 0)
+                                        {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                    @else
+                                        <span class="text-blue-600">Free</span>
+                                    @endif
+                                </span>
+                            @endif
+                        </div>
+
+                        @if($order->status === 'PENDING_REVIEW')
+                        <!-- Quick Shipping Options (Optional) -->
+                        <div class="flex justify-end flex-wrap gap-2">
+                            <button type="button" 
+                                    onclick="setShippingCost(0)"
+                                    class="px-3 py-1 text-xs bg-green-100 text-green-700 hover:bg-green-200 rounded-full transition">
+                                Free
+                            </button>
+                        </div>
+                        
+                        @error('shipping_cost')
+                            <p class="text-red-500 text-xs">{{ $message }}</p>
+                        @enderror
+                        @endif
+
                         <div class="border-t border-gray-200 pt-3">
                             <div class="flex justify-between">
                                 <span class="text-base font-semibold text-gray-900">Total</span>
-                                <span class="text-xl font-bold text-gray-900">{{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}</span>
+                                <span class="text-xl font-bold text-gray-900" id="total-display">
+                                    {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -663,4 +699,36 @@
         </div>
     </div>
 </div>
+
+<script>
+    const subtotal = {{ $order->subtotal }};
+    const currency = '{{ $order->currency }}';
+    const shippingInput = document.getElementById('shipping_cost_input');
+    const totalDisplay = document.getElementById('total-display');
+
+    // Set shipping cost quick buttons
+    function setShippingCost(amount) {
+        shippingInput.value = amount.toFixed(2);
+        updateTotal();
+    }
+
+    // Update total when shipping cost changes
+    function updateTotal() {
+        const shipping = parseFloat(shippingInput.value) || 0;
+        const total = subtotal + shipping;
+        
+        totalDisplay.textContent = currency + ' ' + total.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Listen to shipping input changes
+    if (shippingInput) {
+        shippingInput.addEventListener('input', updateTotal);
+        
+        // Initial calculation
+        updateTotal();
+    }
+</script>
 @endsection
