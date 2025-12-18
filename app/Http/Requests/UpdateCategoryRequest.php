@@ -30,7 +30,12 @@ class UpdateCategoryRequest extends FormRequest
             'slug' => [
                 'required',
                 Rule::unique('categories', 'slug')->ignore($this->category->id)
-            ]
+            ],
+            'parent_id' => [
+                'nullable',
+                'exists:categories,id',
+                Rule::notIn([$this->category->id])  // Prevent self-parent
+            ],
         ];
     }
 }

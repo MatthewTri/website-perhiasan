@@ -13,6 +13,30 @@ class Category extends Model
 
     protected $guarded = ['id'];
 
+    // RELATIONSHIP: Parent Category
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    // RELATIONSHIP: Sub-Categories (Children)
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id')->orderBy('name');
+    }
+
+    // HELPER: Check if category is parent (has children)
+    public function isParent()
+    {
+        return $this->children()->count() > 0;
+    }
+
+    // HELPER: Check if category is child (has parent)
+    public function isChild()
+    {
+        return $this->parent_id !== null;
+    }
+    
     public function products()
     {
         return $this->hasMany(Product::class);

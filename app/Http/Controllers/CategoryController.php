@@ -15,7 +15,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::whereNull('parent_id')
+                              ->with('children')
+                              ->orderBy('name')
+                              ->get();
+        
         return view('categories.index', compact('categories'));
     }
 
@@ -24,7 +28,11 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create');
+        $parentCategories = Category::whereNull('parent_id')
+                                   ->orderBy('name')
+                                   ->get();
+        
+        return view('categories.create', compact('parentCategories'));
     }
 
     /**
@@ -34,7 +42,8 @@ class CategoryController extends Controller
     {
         Category::create($request->validated());
 
-        return redirect()->route('categories.index')->with('success', 'Category successfully added!');
+        return redirect()->route('categories.index')
+                       ->with('success', 'Category successfully added!');
     }
 
     /**
@@ -50,10 +59,12 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('categories.edit', [
-            'category' => $category,
-            'categories' => Category::all()
-        ]);
+        $parentCategories = Category::whereNull('parent_id')
+                                   ->where('id', '!=', $category->id)
+                                   ->orderBy('name')
+                                   ->get();
+        
+        return view('categories.edit', compact('category', 'parentCategories'));
     }
 
     /**
@@ -61,9 +72,18 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
+        // VALIDASI: Prevent circular reference
+        if ($request->parent_id) {
+            $parent = Category::find($request->parent_id);
+            if ($parent && $parent->parent_id == $category->id) {
+                return back()->withErrors(['parent_id' => 'Cannot create circular reference']);
+            }
+        }
+
         $category->update($request->validated());
 
-        return redirect()->route('categories.index')->with('success', 'Category successfully updated!');
+        return redirect()->route('categories.index')
+                       ->with('success', 'Category successfully updated!');
     }
 
     /**
@@ -71,9 +91,20 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        // VALIDASI: Check if has children
+        if ($category->children()->count() > 0) {
+            return back()->with('error', 'Cannot delete category with sub-categories. Delete sub-categories first.');
+        }
+
+        // VALIDASI: Check if has products
+        if ($category->products()->count() > 0) {
+            return back()->with('error', 'Cannot delete category with products. Move or delete products first.');
+        }
+
         $category->delete();
         
-        return redirect()->route('categories.index')->with('success', 'Category successfully deleted!');
+        return redirect()->route('categories.index')
+                       ->with('success', 'Category successfully deleted!');
     }
 
     public function checkSlug(Request $r) {

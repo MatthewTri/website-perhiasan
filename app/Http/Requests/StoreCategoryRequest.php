@@ -23,7 +23,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'slug' => 'required|unique:categories'
+            'slug' => 'required|unique:categories',
+            'parent_id' => 'nullable|exists:categories,id',
         ];
     }
 }

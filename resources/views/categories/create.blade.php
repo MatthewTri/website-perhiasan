@@ -7,6 +7,32 @@
         
         <form id="form-category" action="{{ route('categories.store') }}" method="POST">
             @csrf
+            
+            {{-- ⬅️ PARENT CATEGORY DROPDOWN --}}
+            <div class="mb-4">
+                <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    Parent Category (Optional)
+                </label>
+                <select name="parent_id" 
+                        id="parent_id" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">-- None (Main Category) --</option>
+                    @foreach($parentCategories as $parent)
+                        <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                            {{ $parent->name }}
+                        </option>
+                    @endforeach
+                </select>
+                
+                @error('parent_id')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+                
+                <p class="text-xs text-gray-500 mt-1">
+                    Leave empty to create a main category, or select a parent to create a sub-category
+                </p>
+            </div>
+
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                     Category Name
@@ -17,16 +43,14 @@
                        autofocus
                        value="{{ old('name') }}"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                       placeholder="Enter category name">
+                       placeholder="e.g., Wedding Rings, Proposal Rings">
                 
                 @error('name')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
 
                 {{-- Slug --}}
-                <div class="mb-3">
-                    <input type="hidden" name="slug" id="slug" value="{{ old('slug') }}" readonly>
-                </div>
+                <input type="hidden" name="slug" id="slug" value="{{ old('slug') }}">
             </div>
 
             <div class="flex space-x-3">
@@ -48,20 +72,20 @@
     const slug = document.querySelector('#slug');
     const form = document.querySelector('#form-category');
 
-    name.addEventListener('change' , function() {
-        fetch('/categories/checkSlug?name=' + name.value)
+    name.addEventListener('change', function() {
+        fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value))
         .then(response => response.json())
         .then(data => slug.value = data.slug)
     });
 
     form.addEventListener('submit', function(e) {
         if (name.value && !slug.value) {
-            e.preventDefault(); // Stop submit
-            fetch('/categories/checkSlug?name=' + name.value)
+            e.preventDefault();
+            fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value))
             .then(response => response.json())
             .then(data => {
                 slug.value = data.slug;
-                form.submit(); // Submit ulang setelah slug ready
+                form.submit();
             });
         }
     });
