@@ -141,28 +141,48 @@
 
                     <!-- Category Row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Category -->
+                        <!-- Parent Category -->
                         <div>
-                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Category *
+                            <label for="parent_category_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Parent Category <span class="text-red-500">*</span>
                             </label>
-                            <select name="category_id" 
-                                    id="category_id"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Category</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" 
-                                            {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
+                            <select name="parent_category_id" 
+                                    id="parent_category_id"
+                                    required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('parent_category_id') border-red-500 @enderror">
+                                <option value="">-- Select Parent Category --</option>
+                                @foreach($parentCategories as $parent)
+                                    <option value="{{ $parent->id }}" 
+                                            {{ old('parent_category_id', $selectedParentId) == $parent->id ? 'selected' : '' }}>
+                                        {{ $parent->name }}
                                     </option>
                                 @endforeach
                             </select>
                             
-                            @error('category_id')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @error('parent_category_id')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
+                        <!-- Sub-Category -->
+                        <div>
+                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Sub-Category (Optional)
+                            </label>
+                            <select name="category_id" 
+                                    id="category_id"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category_id') border-red-500 @enderror">
+                                <option value="">-- Select Parent First --</option>
+                            </select>
+                            
+                            @error('category_id')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                            
+                            <p class="text-xs text-gray-500 mt-1">
+                                Leave empty to use parent category
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Description -->
@@ -199,6 +219,50 @@
 </div>
 
 <script>
+    const allCategories = @json($allCategories);
+    const initialParentId = {{ $selectedParentId ?? 'null' }};
+    const initialSubId = {{ $selectedSubCategoryId ?? 'null' }};
+
+    const parentSelect = document.getElementById('parent_category_id');
+    const subSelect = document.getElementById('category_id');
+
+    // Load sub-categories function
+    function loadSubCategories(parentId, selectedSubId = null) {
+        subSelect.innerHTML = '<option value="">None</option>';
+        subSelect.disabled = true;
+        subSelect.classList.add('bg-gray-50');
+        
+        if (parentId) {
+            const children = allCategories.filter(cat => cat.parent_id === parseInt(parentId));
+            
+            if (children.length > 0) {
+                children.forEach(child => {
+                    const option = document.createElement('option');
+                    option.value = child.id;
+                    option.textContent = child.name;
+                    if (selectedSubId && child.id === selectedSubId) {
+                        option.selected = true;
+                    }
+                    subSelect.appendChild(option);
+                });
+                
+                subSelect.disabled = false;
+                subSelect.classList.remove('bg-gray-50');
+            } else {
+                subSelect.innerHTML = '<option value="">-- No sub-categories --</option>';
+            }
+        }
+    }
+
+    // Load initial sub-categories
+    if (initialParentId) {
+        loadSubCategories(initialParentId, initialSubId);
+    }
+
+    // Handle parent change
+    parentSelect.addEventListener('change', function() {
+        loadSubCategories(this.value);
+    });
     // Global variables
     let selectedFiles = [];
     let currentMainIndex = 0;
@@ -455,6 +519,17 @@
 
     // Ensure form data is updated
     updateFormFiles();
+    
+    if (!subSelect.value && parentSelect.value) {
+        let categoryInput = document.querySelector('input[name="category_id_hidden"]');
+        if (!categoryInput) {
+            categoryInput = document.createElement('input');
+            categoryInput.type = 'hidden';
+            categoryInput.name = 'category_id';
+            editProductForm.appendChild(categoryInput);
+        }
+        categoryInput.value = parentSelect.value;
+    }
 
     // Always fetch slug before submit
     if (name.value.length > 0) {

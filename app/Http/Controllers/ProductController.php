@@ -27,8 +27,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
-        return view('products.create', compact('categories'));
+        // Kirim parent categories + semua categories (untuk mapping di frontend)
+        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
+        $allCategories = Category::with('parent')->orderBy('name')->get(); // Include parent untuk mapping
+        
+        return view('products.create', compact('parentCategories', 'allCategories'));
     }
 
     /**
@@ -76,8 +79,14 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
-        return view('products.edit', compact('product', 'categories'));
+        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
+        $allCategories = Category::with('parent')->orderBy('name')->get();
+        
+        // Determine parent and sub-category
+        $selectedParentId = $product->category->parent_id ?? $product->category_id;
+        $selectedSubCategoryId = $product->category->parent_id ? $product->category_id : null;
+        
+        return view('products.edit', compact('product', 'parentCategories', 'allCategories', 'selectedParentId', 'selectedSubCategoryId'));
     }
 
     /**
