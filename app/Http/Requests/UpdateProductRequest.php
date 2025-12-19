@@ -29,7 +29,8 @@ class UpdateProductRequest extends FormRequest
                 Rule::unique('products', 'slug')->ignore($this->product->id)
             ],
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
+            'price_idr' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'

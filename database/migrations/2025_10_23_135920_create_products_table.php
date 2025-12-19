@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 15, 2); // Harga produk
+            $table->decimal('price_idr', 15, 2); // Harga produk dalam IDR
+            $table->decimal('price_usd', 15, 2); // Harga produk dalam USD
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

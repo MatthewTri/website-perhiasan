@@ -117,26 +117,53 @@
                         @enderror
                     </div>
 
-                    <!-- Price -->
-                    <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
-                            Price (Rp) *
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-3 text-gray-500 text-lg">Rp</span>
-                            <input type="number" 
-                                   id="price" 
-                                   name="price" 
-                                   value="{{ old('price', $product->price) }}"
-                                   step="0.01"
-                                   min="0"
-                                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                                   placeholder="0.00">
+                    <!-- Price Row (IDR & USD) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Price IDR -->
+                        <div>
+                            <label for="price_idr" class="block text-sm font-medium text-gray-700 mb-2">
+                                Price (IDR) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-gray-500 text-lg">Rp</span>
+                                <input type="number" 
+                                    id="price_idr" 
+                                    name="price_idr" 
+                                    value="{{ old('price_idr', $product->price_idr) }}"
+                                    step="0.01"
+                                    min="0"
+                                    required
+                                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                                    placeholder="0.00">
+                            </div>
+                            
+                            @error('price_idr')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
-                        
-                        @error('price')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+
+                        <!-- Price USD -->
+                        <div>
+                            <label for="price_usd" class="block text-sm font-medium text-gray-700 mb-2">
+                                Price (USD) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-gray-500 text-lg">$</span>
+                                <input type="number" 
+                                    id="price_usd" 
+                                    name="price_usd" 
+                                    value="{{ old('price_usd', $product->price_usd) }}"
+                                    step="0.01"
+                                    min="0"
+                                    required
+                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                                    placeholder="0.00">
+                            </div>
+                            
+                            @error('price_usd')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Category Row -->

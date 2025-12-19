@@ -44,7 +44,8 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
-            'price' => $request->price,
+            'price_idr' => $request->price_idr,
+            'price_usd' => $request->price_usd,
             'category_id' => $request->category_id,
         ]);
 
@@ -99,7 +100,8 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
-            'price' => $request->price,
+            'price_idr' => $request->price_idr,
+            'price_usd' => $request->price_usd,
             'category_id' => $request->category_id,
         ]);
 
