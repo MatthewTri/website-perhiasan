@@ -50,7 +50,8 @@ return new class extends Migration
             ])->default('PENDING_REVIEW')->index();
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'
             
-            $table->decimal('subtotal', 15, 2); // Harga Barang Total
+            $table->decimal('subtotal_idr', 15, 2); // Subtotal dalam IDR
+            $table->decimal('subtotal_usd', 15, 2); // Subtotal dalam USD
             $table->decimal('shipping_cost', 15, 2)->default(0); // Diinput Manual Admin
             $table->decimal('tax_amount', 15, 2)->default(0); // Diinput Manual/Otomatis Admin
             $table->decimal('total_amount', 15, 2); // Grand Total (Yang harus dibayar)

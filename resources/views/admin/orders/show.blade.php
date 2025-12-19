@@ -525,14 +525,14 @@
                     </div>
                     
                     <!-- Cart Items -->
-                    <div class="space-y-4 mb-6 max-h-60 overflow-y-auto">
+                    <div id="summary-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto">
                         @foreach($order->orderItems as $item)
                         <div class="flex items-start space-x-4 pt-2 pb-4 border-b border-gray-200">
                             <div class="flex-shrink-0 w-16 h-16 relative">
                                 @if($item->product && $item->product->featuredImage)
                                     <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
-                                         alt="{{ $item->item_name }}"
-                                         class="w-full h-full object-cover rounded-lg">
+                                        alt="{{ $item->item_name }}"
+                                        class="w-full h-full object-cover rounded-lg">
                                 @else
                                     <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
                                         <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -546,10 +546,20 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $item->item_name }}</p>
-                                <p class="text-sm text-gray-500">{{ $order->currency }} {{ number_format($item->price, 2, ',', '.') }}</p>
+                                <p class="text-sm text-gray-500">
+                                    @if($order->currency === 'USD')
+                                        ${{ number_format($item->price_usd, 2) }}
+                                    @else
+                                        Rp {{ number_format($item->price_idr, 0, ',', '.') }}
+                                    @endif
+                                </p>
                             </div>
                             <div class="text-sm font-medium text-gray-900">
-                                {{ $order->currency }} {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
+                                @if($order->currency === 'USD')
+                                    ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                @else
+                                    Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                @endif
                             </div>
                         </div>
                         @endforeach
@@ -560,7 +570,11 @@
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Subtotal</span>
                             <span class="font-medium text-gray-900" id="subtotal-display">
-                                {{ $order->currency }} {{ number_format($order->subtotal, 2, ',', '.') }}
+                                @if($order->currency === 'USD')
+                                    ${{ number_format($order->subtotal_usd, 2) }}
+                                @else
+                                    Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}
+                                @endif
                             </span>
                         </div>
                         
@@ -769,34 +783,61 @@
 </div>
 
 <script>
-    const subtotal = {{ $order->subtotal }};
-    const currency = '{{ $order->currency }}';
+    // ⬅️ AMBIL SUBTOTAL SESUAI CURRENCY
+    const subtotalIdr = {{ $order->subtotal_idr }};
+    const subtotalUsd = {{ $order->subtotal_usd }};
+    
+    // ⬅️ DETEKSI PAYMENT GATEWAY YANG DIPILIH
+    const paymentGatewayRadios = document.querySelectorAll('input[name="payment_gateway_override"]');
     const shippingInput = document.getElementById('shipping_cost_input');
     const totalDisplay = document.getElementById('total-display');
+    const subtotalDisplay = document.getElementById('subtotal-display');
 
-    // Set shipping cost quick buttons
-    function setShippingCost(amount) {
-        shippingInput.value = amount.toFixed(2);
-        updateTotal();
-    }
-
-    // Update total when shipping cost changes
     function updateTotal() {
+        if (!shippingInput) return;
+        
+        // ⬅️ CEK PAYMENT GATEWAY YANG DIPILIH
+        const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
+        const isPaypal = selectedGateway && selectedGateway.value === 'PAYPAL';
+        const currency = isPaypal ? 'USD' : 'IDR';
+        const subtotal = isPaypal ? subtotalUsd : subtotalIdr;
+        
         const shipping = parseFloat(shippingInput.value) || 0;
         const total = subtotal + shipping;
         
-        totalDisplay.textContent = currency + ' ' + total.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+        // ⬅️ UPDATE DISPLAY SESUAI CURRENCY
+        if (currency === 'USD') {
+            subtotalDisplay.textContent = '$' + subtotal.toFixed(2);
+            totalDisplay.textContent = '$' + total.toFixed(2);
+        } else {
+            subtotalDisplay.textContent = 'Rp ' + subtotal.toLocaleString('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            totalDisplay.textContent = 'Rp ' + total.toLocaleString('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+    }
+
+    // ⬅️ LISTEN PAYMENT GATEWAY CHANGE
+    if (paymentGatewayRadios.length > 0) {
+        paymentGatewayRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Reset shipping cost saat ganti gateway
+                if (shippingInput) {
+                    shippingInput.value = '0.00';
+                }
+                updateTotal();
+            });
         });
     }
 
-    // Listen to shipping input changes
+    // ⬅️ LISTEN SHIPPING INPUT CHANGE
     if (shippingInput) {
         shippingInput.addEventListener('input', updateTotal);
-        
-        // Initial calculation
-        updateTotal();
+        updateTotal(); // Initial calculation
     }
 </script>
 @endsection

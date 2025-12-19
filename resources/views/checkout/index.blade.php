@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen py-8">
@@ -323,8 +323,8 @@
                                 <div class="flex-shrink-0 w-16 h-16 relative">
                                     @if($item->product->featuredImage)
                                         <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
-                                             alt="{{ $item->product->name }}"
-                                             class="w-full h-full object-cover rounded-lg">
+                                            alt="{{ $item->product->name }}"
+                                            class="w-full h-full object-cover rounded-lg">
                                     @else
                                         <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
                                             <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -338,10 +338,21 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium text-gray-900 truncate">{{ $item->product->name }}</p>
-                                    <p class="text-sm text-gray-500">Rp {{ number_format($item->product->price, 2, ',', '.') }}</p>
+                                    <p class="text-sm text-gray-500 item-price" 
+                                    data-price-idr="{{ $item->product->price_idr }}"
+                                    data-price-usd="{{ $item->product->price_usd }}">
+                                        @currency(['idr' => $item->product->price_idr, 'usd' => $item->product->price_usd])
+                                    </p>
                                 </div>
-                                <div class="text-sm font-medium text-gray-900">
-                                    Rp {{ number_format($item->product->price * $item->quantity, 2, ',', '.') }}
+                                <div class="text-sm font-medium text-gray-900 item-total"
+                                    data-price-idr="{{ $item->product->price_idr }}"
+                                    data-price-usd="{{ $item->product->price_usd }}"
+                                    data-qty="{{ $item->quantity }}">
+                                    @currencyTotal([
+                                        'idr' => $item->product->price_idr, 
+                                        'usd' => $item->product->price_usd, 
+                                        'qty' => $item->quantity
+                                    ])
                                 </div>
                             </div>
                             @endforeach
@@ -352,8 +363,10 @@
                         <div class="space-y-3 mb-6">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span class="font-medium text-gray-900" id="summary-subtotal">
-                                    Rp {{ number_format($subtotal, 2, ',', '.') }}
+                                <span class="font-medium text-gray-900" id="summary-subtotal"
+                                    data-idr="{{ $totalIdr }}"
+                                    data-usd="{{ $totalUsd }}">
+                                    @currency(['idr' => $totalIdr, 'usd' => $totalUsd])
                                 </span>
                             </div>
                             <div class="flex justify-between text-sm">
@@ -362,16 +375,13 @@
                                     <span class="text-blue-600">Calculated at next step</span>
                                 </span>
                             </div>
-                            {{-- Tax --}}
-                            {{-- <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Tax</span>
-                                <span class="font-medium text-gray-900">Rp 0</span>
-                            </div> --}}
                             <div class="border-t border-gray-200 pt-3">
                                 <div class="flex justify-between">
                                     <span class="text-base font-semibold text-gray-900">Total</span>
-                                    <span class="text-xl font-bold text-gray-900" id="summary-total">
-                                        Rp {{ number_format($total, 2, ',', '.') }}
+                                    <span class="text-xl font-bold text-gray-900" id="summary-total"
+                                        data-idr="{{ $totalIdr }}"
+                                        data-usd="{{ $totalUsd }}">
+                                        @currency(['idr' => $totalIdr, 'usd' => $totalUsd])
                                     </span>
                                 </div>
                             </div>
@@ -444,11 +454,26 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function displayCheckoutSummary(items) {
-    let subtotal = 0;
+    // Default currency (akan di-override oleh payment method selection)
+    let currentCurrency = '{{ $globalCurrency }}';
+    
+    const formatPrice = (priceIdr, priceUsd, currency) => {
+        if (currency === 'USD') {
+            return '$' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(priceUsd);
+        } else {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+        }
+    };
+    
+    let subtotalIdr = 0;
+    let subtotalUsd = 0;
     
     const itemsHtml = items.map(item => {
-        const itemTotal = item.product.price * item.quantity;
-        subtotal += itemTotal;
+        subtotalIdr += item.product.price_idr * item.quantity;
+        subtotalUsd += item.product.price_usd * item.quantity;
         
         const imageHtml = item.product.featured_image 
             ? `<img src="/storage/${item.product.featured_image.image}" alt="${item.product.name}" class="w-full h-full object-cover rounded-lg">`
@@ -468,38 +493,129 @@ function displayCheckoutSummary(items) {
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">${item.product.name}</p>
-                    <p class="text-sm text-gray-500">Rp ${new Intl.NumberFormat('id-ID').format(item.product.price)}</p>
+                    <p class="text-sm text-gray-500 item-price"
+                       data-price-idr="${item.product.price_idr}"
+                       data-price-usd="${item.product.price_usd}">
+                        ${formatPrice(item.product.price_idr, item.product.price_usd, currentCurrency)}
+                    </p>
                 </div>
-                <div class="text-sm font-medium text-gray-900">
-                    Rp ${new Intl.NumberFormat('id-ID').format(itemTotal)}
+                <div class="text-sm font-medium text-gray-900 item-total"
+                     data-price-idr="${item.product.price_idr}"
+                     data-price-usd="${item.product.price_usd}"
+                     data-qty="${item.quantity}">
+                    ${formatPrice(item.product.price_idr * item.quantity, item.product.price_usd * item.quantity, currentCurrency)}
                 </div>
             </div>
         `;
     }).join('');
     
+    // Update DOM
     document.getElementById('summary-items').innerHTML = itemsHtml;
-    document.getElementById('summary-subtotal').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(subtotal);
-    document.getElementById('summary-total').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(subtotal);
+    
+    // Update subtotal with data attributes
+    const subtotalEl = document.getElementById('summary-subtotal');
+    subtotalEl.dataset.idr = subtotalIdr;
+    subtotalEl.dataset.usd = subtotalUsd;
+    subtotalEl.textContent = formatPrice(subtotalIdr, subtotalUsd, currentCurrency);
+    
+    // Update total with data attributes
+    const totalEl = document.getElementById('summary-total');
+    totalEl.dataset.idr = subtotalIdr;
+    totalEl.dataset.usd = subtotalUsd;
+    totalEl.textContent = formatPrice(subtotalIdr, subtotalUsd, currentCurrency);
 }
 </script>
 @endguest
 
 <script>
-// Form validation script
+// ===== 1. DEFINE FUNCTION DULU (PALING ATAS) =====
+function updateOrderSummaryPrices(currency) {
+    const formatPrice = (priceIdr, priceUsd, currency) => {
+        if (currency === 'USD') {
+            return '$' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(priceUsd);
+        } else {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+        }
+    };
+
+    // Update item prices
+    document.querySelectorAll('.item-price').forEach(el => {
+        const priceIdr = parseFloat(el.dataset.priceIdr);
+        const priceUsd = parseFloat(el.dataset.priceUsd);
+        el.textContent = formatPrice(priceIdr, priceUsd, currency);
+    });
+
+    // Update item totals
+    document.querySelectorAll('.item-total').forEach(el => {
+        const priceIdr = parseFloat(el.dataset.priceIdr);
+        const priceUsd = parseFloat(el.dataset.priceUsd);
+        const qty = parseInt(el.dataset.qty);
+        el.textContent = formatPrice(priceIdr * qty, priceUsd * qty, currency);
+    });
+
+    // Update subtotal
+    const subtotalEl = document.getElementById('summary-subtotal');
+    if (subtotalEl) {
+        const subtotalIdr = parseFloat(subtotalEl.dataset.idr);
+        const subtotalUsd = parseFloat(subtotalEl.dataset.usd);
+        subtotalEl.textContent = formatPrice(subtotalIdr, subtotalUsd, currency);
+    }
+
+    // Update total
+    const totalEl = document.getElementById('summary-total');
+    if (totalEl) {
+        const totalIdr = parseFloat(totalEl.dataset.idr);
+        const totalUsd = parseFloat(totalEl.dataset.usd);
+        totalEl.textContent = formatPrice(totalIdr, totalUsd, currency);
+    }
+}
+
+// ===== 2. PAYMENT METHOD CHANGE HANDLER =====
+document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const selectedCurrency = this.value === 'paypal' ? 'USD' : 'IDR';
+        
+        // Update visual feedback
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+        
+        if (this.checked) {
+            const label = this.closest('.payment-option');
+            label.classList.add('border-blue-500', 'bg-blue-50');
+        }
+        
+        // Update prices
+        updateOrderSummaryPrices(selectedCurrency);
+    });
+});
+
+// ===== 3. DOM CONTENT LOADED =====
 document.addEventListener('DOMContentLoaded', function() {
+    // Set default to IDR on page load
+    updateOrderSummaryPrices('IDR');
+    
+    // If payment method already selected, trigger change
+    const selectedPayment = document.querySelector('input[name="payment_gateway"]:checked');
+    if (selectedPayment) {
+        selectedPayment.dispatchEvent(new Event('change'));
+    }
+    
     // ===== PHONE INPUT SETUP =====
     const phoneInputField = document.querySelector("#shipping_phone");
     const hiddenPhoneInput = document.querySelector("#hidden_shipping_phone");
     
     if (phoneInputField) {
-        // Initialize intl-tel-input
         const phoneInput = window.intlTelInput(phoneInputField, {
             initialCountry: "auto",
             geoIpLookup: function(callback) {
                 fetch('https://ipapi.co/json/')
                     .then(res => res.json())
                     .then(data => callback(data.country_code))
-                    .catch(() => callback("id")); // Default Indonesia
+                    .catch(() => callback("id"));
             },
             preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
             separateDialCode: true,
@@ -509,18 +625,17 @@ document.addEventListener('DOMContentLoaded', function() {
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
         });
 
-        // ===== POPULATE COUNTRIES FROM COUNTRIESNOW API =====
+        // ===== POPULATE COUNTRIES =====
         const countrySelect = document.getElementById('shipping_country');
         const provinceSelect = document.getElementById('shipping_province');
+        const addressDetails = document.getElementById('address-details');
 
-        // Fetch countries
         fetch('https://countriesnow.space/api/v0.1/countries/positions')
             .then(res => res.json())
             .then(data => {
                 if (data.error === false && data.data) {
                     countrySelect.innerHTML = '<option value="">Select Country</option>';
                     
-                    // Sort countries alphabetically
                     const sortedCountries = data.data.sort((a, b) => 
                         a.name.localeCompare(b.name)
                     );
@@ -535,7 +650,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         countrySelect.appendChild(option);
                     });
 
-                    // Load provinces jika ada old value
                     @if(old('shipping_country'))
                         addressDetails.classList.remove('hidden');
                         loadProvinces('{{ old("shipping_country") }}', '{{ old("shipping_province") }}');
@@ -548,34 +662,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="">Select Country</option>
                     <option value="Indonesia">Indonesia</option>
                     <option value="United States">United States</option>
-                    <option value="Singapore">Singapore</option>
-                    <option value="Malaysia">Malaysia</option>
-                    <option value="United Kingdom">United Kingdom</option>
                 `;
             });
-
-        // ===== LOAD PROVINCES WHEN COUNTRY CHANGES =====
-        const addressDetails = document.getElementById('address-details');
 
         countrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
             if (selectedCountry) {
-                // Show address details
                 addressDetails.classList.remove('hidden');
-                
-                // Load provinces
                 loadProvinces(selectedCountry);
             } else {
-                // Hide address details
                 addressDetails.classList.add('hidden');
-                
-                // Reset province
                 provinceSelect.innerHTML = '<option value="">Select Province/State</option>';
                 provinceSelect.disabled = true;
             }
         });
 
-        // Function to load provinces
         function loadProvinces(countryName, selectedProvince = '') {
             provinceSelect.innerHTML = '<option value="">Loading provinces...</option>';
             provinceSelect.disabled = true;
@@ -592,7 +693,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.error === false && data.data && data.data.states && data.data.states.length > 0) {
                     provinceSelect.disabled = false;
                     
-                    // Sort provinces alphabetically
                     const sortedStates = data.data.states.sort((a, b) => 
                         a.name.localeCompare(b.name)
                     );
@@ -607,7 +707,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         provinceSelect.appendChild(option);
                     });
                 } else {
-                    // Jika tidak ada data province, biarkan input manual
                     provinceSelect.innerHTML = '<option value="">No provinces available</option>';
                     provinceSelect.disabled = true;
                 }
@@ -619,42 +718,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Input restriction - hanya angka
+        // Phone input validation
         phoneInputField.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^0-9]/g, '');
             e.target.value = value;
             updateHiddenPhone();
         });
 
-        phoneInputField.addEventListener('paste', function(e) {
-            e.preventDefault();
-            let paste = (e.clipboardData || window.clipboardData).getData('text');
-            let numericPaste = paste.replace(/[^0-9]/g, '');
-            e.target.value = numericPaste;
-            setTimeout(() => updateHiddenPhone(), 100);
-        });
-
-        phoneInputField.addEventListener('keypress', function(e) {
-            // Allow control keys
-            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-                (e.keyCode === 65 && e.ctrlKey === true) ||
-                (e.keyCode === 67 && e.ctrlKey === true) ||
-                (e.keyCode === 86 && e.ctrlKey === true) ||
-                (e.keyCode === 88 && e.ctrlKey === true)) {
-                return;
-            }
-            // Only allow numbers
-            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                e.preventDefault();
-            }
-        });
-
-        // Update hidden input saat country berubah
         phoneInputField.addEventListener("countrychange", function() {
             updateHiddenPhone();
         });
 
-        // Function untuk update hidden input
         function updateHiddenPhone() {
             if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
                 const fullNumber = phoneInput.getNumber();
@@ -669,10 +743,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Show phone error function
         function showPhoneError(message) {
             hidePhoneError();
-            
             const errorDiv = document.getElementById('phone-error');
             errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-2 text-sm';
             errorDiv.innerHTML = `
@@ -683,32 +755,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${message}
                 </div>
             `;
-            
             phoneInputField.scrollIntoView({ behavior: 'smooth', block: 'center' });
             phoneInputField.focus();
         }
 
-        // Hide phone error function
         function hidePhoneError() {
             const errorDiv = document.getElementById('phone-error');
             errorDiv.className = 'hidden';
             errorDiv.innerHTML = '';
         }
 
-        // ===== FORM VALIDATION ON SUBMIT =====
+        // Form validation
         const checkoutForm = document.getElementById('checkout-form');
-        
         checkoutForm.addEventListener('submit', function(e) {
             let isValid = true;
             
-            // Validate phone number
             if (phoneInputField.value.trim() === '') {
                 e.preventDefault();
                 showPhoneError('Please enter your phone number.');
                 isValid = false;
             } else {
                 updateHiddenPhone();
-                
                 if (!phoneInput.isValidNumber()) {
                     e.preventDefault();
                     showPhoneError('Please enter a valid phone number for the selected country.');
@@ -716,16 +783,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Validate required fields
             const requiredFields = checkoutForm.querySelectorAll('[required]');
             requiredFields.forEach(field => {
                 if (field.type === 'radio') {
                     const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
                     const isChecked = Array.from(radioGroup).some(radio => radio.checked);
-                    if (!isChecked) {
-                        isValid = false;
-                    }
-                } else if (field.id !== 'shipping_phone') { // Skip karena sudah di-check di atas
+                    if (!isChecked) isValid = false;
+                } else if (field.id !== 'shipping_phone') {
                     if (!field.value.trim()) {
                         isValid = false;
                         field.classList.add('border-red-500');
@@ -742,7 +806,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // If valid, show loading state
             if (isValid) {
                 const submitBtn = checkoutForm.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
@@ -757,30 +820,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// Payment method selection visual feedback
-document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        // Remove selected state from all options
-        document.querySelectorAll('.payment-option').forEach(option => {
-            option.classList.remove('border-blue-500', 'bg-blue-50');
-        });
-        
-        // Add selected state to chosen option
-        if (this.checked) {
-            const label = this.closest('.payment-option');
-            label.classList.add('border-blue-500', 'bg-blue-50');
-        }
-    });
-});
-
-// Trigger change on page load if there's a selected option
-document.addEventListener('DOMContentLoaded', function() {
-    const selectedRadio = document.querySelector('input[name="payment_gateway"]:checked');
-    if (selectedRadio) {
-        selectedRadio.dispatchEvent(new Event('change'));
-    }
-});
-
 </script>
 @endsection

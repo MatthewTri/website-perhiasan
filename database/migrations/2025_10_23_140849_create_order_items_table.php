@@ -24,7 +24,8 @@ return new class extends Migration
             $table->text('item_description')->nullable(); // (Deskripsi dari invoice kustom)
 
             $table->integer('quantity');
-            $table->decimal('price', 15, 2); // Harga per unit (final saat checkout/invoice)
+            $table->decimal('price_idr', 15, 2); // Harga per unit dalam IDR
+            $table->decimal('price_usd', 15, 2); // Harga per unit dalam USD
             $table->timestamps();
         });
     }

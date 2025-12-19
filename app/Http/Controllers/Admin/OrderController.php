@@ -61,7 +61,6 @@ class OrderController extends Controller
             return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 
-        // ⬅️ VALIDASI SHIPPING COST
         $validated = $request->validate([
             'payment_gateway_override' => 'required|in:MANUAL,PAYPAL',
             'admin_notes' => 'nullable|string|max:1000',
@@ -71,26 +70,35 @@ class OrderController extends Controller
         $paymentGateway = $validated['payment_gateway_override'];
         $shippingCost = $validated['shipping_cost'];
 
-        // ⬅️ HITUNG ULANG TOTAL AMOUNT
-        $newTotalAmount = $order->subtotal + $shippingCost;
+        // ⬅️ TENTUKAN CURRENCY BERDASARKAN PAYMENT GATEWAY
+        $newCurrency = $paymentGateway === 'PAYPAL' ? 'USD' : 'IDR';
+        
+        // ⬅️ AMBIL SUBTOTAL SESUAI CURRENCY BARU
+        $subtotal = $newCurrency === 'USD' ? $order->subtotal_usd : $order->subtotal_idr;
+        
+        // ⬅️ HITUNG ULANG TOTAL
+        $newTotalAmount = $subtotal + $shippingCost;
 
         $order->update([
             'payment_gateway' => $paymentGateway,
             'payment_method' => $paymentGateway === 'PAYPAL' ? 'PAYPAL' : 'BCA',
             'admin_notes' => $validated['admin_notes'],
+            
+            // ⬅️ UPDATE CURRENCY & AMOUNTS
+            'currency' => $newCurrency,
             'shipping_cost' => $shippingCost, 
             'total_amount' => $newTotalAmount, 
+            
             'status' => 'INVOICE_SENT',
         ]);
 
-        // Kirim email dengan Magic Link
         $magicLink = route('order.track', $order->guest_token);
         
         try {
             Mail::to($order->contact_email)->send(new PaymentDetailsMail($order, $magicLink));
             
             $message = $paymentGateway === 'PAYPAL' 
-                ? 'Payment instruction sent to ' . $order->contact_email 
+                ? 'PayPal invoice sent to ' . $order->contact_email 
                 : 'BCA payment details sent to ' . $order->contact_email;
             
             return back()->with('success', $message . ' | Magic Link: ' . $magicLink);

@@ -14,41 +14,40 @@ use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class CheckoutController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
+        session()->forget('currency');
+
         if (Auth::check()) {
-            // User authenticated - ambil dari database
+            // Authenticated user - get cart from database
             $cart = Cart::with(['cartItems.product.featuredImage'])
                         ->where('user_id', Auth::id())
                         ->first();
 
             $cartItems = $cart ? $cart->cartItems : collect();
             
-            if ($cartItems->isEmpty()) {
-                return redirect()->route('cart.index')->with('error', 'Your cart is empty');
-            }
-
-            // Calculate totals
-            $subtotal = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
+            // ⬅️ CALCULATE BOTH IDR & USD TOTALS
+            $totalIdr = $cartItems->sum(function ($item) {
+                return $item->product->price_idr * $item->quantity;
+            });
+            
+            $totalUsd = $cartItems->sum(function ($item) {
+                return $item->product->price_usd * $item->quantity;
             });
 
-            $shippingCost = 0;
-            $taxAmount = 0;
-            $total = $subtotal + $shippingCost + $taxAmount;
-
-            return view('checkout.index', compact('cartItems', 'subtotal', 'shippingCost', 'taxAmount', 'total'));
+            // Check if cart is empty
+            if ($cartItems->isEmpty()) {
+                return redirect()->route('cart.index')
+                               ->with('error', 'Your cart is empty');
+            }
         } else {
-            // Guest user - akan di-load via JavaScript
-            return view('checkout.index', [
-                'cartItems' => collect(),
-                'subtotal' => 0,
-                'shippingCost' => 0,
-                'taxAmount' => 0,
-                'total' => 0,
-                'isGuest' => true
-            ]);
+            // Guest user - cart will be loaded via JavaScript
+            $cartItems = collect();
+            $totalIdr = 0;
+            $totalUsd = 0;
         }
+
+        return view('checkout.index', compact('cartItems', 'totalIdr', 'totalUsd'));
     }
 
     public function store(Request $request)
@@ -64,18 +63,20 @@ class CheckoutController extends Controller
             'shipping_country' => 'required|string|max:100',
             'payment_gateway' => 'required|in:manual,paypal',
             'order_notes' => 'nullable|string',
-            'cart_data' => 'nullable|json', // untuk guest
+            'cart_data' => 'nullable|json',
         ]);
 
         try {
-            // 1. Tentukan user_id dan guest_token
             $userId = Auth::check() ? Auth::id() : null;
             $guestToken = Str::random(64);
             $isGuest = !Auth::check();
 
-            // 2. Ambil cart items
+            // ⬅️ TENTUKAN CURRENCY DARI PAYMENT PREFERENCE
+            $paymentPreference = strtoupper($validated['payment_gateway']); // 'MANUAL' atau 'PAYPAL'
+            $selectedCurrency = $paymentPreference === 'PAYPAL' ? 'USD' : 'IDR';
+
+            // Ambil cart items
             if (Auth::check()) {
-                // User login
                 $cart = Cart::with('cartItems.product')->where('user_id', $userId)->first();
                 
                 if (!$cart || $cart->cartItems->isEmpty()) {
@@ -83,9 +84,7 @@ class CheckoutController extends Controller
                 }
                 
                 $cartItems = $cart->cartItems;
-                
             } else {
-                // Guest user
                 if (!$request->cart_data) {
                     return back()->with('error', 'Cart data is missing');
                 }
@@ -94,8 +93,7 @@ class CheckoutController extends Controller
                 $productIds = array_keys($guestCart);
                 $products = Product::whereIn('id', $productIds)->get();
                 
-                // Transform ke collection
-                $cartItems = collect($products)->map(function ($product) use ($guestCart) {
+                $cartItems = $products->map(function ($product) use ($guestCart) {
                     return (object)[
                         'product' => $product,
                         'quantity' => $guestCart[$product->id]
@@ -103,23 +101,25 @@ class CheckoutController extends Controller
                 });
             }
 
-            // 3. Hitung subtotal
-            $subtotal = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
+            // ⬅️ HITUNG SUBTOTAL DALAM KEDUA CURRENCY
+            $subtotalIdr = $cartItems->sum(function ($item) {
+                return $item->product->price_idr * $item->quantity;
+            });
+            
+            $subtotalUsd = $cartItems->sum(function ($item) {
+                return $item->product->price_usd * $item->quantity;
             });
 
-            // 4. Generate order number
+            // ⬅️ TOTAL AMOUNT SESUAI CURRENCY TERPILIH
+            $totalAmount = $selectedCurrency === 'USD' ? $subtotalUsd : $subtotalIdr;
+
+            // Generate order number & slug
             $lastOrder = Order::latest('id')->first();
             $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
             $orderNumber = 'INV-' . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-
-            // 5. Generate slug dari order_number
             $slug = SlugService::createSlug(Order::class, 'slug', $orderNumber);
 
-            // 6. Tentukan currency
-            $currency = $validated['payment_gateway'] === 'paypal' ? 'USD' : 'IDR';
-
-            // 7. Create Order
+            // ⬅️ CREATE ORDER DENGAN KEDUA SUBTOTAL
             $order = Order::create([
                 'order_number' => $orderNumber,
                 'slug' => $slug,
@@ -130,11 +130,15 @@ class CheckoutController extends Controller
                 'custom_request_id' => null,
                 
                 'status' => 'PENDING_REVIEW',
-                'currency' => $currency,
-                'subtotal' => $subtotal,
+                'currency' => $selectedCurrency, // Currency terpilih saat ini
+                
+                // ⬅️ SIMPAN KEDUA SUBTOTAL
+                'subtotal_idr' => $subtotalIdr,
+                'subtotal_usd' => $subtotalUsd,
+                
                 'shipping_cost' => 0,
                 'tax_amount' => 0,
-                'total_amount' => $subtotal,
+                'total_amount' => $totalAmount, // Total sesuai currency terpilih
                 
                 'shipping_name' => $validated['shipping_name'],
                 'shipping_phone' => $validated['shipping_phone'],
@@ -147,9 +151,9 @@ class CheckoutController extends Controller
                 'courier_name' => null,
                 'tracking_number' => null,
                 
-                'payment_preference' => strtoupper($validated['payment_gateway']), // ⬅️ 'MANUAL' atau 'PAYPAL'
-                'payment_gateway' => null, // ⬅️ Akan diisi admin saat create invoice
-                'payment_method' => null, // ⬅️ Akan diisi 'BCA' atau 'PAYPAL' oleh admin
+                'payment_preference' => $paymentPreference, // Customer's choice
+                'payment_gateway' => null, // Akan diisi admin
+                'payment_method' => null,
                 'transaction_id' => null,
                 'payment_url' => null,
                 
@@ -157,7 +161,7 @@ class CheckoutController extends Controller
                 'is_reviewed' => false,
             ]);
 
-            // 8. Create Order Items
+            // ⬅️ CREATE ORDER ITEMS DENGAN KEDUA HARGA
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -165,20 +169,21 @@ class CheckoutController extends Controller
                     'item_name' => $item->product->name,
                     'item_description' => $item->product->description,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
+                    
+                    // ⬅️ SIMPAN KEDUA HARGA
+                    'price_idr' => $item->product->price_idr,
+                    'price_usd' => $item->product->price_usd,
                 ]);
             }
 
-            // 9. Clear cart
+            // Clear cart
             if (Auth::check() && isset($cart)) {
-                // User login - hapus dari database
                 $cart->cartItems()->delete();
             }
-            // Guest cart akan di-clear via JavaScript
-            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment link to your email within 24 hours.';
+
+            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment details to your email within 24 hours.';
             
             if ($isGuest) {
-                // Untuk guest, redirect dengan query parameter agar JS bisa clear localStorage
                 return redirect()->route('home', ['clear_cart' => '1'])
                     ->with('success', $successMessage);
             } else {
