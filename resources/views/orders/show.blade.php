@@ -141,12 +141,12 @@
             </div>
         </div>
 
-        <!-- Payment Section (Same as tracking page) -->
+        <!-- Payment Section -->
         @if($order->status === 'INVOICE_SENT' || $order->status === 'WAITING_VERIFICATION')
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">Payment Information</h2>
 
-            @if($order->payment_preference === 'MANUAL')
+            @if($order->payment_gateway === 'MANUAL')
                 <!-- BCA Transfer Instructions -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                     <h3 class="font-semibold text-blue-900 mb-3">BCA Bank Transfer</h3>
@@ -165,7 +165,9 @@
                         </div>
                         <div class="flex justify-between border-t pt-2 mt-2">
                             <span class="text-gray-600">Total Amount:</span>
-                            <span class="font-bold text-lg text-blue-900">Rp {{ number_format($order->total_amount, 2, ',', '.') }}</span>
+                            <span class="font-bold text-lg text-blue-900">
+                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -207,7 +209,6 @@
                         </div>
                     </div>
                     
-                    {{-- ⬅️ GANTI DARI payment_url KE ON-DEMAND CHECKOUT --}}
                     <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
                     class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-center">
                         <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -216,7 +217,6 @@
                         Pay with PayPal
                     </a>
                     
-                    {{-- ⬅️ INFO BOX: Link will expire --}}
                     <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
                         <p class="text-xs text-yellow-800">
                             <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -259,11 +259,16 @@
                         <p class="text-sm text-gray-500">Quantity: {{ $item->quantity }}</p>
                     </div>
                     <div class="text-right">
+                        @php
+                            $price = $order->currency === 'USD' ? $item->price_usd : $item->price_idr;
+                            $subtotal = $price * $item->quantity;
+                            $decimals = $order->currency === 'USD' ? 2 : 0;
+                        @endphp
                         <p class="font-semibold text-gray-900">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->price, 2, ',', '.') }}
+                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($price, $decimals, ',', '.') }}
                         </p>
                         <p class="text-sm text-gray-500">
-                            Subtotal: {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, 2, ',', '.') }}
+                            Subtotal: {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}
                         </p>
                     </div>
                 </div>
@@ -272,21 +277,21 @@
 
             <!-- Order Summary -->
             <div class="mt-6 pt-4 border-t space-y-2">
+                @php
+                    $decimals = $order->currency === 'USD' ? 2 : 0;
+                    $subtotal = $order->currency === 'USD' ? $order->subtotal_usd : $order->subtotal_idr;
+                @endphp
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->subtotal, 2, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Shipping Cost:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, 2, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, $decimals, ',', '.') }}</span>
                 </div>
-                {{-- <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Tax:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->tax_amount, $order->currency === 'USD' ? 2 : 0, ',', '.') }}</span>
-                </div> --}}
                 <div class="flex justify-between text-lg font-bold pt-2 border-t">
                     <span class="text-gray-900">Total:</span>
-                    <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, 2, ',', '.') }}</span>
+                    <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
                 </div>
             </div>
         </div>

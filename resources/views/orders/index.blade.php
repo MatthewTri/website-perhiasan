@@ -53,6 +53,12 @@
                 <!-- Order Items Preview (first 3 items) -->
                 <div class="space-y-3 mb-4">
                     @foreach($order->orderItems->take(3) as $item)
+                    @php
+                        // ⬅️ HITUNG HARGA & SUBTOTAL SESUAI CURRENCY ORDER
+                        $price = $order->currency === 'USD' ? $item->price_usd : $item->price_idr;
+                        $subtotal = $price * $item->quantity;
+                        $decimals = $order->currency === 'USD' ? 2 : 0;
+                    @endphp
                     <div class="flex items-center space-x-4">
                         @if($item->product && $item->product->images->first())
                         <img src="{{ Storage::url($item->product->images->first()->image) }}" 
@@ -67,11 +73,11 @@
                         @endif
                         <div class="flex-1">
                             <h4 class="font-medium text-gray-900">{{ $item->item_name }}</h4>
-                            <p class="text-sm text-gray-500">Qty: {{ $item->quantity }}</p>
+                            <p class="text-sm text-gray-500">Qty: {{ $item->quantity }} × {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($price, $decimals, ',', '.') }}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-semibold text-gray-900">
-                                {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($item->subtotal, 2, ',', '.') }}
+                                {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}
                             </p>
                         </div>
                     </div>
@@ -88,8 +94,11 @@
                 <div class="flex items-center justify-between pt-4 border-t">
                     <div>
                         <p class="text-sm text-gray-600">Total Amount</p>
+                        @php
+                            $decimals = $order->currency === 'USD' ? 2 : 0;
+                        @endphp
                         <p class="text-xl font-bold text-blue-600">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, 2, ',', '.') }}
+                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}
                         </p>
                     </div>
                     <a href="{{ route('orders.show', $order->slug) }}" 
@@ -99,8 +108,9 @@
                 </div>
 
                 <!-- Quick Actions -->
-                @if($order->status === 'INVOICE_SENT' && $order->payment_preference === 'MANUAL')
+                @if($order->status === 'INVOICE_SENT')
                 <div class="mt-4 pt-4 border-t">
+                    @if($order->payment_gateway === 'MANUAL')
                     <a href="{{ route('order.track', $order->guest_token) }}" 
                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,11 +118,48 @@
                         </svg>
                         Upload Payment Proof
                     </a>
+                    @elseif($order->payment_gateway === 'PAYPAL')
+                    <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
+                       class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.76-4.852a.932.932 0 0 1 .922-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+                        </svg>
+                        Pay with PayPal
+                    </a>
+                    @endif
+                </div>
+                @elseif($order->status === 'WAITING_VERIFICATION')
+                <div class="mt-4 pt-4 border-t bg-purple-50 rounded-lg p-3">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-purple-900">Payment Proof Submitted</p>
+                            <p class="text-xs text-purple-700">Admin will verify within 24 hours</p>
+                        </div>
+                    </div>
                 </div>
                 @elseif($order->status === 'SHIPPED')
                 <div class="mt-4 pt-4 border-t bg-blue-50 rounded-lg p-3">
                     <p class="text-sm font-medium text-blue-900">Tracking Info:</p>
                     <p class="text-sm text-blue-800">{{ $order->courier_name }}: <span class="font-semibold">{{ $order->tracking_number }}</span></p>
+                </div>
+                @elseif($order->status === 'COMPLETED')
+                <div class="mt-4 pt-4 border-t bg-green-50 rounded-lg p-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <p class="text-sm font-medium text-green-900">Order Completed!</p>
+                        </div>
+                        @if(!$order->is_reviewed)
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            Leave a Review
+                        </a>
+                        @endif
+                    </div>
                 </div>
                 @endif
             </div>

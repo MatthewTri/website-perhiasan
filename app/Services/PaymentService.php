@@ -25,6 +25,37 @@ class PaymentService
 
             $uniqueInvoiceId = $order->order_number . '-' . time();
 
+            $itemTotal = 0;
+            $items = [];
+
+            foreach ($order->orderItems as $orderItem) {
+                $unitPrice = number_format($orderItem->price_usd, 2, '.', '');
+                $itemSubtotal = $orderItem->price_usd * $orderItem->quantity;
+                $itemTotal += $itemSubtotal;
+
+                $items[] = [
+                    'name' => $orderItem->item_name,
+                    'description' => $orderItem->item_description ?? 'Product from ' . config('app.name'),
+                    'quantity' => (string)$orderItem->quantity,
+                    'unit_amount' => [
+                        'currency_code' => 'USD',
+                        'value' => $unitPrice
+                    ]
+                ];
+            }
+            
+            $itemTotal = number_format($itemTotal, 2, '.', '');
+            $shippingCost = number_format($order->shipping_cost, 2, '.', '');
+            $taxAmount = number_format($order->tax_amount ?? 0, 2, '.', '');
+            
+            // ⬅️ TOTAL HARUS SAMA DENGAN: item_total + shipping + tax
+            $totalAmount = number_format(
+                floatval($itemTotal) + floatval($shippingCost) + floatval($taxAmount),
+                2,
+                '.',
+                ''
+            );
+
             // Buat Payload Order
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
@@ -43,20 +74,20 @@ class PaymentService
                         "description" => "Order #{$order->order_number}",
                         "amount" => [
                             "currency_code" => "USD",
-                            "value" => number_format($order->total_amount, 2, '.', ''),
-                            "breakdown" => [
-                                "item_total" => [
-                                    "currency_code" => "USD",
-                                    "value" => number_format($order->subtotal, 2, '.', '')
+                            'value' => $totalAmount, // ⬅️ TOTAL AMOUNT
+                            'breakdown' => [
+                                'item_total' => [
+                                    'currency_code' => 'USD',
+                                    'value' => $itemTotal // ⬅️ SUM OF ALL ITEMS
                                 ],
-                                "shipping" => [
-                                    "currency_code" => "USD",
-                                    "value" => number_format($order->shipping_cost, 2, '.', '')
+                                'shipping' => [
+                                    'currency_code' => 'USD',
+                                    'value' => $shippingCost // ⬅️ SHIPPING COST
                                 ],
-                                "tax_total" => [
-                                    "currency_code" => "USD",
-                                    "value" => number_format($order->tax_amount, 2, '.', '')
-                                ],
+                                'tax_total' => [
+                                    'currency_code' => 'USD',
+                                    'value' => $taxAmount // ⬅️ TAX (optional, bisa 0.00)
+                                ]
                             ]
                         ],
                         "items" => $this->formatPayPalItems($order)
