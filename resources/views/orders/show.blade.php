@@ -199,23 +199,32 @@
             @else
                 <!-- PayPal Payment Link -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <h3 class="font-semibold text-blue-900 mb-3">PayPal Invoice</h3>
+                    <h3 class="font-semibold text-blue-900 mb-3">PayPal Payment</h3>
                     <div class="space-y-2 text-sm mb-4">
                         <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-600">Total Amount:</span>
-                            <span class="font-bold text-lg text-blue-900">${{ number_format($order->total_amount, 2, ',', '.') }}</span>
+                            <span class="font-bold text-lg text-blue-900">${{ number_format($order->total_amount, 2) }}</span>
                         </div>
                     </div>
                     
-                    @if($order->payment_url)
-                    <a href="{{ $order->payment_url }}" 
-                       target="_blank"
-                       class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-center">
-                        Pay with PayPal →
+                    {{-- ⬅️ GANTI DARI payment_url KE ON-DEMAND CHECKOUT --}}
+                    <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
+                    class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-center">
+                        <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.76-4.852a.932.932 0 0 1 .922-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+                        </svg>
+                        Pay with PayPal
                     </a>
-                    @else
-                    <p class="text-sm text-gray-600">PayPal invoice link will be sent to your email shortly.</p>
-                    @endif
+                    
+                    {{-- ⬅️ INFO BOX: Link will expire --}}
+                    <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                        <p class="text-xs text-yellow-800">
+                            <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <strong>Note:</strong> PayPal checkout link will be created when you click the button above and is valid for 3 hours.
+                        </p>
+                    </div>
                 </div>
 
                 @if($order->admin_notes)
