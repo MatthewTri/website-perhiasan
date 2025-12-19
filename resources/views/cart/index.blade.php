@@ -59,14 +59,20 @@
                                         </div>
                                     </div>
                                 </td>
+                                {{-- ⬅️ PRICE (DYNAMIC CURRENCY) --}}
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    Rp {{ number_format($item->product->price, 2, ',', '.') }}
+                                    @currency(['idr' => $item->product->price_idr, 'usd' => $item->product->price_usd])
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $item->quantity }}
                                 </td>
+                                {{-- ⬅️ TOTAL (DYNAMIC CURRENCY) --}}
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Rp {{ number_format($item->product->price * $item->quantity, 2, ',', '.') }}
+                                    @currencyTotal([
+                                        'idr' => $item->product->price_idr, 
+                                        'usd' => $item->product->price_usd, 
+                                        'qty' => $item->quantity
+                                    ])
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="inline">
@@ -91,8 +97,9 @@
                         <div class="text-lg font-medium text-gray-900">
                             Total Items: {{ $cartItems->sum('quantity') }}
                         </div>
+                        {{-- ⬅️ GRAND TOTAL (DYNAMIC CURRENCY) --}}
                         <div class="text-2xl font-bold text-gray-900">
-                            Total: Rp {{ number_format($total, 2, ',', '.') }}
+                            Total: @currency(['idr' => $totalIdr, 'usd' => $totalUsd])
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
@@ -152,12 +159,11 @@
 
 @guest
 <script>
-
 const checkoutUrl = "{{ route('checkout.index') }}";
+const currentCurrency = "{{ $globalCurrency }}";
 
 // Guest Cart Management
 class GuestCart {
-
     constructor() {
         this.storageKey = 'guest_cart';
         this.init();
@@ -167,18 +173,15 @@ class GuestCart {
         this.loadGuestCart();
     }
 
-    // Get cart from localStorage
     getCart() {
         const cart = localStorage.getItem(this.storageKey);
         return cart ? JSON.parse(cart) : {};
     }
 
-    // Save cart to localStorage
     saveCart(cart) {
         localStorage.setItem(this.storageKey, JSON.stringify(cart));
     }
 
-    // Add item to cart
     addItem(productId, quantity = 1) {
         const cart = this.getCart();
         if (cart[productId]) {
@@ -189,15 +192,13 @@ class GuestCart {
         this.saveCart(cart);
     }
 
-    // Remove item from cart
     removeItem(productId) {
         const cart = this.getCart();
         delete cart[productId];
         this.saveCart(cart);
-        this.loadGuestCart(); // Refresh display
+        this.loadGuestCart();
     }
 
-    // Load and display cart
     async loadGuestCart() {
         const cart = this.getCart();
         const productIds = Object.keys(cart);
@@ -231,8 +232,18 @@ class GuestCart {
         }
     }
 
+    // ⬅️ FORMAT PRICE BERDASARKAN CURRENCY
+    formatPrice(priceIdr, priceUsd) {
+        if (currentCurrency === 'USD') {
+            return '$' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(priceUsd);
+        } else {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+        }
+    }
 
-    // Display cart items
     displayCart(items) {
         let total = 0;
         let totalItems = 0;
@@ -252,11 +263,12 @@ class GuestCart {
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             ${items.map(item => {
-                                const itemTotal = item.product.price * item.quantity;
+                                // ⬅️ HITUNG BERDASARKAN CURRENCY AKTIF
+                                const price = currentCurrency === 'USD' ? item.product.price_usd : item.product.price_idr;
+                                const itemTotal = price * item.quantity;
                                 total += itemTotal;
                                 totalItems += item.quantity;
                                 
-                                // Kondisi untuk gambar (seperti Blade template)
                                 const imageHtml = item.product.featured_image 
                                     ? `<img class="h-16 w-16 rounded-lg object-cover" 
                                         src="/storage/${item.product.featured_image.image}" 
@@ -281,13 +293,13 @@ class GuestCart {
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            Rp ${new Intl.NumberFormat('id-ID').format(item.product.price)}
+                                            ${this.formatPrice(item.product.price_idr, item.product.price_usd)}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             ${item.quantity}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            Rp ${new Intl.NumberFormat('id-ID').format(itemTotal)}
+                                            ${this.formatPrice(item.product.price_idr * item.quantity, item.product.price_usd * item.quantity)}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button onclick="guestCart.removeItem(${item.product.id})" 
@@ -308,7 +320,9 @@ class GuestCart {
                             Total Items: ${totalItems}
                         </div>
                         <div class="text-2xl font-bold text-gray-900">
-                            Total: Rp ${new Intl.NumberFormat('id-ID').format(total)}
+                            Total: ${currentCurrency === 'USD' 
+                                ? '$' + new Intl.NumberFormat('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(total)
+                                : 'Rp ' + new Intl.NumberFormat('id-ID').format(total)}
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
@@ -356,7 +370,6 @@ async function migrateGuestCartToUser() {
         const result = await response.json();
         
         if (result.success) {
-            // Clear localStorage setelah berhasil migrate
             localStorage.removeItem('guest_cart');
             console.log('Cart migration successful:', result.message);
         } else {
@@ -367,7 +380,6 @@ async function migrateGuestCartToUser() {
     }
 }
 
-// ✅ Make function globally available
 window.migrateGuestCartToUser = migrateGuestCartToUser;
 </script>
 @endguest

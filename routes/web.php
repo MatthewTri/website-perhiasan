@@ -14,11 +14,15 @@ use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CurrencyController;
 
 // Home Page
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+// Currency Switcher (Public Access)
+Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('currency.switch');
 
 // Categories
 Route::get('/categories/checkSlug', [CategoryController::class, 'checkSlug']);

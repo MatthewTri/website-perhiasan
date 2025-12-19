@@ -65,7 +65,7 @@
                     
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xl font-bold text-gray-900">
-                            Rp {{ number_format($product->price_idr, 2, ',', '.') }}
+                            @currency(['idr' => $product->price_idr, 'usd' => $product->price_usd])
                         </span>
                     </div>
 

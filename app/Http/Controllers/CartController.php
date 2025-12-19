@@ -13,24 +13,27 @@ class CartController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            // User authenticated - ambil dari database
             $cart = Cart::with(['cartItems.product.featuredImage'])
                         ->where('user_id', Auth::id())
                         ->first();
 
             $cartItems = $cart ? $cart->cartItems : collect();
             
-            // Hitung total
-            $total = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
+            // ⬅️ CALCULATE BOTH IDR & USD TOTAL (di backend, bukan di view)
+            $totalIdr = $cartItems->sum(function ($item) {
+                return $item->product->price_idr * $item->quantity;
+            });
+            
+            $totalUsd = $cartItems->sum(function ($item) {
+                return $item->product->price_usd * $item->quantity;
             });
         } else {
-            // Guest user - data akan diambil dari localStorage via JavaScript
             $cartItems = collect();
-            $total = 0;
+            $totalIdr = 0;
+            $totalUsd = 0;
         }
 
-        return view('cart.index', compact('cartItems', 'total'));
+        return view('cart.index', compact('cartItems', 'totalIdr', 'totalUsd'));
     }
 
     public function addToCart(Request $request, $productId)
@@ -62,12 +65,14 @@ class CartController extends Controller
                 return response()->json(['error' => 'Product not found'], 404);
             }
 
+            // ⬅️ RETURN DUAL PRICES
             return response()->json([
                 'success' => 'Product added to cart!',
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => $product->price,
+                    'price_idr' => $product->price_idr,
+                    'price_usd' => $product->price_usd,
                     'description' => $product->description
                 ]
             ]);
@@ -94,7 +99,7 @@ class CartController extends Controller
         }
     }
 
-    // API endpoint untuk get guest cart items
+    // ⬅️ API endpoint untuk get guest cart items (FIXED)
     public function getGuestCartItems(Request $request)
     {
         $productIds = $request->input('product_ids', []);
@@ -112,7 +117,8 @@ class CartController extends Controller
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => $product->price,
+                    'price_idr' => (float) $product->price_idr, // ⬅️ CAST TO FLOAT
+                    'price_usd' => (float) $product->price_usd, // ⬅️ CAST TO FLOAT
                     'description' => $product->description,
                     // Tambahkan image data
                     'featured_image' => $product->featuredImage ? [
@@ -120,7 +126,7 @@ class CartController extends Controller
                         'alt' => $product->featuredImage->alt ?? $product->name
                     ] : null
                 ],
-                'quantity' => $productIds[$product->id]
+                'quantity' => (int) $productIds[$product->id] // ⬅️ CAST TO INT
             ];
         });
 
