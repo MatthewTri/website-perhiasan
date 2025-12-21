@@ -142,8 +142,28 @@
                 </div>
                 @elseif($order->status === 'SHIPPED')
                 <div class="mt-4 pt-4 border-t bg-blue-50 rounded-lg p-3">
-                    <p class="text-sm font-medium text-blue-900">Tracking Info:</p>
-                    <p class="text-sm text-blue-800">{{ $order->courier_name }}: <span class="font-semibold">{{ $order->tracking_number }}</span></p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-blue-900">Order Shipped!</p>
+                                @if($order->tracking_number)
+                                <p class="text-xs text-blue-700">{{ $order->courier_name }}: {{ $order->tracking_number }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        <form action="{{ route('order.track.complete', $order->guest_token) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" 
+                                    onclick="return confirm('Have you received your order?')"
+                                    class="text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                Order Received
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 @elseif($order->status === 'COMPLETED')
                 <div class="mt-4 pt-4 border-t bg-green-50 rounded-lg p-3">
@@ -154,10 +174,12 @@
                             </svg>
                             <p class="text-sm font-medium text-green-900">Order Completed!</p>
                         </div>
-                        @if(!$order->is_reviewed)
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                            Leave a Review
+                        @if($order->can_review && !$order->is_reviewed)
+                        <a href="{{ route('order.track.review', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            Write Review
                         </a>
+                        @elseif($order->is_reviewed)
+                        <span class="text-sm text-gray-600">Reviewed ✓</span>
                         @endif
                     </div>
                 </div>

@@ -15,6 +15,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ReviewController;
 
 // Home Page
 Route::get('/', function () {
@@ -107,6 +108,8 @@ Route::get('/order/track/{token}', [OrderTrackingController::class, 'show'])->na
 Route::post('/order/track/{token}/upload', [OrderTrackingController::class, 'uploadProof'])->name('order.track.upload');
 Route::get('/order/track/{guestToken}/paypal/checkout', [OrderTrackingController::class, 'createPaypalCheckout'])
     ->name('order.track.paypal.checkout');
+Route::post('/order/track/{token}/complete', [OrderTrackingController::class, 'completeOrder'])->name('order.track.complete');
+
 
 // PayPal Payment Callbacks
 Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('payment.paypal.success');
@@ -120,3 +123,7 @@ Route::get('/webhook/paypal', function () {
         'timestamp' => now()
     ]);
 })->name('webhook.paypal.test');
+
+// Revew Routes via magic link
+Route::get('/order/track/{token}/review', [ReviewController::class, 'create'])->name('order.track.review');
+Route::post('/order/track/{token}/review', [ReviewController::class, 'store'])->name('order.track.review.store');

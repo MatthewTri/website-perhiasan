@@ -372,6 +372,95 @@
         @endif
         </div>
         @endif
+
+        <!-- User Confirm Receipt Section if already shipped-->
+        @if($order->status === 'SHIPPED')
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Received?</h2>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-blue-900">Have you received your order?</p>
+                        <p class="text-xs text-blue-700 mt-1">Click the button below to confirm delivery and share your experience!</p>
+                        
+                        @if($order->tracking_number)
+                        <div class="mt-3 pt-3 border-t border-blue-200">
+                            <p class="text-xs text-gray-700"><strong>Courier:</strong> {{ $order->courier_name }}</p>
+                            <p class="text-xs text-gray-700"><strong>Tracking:</strong> {{ $order->tracking_number }}</p>
+                            <p class="text-xs text-gray-700"><strong>Shipped on:</strong> {{ $order->shipped_at->format('M d, Y') }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            
+            <form action="{{ route('order.track.complete', $order->guest_token) }}" method="POST" onsubmit="return confirm('Have you received your order? This will mark the order as completed.');">
+                @csrf
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Complete Order & Write Review
+                </button>
+            </form>
+
+            <p class="text-xs text-gray-500 text-center mt-3">
+                <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                You'll be redirected to write a review after confirming
+            </p>
+        </div>
+        @endif
+
+        <!-- Review Section -->
+        @if($order->status === 'COMPLETED' && $order->can_review && !$order->is_reviewed)
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Review Your Purchase</h2>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-blue-900">Share your experience!</p>
+                        <p class="text-xs text-blue-700 mt-1">Help other customers by reviewing the products you purchased.</p>
+                        <p class="text-xs text-yellow-700 mt-2">
+                            <strong>Deadline:</strong> {{ $order->completed_at->addDays(30)->format('M d, Y g:i A') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="{{ route('order.track.review', $order->guest_token) }}" 
+               class="block w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-lg transition duration-200 text-center flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                Write a Review
+            </a>
+        </div>
+        @elseif($order->is_reviewed)
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-green-900">Thank you for your review!</p>
+                        <p class="text-xs text-green-700 mt-1">You have already submitted a review for this order.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 

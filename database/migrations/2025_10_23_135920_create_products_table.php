@@ -19,6 +19,9 @@ return new class extends Migration
             $table->decimal('price_idr', 15, 2); // Harga produk dalam IDR
             $table->decimal('price_usd', 15, 2); // Harga produk dalam USD
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+
+            $table->decimal('rating_avg', 3, 2)->default(0); // Contoh: 4.55
+            $table->integer('rating_count')->default(0);     // Contoh: 150 ulasan
             $table->timestamps();
         });
     }

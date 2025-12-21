@@ -35,10 +35,9 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // Relasi: Pembayaran untuk order ini
-    public function payment()
+    public function reviews()
     {
-        return $this->hasOne(Payment::class);
+        return $this->hasMany(Review::class);
     }
 
     // Relasi: Pengajuan refund untuk order ini

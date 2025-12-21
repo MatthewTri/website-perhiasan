@@ -11,7 +11,7 @@ class Product extends Model
     /** @use HasFactory<\Database\Factories\ProductFactory> */
     use Sluggable;
 
-    protected $fillable = ['name', 'slug', 'description', 'price_idr', 'price_usd', 'image', 'category_id'];
+    protected $fillable = ['name', 'slug', 'description', 'price_idr', 'price_usd', 'image', 'category_id',  'rating_avg', 'rating_count'];
     protected $with = ['category'];
 
     public function category()
@@ -34,6 +34,22 @@ class Product extends Model
         return $this->hasOne(ProductImage::class)->where('is_featured', true);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class)->where('is_visible', true)->latest();
+    }
+
+    public function updateRatingAggregate()
+    {
+        $avgRating = $this->reviews()->avg('rating') ?? 0;
+        $countRating = $this->reviews()->count();
+
+        $this->update([
+            'rating_avg' => round($avgRating, 2),
+            'rating_count' => $countRating
+        ]);
+    }
+    
     public function getRouteKeyName() {
         return 'slug';
     }

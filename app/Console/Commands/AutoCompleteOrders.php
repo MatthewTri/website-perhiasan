@@ -20,7 +20,7 @@ class AutoCompleteOrders extends Command
      *
      * @var string
      */
-    protected $description = 'Automatically complete orders that have been shipped for more than 30 days';
+    protected $description = 'Automatically complete orders that have been shipped for more than 7/21 days';
     /**
      * Execute the console command.
      */

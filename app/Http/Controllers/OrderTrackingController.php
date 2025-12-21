@@ -99,4 +99,29 @@ class OrderTrackingController extends Controller
         // ⬅️ REDIRECT LANGSUNG KE PAYPAL CHECKOUT
         return redirect()->away($paypalResult['redirect_url']);
     }
+
+    /**
+     * USER CONFIRM ORDER RECEIVED (SHIPPED → COMPLETED)
+     * URL: /order/track/{token}/complete
+     */
+    public function completeOrder($guestToken)
+    {
+        $order = Order::where('guest_token', $guestToken)->firstOrFail();
+
+        // Validasi: Hanya bisa complete jika status SHIPPED
+        if ($order->status !== 'SHIPPED') {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'This order cannot be completed at this time.');
+        }
+
+        // Update status ke COMPLETED
+        $order->update([
+            'status' => 'COMPLETED',
+            'completed_at' => now(),
+        ]);
+
+        // ⬅️ REDIRECT LANGSUNG KE HALAMAN REVIEW
+        return redirect()->route('order.track.review', $guestToken)
+                       ->with('success', 'Order completed! Please share your experience by writing a review.');
+    }
 }
