@@ -87,7 +87,7 @@ class OrderTrackingController extends Controller
 
         if (!$paypalResult['success']) {
             return redirect()->route('order.track', $guestToken)
-                           ->with('error', 'Failed to create PayPal checkout: ' . $paypalResult['message']);
+                           ->with('error', 'Failed to create PayPal checkout. Please try again or contact support.');
         }
 
         // Update order dengan PayPal data

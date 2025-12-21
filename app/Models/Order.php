@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
-
+use Carbon\Carbon;
 
 class Order extends Model
 {
@@ -62,5 +62,26 @@ class Order extends Model
                 'source' => 'order_number'
             ]
         ];
+    }
+
+
+    // Aksesor untuk cek Refund
+    public function getCanRequestRefundAttribute()
+    {
+        if ($this->status !== 'COMPLETED') return false;
+        
+        // Batas 3 Hari
+        $limit = Carbon::parse($this->completed_at)->addDays(3);
+        return now()->lessThan($limit);
+    }
+
+    // Aksesor untuk cek Review
+    public function getCanReviewAttribute()
+    {
+        if ($this->status !== 'COMPLETED') return false;
+        
+        // Batas 30 Hari
+        $limit = Carbon::parse($this->completed_at)->addDays(30);
+        return now()->lessThan($limit);
     }
 }

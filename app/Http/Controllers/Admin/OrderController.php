@@ -130,6 +130,7 @@ class OrderController extends Controller
             $order->update([
                 'status' => 'SHIPPED',
                 'paid_at' => now(),
+                'shipped_at' => now(),
                 'courier_name' => $validated['courier_name'],
                 'tracking_number' => $validated['tracking_number'],
             ]);
@@ -169,7 +170,8 @@ class OrderController extends Controller
         $order->update([
             'courier_name' => $validated['courier_name'],
             'tracking_number' => $validated['tracking_number'],
-            'status' => 'SHIPPED'
+            'status' => 'SHIPPED',
+            'shipped_at' => now(),
         ]);
 
         return back()->with('success', 'Tracking information updated successfully!');

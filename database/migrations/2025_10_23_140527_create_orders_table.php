@@ -76,7 +76,8 @@ return new class extends Migration
             $table->string('transaction_id')->nullable()->index(); // Capture ID dari PayPal
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
-
+            $table->timestamp('shipped_at')->nullable(); // Waktu pengiriman barang
+            $table->timestamp('completed_at')->nullable(); // Waktu order selesai
             $table->timestamp('cancelled_at')->nullable(); // Waktu pembatalan order
 
             $table->string('proof_of_payment')->nullable(); // URL/Gambar bukti transfer manual
