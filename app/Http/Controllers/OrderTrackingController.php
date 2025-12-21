@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\Storage;
 use App\Services\PaymentService;
+use Illuminate\Support\Facades\Log;
 
 class OrderTrackingController extends Controller
 {
@@ -70,34 +71,42 @@ class OrderTrackingController extends Controller
     {
         $order = Order::where('guest_token', $guestToken)->firstOrFail();
 
-        // Validasi status order
         if (!in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION'])) {
             return redirect()->route('order.track', $guestToken)
                            ->with('error', 'This order is not eligible for payment.');
         }
 
-        // Validasi payment gateway
         if ($order->payment_gateway !== 'PAYPAL') {
             return redirect()->route('order.track', $guestToken)
                            ->with('error', 'This order is set for BCA bank transfer.');
         }
 
-        // ⬅️ CREATE PAYPAL ORDER (FRESH 3 JAM!)
-        $paypalResult = $this->paymentService->createPaypalOrder($order);
+        // ⬅️ CREATE PAYPAL ORDER DENGAN RETRY
+        try {
+            $paypalResult = $this->paymentService->createPaypalOrder($order);
 
-        if (!$paypalResult['success']) {
+            if (!$paypalResult['success']) {
+                return redirect()->route('order.track', $guestToken)
+                               ->with('error', 'PayPal checkout failed: ' . $paypalResult['message'] . '. Please try again or contact support.');
+            }
+
+            // Update order dengan PayPal data
+            $order->update([
+                'payment_url' => $paypalResult['redirect_url'],
+                'transaction_id' => $paypalResult['transaction_id'],
+            ]);
+
+            return redirect()->away($paypalResult['redirect_url']);
+
+        } catch (\Exception $e) {
+            Log::error('PayPal Checkout Exception', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+
             return redirect()->route('order.track', $guestToken)
-                           ->with('error', 'Failed to create PayPal checkout. Please try again or contact support.');
+                           ->with('error', 'An error occurred while connecting to PayPal. Please try again in a few moments.');
         }
-
-        // Update order dengan PayPal data
-        $order->update([
-            'payment_url' => $paypalResult['redirect_url'],
-            'transaction_id' => $paypalResult['transaction_id'],
-        ]);
-
-        // ⬅️ REDIRECT LANGSUNG KE PAYPAL CHECKOUT
-        return redirect()->away($paypalResult['redirect_url']);
     }
 
     /**

@@ -3,125 +3,185 @@
 namespace App\Services;
 
 use App\Models\Order;
-use Xendit\Configuration;
-use Xendit\Invoice\InvoiceApi;
-use Xendit\Invoice\CreateInvoiceRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaymentService
 {
+    protected $maxRetries = 3;
+    protected $retryDelay = 1000; // milliseconds
+
+    /**
+     * ⬅️ GET PAYPAL CLIENT WITH CACHED TOKEN
+     */
+    private function getPayPalClient()
+    {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+
+        // ⬅️ CACHE TOKEN SELAMA 55 MENIT (Token PayPal berlaku 60 menit)
+        $token = Cache::remember('paypal_access_token', 55 * 60, function () use ($provider) {
+            try {
+                return $provider->getAccessToken();
+            } catch (\Exception $e) {
+                Log::error('PayPal Get Token Failed', ['error' => $e->getMessage()]);
+                return null;
+            }
+        });
+
+        if (!$token) {
+            // Jika cache gagal, coba langsung
+            $token = $provider->getAccessToken();
+        }
+
+        $provider->setAccessToken($token);
+        return $provider;
+    }
+
+    /**
+     * ⬅️ RETRY WRAPPER UNTUK API CALLS
+     */
+    private function retryApiCall(callable $callback, $context = 'PayPal API Call')
+    {
+        $attempt = 0;
+        $lastException = null;
+
+        while ($attempt < $this->maxRetries) {
+            try {
+                return $callback();
+            } catch (\Exception $e) {
+                $lastException = $e;
+                $attempt++;
+
+                Log::warning("{$context} Failed - Attempt {$attempt}/{$this->maxRetries}", [
+                    'error' => $e->getMessage(),
+                    'attempt' => $attempt
+                ]);
+
+                if ($attempt < $this->maxRetries) {
+                    // ⬅️ CLEAR CACHE TOKEN JIKA ERROR (BIAR REFRESH)
+                    if (str_contains($e->getMessage(), 'Authentication') || 
+                        str_contains($e->getMessage(), 'Unauthorized')) {
+                        Cache::forget('paypal_access_token');
+                    }
+
+                    // Exponential backoff: 1s, 2s, 4s
+                    usleep($this->retryDelay * pow(2, $attempt - 1) * 1000);
+                }
+            }
+        }
+
+        // Jika semua retry gagal
+        Log::error("{$context} Failed After {$this->maxRetries} Retries", [
+            'error' => $lastException->getMessage(),
+            'trace' => $lastException->getTraceAsString()
+        ]);
+
+        throw $lastException;
+    }
+
     /**
      * 1. Membuat Order di PayPal (Redirect URL)
      */
     public function createPaypalOrder(Order $order)
     {
         try {
-            // Inisialisasi PayPal Client
-            $provider = new PayPalClient;
-            $provider->setApiCredentials(config('paypal'));
-            $token = $provider->getAccessToken();
-            $provider->setAccessToken($token);
+            return $this->retryApiCall(function () use ($order) {
+                $provider = $this->getPayPalClient();
+                $uniqueInvoiceId = $order->order_number . '-' . time();
 
-            $uniqueInvoiceId = $order->order_number . '-' . time();
+                $itemTotal = 0;
+                $items = [];
 
-            $itemTotal = 0;
-            $items = [];
+                foreach ($order->orderItems as $orderItem) {
+                    $unitPrice = number_format($orderItem->price_usd, 2, '.', '');
+                    $itemSubtotal = $orderItem->price_usd * $orderItem->quantity;
+                    $itemTotal += $itemSubtotal;
 
-            foreach ($order->orderItems as $orderItem) {
-                $unitPrice = number_format($orderItem->price_usd, 2, '.', '');
-                $itemSubtotal = $orderItem->price_usd * $orderItem->quantity;
-                $itemTotal += $itemSubtotal;
-
-                $items[] = [
-                    'name' => $orderItem->item_name,
-                    'description' => $orderItem->item_description ?? 'Product from ' . config('app.name'),
-                    'quantity' => (string)$orderItem->quantity,
-                    'unit_amount' => [
-                        'currency_code' => 'USD',
-                        'value' => $unitPrice
-                    ]
-                ];
-            }
-            
-            $itemTotal = number_format($itemTotal, 2, '.', '');
-            $shippingCost = number_format($order->shipping_cost, 2, '.', '');
-            $taxAmount = number_format($order->tax_amount ?? 0, 2, '.', '');
-            
-            // ⬅️ TOTAL HARUS SAMA DENGAN: item_total + shipping + tax
-            $totalAmount = number_format(
-                floatval($itemTotal) + floatval($shippingCost) + floatval($taxAmount),
-                2,
-                '.',
-                ''
-            );
-
-            // Buat Payload Order
-            $response = $provider->createOrder([
-                "intent" => "CAPTURE",
+                    $items[] = [
+                        'name' => $orderItem->item_name,
+                        'description' => $orderItem->item_description ?? 'Product from ' . config('app.name'),
+                        'quantity' => (string)$orderItem->quantity,
+                        'unit_amount' => [
+                            'currency_code' => 'USD',
+                            'value' => $unitPrice
+                        ]
+                    ];
+                }
                 
-                "application_context" => [
-                    "return_url" => route('payment.paypal.success', ['order' => $order->id]),
-                    "cancel_url" => route('payment.paypal.cancel', ['order' => $order->id]),
-                    "brand_name" => config('app.name', 'Cecile Private Collection'),
-                    "shipping_preference" => "NO_SHIPPING", // PENTING: Tidak tanya alamat lagi
-                ],
+                $itemTotal = number_format($itemTotal, 2, '.', '');
+                $shippingCost = number_format($order->shipping_cost, 2, '.', '');
+                $taxAmount = number_format($order->tax_amount ?? 0, 2, '.', '');
                 
-                "purchase_units" => [
-                    [
-                        "reference_id" => $order->order_number,
-                        "invoice_id" => $uniqueInvoiceId,
-                        "description" => "Order #{$order->order_number}",
-                        "amount" => [
-                            "currency_code" => "USD",
-                            'value' => $totalAmount, // ⬅️ TOTAL AMOUNT
-                            'breakdown' => [
-                                'item_total' => [
-                                    'currency_code' => 'USD',
-                                    'value' => $itemTotal // ⬅️ SUM OF ALL ITEMS
-                                ],
-                                'shipping' => [
-                                    'currency_code' => 'USD',
-                                    'value' => $shippingCost // ⬅️ SHIPPING COST
-                                ],
-                                'tax_total' => [
-                                    'currency_code' => 'USD',
-                                    'value' => $taxAmount // ⬅️ TAX (optional, bisa 0.00)
+                $totalAmount = number_format(
+                    floatval($itemTotal) + floatval($shippingCost) + floatval($taxAmount),
+                    2,
+                    '.',
+                    ''
+                );
+
+                // Buat Payload Order
+                $response = $provider->createOrder([
+                    "intent" => "CAPTURE",
+                    
+                    "application_context" => [
+                        "return_url" => route('payment.paypal.success', ['order' => $order->id]),
+                        "cancel_url" => route('payment.paypal.cancel', ['order' => $order->id]),
+                        "brand_name" => config('app.name', 'Cecile Private Collection'),
+                        "shipping_preference" => "NO_SHIPPING",
+                    ],
+                    
+                    "purchase_units" => [
+                        [
+                            "reference_id" => $order->order_number,
+                            "invoice_id" => $uniqueInvoiceId,
+                            "description" => "Order #{$order->order_number}",
+                            "amount" => [
+                                "currency_code" => "USD",
+                                'value' => $totalAmount,
+                                'breakdown' => [
+                                    'item_total' => [
+                                        'currency_code' => 'USD',
+                                        'value' => $itemTotal
+                                    ],
+                                    'shipping' => [
+                                        'currency_code' => 'USD',
+                                        'value' => $shippingCost
+                                    ],
+                                    'tax_total' => [
+                                        'currency_code' => 'USD',
+                                        'value' => $taxAmount
+                                    ]
                                 ]
-                            ]
-                        ],
-                        "items" => $this->formatPayPalItems($order)
+                            ],
+                            "items" => $items
+                        ]
                     ]
-                ]
-            ]);
+                ]);
 
-            // Cek Response
-            if (isset($response['id']) && $response['id'] != null) {
-                // Cari Link 'approve'
-                foreach ($response['links'] as $link) {
-                    if ($link['rel'] === 'approve') {
-                        return [
-                            'success' => true,
-                            'redirect_url' => $link['href'],
-                            'transaction_id' => $response['id']
-                        ];
+                // Cek Response
+                if (isset($response['id']) && $response['id'] != null) {
+                    foreach ($response['links'] as $link) {
+                        if ($link['rel'] === 'approve') {
+                            return [
+                                'success' => true,
+                                'redirect_url' => $link['href'],
+                                'transaction_id' => $response['id']
+                            ];
+                        }
                     }
                 }
-            }
 
-            // Jika gagal
-            Log::error('PayPal Create Order Failed', ['response' => $response]);
-            return [
-                'success' => false, 
-                'message' => 'Failed to create PayPal order: ' . ($response['message'] ?? 'Unknown error')
-            ];
+                Log::error('PayPal Create Order Failed', ['response' => $response]);
+                return [
+                    'success' => false, 
+                    'message' => 'Failed to create PayPal order: ' . ($response['message'] ?? 'Unknown error')
+                ];
+
+            }, 'PayPal Create Order');
 
         } catch (\Exception $e) {
-            Log::error('PayPal Exception', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return [
                 'success' => false,
                 'message' => 'PayPal error: ' . $e->getMessage()
@@ -130,65 +190,39 @@ class PaymentService
     }
 
     /**
-     * 2. Format Order Items untuk PayPal
-     */
-    private function formatPayPalItems(Order $order)
-    {
-        $items = [];
-        
-        foreach ($order->orderItems as $item) {
-            $items[] = [
-                "name" => substr($item->item_name, 0, 127), // PayPal max 127 chars
-                "description" => substr($item->item_description ?? '', 0, 127),
-                "unit_amount" => [
-                    "currency_code" => "USD",
-                    "value" => number_format($item->price, 2, '.', '')
-                ],
-                "quantity" => (string) $item->quantity,
-                "category" => "PHYSICAL_GOODS"
-            ];
-        }
-        
-        return $items;
-    }
-
-    /**
-     * 3. Capture Payment (Saat User Kembali dari PayPal)
+     * 2. Capture Payment (Saat User Kembali dari PayPal)
      */
     public function capturePaypalPayment($orderId)
     {
         try {
-            $provider = new PayPalClient;
-            $provider->setApiCredentials(config('paypal'));
-            $provider->getAccessToken();
+            return $this->retryApiCall(function () use ($orderId) {
+                $provider = $this->getPayPalClient();
+                $response = $provider->capturePaymentOrder($orderId);
 
-            // Capture Payment
-            $response = $provider->capturePaymentOrder($orderId);
+                if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
-            // Cek Status
-            if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+                    $captureId = $response['purchase_units'][0]['payments']['captures'][0]['id'] ?? null;
+
+                    return [
+                        'success' => true,
+                        'transaction_id' => $response['id'],
+                        'capture_id' => $captureId, // Refund id
+                        'status' => 'PAID',
+                        'payer_email' => $response['payer']['email_address'] ?? null,
+                        'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'] ?? 0
+                    ];
+                }
+
+                Log::error('PayPal Capture Failed', ['response' => $response]);
                 return [
-                    'success' => true,
-                    'transaction_id' => $response['id'],
-                    'status' => 'PAID',
-                    'payer_email' => $response['payer']['email_address'] ?? null,
-                    'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'] ?? 0
+                    'success' => false, 
+                    'message' => 'Payment capture failed',
+                    'details' => $response
                 ];
-            }
 
-            Log::error('PayPal Capture Failed', ['response' => $response]);
-            return [
-                'success' => false, 
-                'message' => 'Payment capture failed',
-                'details' => $response
-            ];
+            }, 'PayPal Capture Payment');
 
         } catch (\Exception $e) {
-            Log::error('PayPal Capture Exception', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return [
                 'success' => false,
                 'message' => 'PayPal capture error: ' . $e->getMessage()
@@ -197,36 +231,35 @@ class PaymentService
     }
 
     /**
-     * 4. Get Order Details (untuk verifikasi)
+     * 3. Get Order Details (untuk verifikasi)
      */
     public function getPaypalOrderStatus($paypalOrderId)
     {
         try {
-            $provider = new PayPalClient;
-            $provider->setApiCredentials(config('paypal'));
-            $provider->getAccessToken();
+            return $this->retryApiCall(function () use ($paypalOrderId) {
+                $provider = $this->getPayPalClient();
+                $orderDetails = $provider->showOrderDetails($paypalOrderId);
 
-            $orderDetails = $provider->showOrderDetails($paypalOrderId);
+                if (!$orderDetails) {
+                    return [
+                        'success' => false,
+                        'message' => 'Order not found'
+                    ];
+                }
 
-            if (!$orderDetails) {
                 return [
-                    'success' => false,
-                    'message' => 'Order not found'
+                    'success' => true,
+                    'paypal_order_id' => $orderDetails['id'],
+                    'status' => $orderDetails['status'],
+                    'create_time' => $orderDetails['create_time'] ?? null,
+                    'update_time' => $orderDetails['update_time'] ?? null,
+                    'payer_email' => $orderDetails['payer']['email_address'] ?? 'N/A',
+                    'payer_name' => $orderDetails['payer']['name']['given_name'] ?? 'N/A',
+                    'amount' => $orderDetails['purchase_units'][0]['amount']['value'] ?? 0,
+                    'currency' => $orderDetails['purchase_units'][0]['amount']['currency_code'] ?? 'USD',
                 ];
-            }
 
-            // Format data untuk admin view
-            return [
-                'success' => true,
-                'paypal_order_id' => $orderDetails['id'],
-                'status' => $orderDetails['status'], // CREATED, APPROVED, COMPLETED, etc.
-                'create_time' => $orderDetails['create_time'] ?? null,
-                'update_time' => $orderDetails['update_time'] ?? null,
-                'payer_email' => $orderDetails['payer']['email_address'] ?? 'N/A',
-                'payer_name' => $orderDetails['payer']['name']['given_name'] ?? 'N/A',
-                'amount' => $orderDetails['purchase_units'][0]['amount']['value'] ?? 0,
-                'currency' => $orderDetails['purchase_units'][0]['amount']['currency_code'] ?? 'USD',
-            ];
+            }, 'PayPal Get Order Status');
 
         } catch (\Exception $e) {
             Log::error('PayPal Get Order Status Exception', [
@@ -236,10 +269,19 @@ class PaymentService
             
             return [
                 'success' => false,
-                'message' => 'Failed to fetch PayPal order status'
+                'message' => 'Failed to fetch PayPal order status: ' . $e->getMessage()
             ];
         }
     }
+}
+
+
+
+
+
+
+
+
     // protected $apiInstance;
 
     // public function __construct()
@@ -295,4 +337,3 @@ class PaymentService
     //         ];
     //     }
     // }
-}

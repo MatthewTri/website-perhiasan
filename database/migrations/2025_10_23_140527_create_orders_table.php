@@ -73,7 +73,8 @@ return new class extends Migration
             $table->string('payment_preference')->default('MANUAL'); // MANUAL atau PAYPAL
             $table->string('payment_gateway')->nullable(); // 'MANUAL' atau 'PAYPAL'
             $table->string('payment_method')->nullable(); // 'BCA' , 'PAYPAL'
-            $table->string('transaction_id')->nullable()->index(); // Capture ID dari PayPal
+            $table->string('transaction_id')->nullable()->index(); // Transaction ID dari PayPal
+            $table->string('capture_id')->nullable()->index(); // Capture ID dari PayPal
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
             $table->timestamp('shipped_at')->nullable(); // Waktu pengiriman barang

@@ -8,6 +8,7 @@ use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentDetailsMail;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -45,8 +46,27 @@ class OrderController extends Controller
     {
         $order->load('user', 'orderItems.product', 'customRequest');
         $paypalStatus = null;
+        
+        // ⬅️ HANYA FETCH PAYPAL STATUS JIKA ADA TRANSACTION_ID
         if ($order->payment_gateway === 'PAYPAL' && $order->transaction_id) {
-            $paypalStatus = $this->paymentService->getPaypalOrderStatus($order->transaction_id);
+            try {
+                $paypalStatus = $this->paymentService->getPaypalOrderStatus($order->transaction_id);
+                
+                // ⬅️ TAMBAHAN: Jika masih gagal, set null aja (jangan error)
+                if (!$paypalStatus['success']) {
+                    Log::warning('PayPal Status Fetch Failed (Non-critical)', [
+                        'order_id' => $order->id,
+                        'message' => $paypalStatus['message']
+                    ]);
+                    $paypalStatus = null; // Set null biar view tetap bisa tampil
+                }
+            } catch (\Exception $e) {
+                Log::error('PayPal Status Exception in Admin', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+                $paypalStatus = null;
+            }
         }
         
         return view('admin.orders.show', compact('order', 'paypalStatus'));

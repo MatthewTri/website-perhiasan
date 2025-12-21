@@ -237,7 +237,7 @@
                                             <p class="text-sm text-gray-500">Transaction ID: {{ $order->transaction_id }}</p>
                                             
                                             {{-- ⬅️ TAMPILKAN STATUS PAYPAL (READ-ONLY) --}}
-                                            @if(isset($paypalStatus) && $paypalStatus['success'])
+                                            @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])
                                                 <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                                                     <p class="text-xs font-medium text-blue-900 mb-2">PayPal Order Status:</p>
                                                     <div class="space-y-1 text-xs text-blue-800">
@@ -254,8 +254,23 @@
                                                     </div>
                                                 </div>
                                             @elseif(isset($paypalStatus) && !$paypalStatus['success'])
-                                                <div class="mt-2 text-xs text-red-600">
-                                                    ⚠️ Unable to fetch PayPal status: {{ $paypalStatus['message'] }}
+                                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+                                                    <div class="flex items-start">
+                                                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        <div>
+                                                            <p class="font-medium">PayPal Status Unavailable</p>
+                                                            <p class="mt-1">Transaction ID: {{ $order->transaction_id }}</p>
+                                                            <button onclick="location.reload()" class="mt-2 text-blue-600 hover:text-blue-800 underline text-xs">
+                                                                Retry Loading Status
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="mt-2 text-xs text-gray-500 italic">
+                                                    PayPal status will appear here after order creation
                                                 </div>
                                             @endif
 

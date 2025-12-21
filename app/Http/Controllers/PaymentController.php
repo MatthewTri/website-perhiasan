@@ -74,7 +74,7 @@ class PaymentController extends Controller
 
         // ⬅️ CAPTURE PAYMENT DI SINI (INI YANG TRIGGER WEBHOOK!)
         try {
-            Log::info('🔄 Attempting to CAPTURE PayPal payment', [
+            Log::info('Attempting to CAPTURE PayPal payment', [
                 'paypal_order_id' => $paypalToken
             ]);
 
@@ -86,16 +86,18 @@ class PaymentController extends Controller
 
             if ($captureResult['success']) {
                 // ✅ UPDATE ORDER (ini backup, webhook juga akan update)
-                $order->update([
-                    'status' => 'PAID',
-                    'paid_at' => now(),
-                ]);
+                // $order->update([
+                //     'status' => 'PAID',
+                //     'paid_at' => now(),
+                //     'capture_id' => $captureResult['capture_id'] ?? null,
+                // ]);
 
                 Log::info('TESTING WEBHOOK: Database TIDAK diupdate oleh Controller. Menunggu Webhook...');
 
-                Log::info('✅ Order updated to PAID via return URL', [
+                Log::info('✅ Order updated to PAID with Capture ID', [
                     'order_id' => $order->id,
                     'order_number' => $order->order_number,
+                    'capture_id' => $captureResult['capture_id'],
                     'amount' => $captureResult['amount'] ?? 'N/A'
                 ]);
 
@@ -262,6 +264,8 @@ class PaymentController extends Controller
             'capture_id' => $captureId
         ]);
 
+
+
         // ⬅️ TAMBAHKAN LOG DATABASE DEBUG
         try {
             $totalOrders = Order::count();
@@ -320,11 +324,13 @@ class PaymentController extends Controller
         $order->update([
             'status' => 'PAID',
             'paid_at' => now(),
+            'capture_id' => $captureId,
         ]);
 
         Log::info('✅ PayPal Webhook: Payment completed successfully', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
+            'capture_id' => $captureId,
             'amount' => $event['resource']['amount']['value'] ?? 'unknown'
         ]);
 

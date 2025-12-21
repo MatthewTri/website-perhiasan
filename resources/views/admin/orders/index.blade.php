@@ -11,7 +11,7 @@
             </div>
             <div class="text-right">
                 <div class="text-sm text-gray-500">Total Orders</div>
-                <div class="text-2xl font-bold text-gray-900">{{ $orders->count() }}</div>
+                <div class="text-2xl font-bold text-gray-900">{{ $allOrders->count() }}</div>
             </div>
         </div>
     </div>
@@ -29,21 +29,7 @@
     @endif
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 mb-8">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Total Orders</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $allOrders->count() }}</p>
-                </div>
-                <div class="bg-blue-100 rounded-full p-3">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <div class="flex items-center justify-between">
                 <div>
