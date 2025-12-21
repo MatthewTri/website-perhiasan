@@ -21,3 +21,14 @@ Schedule::command('orders:cancel-unpaid')
         ->onFailure(function () {
             Log::error('❌ Scheduler: orders:cancel-unpaid FAILED');
         });
+
+Schedule::command('orders:auto-complete')
+        ->dailyAt('02:00')
+        ->withoutOverlapping()
+        ->runInBackground()    
+        ->onSuccess(function () {
+            Log::info('✅ Scheduler: orders:auto-complete completed successfully');
+        })
+        ->onFailure(function () {
+            Log::error('❌ Scheduler: orders:auto-complete FAILED');
+        });

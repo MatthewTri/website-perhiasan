@@ -19,6 +19,8 @@ class Order extends Model
      protected $casts = [
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'shipped_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     // Relasi: Order ini milik siapa (bisa jadi Guest)
