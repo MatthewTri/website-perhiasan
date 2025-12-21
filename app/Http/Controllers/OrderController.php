@@ -31,9 +31,7 @@ class OrderController extends Controller
             abort(403, 'Unauthorized access to this order.');
         }
 
-        // Load relasi
-        $order->load(['orderItems.product.images', 'user']);
-
-        return view('orders.show', compact('order'));
+        // ⬅️ REDIRECT KE MAGIC LINK TRACKING
+        return redirect()->route('order.track', $order->guest_token);
     }
 }

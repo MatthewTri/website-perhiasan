@@ -92,7 +92,7 @@ Route::middleware(['auth'])->group(function () { // tambahkan middleware admin n
 // Member Orders (Must be authenticated)
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/my-orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
+    // Route::get('/my-orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
 });
 
 // Admin Orders
