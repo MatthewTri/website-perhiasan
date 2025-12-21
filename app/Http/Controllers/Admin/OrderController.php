@@ -145,7 +145,7 @@ class OrderController extends Controller
             // Update status jadi CANCELLED
             $order->update([
                 'status' => 'CANCELLED',
-                'proof_of_payment' => null, // Hapus proof
+                'cancelled_at' => now(),
             ]);
 
             // TODO: Kirim email payment rejection
