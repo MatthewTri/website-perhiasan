@@ -35,12 +35,11 @@
         </div>
 
         <!-- Modal Body (Scrollable) -->
-        <div class="flex-1 overflow-y-auto p-4">
-            <div id="reviews-list" class="space-y-4">
+        <div class="flex-1 overflow-y-auto pl-4">
+            <div id="reviews-list" class="space-y-4 overflow-y-auto max-h-96">
                 <!-- Reviews akan dimuat via AJAX -->
                 <div class="text-center py-8">
                     <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mx-auto"></div>
-                    <p class="mt-3 text-sm text-gray-600">Loading reviews...</p>
                 </div>
             </div>
         </div>
@@ -100,8 +99,7 @@ async function loadReviews(page = 1) {
         document.getElementById('total-reviews').textContent = data.total;
         
         if (data.data.length > 0) {
-            reviewsList.innerHTML = data.data.map(review => renderReview(review)).join('');
-            
+            reviewsList.innerHTML = data.data.map((review, index) => renderReview(review, index)).join('');            
             if (data.last_page > 1) {
                 pagination.innerHTML = renderPagination(data);
                 pagination.classList.remove('hidden');
@@ -118,7 +116,7 @@ async function loadReviews(page = 1) {
     }
 }
 
-function renderReview(review) {
+function renderReview(review, index) {
     const stars = Array(5).fill(0).map((_, i) => {
         const filled = i < review.rating;
         return `<svg class="w-4 h-4 ${filled ? 'text-yellow-400' : 'text-gray-300'} fill-current" viewBox="0 0 20 20">
@@ -133,8 +131,10 @@ function renderReview(review) {
         ? `<img src="/storage/${review.image}" alt="Review photo" class="mt-2 max-w-32 h-auto rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('/storage/${review.image}', '_blank')">`
         : '';
     
+    const paddingTop = index === 0 ? 'pt-4' : '';
+
     return `
-        <div class="border-b border-gray-200 pb-4 last:border-0">
+        <div class="border-b border-gray-200 ${paddingTop} pb-4 pr-4 last:border-0">
             <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -154,7 +154,6 @@ function renderReview(review) {
                     <p class="text-xs text-gray-500 mt-0.5">about <a href="/product/${review.product.slug}" class="text-orange-500 hover:underline">${review.product.name}</a></p>
                     ${review.comment ? `<p class="mt-2 text-sm text-gray-700 leading-relaxed">${review.comment}</p>` : ''}
                     ${imageHtml}
-                    <p class="text-xs text-gray-400 mt-2">${new Date(review.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                 </div>
             </div>
         </div>
