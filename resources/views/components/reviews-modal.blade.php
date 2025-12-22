@@ -126,11 +126,9 @@ function renderReview(review) {
         </svg>`;
     }).join('');
     
-    // ⬅️ AMBIL NAMA DARI ORDER SHIPPING_NAME
     const userName = review.anonymous ? 'Anonymous' : (review.order ? review.order.shipping_name : 'Customer');
     const verifiedBadge = review.order_id ? '<span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">Verified</span>' : '';
     
-    // ⬅️ GAMBAR LEBIH KECIL (max-w-32 = 128px)
     const imageHtml = review.image 
         ? `<img src="/storage/${review.image}" alt="Review photo" class="mt-2 max-w-32 h-auto rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('/storage/${review.image}', '_blank')">`
         : '';
@@ -156,6 +154,7 @@ function renderReview(review) {
                     <p class="text-xs text-gray-500 mt-0.5">about <a href="/product/${review.product.slug}" class="text-orange-500 hover:underline">${review.product.name}</a></p>
                     ${review.comment ? `<p class="mt-2 text-sm text-gray-700 leading-relaxed">${review.comment}</p>` : ''}
                     ${imageHtml}
+                    <p class="text-xs text-gray-400 mt-2">${new Date(review.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                 </div>
             </div>
         </div>
@@ -165,22 +164,80 @@ function renderReview(review) {
 function renderPagination(data) {
     const pages = [];
     
+    // ⬅️ TAMBAHAN: Double Left Arrow (Jump to First Page)
     if (data.current_page > 1) {
-        pages.push(`<button onclick="loadReviews(${data.current_page - 1})" class="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">Previous</button>`);
+        pages.push(`
+            <button onclick="loadReviews(1)" 
+                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7M18 19l-7-7 7-7"/>
+                </svg>
+            </button>
+        `);
     }
     
-    for (let i = 1; i <= data.last_page; i++) {
+    // Previous button (Left Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE 1
+    if (data.current_page > 1) {
+        pages.push(`
+            <button onclick="loadReviews(${data.current_page - 1})" 
+                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+        `);
+    }
+    
+    // Page numbers
+    const maxVisible = 5;
+    let startPage = Math.max(1, data.current_page - Math.floor(maxVisible / 2));
+    let endPage = Math.min(data.last_page, startPage + maxVisible - 1);
+    
+    if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
         if (i === data.current_page) {
-            pages.push(`<button class="px-3 py-1.5 text-sm bg-orange-500 text-white rounded-md">${i}</button>`);
+            pages.push(`
+                <button class="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-900 bg-transparent">
+                    ${i}
+                </button>
+            `);
         } else {
-            pages.push(`<button onclick="loadReviews(${i})" class="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">${i}</button>`);
+            pages.push(`
+                <button onclick="loadReviews(${i})" 
+                        class="w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-400 hover:text-orange-500 transition-colors">
+                    ${i}
+                </button>
+            `);
         }
     }
     
+    // Next button (Right Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE TERAKHIR
     if (data.current_page < data.last_page) {
-        pages.push(`<button onclick="loadReviews(${data.current_page + 1})" class="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">Next</button>`);
+        pages.push(`
+            <button onclick="loadReviews(${data.current_page + 1})" 
+                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+        `);
     }
     
-    return `<div class="flex items-center justify-center space-x-1.5">${pages.join('')}</div>`;
+    // Last page button (Double Right Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE TERAKHIR
+    if (data.current_page < data.last_page) {
+        pages.push(`
+            <button onclick="loadReviews(${data.last_page})" 
+                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                </svg>
+            </button>
+        `);
+    }
+    
+    return `<div class="flex items-center justify-center space-x-0.5">${pages.join('')}</div>`;
 }
 </script>
