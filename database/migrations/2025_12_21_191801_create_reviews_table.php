@@ -28,6 +28,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('rating'); // Angka 1 sampai 5
             $table->text('comment')->nullable();   // Komentar teks (Boleh kosong kalau cuma kasih bintang)
             $table->string('image')->nullable();   // Path foto (Upload bukti barang)
+            $table->boolean('anonymous')->default(false); // Pilihan tampilkan nama atau tidak
 
             // 3. Status Moderasi
             // Default true. Admin bisa ubah jadi false jika review mengandung kata kasar/spam.

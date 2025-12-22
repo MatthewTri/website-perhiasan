@@ -128,6 +128,21 @@
                                         <img id="preview_img_{{ $index }}" src="" alt="Preview" class="max-w-xs rounded-lg border border-gray-300">
                                     </div>
                                 </div>
+
+                                @if($order->user_id)
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" 
+                                               name="reviews[{{ $index }}][anonymous]" 
+                                               value="1"
+                                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="ml-2 text-sm text-gray-700">
+                                            Post as Anonymous
+                                            <span class="text-gray-500">(Hide my name)</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                @endif
                             @endif
                         </div>
                     </div>

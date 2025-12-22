@@ -60,6 +60,7 @@ class ReviewController extends Controller
             'reviews.*.rating' => 'nullable|integer|min:1|max:5',
             'reviews.*.comment' => 'nullable|string|max:1000',
             'reviews.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'reviews.*.anonymous' => 'nullable|boolean',
         ]);
 
         $reviewCount = 0;
@@ -98,6 +99,8 @@ class ReviewController extends Controller
                 'comment' => $reviewData['comment'] ?? null,
                 'image' => $imagePath,
                 'is_visible' => true,
+                'anonymous' => $order->user_id ? ($reviewData['anonymous'] ?? false) : false,
+
             ]);
 
             // ⬅️ UPDATE PRODUCT RATING AGGREGATE
