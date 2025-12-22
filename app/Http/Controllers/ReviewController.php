@@ -129,4 +129,98 @@ class ReviewController extends Controller
 
         return back()->with('error', 'Please provide at least one rating or comment.');
     }
+
+    /**
+     * Halaman Edit Review
+     */
+    public function edit($guestToken)
+    {
+        $order = Order::where('guest_token', $guestToken)->firstOrFail();
+
+        // Validasi: Order harus COMPLETED dan sudah direview
+        if ($order->status !== 'COMPLETED' || !$order->is_reviewed) {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'No review found for this order.');
+        }
+
+        // Load order items dengan produk dan reviews
+        $order->load(['orderItems.product.featuredImage', 'reviews']);
+
+        return view('reviews.edit', compact('order'));
+    }
+
+    /**
+     * Update Review
+     */
+    public function update(Request $request, $guestToken)
+    {
+        $order = Order::where('guest_token', $guestToken)->firstOrFail();
+
+        // Validasi order
+        if ($order->status !== 'COMPLETED' || !$order->is_reviewed) {
+            return back()->with('error', 'Cannot update review for this order.');
+        }
+
+        $validated = $request->validate([
+            'reviews' => 'required|array',
+            'reviews.*.review_id' => 'required|exists:reviews,id',
+            'reviews.*.rating' => 'nullable|integer|min:1|max:5',
+            'reviews.*.comment' => 'nullable|string|max:1000',
+            'reviews.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'reviews.*.delete_image' => 'nullable|boolean',
+            'reviews.*.anonymous' => 'nullable|boolean',
+        ]);
+
+        $updateCount = 0;
+
+        foreach ($validated['reviews'] as $reviewData) {
+            $review = Review::find($reviewData['review_id']);
+
+            // Validasi: Review harus milik order ini
+            if (!$review || $review->order_id !== $order->id) {
+                continue;
+            }
+
+            // Skip jika tidak ada perubahan (rating & comment kosong)
+            if (empty($reviewData['rating']) && empty($reviewData['comment'])) {
+                continue;
+            }
+
+            // Handle Delete Image
+            if (isset($reviewData['delete_image']) && $reviewData['delete_image']) {
+                if ($review->image) {
+                    Storage::disk('public')->delete($review->image);
+                    $review->image = null;
+                }
+            }
+
+            // Handle New Image Upload
+            if (isset($reviewData['image'])) {
+                // Delete old image
+                if ($review->image) {
+                    Storage::disk('public')->delete($review->image);
+                }
+                $review->image = $reviewData['image']->store('reviews', 'public');
+            }
+
+            // Update review data
+            $review->update([
+                'rating' => $reviewData['rating'] ?? $review->rating,
+                'comment' => $reviewData['comment'] ?? $review->comment,
+                'anonymous' => $order->user_id ? ($reviewData['anonymous'] ?? false) : false,
+            ]);
+
+            // Update product rating aggregate
+            $review->product->updateRatingAggregate();
+
+            $updateCount++;
+        }
+
+        if ($updateCount > 0) {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('success', "{$updateCount} review(s) updated successfully.");
+        }
+
+        return back()->with('error', 'No changes were made to your reviews.');
+    }
 }

@@ -177,12 +177,31 @@
                             </svg>
                             <p class="text-sm font-medium text-green-900">Order Completed!</p>
                         </div>
-                        @if($order->can_review && !$order->is_reviewed)
-                        <a href="{{ route('order.track.review', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                            Write Review
-                        </a>
-                        @elseif($order->is_reviewed)
-                        <span class="text-sm text-gray-600">Reviewed ✓</span>
+                        
+                        @if($order->can_review)
+                            @if(!$order->is_reviewed)
+                            {{-- Belum review & masih dalam 30 hari --}}
+                            <a href="{{ route('order.track.review', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                Write Review
+                            </a>
+                            @else
+                            {{-- Sudah review & masih dalam 30 hari (bisa edit) --}}
+                            <a href="{{ route('order.track.review.edit', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Edit Review
+                            </a>
+                            @endif
+                        @else
+                            {{-- Sudah lewat 30 hari --}}
+                            @if($order->is_reviewed)
+                            <span class="text-sm text-gray-500">Reviewed ✓</span>
+                            @endif
+                            {{-- Jika tidak review & lewat 30 hari, tidak tampilkan apa-apa --}}
                         @endif
                     </div>
                 </div>

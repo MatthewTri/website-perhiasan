@@ -127,3 +127,5 @@ Route::get('/webhook/paypal', function () {
 // Revew Routes via magic link
 Route::get('/order/track/{token}/review', [ReviewController::class, 'create'])->name('order.track.review');
 Route::post('/order/track/{token}/review', [ReviewController::class, 'store'])->name('order.track.review.store');
+Route::get('/order/track/{token}/review/edit', [ReviewController::class, 'edit'])->name('order.track.review.edit');
+Route::put('/order/track/{token}/review/update', [ReviewController::class, 'update'])->name('order.track.review.update');
