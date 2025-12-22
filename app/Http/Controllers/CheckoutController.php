@@ -144,7 +144,7 @@ class CheckoutController extends Controller
                 'shipping_phone' => $validated['shipping_phone'],
                 'shipping_address_line1' => $validated['shipping_address_line1'],
                 'shipping_city' => $validated['shipping_city'],
-                'shipping_province' => $validated['shipping_province'],
+                'shipping_province' => $validated['shipping_province'] ?? null,
                 'shipping_postal_code' => $validated['shipping_postal_code'],
                 'shipping_country' => $validated['shipping_country'],
                 

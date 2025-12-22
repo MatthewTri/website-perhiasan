@@ -184,6 +184,7 @@
                                             id="shipping_city" 
                                             value="{{ old('shipping_city') }}"
                                             required
+                                            
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_city') border-red-500 @enderror"
                                             placeholder="Jakarta">
                                         @error('shipping_city')
@@ -192,12 +193,13 @@
                                     </div>
                                     <div>
                                         <label for="shipping_postal_code" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Postal Code
+                                            Postal Code (Optional)
                                         </label>
                                         <input type="text" 
                                             name="shipping_postal_code" 
                                             id="shipping_postal_code" 
                                             value="{{ old('shipping_postal_code') }}"
+                                            oninput="this.value = this.value.toUpperCase()"
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_postal_code') border-red-500 @enderror"
                                             placeholder="12345">
                                         @error('shipping_postal_code')
