@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
+    public function index(Request $request)
+    {
+        $reviews = Review::with(['user', 'product:id,name,slug' , 'order:id,shipping_name'])
+            ->where('is_visible', true)
+            ->whereHas('product') // Only reviews with existing products
+            ->latest()
+            ->paginate(10);
+
+        return response()->json($reviews);
+    }
     /**
      * Halaman Review via Magic Link (Support Guest & Member)
      * URL: /order/track/{token}/review
