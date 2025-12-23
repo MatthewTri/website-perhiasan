@@ -92,6 +92,13 @@ async function loadReviews(page = 1) {
     const reviewsList = document.getElementById('reviews-list');
     const pagination = document.getElementById('reviews-pagination');
     
+    // TAMPILKAN LOADING DULU (sebelum fetch)
+    reviewsList.innerHTML = `
+        <div class="text-center py-8">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mx-auto"></div>
+        </div>
+    `;
+    
     try {
         const response = await fetch(`/api/reviews?page=${page}`);
         const data = await response.json();

@@ -16,7 +16,7 @@ class ReviewController extends Controller
             ->where('is_visible', true)
             ->whereHas('product') // Only reviews with existing products
             ->latest()
-            ->paginate(3);
+            ->paginate(1);
 
         return response()->json($reviews);
     }
