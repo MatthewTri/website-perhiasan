@@ -40,6 +40,9 @@ return new class extends Migration
             // Kombinasi order_id dan product_id harus unik.
             // Artinya: Di Order #INV-001, User tidak bisa review "Baju Merah" 2 kali.
             $table->unique(['order_id', 'product_id']);
+
+            // Index untuk query cepat hanya yang visible
+            $table->index('is_visible');
         });
     }
 

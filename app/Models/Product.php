@@ -41,8 +41,14 @@ class Product extends Model
 
     public function updateRatingAggregate()
     {
-        $avgRating = $this->reviews()->avg('rating') ?? 0;
-        $countRating = $this->reviews()->count();
+        // HANYA HITUNG REVIEW YANG VISIBLE
+        $avgRating = $this->reviews()
+            ->where('is_visible', true)
+            ->avg('rating') ?? 0;
+            
+        $countRating = $this->reviews()
+            ->where('is_visible', true)
+            ->count();
 
         $this->update([
             'rating_avg' => round($avgRating, 2),

@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\AdminReviewController;
+
 
 // Home Page
 Route::get('/', function () {
@@ -129,3 +131,11 @@ Route::get('/order/track/{token}/review', [ReviewController::class, 'create'])->
 Route::post('/order/track/{token}/review', [ReviewController::class, 'store'])->name('order.track.review.store');
 Route::get('/order/track/{token}/review/edit', [ReviewController::class, 'edit'])->name('order.track.review.edit');
 Route::put('/order/track/{token}/review/update', [ReviewController::class, 'update'])->name('order.track.review.update');
+
+
+// Admin Review Management
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function() {
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+});

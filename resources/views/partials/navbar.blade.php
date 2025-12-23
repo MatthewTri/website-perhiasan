@@ -73,6 +73,7 @@
             @auth
               <li><a href="{{ route('settings.index') }}" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"> Admin Settings </a></li>
               <li><a href="{{ route('orders.index') }}" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"> My Orders </a></li>
+              <li><a href="{{ route('admin.reviews.index') }}" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"> Customer's Reviews </a></li>
             @endauth
           </ul>
       
