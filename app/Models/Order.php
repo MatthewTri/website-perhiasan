@@ -19,7 +19,6 @@ class Order extends Model
      protected $casts = [
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'shipped_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
 
@@ -33,6 +32,11 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shipment()
+    {
+        return $this->hasOne(Shipment::class);
     }
 
     public function reviews()

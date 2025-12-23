@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\PaymentService;
+use App\Models\Shipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentDetailsMail;
@@ -25,7 +26,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
-        $query = Order::with(['user', 'orderItems']);
+        $query = Order::with(['user', 'orderItems', 'shipment']);
 
         if ($status) {
             $query->where('status', $status);
@@ -44,7 +45,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('user', 'orderItems.product', 'customRequest');
+        $order->load('user', 'orderItems.product', 'customRequest','shipment');
         $paypalStatus = null;
         
         // ⬅️ HANYA FETCH PAYPAL STATUS JIKA ADA TRANSACTION_ID
@@ -146,14 +147,18 @@ class OrderController extends Controller
                 'tracking_number' => 'required|string|max:100',
             ]);
 
-            // Update order: PAID + SHIPPED
+            // Update shipment
+            $order->shipment->update([
+                'courier_name' => $validated['courier_name'],
+                'tracking_number' => $validated['tracking_number'],
+                'shipped_at' => now(),
+            ]);
+
+            // UPDATE ORDER STATUS
             $order->update([
                 'status' => 'SHIPPED',
                 'paid_at' => now(),
-                'shipped_at' => now(),
-                'courier_name' => $validated['courier_name'],
-                'tracking_number' => $validated['tracking_number'],
-                'rejection_notes' => null, // Clear rejection notes if any
+                'rejection_notes' => null,
             ]);
 
             // TODO: Kirim email shipping notification
@@ -192,12 +197,17 @@ class OrderController extends Controller
             'courier_name' => 'required|string',
             'tracking_number' => 'required|string',
         ]);
-
-        $order->update([
+                
+        // UPDATE SHIPMENT
+        $order->shipment->update([
             'courier_name' => $validated['courier_name'],
             'tracking_number' => $validated['tracking_number'],
-            'status' => 'SHIPPED',
             'shipped_at' => now(),
+        ]);
+
+        // UPDATE ORDER STATUS
+        $order->update([
+            'status' => 'SHIPPED',
         ]);
 
         return back()->with('success', 'Tracking information updated successfully!');

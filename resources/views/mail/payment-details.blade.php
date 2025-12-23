@@ -19,7 +19,7 @@
         </div>
 
         <div class="content">
-            <p>Hi {{ $order->shipping_name }},</p>
+            <p>Hi Customer,</p>
             
             <p>Thank you for your order! Here are your payment details:</p>
 

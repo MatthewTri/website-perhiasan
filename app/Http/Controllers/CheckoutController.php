@@ -8,7 +8,9 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Shipment;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 
@@ -54,7 +56,8 @@ class CheckoutController extends Controller
     {
         $validated = $request->validate([
             'contact_email' => 'required|email',
-            'shipping_name' => 'required|string|max:255',
+            'shipping_first_name' => 'required|string|max:100',
+            'shipping_last_name' => 'required|string|max:100',
             'shipping_phone' => 'required|string|max:20',
             'shipping_address_line1' => 'required|string',
             'shipping_city' => 'required|string|max:100',
@@ -67,6 +70,8 @@ class CheckoutController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
+
             $userId = Auth::check() ? Auth::id() : null;
             $guestToken = Str::random(64);
             $isGuest = !Auth::check();
@@ -140,17 +145,6 @@ class CheckoutController extends Controller
                 'tax_amount' => 0,
                 'total_amount' => $totalAmount, // Total sesuai currency terpilih
                 
-                'shipping_name' => $validated['shipping_name'],
-                'shipping_phone' => $validated['shipping_phone'],
-                'shipping_address_line1' => $validated['shipping_address_line1'],
-                'shipping_city' => $validated['shipping_city'],
-                'shipping_province' => $validated['shipping_province'] ?? null,
-                'shipping_postal_code' => $validated['shipping_postal_code'],
-                'shipping_country' => $validated['shipping_country'],
-                
-                'courier_name' => null,
-                'tracking_number' => null,
-                
                 'payment_preference' => $paymentPreference, // Customer's choice
                 'payment_gateway' => null, // Akan diisi admin
                 'payment_method' => null,
@@ -159,6 +153,23 @@ class CheckoutController extends Controller
                 
                 'order_notes' => $validated['order_notes'],
                 'is_reviewed' => false,
+            ]);
+
+            Shipment::create([
+                'order_id' => $order->id,
+                'first_name' => $validated['shipping_first_name'],
+                'last_name' => $validated['shipping_last_name'],
+                'phone' => $validated['shipping_phone'],
+                'address_line1' => $validated['shipping_address_line1'],
+                'city' => $validated['shipping_city'],
+                'province' => $validated['shipping_province'],
+                'postal_code' => $validated['shipping_postal_code'],
+                'country' => $validated['shipping_country'],
+                
+                // Logistic fields (akan diisi admin nanti)
+                'courier_name' => null,
+                'tracking_number' => null,
+                'shipped_at' => null,
             ]);
 
             // ⬅️ CREATE ORDER ITEMS DENGAN KEDUA HARGA
@@ -180,6 +191,8 @@ class CheckoutController extends Controller
             if (Auth::check() && isset($cart)) {
                 $cart->cartItems()->delete();
             }
+
+            DB::commit();
 
             $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment details to your email within 24 hours.';
             

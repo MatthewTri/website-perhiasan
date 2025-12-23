@@ -97,7 +97,6 @@
                     </div>
                 </div>
 
-                <!-- Shipping Information -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                         <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,14 +106,26 @@
                         Shipping Address
                     </h2>
                     
+                    @if($order->shipment)
                     <div class="space-y-4">
-                        <!-- Full Name -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Full Name
-                            </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                {{ $order->shipping_name }}
+                        <!-- First & Last Name -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    First Name
+                                </label>
+                                <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
+                                    {{ $order->shipment->first_name }}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Last Name
+                                </label>
+                                <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
+                                    {{ $order->shipment->last_name }}
+                                </div>
                             </div>
                         </div>
 
@@ -124,7 +135,7 @@
                                 Phone Number
                             </label>
                             <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                {{ $order->shipping_phone }}
+                                {{ $order->shipment->phone }}
                             </div>
                         </div>
 
@@ -133,7 +144,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Street Address
                             </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 whitespace-pre-wrap">{{ $order->shipping_address_line1 }}</div>
+                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 whitespace-pre-wrap">{{ $order->shipment->address_line1 }}</div>
                         </div>
 
                         <!-- Country -->
@@ -142,19 +153,19 @@
                                 Country
                             </label>
                             <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                {{ $order->shipping_country }}
+                                {{ $order->shipment->country }}
                             </div>
                         </div>
 
                         <!-- Province, City, Postal Code -->
                         <div class="space-y-4">
-                            @if($order->shipping_province)
+                            @if($order->shipment->province)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Province / State
                                 </label>
                                 <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                    {{ $order->shipping_province }}
+                                    {{ $order->shipment->province }}
                                 </div>
                             </div>
                             @endif
@@ -165,22 +176,23 @@
                                         City
                                     </label>
                                     <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                        {{ $order->shipping_city }}
+                                        {{ $order->shipment->city }}
                                     </div>
                                 </div>
-                                @if($order->shipping_postal_code)
+                                @if($order->shipment->postal_code)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Postal Code
                                     </label>
                                     <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                        {{ $order->shipping_postal_code }}
+                                        {{ $order->shipment->postal_code }}
                                     </div>
                                 </div>
                                 @endif
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Payment Method Section -->
@@ -865,9 +877,10 @@
                             </svg>
                             <span class="text-sm font-medium text-blue-800">Order Shipped</span>
                         </div>
-                        @if($order->courier_name && $order->tracking_number)
-                        <p class="text-xs text-blue-700">Courier: {{ $order->courier_name }}</p>
-                        <p class="text-xs text-blue-700">Tracking: {{ $order->tracking_number }}</p>
+                        @if($order->shipment && $order->shipment->courier_name && $order->shipment->tracking_number)
+                        <p class="text-xs text-blue-700">Courier: {{ $order->shipment->courier_name }}</p>
+                        <p class="text-xs text-blue-700">Tracking: {{ $order->shipment->tracking_number }}</p>
+                        <p class="text-xs text-blue-700">Shipped: {{ $order->shipment->shipped_at->format('M d, Y') }}</p>
                         @endif
                     </div>
                     

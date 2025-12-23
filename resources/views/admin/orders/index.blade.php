@@ -218,7 +218,6 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $order->shipping_name }}</div>
                             <div class="text-sm text-gray-500">{{ $order->contact_email }}</div>
                             @if($order->user)
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
@@ -231,7 +230,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $order->shipping_phone }}</div>
+                            <div class="text-sm text-gray-900">{{ $order->shipment->phone }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-semibold text-gray-900">{{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}</div>

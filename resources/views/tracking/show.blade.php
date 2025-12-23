@@ -131,8 +131,9 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">Shipped</p>
-                            @if($order->tracking_number)
-                            <p class="text-xs text-gray-500">{{ $order->courier_name }}: {{ $order->tracking_number }}</p>
+                            @if($order->shipment && $order->shipment->tracking_number)
+                            <p class="text-xs text-gray-500">{{ $order->shipment->courier_name }}: {{ $order->shipment->tracking_number }}</p>
+                            <p class="text-xs text-gray-400">{{ $order->shipment->shipped_at->format('d M Y, H:i') }}</p>
                             @else
                             <p class="text-xs text-gray-500">Waiting for shipment</p>
                             @endif
@@ -221,30 +222,44 @@
         <!-- Shipping Information -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">Shipping Information</h2>
+            
+            @if($order->shipment)
             <div class="space-y-2 text-sm">
                 <div class="flex">
                     <span class="text-gray-600 w-32">Name:</span>
-                    <span class="text-gray-900 font-medium">{{ $order->shipping_name }}</span>
+                    <span class="text-gray-900 font-medium">{{ $order->shipment->full_name }}</span>
                 </div>
                 <div class="flex">
                     <span class="text-gray-600 w-32">Phone:</span>
-                    <span class="text-gray-900">{{ $order->shipping_phone }}</span>
+                    <span class="text-gray-900">{{ $order->shipment->phone }}</span>
                 </div>
                 <div class="flex">
                     <span class="text-gray-600 w-32">Address:</span>
-                    <span class="text-gray-900">{{ $order->shipping_address_line1 }}, {{ $order->shipping_city }}, {{ $order->shipping_province }} {{ $order->shipping_postal_code }}, {{ $order->shipping_country }}</span>
+                    <span class="text-gray-900">{{ $order->shipment->full_address }}</span>
                 </div>
-                @if($order->tracking_number)
+                
+                @if($order->shipment->tracking_number)
                 <div class="flex pt-2 border-t mt-2">
                     <span class="text-gray-600 w-32">Courier:</span>
-                    <span class="text-gray-900 font-medium">{{ $order->courier_name }}</span>
+                    <span class="text-gray-900 font-medium">{{ $order->shipment->courier_name }}</span>
                 </div>
                 <div class="flex">
                     <span class="text-gray-600 w-32">Tracking:</span>
-                    <span class="text-blue-600 font-medium">{{ $order->tracking_number }}</span>
+                    <span class="text-blue-600 font-medium">{{ $order->shipment->tracking_number }}</span>
+                </div>
+                @if($order->shipment->shipped_at)
+                <div class="flex">
+                    <span class="text-gray-600 w-32">Shipped At:</span>
+                    <span class="text-gray-900">{{ $order->shipment->shipped_at->format('M d, Y - g:i A') }}</span>
                 </div>
                 @endif
+                @endif
             </div>
+            @else
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p class="text-sm text-yellow-800">Shipping information not available yet.</p>
+            </div>
+            @endif
         </div>
 
         <!-- PAYMENT PROOF SECTION (Ukuran lebih kecil & responsive) -->
@@ -414,11 +429,11 @@
                         <p class="text-sm font-medium text-blue-900">Have you received your order?</p>
                         <p class="text-xs text-blue-700 mt-1">Click the button below to confirm delivery and share your experience!</p>
                         
-                        @if($order->tracking_number)
+                        @if($order->shipment && $order->shipment->tracking_number)
                         <div class="mt-3 pt-3 border-t border-blue-200">
-                            <p class="text-xs text-gray-700"><strong>Courier:</strong> {{ $order->courier_name }}</p>
-                            <p class="text-xs text-gray-700"><strong>Tracking:</strong> {{ $order->tracking_number }}</p>
-                            <p class="text-xs text-gray-700"><strong>Shipped on:</strong> {{ $order->shipped_at->format('M d, Y') }}</p>
+                            <p class="text-xs text-gray-700"><strong>Courier:</strong> {{ $order->shipment->courier_name }}</p>
+                            <p class="text-xs text-gray-700"><strong>Tracking:</strong> {{ $order->shipment->tracking_number }}</p>
+                            <p class="text-xs text-gray-700"><strong>Shipped on:</strong> {{ $order->shipment->shipped_at->format('M d, Y') }}</p>
                         </div>
                         @endif
                     </div>

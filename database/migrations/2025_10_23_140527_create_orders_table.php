@@ -56,20 +56,7 @@ return new class extends Migration
             $table->decimal('tax_amount', 15, 2)->default(0); // Diinput Manual/Otomatis Admin
             $table->decimal('total_amount', 15, 2); // Grand Total (Yang harus dibayar)
 
-            // 5. Data Pengiriman (Shipping Address - Digabung di sini)
-            $table->string('shipping_name');
-            $table->string('shipping_phone');
-            $table->text('shipping_address_line1');
-            $table->string('shipping_city');
-            $table->string('shipping_province')->nullable();
-            $table->string('shipping_postal_code')->nullable();
-            $table->string('shipping_country'); // Penting untuk Admin cek ongkir (ID/US/SG)
-
-            // 6. Data Logistik (Diisi Admin setelah kirim barang)
-            $table->string('courier_name')->nullable(); // JNE / DHL / Paxel
-            $table->string('tracking_number')->nullable(); // Nomor Resi
-
-            // 7. Data Pembayaran (Untuk keperluan Refund nanti)
+            // 5. Data Pembayaran (Untuk keperluan Refund nanti)
             $table->string('payment_preference')->default('MANUAL'); // MANUAL atau PAYPAL
             $table->string('payment_gateway')->nullable(); // 'MANUAL' atau 'PAYPAL'
             $table->string('payment_method')->nullable(); // 'BCA' , 'PAYPAL'
@@ -77,20 +64,19 @@ return new class extends Migration
             $table->string('capture_id')->nullable()->index(); // Capture ID dari PayPal
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
-            $table->timestamp('shipped_at')->nullable(); // Waktu pengiriman barang
             $table->timestamp('completed_at')->nullable(); // Waktu order selesai
             $table->timestamp('cancelled_at')->nullable(); // Waktu pembatalan order
 
             $table->string('proof_of_payment')->nullable(); // URL/Gambar bukti transfer manual
 
-            // 8. Catatan Pelanggan
+            // 6. Catatan Pelanggan
             $table->text('order_notes')->nullable(); // Catatan dari customer saat checkout
 
-            // 9. Catatan Admin untuk pelanggan
+            // 7. Catatan Admin untuk pelanggan
             $table->text('admin_notes')->nullable(); // Catatan dari admin untuk customer
             $table->text('rejection_notes')->nullable(); // Catatan alasan tolak pembayaran BCA
 
-            // 10. Review (Pencegahan Double Review)`
+            // 8. Review (Pencegahan Double Review)`
             $table->boolean('is_reviewed')->default(false);
 
             $table->timestamps();

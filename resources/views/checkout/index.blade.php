@@ -83,21 +83,39 @@
                         </h2>
                         
                         <div class="space-y-4">
-                            <!-- Full Name -->
-                            <div>
-                                <label for="shipping_name" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Full Name <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" 
-                                       name="shipping_name" 
-                                       id="shipping_name" 
-                                       value="{{ old('shipping_name') }}"
-                                       required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_name') border-red-500 @enderror"
-                                       placeholder="John Doe">
-                                @error('shipping_name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                            <!-- ⬅️ FIRST NAME & LAST NAME (2 kolom) -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="shipping_first_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                        First Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           name="shipping_first_name" 
+                                           id="shipping_first_name" 
+                                           value="{{ old('shipping_first_name') }}"
+                                           required
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_first_name') border-red-500 @enderror"
+                                           placeholder="First Name">
+                                    @error('shipping_first_name')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="shipping_last_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Last Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           name="shipping_last_name" 
+                                           id="shipping_last_name" 
+                                           value="{{ old('shipping_last_name') }}"
+                                           required
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('shipping_last_name') border-red-500 @enderror"
+                                           placeholder="Last Name">
+                                    @error('shipping_last_name')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
 
                             <!-- Phone Number -->

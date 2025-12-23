@@ -23,7 +23,7 @@ class OrderTrackingController extends Controller
     public function show($token)
     {
         // Cari order berdasarkan token (Guest/Member sama saja)
-        $order = Order::with(['orderItems.product.images'])
+        $order = Order::with(['orderItems.product.images' , 'shipment'])
                   ->where('guest_token', $token)
                   ->firstOrFail();
 
