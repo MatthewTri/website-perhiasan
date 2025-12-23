@@ -21,6 +21,7 @@ class AutoCompleteOrders extends Command
      * @var string
      */
     protected $description = 'Automatically complete orders that have been shipped for more than 7/21 days';
+
     /**
      * Execute the console command.
      */
@@ -28,19 +29,27 @@ class AutoCompleteOrders extends Command
     {
         $now = now();
         
-        // Ambil semua order yang status SHIPPED dan belum completed
-        $shippedOrders = Order::where('status', 'SHIPPED')
-                              ->whereNotNull('shipped_at')
+        // ⬅️ LOAD SHIPMENT RELATION
+        $shippedOrders = Order::with('shipment')
+                              ->where('status', 'SHIPPED')
+                              ->whereHas('shipment', function($query) {
+                                  $query->whereNotNull('shipped_at');
+                              })
                               ->get();
 
         $completedCount = 0;
 
         foreach ($shippedOrders as $order) {
-            // Tentukan deadline berdasarkan negara
-            $deliveryDays = $order->shipping_country === 'Indonesia' ? 7 : 21;
+            // ⬅️ CEK SHIPMENT DULU
+            if (!$order->shipment || !$order->shipment->shipped_at) {
+                continue;
+            }
+
+            // ⬅️ AMBIL COUNTRY DARI SHIPMENT
+            $deliveryDays = $order->shipment->country === 'Indonesia' ? 7 : 21;
             
-            // Hitung deadline dari shipped_at
-            $deadline = $order->shipped_at->addDays($deliveryDays);
+            // ⬅️ HITUNG DEADLINE DARI shipment->shipped_at
+            $deadline = $order->shipment->shipped_at->addDays($deliveryDays);
             
             // Cek apakah sudah melewati deadline
             if ($now->greaterThanOrEqualTo($deadline)) {
@@ -53,8 +62,8 @@ class AutoCompleteOrders extends Command
                 
                 Log::info('✅ Order auto-completed', [
                     'order_number' => $order->order_number,
-                    'shipped_at' => $order->shipped_at->toDateTimeString(),
-                    'country' => $order->shipping_country,
+                    'shipped_at' => $order->shipment->shipped_at->toDateTimeString(),
+                    'country' => $order->shipment->country,
                     'delivery_days' => $deliveryDays,
                     'completed_at' => now()->toDateTimeString(),
                 ]);
