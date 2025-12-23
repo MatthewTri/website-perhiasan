@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductColor;
+use App\Models\ProductSpecification;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,13 +51,19 @@ class ProductController extends Controller
             'price_idr' => 'required|numeric|min:0',
             'price_usd' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'images' => 'required|array|min:1',
+            'images' => 'array|min:1',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             
-            // ⬅️ VALIDASI COLORS
+            // VALIDASI COLORS
             'colors' => 'nullable|array',
             'colors.*.name' => 'required_with:colors|string|max:100',
             'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
+
+            // VALIDASI SPECIFICATIONS
+            'specifications' => 'nullable|array',
+            'specifications.*.section_title' => 'required_with:specifications|string|max:255',
+            'specifications.*.items' => 'required_with:specifications|array|min:1',
+            'specifications.*.items.*' => 'required|string|max:500',
         ]);
 
         try {
@@ -86,13 +93,25 @@ class ProductController extends Controller
                 }
             }
 
-            // ⬅️ CREATE COLORS
+            // CREATE COLORS
             if ($request->has('colors') && is_array($request->colors)) {
                 foreach ($request->colors as $index => $colorData) {
                     ProductColor::create([
                         'product_id' => $product->id,
                         'name' => $colorData['name'],
                         'hex_code' => strtoupper($colorData['hex_code']), // Normalize to uppercase
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            // CREATE SPECIFICATIONS
+            if ($request->has('specifications') && is_array($request->specifications)) {
+                foreach ($request->specifications as $index => $specData) {
+                    ProductSpecification::create([
+                        'product_id' => $product->id,
+                        'section_title' => $specData['section_title'],
+                        'items' => array_filter($specData['items']), // Remove empty items
                         'sort_order' => $index,
                     ]);
                 }
@@ -213,6 +232,38 @@ class ProductController extends Controller
                         'product_id' => $product->id,
                         'name' => $colorData['name'],
                         'hex_code' => strtoupper($colorData['hex_code']),
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+        }
+
+        // ⬅️ HANDLE SPECIFICATION DELETION
+        if ($request->has('deleted_specifications') && $request->deleted_specifications) {
+            $deletedSpecIds = explode(',', $request->deleted_specifications);
+            ProductSpecification::whereIn('id', $deletedSpecIds)
+                               ->where('product_id', $product->id)
+                               ->delete();
+        }
+
+        // ⬅️ HANDLE SPECIFICATION UPDATE & CREATE
+        if ($request->has('specifications') && is_array($request->specifications)) {
+            foreach ($request->specifications as $index => $specData) {
+                if (isset($specData['id']) && !empty($specData['id'])) {
+                    // UPDATE EXISTING SPECIFICATION
+                    ProductSpecification::where('id', $specData['id'])
+                                       ->where('product_id', $product->id)
+                                       ->update([
+                                           'section_title' => $specData['section_title'],
+                                           'items' => array_filter($specData['items']),
+                                           'sort_order' => $index,
+                                       ]);
+                } else {
+                    // CREATE NEW SPECIFICATION
+                    ProductSpecification::create([
+                        'product_id' => $product->id,
+                        'section_title' => $specData['section_title'],
+                        'items' => array_filter($specData['items']),
                         'sort_order' => $index,
                     ]);
                 }

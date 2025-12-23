@@ -40,6 +40,13 @@ class UpdateProductRequest extends FormRequest
             'colors.*.name' => 'required_with:colors|string|max:100',
             'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'deleted_colors' => 'nullable|string',
+
+            'specifications' => 'nullable|array',
+            'specifications.*.id' => 'nullable|exists:product_specifications,id',
+            'specifications.*.section_title' => 'required_with:specifications|string|max:255',
+            'specifications.*.items' => 'required_with:specifications|array|min:1',
+            'specifications.*.items.*' => 'required|string|max:500',
+            'deleted_specifications' => 'nullable|string',
         ];
     }
 

@@ -106,6 +106,7 @@
                         <input type="text" 
                                id="name" 
                                name="name" 
+                               required
                                value="{{ old('name', $product->name) }}"
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
                                placeholder="Enter product name">
@@ -212,6 +213,7 @@
                         </div>
                     </div>
 
+                    {{-- Color section row --}}
                     <div>
                         <div class="flex items-center justify-between mb-4">
                             <label class="block text-sm font-medium text-gray-700">
@@ -278,6 +280,92 @@
                         @enderror
                     </div>
 
+                    {{-- Specification section row --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Product Specifications (Optional)
+                            </label>
+                            <button type="button" 
+                                    onclick="addSpecificationSection()"
+                                    class="text-sm bg-purple-50 hover:bg-purple-100 text-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Section
+                            </button>
+                        </div>
+
+                        <!-- Specifications Container -->
+                        <div id="specificationsContainer" class="space-y-4">
+                            <!-- ⬅️ EXISTING SPECIFICATIONS -->
+                            @forelse($product->specifications as $index => $spec)
+                            <div class="specification-section bg-purple-50 p-4 rounded-lg border border-purple-200" data-index="{{ $index }}" data-existing-id="{{ $spec->id }}">
+                                <div class="space-y-3">
+                                    <!-- Section Title -->
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" 
+                                               name="specifications[{{ $index }}][section_title]" 
+                                               value="{{ $spec->section_title }}"
+                                               placeholder="Section header"
+                                               class="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                                               required>
+                                        
+                                        <button type="button" 
+                                                onclick="removeSpecificationSection({{ $index }})"
+                                                class="text-red-500 hover:text-red-700 transition-colors p-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                        <input type="hidden" name="specifications[{{ $index }}][id]" value="{{ $spec->id }}">
+                                    </div>
+
+                                    <!-- Items List -->
+                                    <div class="spec-items-container space-y-2" id="spec-items-{{ $index }}">
+                                        @foreach($spec->items as $itemIndex => $item)
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" 
+                                                   name="specifications[{{ $index }}][items][]" 
+                                                   value="{{ $item }}"
+                                                   placeholder="e.g., 18k gold vermeil"
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+                                            <button type="button" 
+                                                    onclick="removeSpecItem(this)"
+                                                    class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- Add Item Button -->
+                                    <button type="button" 
+                                            onclick="addSpecItem({{ $index }})"
+                                            class="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Add item
+                                    </button>
+                                </div>
+                            </div>
+                            @empty
+                            <p id="noSpecsText" class="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                                No specifications added yet. Click "Add Section" to start.
+                            </p>
+                            @endforelse
+                        </div>
+
+                        <!-- Hidden input untuk deleted specification IDs -->
+                        <input type="hidden" name="deleted_specifications" id="deletedSpecifications" value="">
+
+                        @error('specifications')
+                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <!-- Description -->
                     <div>
@@ -313,6 +401,7 @@
 </div>
 
 <script>
+    // CATEGORY MANAGEMENT
     const allCategories = @json($allCategories);
     const initialParentId = {{ $selectedParentId ?? 'null' }};
     const initialSubId = {{ $selectedSubCategoryId ?? 'null' }};
@@ -357,6 +446,8 @@
     parentSelect.addEventListener('change', function() {
         loadSubCategories(this.value);
     });
+
+
 
     // ⬅️ COLOR MANAGEMENT
     let colorIndex = {{ $product->colors->count() }}; // Start from existing count
@@ -456,6 +547,169 @@
             noColorsText.style.display = 'block';
         }
     }
+
+
+
+    // ⬅️ SPECIFICATIONS MANAGEMENT
+    let specIndex = {{ $product->specifications->count() }}; // Start from existing count
+    let deletedSpecificationIds = [];
+
+    function addSpecificationSection() {
+        addSpecificationSectionWithData('', ['']);
+    }
+
+    function addSpecificationSectionWithData(sectionTitle = '', items = ['']) {
+        const container = document.getElementById('specificationsContainer');
+        const noSpecsText = document.getElementById('noSpecsText');
+        
+        if (noSpecsText) {
+            noSpecsText.style.display = 'none';
+        }
+
+        const specDiv = document.createElement('div');
+        specDiv.className = 'specification-section bg-purple-50 p-4 rounded-lg border border-purple-200';
+        specDiv.dataset.index = specIndex;
+        
+        // Generate items HTML
+        const itemsHtml = items.map((item, itemIndex) => `
+            <div class="flex items-center gap-2">
+                <input type="text" 
+                       name="specifications[${specIndex}][items][]" 
+                       value="${item || ''}"
+                       placeholder="e.g., 18k gold vermeil"
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+                <button type="button" 
+                        onclick="removeSpecItem(this)"
+                        class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        `).join('');
+        
+        specDiv.innerHTML = `
+            <div class="space-y-3">
+                <!-- Section Title -->
+                <div class="flex items-center gap-2">
+                    <input type="text" 
+                           name="specifications[${specIndex}][section_title]" 
+                           value="${sectionTitle || ''}"
+                           placeholder="Section header"
+                           class="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                           required>
+                    
+                    <button type="button" 
+                            onclick="removeSpecificationSection(${specIndex})"
+                            class="text-red-500 hover:text-red-700 transition-colors p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Items List -->
+                <div class="spec-items-container space-y-2" id="spec-items-${specIndex}">
+                    ${itemsHtml}
+                </div>
+
+                <!-- Add Item Button -->
+                <button type="button" 
+                        onclick="addSpecItem(${specIndex})"
+                        class="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add item
+                </button>
+            </div>
+        `;
+
+        container.appendChild(specDiv);
+        specIndex++;
+    }
+
+    function addSpecItem(sectionIndex) {
+        const itemsContainer = document.getElementById(`spec-items-${sectionIndex}`);
+        
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex items-center gap-2';
+        itemDiv.innerHTML = `
+            <input type="text" 
+                   name="specifications[${sectionIndex}][items][]" 
+                   placeholder="e.g., 925 sterling silver"
+                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+            <button type="button" 
+                    onclick="removeSpecItem(this)"
+                    class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+        
+        itemsContainer.appendChild(itemDiv);
+    }
+
+    function removeSpecItem(button) {
+        const itemsContainer = button.closest('.spec-items-container');
+        const items = itemsContainer.querySelectorAll('.flex.items-center');
+        
+        // Minimal 1 item per section
+        if (items.length > 1) {
+            button.closest('.flex.items-center').remove();
+        } else {
+            alert('Each section must have at least one item');
+        }
+    }
+
+    function removeSpecificationSection(index) {
+        const specDiv = document.querySelector(`.specification-section[data-index="${index}"]`);
+        
+        if (specDiv) {
+            // CEK APAKAH INI EXISTING SPECIFICATION (ada data-existing-id)
+            const existingId = specDiv.dataset.existingId;
+            
+            if (existingId) {
+                // Mark untuk dihapus dari database
+                if (!deletedSpecificationIds.includes(existingId)) {
+                    deletedSpecificationIds.push(existingId);
+                }
+                document.getElementById('deletedSpecifications').value = deletedSpecificationIds.join(',');
+                
+                // Visual feedback
+                specDiv.style.opacity = '0.5';
+                specDiv.style.pointerEvents = 'none';
+                
+                // Ganti button remove dengan label "Will be deleted"
+                const removeBtn = specDiv.querySelector('button[onclick*="removeSpecificationSection"]');
+                if (removeBtn) {
+                    removeBtn.style.display = 'none';
+                }
+                
+                // Cek apakah sudah ada label "Will be deleted"
+                if (!specDiv.querySelector('.deleted-spec-label')) {
+                    const deletedLabel = document.createElement('span');
+                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-spec-label ml-2';
+                    deletedLabel.textContent = 'Will be deleted';
+                    specDiv.querySelector('.flex.items-center.gap-2').appendChild(deletedLabel);
+                }
+            } else {
+                // Hapus langsung (new specification yang belum disave)
+                specDiv.remove();
+            }
+        }
+
+        // Show "no specs" text if no specs left
+        const container = document.getElementById('specificationsContainer');
+        const noSpecsText = document.getElementById('noSpecsText');
+        const remainingSpecs = container.querySelectorAll('.specification-section:not([style*="opacity: 0.5"])');
+        
+        if (remainingSpecs.length === 0 && noSpecsText) {
+            noSpecsText.style.display = 'block';
+        }
+    }
+
 
     // ⬅️ GLOBAL VARIABLES
     let selectedFiles = [];
