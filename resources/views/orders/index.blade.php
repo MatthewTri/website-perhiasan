@@ -113,7 +113,27 @@
                 <!-- Quick Actions -->
                 @if($order->status === 'INVOICE_SENT')
                 <div class="mt-4 pt-4 border-t">
-                    @if($order->payment_gateway === 'MANUAL')
+                    @if($order->rejection_notes)
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-red-900 mb-1">Payment Proof Rejected</p>
+                                <p class="text-xs text-red-800 mb-2">{{ Str::limit($order->rejection_notes, 100) }}</p>
+                                <a href="{{ route('order.track', $order->guest_token) }}" 
+                                   class="inline-flex items-center text-xs text-red-700 hover:text-red-900 font-medium underline">
+                                    Upload new proof
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if($order->payment_gateway === 'MANUAL' && !$order->rejection_notes)
                     <a href="{{ route('order.track', $order->guest_token) }}" 
                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
