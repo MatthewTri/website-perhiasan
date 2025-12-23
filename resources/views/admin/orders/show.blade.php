@@ -401,14 +401,18 @@
                             <span class="text-sm font-medium text-purple-900">Customer has uploaded payment proof. Please verify below:</span>
                         </div>
                         
-                        <div class="mb-4">
-                            <p class="text-sm font-medium text-gray-700 mb-2">Uploaded Payment Proof:</p>
-                            <a href="{{ Storage::url($order->proof_of_payment) }}" target="_blank">
-                                <img src="{{ Storage::url($order->proof_of_payment) }}" 
-                                    alt="Payment Proof" 
-                                    class="max-w-full h-auto rounded-lg border-2 border-purple-300 shadow-md hover:shadow-xl transition-shadow cursor-pointer">
-                            </a>
-                            <p class="text-xs text-gray-500 mt-2">Click image to view full size</p>
+                        <div class="mt-6 pt-4 border-t">
+                            <p class="text-sm font-medium text-gray-700 mb-3">Payment Proof:</p>
+                            <img src="{{ Storage::url($order->proof_of_payment) }}" 
+                                alt="Payment Proof" 
+                                class="w-48 sm:w-56 md:w-64 h-auto rounded-lg border border-gray-300 cursor-pointer hover:opacity-90 transition-all duration-200"
+                                onclick="openLightbox('{{ Storage::url($order->proof_of_payment) }}', 'admin-image-modal')">
+                            <p class="text-xs text-gray-500 mt-2">
+                                <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                Click to view full size
+                            </p>
                         </div>
                     </div>
 
@@ -909,6 +913,8 @@
         </div>
     </div>
 </div>
+
+<x-image-lightbox modalId="admin-image-modal" alt="Payment Proof" />
 
 <script>
     // ⬅️ AMBIL SUBTOTAL SESUAI CURRENCY
