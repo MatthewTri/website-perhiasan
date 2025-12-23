@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\ProductColor;
+use App\Models\ProductImage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\ProductImage;
-use Illuminate\Support\Facades\Storage;
+
 
 class ProductController extends Controller
 {
@@ -37,34 +41,74 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
-        // Create product
-        $product = Product::create([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'description' => $request->description,
-            'price_idr' => $request->price_idr,
-            'price_usd' => $request->price_usd,
-            'category_id' => $request->category_id,
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|unique:products,slug',
+            'description' => 'nullable|string',
+            'price_idr' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'images' => 'required|array|min:1',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            
+            // ⬅️ VALIDASI COLORS
+            'colors' => 'nullable|array',
+            'colors.*.name' => 'required_with:colors|string|max:100',
+            'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
         ]);
 
-        // Handle multiple images upload
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $imageName = time() . '_' . $index . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('product-images', $imageName, 'public');
-                
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image' => $imagePath,
-                    'is_featured' => $index === 0, // First image as featured
-                    'sort_order' => $index
-                ]);
-            }
-        }
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('products.index')->with('success', 'Product successfully added!');
+            // Create Product
+            $product = Product::create([
+                'name' => $validated['name'],
+                'slug' => $validated['slug'],
+                'description' => $validated['description'],
+                'price_idr' => $validated['price_idr'],
+                'price_usd' => $validated['price_usd'],
+                'category_id' => $validated['category_id'],
+            ]);
+
+            // Upload Images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $file) {
+                    $path = $file->store('products', 'public');
+                    
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => $path,
+                        'is_featured' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            // ⬅️ CREATE COLORS
+            if ($request->has('colors') && is_array($request->colors)) {
+                foreach ($request->colors as $index => $colorData) {
+                    ProductColor::create([
+                        'product_id' => $product->id,
+                        'name' => $colorData['name'],
+                        'hex_code' => strtoupper($colorData['hex_code']), // Normalize to uppercase
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('products.index')
+                        ->with('success', 'Product created successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Product creation failed: ' . $e->getMessage());
+            return back()->withInput()
+                    ->with('error', 'Failed to create product: ' . $e->getMessage());
+        }
     }
 
     /**

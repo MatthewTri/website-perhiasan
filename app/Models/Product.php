@@ -25,6 +25,10 @@ class Product extends Model
         return $this->hasMany(ProductImage::class)->orderBy('sort_order');
     }
 
+    public function colors()
+    {
+        return $this->hasMany(ProductColor::class)->orderBy('sort_order');
+    }
     /**
      * Shortcut untuk mengambil HANYA gambar utama (thumbnail).
      */

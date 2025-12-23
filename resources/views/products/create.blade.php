@@ -184,6 +184,35 @@
                         </div>
                     </div>
 
+                    <!-- COLOR SECTION Row -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Product Colors (Optional)
+                            </label>
+                            <button type="button" 
+                                    onclick="addColorOption()"
+                                    class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Color
+                            </button>
+                        </div>
+
+                        <!-- Colors Container -->
+                        <div id="colorsContainer" class="space-y-3">
+                            <!-- Color options will be added here dynamically -->
+                            <p id="noColorsText" class="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                                No colors added yet. Click "Add Color" to start.
+                            </p>
+                        </div>
+
+                        @error('colors')
+                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Description -->
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -228,7 +257,74 @@
         .then(data => slug.value = data.slug)
     });
 
+    // COLOR LOGIC MANAGEMENT
+    let colorIndex = 0;
 
+    function addColorOption() {
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        
+        // Hide "no colors" text
+        if (noColorsText) {
+            noColorsText.style.display = 'none';
+        }
+
+        const colorDiv = document.createElement('div');
+        colorDiv.className = 'color-option bg-gray-50 p-4 rounded-lg border border-gray-200';
+        colorDiv.dataset.index = colorIndex;
+        
+        colorDiv.innerHTML = `
+            <div class="flex items-center gap-3">
+                <!-- Color Picker -->
+                <div class="flex-shrink-0">
+                    <input type="color" 
+                           name="colors[${colorIndex}][hex_code]" 
+                           value="#D4AF37"
+                            class="color-picker-input w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer"
+                           title="Choose color">
+                </div>
+
+                <!-- Color Name Input -->
+                <div class="flex-1">
+                    <input type="text" 
+                           name="colors[${colorIndex}][name]" 
+                           placeholder="e.g., 18k gold plated, Rose Gold, Silver"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           required>
+                </div>
+
+                <!-- Remove Button -->
+                <button type="button" 
+                        onclick="removeColorOption(${colorIndex})"
+                        class="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        container.appendChild(colorDiv);
+        colorIndex++;
+    }
+
+    function removeColorOption(index) {
+        const colorDiv = document.querySelector(`.color-option[data-index="${index}"]`);
+        if (colorDiv) {
+            colorDiv.remove();
+        }
+
+        // Show "no colors" text if no colors left
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        const remainingColors = container.querySelectorAll('.color-option');
+        
+        if (remainingColors.length === 0 && noColorsText) {
+            noColorsText.style.display = 'block';
+        }
+    }
+
+    // Categories logic
     const allCategories = @json($allCategories);
 
     const parentSelect = document.getElementById('parent_category_id');
@@ -428,6 +524,48 @@
     
     #thumbnailContainer::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
+    }
+
+    /* ⬅️ CUSTOM COLOR PICKER BULAT SEMPURNA */
+    .color-picker-input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: transparent;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    /* Chrome/Safari/Edge */
+    .color-picker-input::-webkit-color-swatch-wrapper {
+        padding: 0;
+        border-radius: 9999px;
+    }
+
+    .color-picker-input::-webkit-color-swatch {
+        border: none;
+        border-radius: 9999px;
+    }
+
+    /* Firefox */
+    .color-picker-input::-moz-color-swatch {
+        border: none;
+        border-radius: 9999px;
+    }
+
+    .color-picker-input::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+    }
+
+    /* Hover & Focus States */
+    .color-picker-input:hover {
+        border-color: #9ca3af;
+    }
+
+    .color-picker-input:focus {
+        outline: none;
+        border-color: #000000;
     }
 </style>
 @endsection
