@@ -153,6 +153,7 @@ class OrderController extends Controller
                 'shipped_at' => now(),
                 'courier_name' => $validated['courier_name'],
                 'tracking_number' => $validated['tracking_number'],
+                'rejection_notes' => null, // Clear rejection notes if any
             ]);
 
             // TODO: Kirim email shipping notification
@@ -162,16 +163,21 @@ class OrderController extends Controller
         } 
         
         elseif ($action === 'reject') {
-            // Update status jadi CANCELLED
+
+            $validated = $request->validate([
+                'rejection_notes' => 'required|string|max:500',
+            ]);
+            // Update status kembali jadi invoice sent
             $order->update([
-                'status' => 'CANCELLED',
-                'cancelled_at' => now(),
+                'status' => 'INVOICE_SENT',
+                'rejection_notes' => $validated['rejection_notes'],
+                'proof_of_payment' => null, // Hapus bukti yang ditolak
             ]);
 
             // TODO: Kirim email payment rejection
             // Mail::to($order->contact_email)->send(new PaymentRejected($order));
 
-            return back()->with('success', 'Payment rejected. Order has been CANCELLED.');
+            return back()->with('success', 'Payment rejected. Customer can re-upload new proof.');
         }
 
         return back()->with('error', 'Invalid action!');

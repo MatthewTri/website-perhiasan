@@ -88,6 +88,7 @@ return new class extends Migration
 
             // 9. Catatan Admin untuk pelanggan
             $table->text('admin_notes')->nullable(); // Catatan dari admin untuk customer
+            $table->text('rejection_notes')->nullable(); // Catatan alasan tolak pembayaran BCA
 
             // 10. Review (Pencegahan Double Review)`
             $table->boolean('is_reviewed')->default(false);

@@ -647,36 +647,30 @@
                     </div>
 
                     @elseif($order->status === 'WAITING_VERIFICATION')
-                    <!-- ⬅️ VERIFICATION ACTIONS (MIRIP MARK AS SHIPPED) -->
+                    <!-- ⬅️ VERIFICATION ACTIONS -->
                     <div class="space-y-3">
-                        <!-- Reject Button -->
-                        <button type="button" 
-                                onclick="if(confirm('Are you sure you want to REJECT this payment? Order will be CANCELLED.')) { document.getElementById('reject-form').submit(); }"
-                                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            Reject Payment
-                        </button>
-
-                        <!-- Hidden Reject Form -->
-                        <form id="reject-form" action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST" style="display: none;">
-                            @csrf
-                            <input type="hidden" name="action" value="reject">
-                        </form>
-
                         <!-- Approve Button (Toggle Form) -->
                         <button type="button" 
-                                onclick="document.getElementById('verification-shipping-form').classList.toggle('hidden')"
+                                onclick="toggleForm('verification-shipping-form', 'reject-form-container')"
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             Approve Payment
                         </button>
+
+                        <!-- Reject Button (Toggle Form) -->
+                        <button type="button" 
+                                onclick="toggleForm('reject-form-container', 'verification-shipping-form')"
+                                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Reject Payment
+                        </button>
                     </div>
 
-                    <!-- Shipping Form (Hidden by default) -->
+                    <!-- Approve Shipping Form (Hidden by default) -->
                     <div id="verification-shipping-form" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                         <h3 class="text-sm font-semibold text-green-900 mb-3 flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -690,62 +684,88 @@
                             <input type="hidden" name="action" value="approve">
                             
                             <div class="space-y-3">
-                                <!-- Courier Name -->
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         Courier / Shipping Service <span class="text-red-500">*</span>
                                     </label>
-                                    <select name="courier_name" 
-                                            required
-                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <select name="courier_name" required
+                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                                         <option value="">Select Courier</option>
                                         <option value="JNE">JNE</option>
                                         <option value="Paxel">Paxel</option>
                                         <option value="RPX">RPX</option>
                                     </select>
-                                    @error('courier_name')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                    @enderror
                                 </div>
 
-                                <!-- Tracking Number -->
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">
                                         Tracking Number / Resi <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" 
-                                        name="tracking_number" 
-                                        required
+                                    <input type="text" name="tracking_number" required
                                         placeholder="e.g., JNE1234567890"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                    @error('tracking_number')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                    @enderror
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                                 </div>
 
-                                <!-- Info Box -->
                                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                    <div class="flex">
-                                        <svg class="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <div>
-                                            <p class="text-xs font-medium text-yellow-800">Important:</p>
-                                            <p class="text-xs text-yellow-700 mt-1">
-                                                Order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <p class="text-xs text-yellow-800">
+                                        Order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification.
+                                    </p>
                                 </div>
 
-                                <!-- Submit Button -->
                                 <button type="submit" 
                                         onclick="return confirm('Approve payment and mark as SHIPPED?')"
-                                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                     Approve & Mark as SHIPPED
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ⬅️ REJECT FORM (NEW - Hidden by default) -->
+                    <div id="reject-form-container" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <h3 class="text-sm font-semibold text-red-900 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            Rejection Reason
+                        </h3>
+                        
+                        <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="action" value="reject">
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                                        Why are you rejecting this payment proof? <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea name="rejection_notes" 
+                                              required
+                                              rows="4"
+                                              placeholder="e.g., The payment proof image is blurry/unclear. Please upload a clearer photo showing the transaction details."
+                                              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 resize-none"></textarea>
+                                    <p class="text-xs text-gray-500 mt-1">Customer will see this message and can re-upload a new proof.</p>
+                                    @error('rejection_notes')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                                    <p class="text-xs text-yellow-800">
+                                        <strong>Important:</strong> Order will return to <strong>INVOICE_SENT</strong> status. Customer can upload a new payment proof.
+                                    </p>
+                                </div>
+
+                                <button type="submit" 
+                                        onclick="return confirm('Reject this payment proof? Customer will be notified to re-upload.')"
+                                        class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Reject & Request Re-upload
                                 </button>
                             </div>
                         </form>
@@ -933,6 +953,20 @@
     if (shippingInput) {
         shippingInput.addEventListener('input', updateTotal);
         updateTotal(); // Initial calculation
+    }
+
+
+    function toggleForm(showId, hideId) {
+        const showElement = document.getElementById(showId);
+        const hideElement = document.getElementById(hideId);
+        
+        // Hide the other form first
+        if (hideElement && !hideElement.classList.contains('hidden')) {
+            hideElement.classList.add('hidden');
+        }
+        
+        // Toggle the clicked form
+        showElement.classList.toggle('hidden');
     }
 </script>
 @endsection
