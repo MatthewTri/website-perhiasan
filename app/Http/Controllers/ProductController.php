@@ -75,7 +75,7 @@ class ProductController extends Controller
             // Upload Images
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $file) {
-                    $path = $file->store('products', 'public');
+                    $path = $file->store('product-images', 'public');
                     
                     ProductImage::create([
                         'product_id' => $product->id,
@@ -186,6 +186,38 @@ class ProductController extends Controller
 
         // Reorder images and set featured image
         $this->reorderProductImages($product);
+
+        // ⬅️ HANDLE COLOR DELETION
+        if ($request->has('deleted_colors') && $request->deleted_colors) {
+            $deletedColorIds = explode(',', $request->deleted_colors);
+            ProductColor::whereIn('id', $deletedColorIds)
+                       ->where('product_id', $product->id)
+                       ->delete();
+        }
+
+        // ⬅️ HANDLE COLOR UPDATE & CREATE
+        if ($request->has('colors') && is_array($request->colors)) {
+            foreach ($request->colors as $index => $colorData) {
+                if (isset($colorData['id']) && !empty($colorData['id'])) {
+                    // ⬅️ UPDATE EXISTING COLOR
+                    ProductColor::where('id', $colorData['id'])
+                               ->where('product_id', $product->id)
+                               ->update([
+                                   'name' => $colorData['name'],
+                                   'hex_code' => strtoupper($colorData['hex_code']),
+                                   'sort_order' => $index,
+                               ]);
+                } else {
+                    // ⬅️ CREATE NEW COLOR
+                    ProductColor::create([
+                        'product_id' => $product->id,
+                        'name' => $colorData['name'],
+                        'hex_code' => strtoupper($colorData['hex_code']),
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('products.index')->with('success', 'Product successfully updated!');
     }

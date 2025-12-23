@@ -212,6 +212,73 @@
                         </div>
                     </div>
 
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Product Colors (Optional)
+                            </label>
+                            <button type="button" 
+                                    onclick="addColorOption()"
+                                    class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Color
+                            </button>
+                        </div>
+
+                        <!-- Colors Container -->
+                        <div id="colorsContainer" class="space-y-3">
+                            <!-- ⬅️ EXISTING COLORS -->
+                            @forelse($product->colors as $index => $color)
+                            <div class="color-option bg-gray-50 p-4 rounded-lg border border-gray-200" data-index="{{ $index }}" data-existing-id="{{ $color->id }}">
+                                <div class="flex items-center gap-3">
+                                    <!-- Color Picker -->
+                                    <div class="flex-shrink-0">
+                                        <input type="color" 
+                                               name="colors[{{ $index }}][hex_code]" 
+                                               value="{{ $color->hex_code }}"
+                                               class="color-picker-input w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer"
+                                               title="Choose color">
+                                    </div>
+
+                                    <!-- Color Name Input -->
+                                    <div class="flex-1">
+                                        <input type="text" 
+                                               name="colors[{{ $index }}][name]" 
+                                               value="{{ $color->name }}"
+                                               placeholder="e.g., 18k gold plated, Rose Gold, Silver"
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               required>
+                                        <input type="hidden" name="colors[{{ $index }}][id]" value="{{ $color->id }}">
+                                    </div>
+
+                                    <!-- Remove Button -->
+                                    <button type="button" 
+                                            onclick="removeColorOption({{ $index }})"
+                                            class="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors p-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            @empty
+                            <p id="noColorsText" class="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                                No colors added yet. Click "Add Color" to start.
+                            </p>
+                            @endforelse
+                        </div>
+
+                        <!-- Hidden input untuk deleted color IDs -->
+                        <input type="hidden" name="deleted_colors" id="deletedColors" value="">
+
+                        @error('colors')
+                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
                     <!-- Description -->
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -290,12 +357,113 @@
     parentSelect.addEventListener('change', function() {
         loadSubCategories(this.value);
     });
-    // Global variables
+
+    // ⬅️ COLOR MANAGEMENT
+    let colorIndex = {{ $product->colors->count() }}; // Start from existing count
+    let deletedColorIds = [];
+
+    function addColorOption() {
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        
+        // Hide "no colors" text
+        if (noColorsText) {
+            noColorsText.style.display = 'none';
+        }
+
+        const colorDiv = document.createElement('div');
+        colorDiv.className = 'color-option bg-gray-50 p-4 rounded-lg border border-gray-200';
+        colorDiv.dataset.index = colorIndex;
+        
+        colorDiv.innerHTML = `
+            <div class="flex items-center gap-3">
+                <!-- Color Picker -->
+                <div class="flex-shrink-0">
+                    <input type="color" 
+                           name="colors[${colorIndex}][hex_code]" 
+                           value="#D4AF37"
+                           class="color-picker-input w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer"
+                           title="Choose color">
+                </div>
+
+                <!-- Color Name Input -->
+                <div class="flex-1">
+                    <input type="text" 
+                           name="colors[${colorIndex}][name]" 
+                           placeholder="e.g., 18k gold plated, Rose Gold, Silver"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           required>
+                </div>
+
+                <!-- Remove Button -->
+                <button type="button" 
+                        onclick="removeColorOption(${colorIndex})"
+                        class="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        container.appendChild(colorDiv);
+        colorIndex++;
+    }
+
+    function removeColorOption(index) {
+        const colorDiv = document.querySelector(`.color-option[data-index="${index}"]`);
+        
+        if (colorDiv) {
+            // CEK APAKAH INI EXISTING COLOR (ada data-existing-id)
+            const existingId = colorDiv.dataset.existingId;
+            
+            if (existingId) {
+                // Mark untuk dihapus dari database
+                if (!deletedColorIds.includes(existingId)) {
+                    deletedColorIds.push(existingId);
+                }
+                document.getElementById('deletedColors').value = deletedColorIds.join(',');
+                
+                // Visual feedback
+                colorDiv.style.opacity = '0.5';
+                colorDiv.style.pointerEvents = 'none';
+                
+                // Ganti button remove dengan label "Will be deleted"
+                const removeBtn = colorDiv.querySelector('button');
+                if (removeBtn) {
+                    removeBtn.style.display = 'none';
+                }
+                
+                // Cek apakah sudah ada label "Will be deleted"
+                if (!colorDiv.querySelector('.deleted-label')) {
+                    const deletedLabel = document.createElement('span');
+                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-label';
+                    deletedLabel.textContent = 'Will be deleted';
+                    colorDiv.querySelector('.flex-1').appendChild(deletedLabel);
+                }
+            } else {
+                // Hapus langsung (new color yang belum disave)
+                colorDiv.remove();
+            }
+        }
+
+        // Show "no colors" text if no colors left
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        const remainingColors = container.querySelectorAll('.color-option:not([style*="opacity: 0.5"])');
+        
+        if (remainingColors.length === 0 && noColorsText) {
+            noColorsText.style.display = 'block';
+        }
+    }
+
+    // ⬅️ GLOBAL VARIABLES
     let selectedFiles = [];
     let currentMainIndex = 0;
     let deletedImageIds = [];
     let hasExistingImages = {{ $product->images->count() > 0 ? 'true' : 'false' }};
     const form = document.querySelector('#editProductForm');
+    let isSubmitting = false; // ⬅️ PREVENT DOUBLE SUBMIT
 
     // Auto-generate slug
     const name = document.querySelector('#name');
@@ -316,7 +484,7 @@
         }, 300);
     });
 
-    // Handle main image upload (ONLY if no existing images)
+    // ⬅️ HANDLE MAIN IMAGE UPLOAD (ONLY if no existing images)
     function handleMainImageUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
@@ -332,15 +500,16 @@
         }
     }
 
-    // Handle additional images (ADD to existing)
+    // ⬅️ HANDLE ADDITIONAL IMAGES (ADD to existing)
     function handleAdditionalImages(input) {
-        if (input.files) {
+        if (input.files && input.files.length > 0) {
             Array.from(input.files).forEach(file => {
                 selectedFiles.push(file);
             });
             updateImageDisplay();
             updateFormFiles();
         }
+        // ⬅️ RESET INPUT VALUE UNTUK ALLOW RE-SELECT FILE YANG SAMA
         input.value = '';
     }
 
@@ -383,10 +552,14 @@
         
         // Hide delete button and show "Will be deleted" text
         button.style.display = 'none';
-        const deletedLabel = document.createElement('div');
-        deletedLabel.className = 'absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-red-500 font-medium whitespace-nowrap';
-        deletedLabel.textContent = 'Deleted';
-        thumbnail.appendChild(deletedLabel);
+        
+        // ⬅️ CEK APAKAH SUDAH ADA LABEL
+        if (!thumbnail.querySelector('.deleted-image-label')) {
+            const deletedLabel = document.createElement('div');
+            deletedLabel.className = 'absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-red-500 font-medium whitespace-nowrap deleted-image-label';
+            deletedLabel.textContent = 'Deleted';
+            thumbnail.appendChild(deletedLabel);
+        }
         
         // Update deleted images input
         document.getElementById('deletedImages').value = deletedImageIds.join(',');
@@ -539,42 +712,56 @@
         document.getElementById('deletedImages').value = deletedImageIds.join(',');
     }
 
-    // Form submission validation
+    // ⬅️ FORM SUBMISSION VALIDATION (PREVENT DOUBLE SUBMIT)
     form.addEventListener('submit', async function(e) {
-    const hasActiveExisting = hasActiveExistingImage();
-    const hasNewImages = selectedFiles.length > 0;
-
-    // Ensure form data is updated
-    updateFormFiles();
-    
-    if (!subSelect.value && parentSelect.value) {
-        let categoryInput = document.querySelector('input[name="category_id_hidden"]');
-        if (!categoryInput) {
-            categoryInput = document.createElement('input');
-            categoryInput.type = 'hidden';
-            categoryInput.name = 'category_id';
-            editProductForm.appendChild(categoryInput);
+        e.preventDefault(); // ⬅️ PREVENT DEFAULT SUBMIT
+        
+        // ⬅️ PREVENT DOUBLE SUBMIT
+        if (isSubmitting) {
+            return false;
         }
-        categoryInput.value = parentSelect.value;
-    }
+        
+        isSubmitting = true;
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Updating...';
 
-    // Always fetch slug before submit
-    if (name.value.length > 0) {
-        try {
-            const response = await fetch('/products/checkSlug?name=' + encodeURIComponent(name.value));
-            const data = await response.json();
-            slug.value = data.slug;
-        } catch (error) {
-            alert('Failed to generate slug. Please try again.');
-            return;
+        // Ensure form data is updated
+        updateFormFiles();
+        
+        if (!subSelect.value && parentSelect.value) {
+            let categoryInput = document.querySelector('input[name="category_id_hidden"]');
+            if (!categoryInput) {
+                categoryInput = document.createElement('input');
+                categoryInput.type = 'hidden';
+                categoryInput.name = 'category_id';
+                form.appendChild(categoryInput);
+            }
+            categoryInput.value = parentSelect.value;
         }
-    } else {
-        slug.value = '';
-    }
 
-    // Submit after slug is ready
-    this.submit();
-});
+        // Always fetch slug before submit
+        if (name.value.length > 0) {
+            try {
+                const response = await fetch('/products/checkSlug?name=' + encodeURIComponent(name.value));
+                const data = await response.json();
+                slug.value = data.slug;
+            } catch (error) {
+                alert('Failed to generate slug. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                isSubmitting = false;
+                return false;
+            }
+        } else {
+            slug.value = '';
+        }
+
+        // ⬅️ SUBMIT AFTER SLUG IS READY
+        form.submit();
+    });
 </script>
 
 <style>
@@ -595,6 +782,48 @@
     
     #thumbnailContainer::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
+    }
+
+    /* ⬅️ CUSTOM COLOR PICKER BULAT SEMPURNA */
+    .color-picker-input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: transparent;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    /* Chrome/Safari/Edge */
+    .color-picker-input::-webkit-color-swatch-wrapper {
+        padding: 0;
+        border-radius: 9999px;
+    }
+
+    .color-picker-input::-webkit-color-swatch {
+        border: none;
+        border-radius: 9999px;
+    }
+
+    /* Firefox */
+    .color-picker-input::-moz-color-swatch {
+        border: none;
+        border-radius: 9999px;
+    }
+
+    .color-picker-input::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+    }
+
+    /* Hover & Focus States */
+    .color-picker-input:hover {
+        border-color: #9ca3af;
+    }
+
+    .color-picker-input:focus {
+        outline: none;
+        border-color: #000000;
     }
 </style>
 @endsection

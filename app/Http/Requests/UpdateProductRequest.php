@@ -33,7 +33,13 @@ class UpdateProductRequest extends FormRequest
             'price_usd' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+
+            'colors' => 'nullable|array',
+            'colors.*.id' => 'nullable|exists:product_colors,id',
+            'colors.*.name' => 'required_with:colors|string|max:100',
+            'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'deleted_colors' => 'nullable|string',
         ];
     }
 
