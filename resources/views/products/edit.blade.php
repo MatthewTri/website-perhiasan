@@ -329,7 +329,8 @@
                                                    name="specifications[{{ $index }}][items][]" 
                                                    value="{{ $item }}"
                                                    placeholder="e.g., 18k gold vermeil"
-                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
+                                                   required>
                                             <button type="button" 
                                                     onclick="removeSpecItem(this)"
                                                     class="text-gray-400 hover:text-red-500 transition-colors p-1">
@@ -577,7 +578,8 @@
                        name="specifications[${specIndex}][items][]" 
                        value="${item || ''}"
                        placeholder="e.g., 18k gold vermeil"
-                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
+                       required>
                 <button type="button" 
                         onclick="removeSpecItem(this)"
                         class="text-gray-400 hover:text-red-500 transition-colors p-1">
@@ -638,7 +640,8 @@
             <input type="text" 
                    name="specifications[${sectionIndex}][items][]" 
                    placeholder="e.g., 925 sterling silver"
-                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white">
+                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
+                   required>
             <button type="button" 
                     onclick="removeSpecItem(this)"
                     class="text-gray-400 hover:text-red-500 transition-colors p-1">
