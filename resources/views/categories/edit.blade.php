@@ -69,18 +69,22 @@
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
     const form = document.querySelector('#form-category-edit');
+    const categoryId = {{ $category->id }};
+    const originalName = "{{ $category->name }}";
     let timeout = null;
 
     name.addEventListener('input', function() {
         clearTimeout(timeout);
         timeout = setTimeout(async () => {
             if (name.value.length > 0) {
-                try {
-                    const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value));
-                    const data = await response.json();
-                    slug.value = data.slug;
-                } catch (error) {
-                    slug.value = '';
+                if (name.value !== originalName) {
+                    try {
+                        const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value) + '&id=' + categoryId);
+                        const data = await response.json();
+                        slug.value = data.slug;
+                    } catch (error) {
+                        console.error('Slug generation failed:', error);
+                    }
                 }
             } else {
                 slug.value = '';
@@ -92,14 +96,18 @@
         e.preventDefault();
 
         if (name.value.length > 0) {
-            try {
-                const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value));
-                const data = await response.json();
-                slug.value = data.slug;
-                form.submit();
-            } catch (error) {
-                alert('Failed to generate slug. Please try again.');
+            if (name.value !== originalName) {
+                try {
+                    const response = await fetch('/categories/checkSlug?name=' + encodeURIComponent(name.value) + '&id=' + categoryId);
+                    const data = await response.json();
+                    slug.value = data.slug;
+                } catch (error) {
+                    alert('Failed to generate slug. Please try again.');
+                    return;
+                }
             }
+            // Jika name tidak berubah, slug tetap pakai yang lama
+            form.submit();
         } else {
             slug.value = '';
             form.submit();

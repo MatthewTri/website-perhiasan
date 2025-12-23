@@ -468,6 +468,7 @@
     // Auto-generate slug
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
+    const productId = {{ $product->id }};
     const originalName = "{{ $product->name }}";
     let timeout = null;
 
@@ -476,7 +477,7 @@
         timeout = setTimeout(() => {
             // Only update slug if name changed from original
             if (name.value.length > 0 && name.value !== originalName) {
-                fetch('/products/checkSlug?name=' + encodeURIComponent(name.value))
+                fetch('/products/checkSlug?name=' + encodeURIComponent(name.value) + '&id=' + productId)
                 .then(response => response.json())
                 .then(data => slug.value = data.slug)
                 .catch(error => console.log('Error:', error));
@@ -744,17 +745,20 @@
 
         // Always fetch slug before submit
         if (name.value.length > 0) {
-            try {
-                const response = await fetch('/products/checkSlug?name=' + encodeURIComponent(name.value));
-                const data = await response.json();
-                slug.value = data.slug;
-            } catch (error) {
-                alert('Failed to generate slug. Please try again.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                isSubmitting = false;
-                return false;
+            if (name.value !== originalName) {
+                try {
+                    const response = await fetch('/products/checkSlug?name=' + encodeURIComponent(name.value) + '&id=' + productId);
+                    const data = await response.json();
+                    slug.value = data.slug;
+                } catch (error) {
+                    alert('Failed to generate slug. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    isSubmitting = false;
+                    return false;
+                }
             }
+            // Jika name tidak berubah, slug tetap pakai yang lama
         } else {
             slug.value = '';
         }

@@ -246,8 +246,12 @@ class ProductController extends Controller
     }
 
     public function checkSlug(Request $r) {
-        // slug akan berisi dari title dan check di database dari Post::class apakah slugnya unique atau tidak
-        $slug = SlugService::createSlug(Product::class, 'slug', $r->name);
+        // ⬅️ TERIMA ID PARAMETER (untuk edit mode)
+        $id = $r->id ?? null;
+        
+        // ⬅️ GENERATE SLUG dengan ignore ID yang sedang diedit
+        $slug = SlugService::createSlug(Product::class, 'slug', $r->name, ['unique' => true, 'ignoreId' => $id]);
+        
         return response()->json(['slug' => $slug]);
     }
 

@@ -108,8 +108,9 @@ class CategoryController extends Controller
     }
 
     public function checkSlug(Request $r) {
+        $id = $r->id ?? null;
         // slug akan berisi dari title dan check di database dari Post::class apakah slugnya unique atau tidak
-        $slug = SlugService::createSlug(Category::class, 'slug', $r->name);
+        $slug = SlugService::createSlug(Category::class, 'slug', $r->name, ['unique' => true, 'ignoreId' => $id]);
         return response()->json(['slug' => $slug]);
     }
 }
