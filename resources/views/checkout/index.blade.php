@@ -259,7 +259,7 @@
                                             <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">IDR</span></p>
                                         </div>
                                         <div class="flex items-center">
-                                            <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-10">
+                                            <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-20">
                                         </div>
                                     </div>
                                 </div>
@@ -281,10 +281,7 @@
                                             <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">USD</span></p>
                                         </div>
                                         <div class="flex items-center">
-                                            <svg class="h-8 w-16" viewBox="0 0 124 33" fill="none">
-                                                <path d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746z" fill="#253B80"/>
-                                                <path d="M47 13.154c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906z" fill="#253B80"/>
-                                            </svg>
+                                            <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-14">
                                         </div>
                                     </div>
                                 </div>
