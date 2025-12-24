@@ -89,6 +89,7 @@ Route::middleware(['auth'])->group(function () { // tambahkan middleware admin n
     Route::get('/admin/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/admin/orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.updateShipping');
+    Route::post('/admin/orders/{order}/process-refund', [App\Http\Controllers\Admin\OrderController::class, 'processRefund'])->name('admin.orders.processRefund');
 });
 
 // Member Orders (Must be authenticated)

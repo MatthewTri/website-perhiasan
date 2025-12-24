@@ -33,7 +33,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Order #{{ $order->order_number }}</h1>
-                    <p class="text-sm text-gray-500">Placed on {{ $order->created_at->format('d M Y, H:i') }}</p>
+                    <p class="text-sm text-gray-500">Placed on {{ $order->created_at->format('d M Y') }}</p>
                 </div>
                 
                 <!-- Status Badge -->
@@ -47,6 +47,7 @@
                             'SHIPPED' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'label' => 'Shipped'],
                             'COMPLETED' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => 'Completed'],
                             'CANCELLED' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Cancelled'],
+                            'REFUNDED' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => 'Refunded'],
                         ];
                         $status = $statusConfig[$order->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => $order->status];
                     @endphp
@@ -56,6 +57,35 @@
                 </div>
             </div>
 
+            @if($order->status === 'REFUNDED')
+            <div class="mb-4 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-orange-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-orange-900">Order Refunded</h3>
+                        <p class="text-sm text-orange-800 mt-1">
+                            This order has been refunded by the admin.
+                        </p>
+                        @if($order->refund_amount && $order->payment_method === 'PAYPAL')
+                        <div class="mt-3 pt-3 border-t border-orange-200">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-orange-700">Refund Amount:</span>
+                                <span class="text-lg font-bold text-orange-900">
+                                    ${{ number_format($order->refund_amount, 2) }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-orange-600 mt-1">
+                                Refunded on {{ $order->refunded_at->format('M d, Y') }}
+                            </p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+            
             <!-- Order Timeline -->
             <div class="relative">
                 <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
@@ -70,7 +100,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">Order Placed</p>
-                            <p class="text-xs text-gray-500">{{ $order->created_at->format('d M Y, H:i') }}</p>
+                            <p class="text-xs text-gray-500">{{ $order->created_at->format('d M Y') }}</p>
                         </div>
                     </div>
 
@@ -87,8 +117,8 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">Payment Details Sent</p>
-                            @if(in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION', 'PAID', 'SHIPPED', 'COMPLETED']))
-                            <p class="text-xs text-gray-500">{{ $order->updated_at->format('d M Y, H:i') }}</p>
+                            @if(in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION', 'PAID', 'SHIPPED', 'COMPLETED','REFUNDED']))
+                            <p class="text-xs text-gray-500">{{ $order->updated_at->format('d M Y') }}</p>
                             @else
                             <p class="text-xs text-gray-500">Waiting for admin review</p>
                             @endif
@@ -109,7 +139,7 @@
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">Payment Confirmed</p>
                             @if($order->paid_at)
-                            <p class="text-xs text-gray-500">{{ $order->paid_at->format('d M Y, H:i') }}</p>
+                            <p class="text-xs text-gray-500">{{ $order->paid_at->format('d M Y') }}</p>
                             @elseif($order->status === 'WAITING_VERIFICATION')
                             <p class="text-xs text-yellow-600">Waiting admin verification</p>
                             @else
@@ -133,7 +163,7 @@
                             <p class="text-sm font-medium text-gray-900">Shipped</p>
                             @if($order->shipment && $order->shipment->tracking_number)
                             <p class="text-xs text-gray-500">{{ $order->shipment->courier_name }}: {{ $order->shipment->tracking_number }}</p>
-                            <p class="text-xs text-gray-400">{{ $order->shipment->shipped_at->format('d M Y, H:i') }}</p>
+                            <p class="text-xs text-gray-400">{{ $order->shipment->shipped_at->format('d M Y') }}</p>
                             @else
                             <p class="text-xs text-gray-500">Waiting for shipment</p>
                             @endif

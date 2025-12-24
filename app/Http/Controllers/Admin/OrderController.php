@@ -212,4 +212,36 @@ class OrderController extends Controller
 
         return back()->with('success', 'Tracking information updated successfully!');
     }
+
+    /**
+     * Process Manual Refund (BCA)
+     */
+    public function processRefund(Request $request, Order $order)
+    {
+        if ($order->status !== 'COMPLETED') {
+            return back()->with('error', 'Only COMPLETED orders can be refunded.');
+        }
+
+        if (!$order->can_request_refund) {
+            return back()->with('error', 'Refund window has expired (14 days limit).');
+        }
+
+        if ($order->payment_gateway === 'PAYPAL') {
+            return back()->with('error', 'PayPal refunds must be processed from PayPal Dashboard.');
+        }
+
+        $validated = $request->validate([
+            'refund_amount' => 'required|numeric|min:0.01|max:' . $order->total_amount,
+        ]);
+
+        $order->update([
+            'status' => 'REFUNDED',
+            'refund_amount' => $validated['refund_amount'],
+            'refunded_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'Refund processed successfully. Order marked as REFUNDED.');
+    }
 }

@@ -29,7 +29,7 @@
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900">Order #{{ $order->order_number }}</h3>
-                        <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y, H:i') }}</p>
+                        <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</p>
                     </div>
                     
                     <!-- Status Badge -->

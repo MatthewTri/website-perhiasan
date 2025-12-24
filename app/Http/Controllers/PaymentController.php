@@ -437,6 +437,7 @@ class PaymentController extends Controller
         // Update order status
         $order->update([
             'status' => 'REFUNDED',
+            'refund_amount' => $refundAmount,
             'refunded_at' => now(),
         ]);
         

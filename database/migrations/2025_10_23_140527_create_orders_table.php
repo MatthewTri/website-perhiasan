@@ -42,12 +42,9 @@ return new class extends Migration
                 'SHIPPED',              // Dikirim
                 'COMPLETED',            // Selesai
                 'CANCELLED',            // Batal (Expired/Manual Cancel)
-                
-                // Status Refund TETAP ADA disini sebagai "Headline/Judul Besar"
-                'REFUND_REQUESTED',     // Sedang ada pengajuan (Cek tabel refunds untuk detail)
-                'REFUNDED',             // Uang sudah kembali
-                'REFUND_REJECTED'       // Pengajuan ditolak (History)
+                'REFUNDED',             // Refund selesai
             ])->default('PENDING_REVIEW')->index();
+
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'
             
             $table->decimal('subtotal_idr', 15, 2); // Subtotal dalam IDR
@@ -79,6 +76,9 @@ return new class extends Migration
 
             // 8. Review (Pencegahan Double Review)`
             $table->boolean('is_reviewed')->default(false);
+
+            // 9. Refund
+            $table->decimal('refund_amount', 15, 2)->nullable(); // Jumlah yang direfund
 
             $table->timestamps();
         });

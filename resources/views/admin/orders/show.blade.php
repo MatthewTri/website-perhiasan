@@ -874,6 +874,7 @@
                             </div>
                         </form>
                     </div>
+
                     @elseif($order->status === 'SHIPPED')
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                         <div class="flex items-center mb-2">
@@ -897,6 +898,60 @@
                         </svg>
                         Mark as Completed
                     </button>
+
+                    @elseif($order->status === 'COMPLETED' && $order->can_request_refund && $order->payment_gateway !== 'PAYPAL')
+                    <div class="space-y-3">
+                        <!-- Refund Button (Toggle Form) -->
+                        <button type="button" 
+                                onclick="document.getElementById('manual-refund-form').classList.toggle('hidden')"
+                                class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            Process Refund
+                        </button>
+                        
+                        <!-- Manual Refund Form -->
+                        <div id="manual-refund-form" class="hidden p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                            <form action="{{ route('admin.orders.processRefund', $order) }}" method="POST">
+                                @csrf
+                                
+                                <div class="space-y-3">
+                                    <!-- Refund Amount -->
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">
+                                            Refund Amount <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
+                                                Rp
+                                            </span>
+                                            <input type="number" 
+                                                name="refund_amount" 
+                                                required
+                                                step="0.01"
+                                                min="0.01"
+                                                max="{{ $order->total_amount }}"
+                                                value="{{ $order->total_amount }}"
+                                                placeholder="0"
+                                                class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Max: Rp {{ number_format($order->total_amount, 2, ',', '.') }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" 
+                                            onclick="return confirm('Process refund? Status will change to REFUNDED.')"
+                                            class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Process Refund
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
                     @else
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <p class="text-sm text-gray-600 text-center">Order status: <span class="font-medium">{{ str_replace('_', ' ', $order->status) }}</span></p>
@@ -910,6 +965,59 @@
                         </svg>
                         <p>All customer information is confidential</p>
                     </div>
+
+                    @if($order->status === 'COMPLETED')
+                        @if($order->can_request_refund)
+                        <div class="mt-2 p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-1">
+                                    <p class="text-xs text-green-700">
+                                        Refundable until <strong>{{ $order->refundable_until->format('M d, Y') }}</strong>
+                                    </p>
+                                    @if ($order->payment_gateway === 'PAYPAL')
+                                        <p class="text-xs text-green-600 mt-2 italic">
+                                            You can process refund from PayPal Dashboard
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        <div class="mt-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-gray-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-gray-700">Refund Window Closed</p>
+                                    <p class="text-xs text-gray-600 mt-1">
+                                        Refund period expired on {{ $order->refundable_until->format('M d, Y') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    @elseif($order->status === 'REFUNDED')
+                        <div class="mt-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-orange-900">Order Refunded</p>
+                                    @if($order->refund_amount && $order->payment_method === 'PAYPAL')
+                                    <p class="text-xs text-orange-700 mt-1">
+                                        Amount: <strong>${{ number_format($order->refund_amount, 2) }}</strong>
+                                    </p>
+                                    @else
+                                    <p class="text-xs text-orange-700 mt-1">
+                                        Amount: <strong>Rp {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
+                                    </p>
+                                    @endif
+                                    <p class="text-xs text-orange-600 mt-1">
+                                        Refunded on {{ $order->refunded_at->format('M d, Y') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

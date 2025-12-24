@@ -76,8 +76,8 @@ class Order extends Model
     {
         if ($this->status !== 'COMPLETED') return false;
         
-        // Batas 3 Hari
-        $limit = Carbon::parse($this->completed_at)->addDays(3);
+        // Batas 14 Hari
+        $limit = Carbon::parse($this->completed_at)->addDays(14);
         return now()->lessThan($limit);
     }
 
@@ -89,5 +89,13 @@ class Order extends Model
         // Batas 30 Hari
         $limit = Carbon::parse($this->completed_at)->addDays(30);
         return now()->lessThan($limit);
+    }
+
+    // ⬅️ TAMBAHKAN ACCESSOR BARU
+    public function getRefundableUntilAttribute()
+    {
+        if ($this->status !== 'COMPLETED' || !$this->completed_at) return null;
+        
+        return Carbon::parse($this->completed_at)->addDays(14);
     }
 }

@@ -29,7 +29,7 @@
     @endif
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 mb-8">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <div class="flex items-center justify-between">
                 <div>
@@ -113,6 +113,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Refunded</p>
+                <p class="text-2xl font-bold text-orange-600">{{ $allOrders->where('status', 'REFUNDED')->count() }}</p>
+            </div>
+            <div class="bg-orange-100 rounded-full p-3">
+                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                </svg>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Filter Tabs -->
@@ -169,6 +183,13 @@
                 Cancelled
                 @if($allOrders->where('status', 'CANCELLED')->count() > 0)
                 <span class="ml-2 bg-red-100 text-red-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'CANCELLED')->count() }}</span>
+                @endif
+            </a>
+            <a href="{{ route('admin.orders.index', ['status' => 'REFUNDED']) }}" 
+            class="border-b-2 {{ request('status') === 'REFUNDED' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 font-medium text-sm">
+                Refunded
+                @if($allOrders->where('status', 'REFUNDED')->count() > 0)
+                <span class="ml-2 bg-orange-100 text-orange-800 py-0.5 px-2 rounded-full text-xs">{{ $allOrders->where('status', 'REFUNDED')->count() }}</span>
                 @endif
             </a>
         </nav>
@@ -252,6 +273,7 @@
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
                                 {{ str_replace('_', ' ', $order->status) }}
                             </span>
+                        </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $order->created_at->format('M d, Y') }}</div>
