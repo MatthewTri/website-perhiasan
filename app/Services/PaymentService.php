@@ -101,7 +101,7 @@ class PaymentService
 
                     $items[] = [
                         'name' => $orderItem->item_name,
-                        'description' => $orderItem->item_description ?? 'Product from ' . config('app.name'),
+                        // 'description' => $orderItem->item_description ?? 'Product from ' . config('app.name'),
                         'quantity' => (string)$orderItem->quantity,
                         'unit_amount' => [
                             'currency_code' => 'USD',
