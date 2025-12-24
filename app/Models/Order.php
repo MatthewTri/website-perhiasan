@@ -20,6 +20,7 @@ class Order extends Model
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'completed_at' => 'datetime',
+        'refunded_at' => 'datetime',
     ];
 
     // Relasi: Order ini milik siapa (bisa jadi Guest)

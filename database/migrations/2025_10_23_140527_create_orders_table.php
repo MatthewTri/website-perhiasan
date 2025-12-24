@@ -66,6 +66,7 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
             $table->timestamp('completed_at')->nullable(); // Waktu order selesai
             $table->timestamp('cancelled_at')->nullable(); // Waktu pembatalan order
+            $table->timestamp('refunded_at')->nullable(); // Waktu refund selesai
 
             $table->string('proof_of_payment')->nullable(); // URL/Gambar bukti transfer manual
 

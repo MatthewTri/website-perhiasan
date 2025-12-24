@@ -361,16 +361,96 @@ class PaymentController extends Controller
      */
     private function handlePaymentRefunded(array $event)
     {
-        $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
-        $order = Order::where('transaction_id', $paypalOrderId)->first();
+        Log::info('PayPal Webhook: Refund event received', ['event' => $event]);
+
+        // ⬅️ STRUKTUR DATA REFUND BERBEDA DENGAN CAPTURE!
+        // Refund punya structure: resource.sale_id atau resource.links
+        $captureId = null;
+        $refundId = $event['resource']['id'] ?? null;
+        $refundAmount = $event['resource']['amount']['value'] ?? 0;
+        $refundCurrency = $event['resource']['amount']['currency_code'] ?? 'USD';
         
-        if ($order) {
-            $order->update(['status' => 'REFUNDED']); // Perlu tambah status ini di enum
-            
-            Log::warning('PayPal Webhook: Payment refunded', ['order_id' => $order->id]);
-            
-            // TODO: Kirim email refund notification
+        // Cari Capture ID dari berbagai tempat
+        // 1. Dari sale_id (untuk older PayPal API)
+        if (isset($event['resource']['sale_id'])) {
+            $captureId = $event['resource']['sale_id'];
         }
+        
+        // 2. Dari links array
+        if (!$captureId && isset($event['resource']['links'])) {
+            foreach ($event['resource']['links'] as $link) {
+                if ($link['rel'] === 'up' || $link['rel'] === 'refund') {
+                    // Extract capture ID from URL: /v2/payments/captures/{capture_id}
+                    preg_match('/captures\/([A-Z0-9]+)/', $link['href'], $matches);
+                    if (!empty($matches[1])) {
+                        $captureId = $matches[1];
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // 3. Dari invoice_id (backup)
+        $invoiceId = $event['resource']['invoice_id'] ?? null;
+        
+        Log::info('PayPal Webhook: Extracted refund data', [
+            'capture_id' => $captureId,
+            'refund_id' => $refundId,
+            'refund_amount' => $refundAmount,
+            'currency' => $refundCurrency,
+            'invoice_id' => $invoiceId,
+            'raw_resource' => $event['resource'] // ⬅️ Untuk debugging
+        ]);
+
+        // Search order by capture_id or invoice_id
+        $order = null;
+        
+        if ($captureId) {
+            $order = Order::where('capture_id', $captureId)->first();
+            if ($order) {
+                Log::info('✅ Order found by capture_id', ['order_id' => $order->id]);
+            }
+        }
+        
+        if (!$order && $invoiceId) {
+            $order = Order::where('order_number', $invoiceId)->first();
+            if ($order) {
+                Log::info('✅ Order found by invoice_id', ['order_id' => $order->id]);
+            }
+        }
+        
+        if (!$order) {
+            Log::error('❌ PayPal Webhook: Order not found for refund', [
+                'capture_id' => $captureId,
+                'invoice_id' => $invoiceId,
+                'refund_id' => $refundId
+            ]);
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        // Idempotency check
+        if ($order->status === 'REFUNDED') {
+            Log::info('PayPal Webhook: Order already refunded', ['order_id' => $order->id]);
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        // Update order status
+        $order->update([
+            'status' => 'REFUNDED',
+            'refunded_at' => now(),
+        ]);
+        
+        Log::info('✅ PayPal Webhook: Refund processed successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'refund_id' => $refundId,
+            'refund_amount' => $refundAmount,
+            'refund_currency' => $refundCurrency,
+            'previous_status' => $order->getOriginal('status')
+        ]);
+
+        // TODO: Kirim email notifikasi refund ke customer
+        // Mail::to($order->contact_email)->send(new RefundNotificationMail($order, $refundAmount));
 
         return response()->json(['status' => 'success'], 200);
     }
