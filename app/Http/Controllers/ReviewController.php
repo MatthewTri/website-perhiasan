@@ -12,11 +12,16 @@ class ReviewController extends Controller
 {
     public function index(Request $request)
     {
-        $reviews = Review::with(['user', 'product:id,name,slug' , 'order:id,shipping_name'])
-            ->where('is_visible', true)
-            ->whereHas('product') // Only reviews with existing products
-            ->latest()
-            ->paginate(1);
+        $reviews = Review::with([
+            'user', 
+            'product:id,name,slug',
+            'order:id',
+            'order.shipment:id,order_id,first_name,last_name' 
+        ])
+        ->where('is_visible', true)
+        ->whereHas('product') // Only reviews with existing products
+        ->latest()
+        ->paginate(1);
 
         return response()->json($reviews);
     }

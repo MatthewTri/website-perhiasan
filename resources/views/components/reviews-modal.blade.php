@@ -131,7 +131,15 @@ function renderReview(review, index) {
         </svg>`;
     }).join('');
     
-    const userName = review.anonymous ? 'Anonymous' : (review.order ? review.order.shipping_name : 'Customer');
+    let userName = 'Customer';
+    if (!review.anonymous) {
+        if (review.order && review.order.shipment) {
+            userName = `${review.order.shipment.first_name} ${review.order.shipment.last_name}`;
+        }
+    } else {
+        userName = 'Anonymous';
+    }
+    
     const verifiedBadge = review.order_id ? '<span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">Verified</span>' : '';
     
     const imageHtml = review.image 

@@ -115,7 +115,7 @@
                                 @if($review->anonymous)
                                 <span class="text-sm text-gray-500 italic">Anonymous</span>
                                 @else
-                                <p class="text-sm font-medium text-gray-900">{{ $review->order->shipping_name }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $review->order->shipment->first_name }} {{ $review->order->shipment->last_name }}</p>
                                 @endif
                                 @if($review->order_id)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
