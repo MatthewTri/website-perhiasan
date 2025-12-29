@@ -1,8 +1,8 @@
 <div class="bg-[#E8B49E] text-white text-[10px] md:text-xs font-bold text-center py-2 tracking-[0.2em] uppercase">
-    ✦ Buy 3 and Get 1 For Free ✦
+    ✦ Free shipping all across Indonesia ✦
 </div>
 
-<nav class="bg-white antialiased w-full z-30 sticky top-0 border-b border-gray-100">
+<nav id="main-navbar" class="bg-white antialiased w-full z-30 sticky top-0 border-b border-gray-100 transition-transform duration-300 ease-in-out">
     <div class="max-w-screen-2xl mx-auto px-4 lg:px-6 py-6 md:py-9">
         
         <div class="flex items-center justify-between relative">
@@ -27,48 +27,57 @@
                 </button>
 
                 @auth
-                    @can('admin')
-                    <div class="relative">
-                        <button id="adminDropdownButton" data-dropdown-toggle="adminDropdown" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer transition-colors">
-                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        </button>
-                        <div id="adminDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-48 border border-gray-100">
-                            <div class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Admin Panel</div>
-                            <ul class="py-2 text-sm text-gray-700">
-                                <li><a href="{{ route('products.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Products</a></li>
-                                <li><a href="{{ route('categories.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Categories</a></li>
-                                <li><a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Orders</a></li>
-                                <li><a href="{{ route('admin.consultation.index') }}" class="block px-4 py-2 hover:bg-gray-50">Consultations</a></li>
-                                <li><a href="{{ route('settings.index') }}" class="block px-4 py-2 hover:bg-gray-50">Admin Settings</a></li>
-                            </ul>
-                        </div>
+                @can('admin')
+                <div class="relative">
+                    <button id="adminDropdownButton" data-dropdown-toggle="adminDropdown" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer transition-colors">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </button>
+                    <div id="adminDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-48 border border-gray-100">
+                        <div class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Admin Panel</div>
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="{{ route('products.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Products</a></li>
+                            <li><a href="{{ route('categories.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Categories</a></li>
+                            <li><a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Orders</a></li>
+                            <li><a href="{{ route('admin.consultation.index') }}" class="block px-4 py-2 hover:bg-gray-50">Consultations</a></li>
+                            <li><a href="{{ route('settings.index') }}" class="block px-4 py-2 hover:bg-gray-50">Admin Settings</a></li>
+                        </ul>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">Sign out</button>
+                        </form>
                     </div>
-                    @endcan
-                @endauth
-
+                </div>
+                @else
                 <div class="relative">
                     <button id="userDropdownButton" data-dropdown-toggle="userDropdown" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     </button>
                     <div id="userDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-44 border border-gray-100">
-                        @auth
-                            <ul class="py-2 text-sm text-gray-700">
-                                <li><a href="#" class="block px-4 py-2 hover:bg-gray-50">My Account</a></li>
-                                <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li>
-                            </ul>
-                            <div class="py-1">
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Sign out</button>
-                                </form>
-                            </div>
-                        @else
-                            <div class="py-2">
-                                <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Login / Register</a>
-                            </div>
-                        @endauth
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-50">My Account</a></li>
+                            <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li>
+                        </ul>
+                        <div class="py-1">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">Sign out</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+                @endcan
+            @else
+            <div class="relative">
+                <button id="userDropdownButton" data-dropdown-toggle="userDropdown" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </button>
+                <div id="userDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-44 border border-gray-100">
+                    <div class="py-2">
+                        <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Login / Register</a>
+                    </div>
+                </div>
+            </div>
+            @endauth
 
                 <a href="{{ route('cart.index') }}" class="p-1 text-gray-900 hover:text-gray-600 relative">
                     <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
@@ -99,7 +108,7 @@
     </div>
 </nav>
 
-<div id="mobile-menu-drawer" class="fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-80 shadow-2xl" tabindex="-1">
+<div id="mobile-menu-drawer" class="fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-70 shadow-2xl" tabindex="-1">
     
     <button type="button" data-drawer-hide="mobile-menu-drawer" aria-controls="mobile-menu-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
@@ -159,3 +168,33 @@
         @endauth
     </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('main-navbar');
+        const scrollThreshold = 100; // Jarak scroll sebelum efek mulai aktif (untuk melewati banner)
+
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // 1. Jika masih di paling atas (area banner), biarkan default
+            if (scrollTop <= 0) {
+                navbar.classList.remove('-translate-y-full');
+                return;
+            }
+
+            // 2. Logic Hide/Show
+            // Jika scroll ke bawah DAN sudah melewati banner (threshold)
+            if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
+                // Sembunyikan Navbar (naik ke atas layar)
+                navbar.classList.add('-translate-y-full'); 
+            } else {
+                // Scroll ke atas -> Munculkan Navbar
+                navbar.classList.remove('-translate-y-full');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+    });
+</script>
