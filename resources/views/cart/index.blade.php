@@ -53,9 +53,6 @@
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ $item->product->name }}
                                             </div>
-                                            <div class="text-sm text-gray-500">
-                                                {{ Str::limit($item->product->description, 50) }}
-                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -263,7 +260,6 @@ class GuestCart {
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             ${items.map(item => {
-                                // ⬅️ HITUNG BERDASARKAN CURRENCY AKTIF
                                 const price = currentCurrency === 'USD' ? item.product.price_usd : item.product.price_idr;
                                 const itemTotal = price * item.quantity;
                                 total += itemTotal;
@@ -279,6 +275,11 @@ class GuestCart {
                                         </svg>
                                     </div>`;
                                 
+                                // Fix description handling - pastikan tidak undefined
+                                const description = item.product.description ? 
+                                    (item.product.description.length > 50 ? item.product.description.substring(0, 50) + '...' : item.product.description) 
+                                    : 'No description';
+                                
                                 return `
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -288,7 +289,6 @@ class GuestCart {
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900">${item.product.name}</div>
-                                                    <div class="text-sm text-gray-500">${item.product.description.substring(0, 50)}...</div>
                                                 </div>
                                             </div>
                                         </td>

@@ -89,7 +89,7 @@
 
         <div class="hidden lg:flex justify-center items-center mt-8 pt-4">
             <ul class="flex space-x-8 text-[11px] xl:text-xs font-medium text-gray-900 tracking-[0.15em] uppercase">
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Collections</a></li>
+                <li><a href="{{ route('products.index') }}" class="hover:text-[#E8B49E] transition-colors">Collections</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Best Sellers</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
