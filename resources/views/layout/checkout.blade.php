@@ -19,7 +19,7 @@
 </head>
 <body class="bg-gray-50">
     {{-- Minimal Navbar (bisa customize lebih simple) --}}
-    @include('partials.navbar')
+    {{-- @include('partials.navbar') --}}
 
     {{-- Main Content --}}
     <main>
