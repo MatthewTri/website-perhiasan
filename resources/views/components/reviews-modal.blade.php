@@ -166,7 +166,7 @@ function renderReview(review, index) {
                         </div>
                         <div class="flex">${stars}</div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-0.5">about <a href="/product/${review.product.slug}" class="text-orange-500 hover:underline">${review.product.name}</a></p>
+                    <p class="text-xs text-gray-500 mt-0.5">about <a href="/products/${review.product.slug}" class="text-orange-500 hover:underline">${review.product.name}</a></p>
                     ${review.comment ? `<p class="mt-2 text-sm text-gray-700 leading-relaxed">${review.comment}</p>` : ''}
                     ${imageHtml}
                 </div>

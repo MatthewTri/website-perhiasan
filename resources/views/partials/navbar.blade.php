@@ -116,7 +116,7 @@
     </button>
 
     <div class="mb-6 mt-2">
-        <img src="{{ asset('img/text1.png') }}" alt="Nabi London" class="h-6">
+        <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
     </div>
 
     <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">

@@ -38,6 +38,10 @@ class CartController extends Controller
 
     public function addToCart(Request $request, $productId)
     {
+        // Validate quantity
+        $quantity = $request->input('quantity', 1);
+        $quantity = max(1, (int)$quantity); // Minimal 1
+        
         if (Auth::check()) {
             // User authenticated - simpan ke database
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
@@ -47,34 +51,45 @@ class CartController extends Controller
                                 ->first();
 
             if ($cartItem) {
-                $cartItem->increment('quantity');
+                // Tambah quantity yang ada
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
             } else {
+                // Buat baru dengan quantity dari request
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $productId,
-                    'quantity' => 1
+                    'quantity' => $quantity
                 ]);
             }
 
-            return response()->json(['success' => 'Product added to cart!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart!',
+                'quantity' => $quantity
+            ]);
         } else {
             // Guest user - return product info untuk localStorage
-            $product = Product::find($productId);
+            $product = Product::with('featuredImage')->find($productId);
             
             if (!$product) {
                 return response()->json(['error' => 'Product not found'], 404);
             }
 
-            // ⬅️ RETURN DUAL PRICES
             return response()->json([
-                'success' => 'Product added to cart!',
+                'success' => true,
+                'message' => 'Product added to cart!',
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->name,
                     'price_idr' => $product->price_idr,
                     'price_usd' => $product->price_usd,
-                    'description' => $product->description
-                ]
+                    'description' => $product->description,
+                    'featured_image' => $product->featuredImage ? [
+                        'image' => $product->featuredImage->image
+                    ] : null
+                ],
+                'quantity' => $quantity
             ]);
         }
     }
