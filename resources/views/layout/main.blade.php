@@ -17,10 +17,10 @@
 
     <title>Cecile Private Collection</title>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     @include('partials.navbar')
 
-    <div>
+    <div class="flex-grow">
         @yield('content')
     </div>
 

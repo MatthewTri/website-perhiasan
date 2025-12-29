@@ -22,11 +22,13 @@
               </a>
             </li>
           @endauth
+          @can('admin')
           <li class="shrink-0">
             <a href="{{ route('products.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
               Manage products
             </a>
           </li>
+          @endcan
           <li class="shrink-0">
             <a href="{{ route('categories.index') }}" title="" class="text-sm font-medium text-gray-900 hover:text-primary-700">
               Manage Categories

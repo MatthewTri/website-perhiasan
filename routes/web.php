@@ -59,7 +59,7 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 // Settings routes (only Admin access)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
@@ -78,14 +78,14 @@ Route::get('/consultation', [CustomRequestController::class, 'create'])->name('c
 Route::post('/consultation', [CustomRequestController::class, 'store'])->name('consultation.store');
 
 // Admin routes (tambahkan middleware admin nanti)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/consultation', [CustomRequestController::class, 'index'])->name('admin.consultation.index');
     Route::get('/admin/consultation/{customRequest}', [CustomRequestController::class, 'show'])->name('admin.consultation.show');
     Route::delete('/admin/consultation/{customRequest}', [CustomRequestController::class, 'destroy'])->name('admin.consultation.destroy');
 });
 
 // Admin Order Management routes
-Route::middleware(['auth'])->group(function () { // tambahkan middleware admin nanti
+Route::middleware(['auth' ,'admin'])->group(function () { // tambahkan middleware admin nanti
     Route::get('/admin/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/admin/orders/{order}/update-shipping', [App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.updateShipping');
@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Admin Orders
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth' ,'admin'])->group(function () {
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
     Route::post('orders/{order}/send-payment-details', [AdminOrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
     Route::post('orders/{order}/update-shipping', [AdminOrderController::class, 'updateShipping'])->name('orders.updateShipping');
@@ -135,7 +135,7 @@ Route::put('/order/track/{token}/review/update', [ReviewController::class, 'upda
 
 
 // Admin Review Management
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function() {
+Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function() { // tambahkan middleware admin nanti
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
     Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
