@@ -532,7 +532,6 @@
                 subSelect.classList.add('text-gray-900');
             } else {
                 subSelect.innerHTML = '<option value="">No sub-categories (Uses Parent)</option>';
-                // Logic tambahan jika controller Anda menghandle parent sebagai category_id
             }
         }
     });

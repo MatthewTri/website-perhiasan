@@ -1,728 +1,321 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit Product</h1>
+<div class="min-h-screen bg-white pb-20">
+    
+    {{-- 1. ELEGANT HEADER --}}
+    <div class="max-w-screen-2xl mx-auto px-4 lg:px-6 pt-10 pb-12">
+        <div class="flex flex-col items-center justify-center text-center">
+            <span class="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-2">Inventory Management</span>
+            <h1 class="text-3xl md:text-4xl font-serif text-gray-900 tracking-widest uppercase">
+                Edit Masterpiece
+            </h1>
+            <div class="h-px w-16 bg-gray-900 mt-6"></div>
+        </div>
+    </div>
+
+    {{-- Error Summary --}}
+    @if ($errors->any())
+        <div class="max-w-screen-2xl mx-auto px-4 lg:px-6 mb-8">
+            <div class="bg-red-50 border-l-2 border-red-500 p-4">
+                <p class="text-xs font-bold text-red-500 uppercase tracking-widest">Please correct the following errors:</p>
+                <ul class="mt-2 text-xs text-red-600 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    <form id="editProductForm" action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" class="max-w-screen-2xl mx-auto px-4 lg:px-6">
+        @csrf
+        @method('PUT')
         
-        <form id="editProductForm" action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-16">
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Left Side - Image Upload -->
-                <div class="space-y-4">
-                    <!-- Main Image Preview -->
-                    <div class="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden relative">
-                        <div id="mainImagePreview" class="w-full h-full flex items-center justify-center">
-                            <!-- Show existing main image or default state -->
-                            @if($product->featuredImage)
-                                <img id="mainImage" 
-                                     src="{{ asset('storage/' . $product->featuredImage->image) }}" 
-                                     class="w-full h-full object-cover" 
-                                     alt="Main product image">
-                                <div id="noImageState" class="text-center hidden">
-                                    <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <p class="text-gray-500 text-lg font-medium mb-2">Add an image</p>
-                                    <p class="text-gray-400 text-sm">Click to upload your first product image</p>
-                                </div>
-                            @else
-                                <div id="noImageState" class="text-center">
-                                    <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <p class="text-gray-500 text-lg font-medium mb-2">Add an image</p>
-                                    <p class="text-gray-400 text-sm">Click to upload your first product image</p>
-                                </div>
-                                <img id="mainImage" class="w-full h-full object-cover hidden" alt="Main product image">
-                            @endif
-                        </div>
-                        
-                        <!-- Click overlay for main image -->
-                        <input type="file" 
-                               id="mainImageInput" 
-                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer {{ $product->images->count() > 0 ? 'pointer-events-none' : '' }}" 
-                               accept="image/*" 
-                               onchange="handleMainImageUpload(this)"
-                               {{ $product->images->count() > 0 ? 'disabled' : '' }}>
+            {{-- LEFT COLUMN: VISUALS (Sticky) --}}
+            <div class="lg:col-span-6 xl:col-span-5">
+                <div class="sticky top-24">
+                    <div class="text-xs font-bold tracking-[0.15em] text-gray-900 uppercase mb-6 border-b border-gray-100 pb-2 text-center">
+                        Visual Assets
                     </div>
-                    
-                    <!-- Thumbnail Gallery -->
-                    <div class="flex space-x-2 overflow-x-auto py-2">
-                        <div id="thumbnailContainer" class="flex space-x-2 pb-3">
-                            <!-- Show existing thumbnails -->
-                            @foreach($product->images as $index => $image)
-                                <div class="relative flex-shrink-0" data-existing-id="{{ $image->id }}">
-                                    <div class="w-16 h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-blue-500' : 'border-gray-200' }} cursor-pointer hover:border-blue-300 transition-colors" 
-                                         onclick="setMainImageFromExisting('{{ asset('storage/' . $image->image) }}', {{ $index }})">
-                                        <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover">
+
+                    <div class="w-full max-w-[480px] mx-auto space-y-4">
+                        
+                        {{-- 1. MAIN IMAGE --}}
+                        <div class="group relative aspect-square w-full bg-[#F9F9F9] border border-gray-100 transition-all hover:border-gray-300 overflow-hidden cursor-pointer shadow-sm hover:shadow-md rounded-sm">
+                            
+                            <div id="mainImagePreview" class="w-full h-full">
+                                @if($product->images->count() > 0)
+                                    <div id="noImageState" class="w-full h-full flex flex-col items-center justify-center text-gray-300 transition-colors group-hover:text-gray-400 hidden">
+                                        <span class="text-4xl font-thin mb-3">+</span>
+                                        <span class="text-[10px] uppercase tracking-widest">Cover Image</span>
                                     </div>
-                                    <button type="button" 
-                                            onclick="removeExistingImage({{ $image->id }}, this)"
-                                            class="absolute top-0 right-0 bg-red-500 text-white rounded-tr-lg rounded-bl-xs font-bold w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
-                                        ×
-                                    </button>
-                                </div>
-                            @endforeach
+                                    <img id="mainImage" src="{{ asset('storage/' . $product->featuredImage->image) }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Main product image">
+                                @else
+                                    <div id="noImageState" class="w-full h-full flex flex-col items-center justify-center text-gray-300 transition-colors group-hover:text-gray-400">
+                                        <span class="text-4xl font-thin mb-3">+</span>
+                                        <span class="text-[10px] uppercase tracking-widest">Cover Image</span>
+                                    </div>
+                                    <img id="mainImage" class="w-full h-full object-cover hidden transition-transform duration-700 group-hover:scale-105" alt="Main product image">
+                                @endif
+                            </div>
+
+                            <input type="file" id="mainImageInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 {{ $product->images->count() > 0 ? 'pointer-events-none' : '' }}" accept="image/*" onchange="handleMainImageUpload(this)" {{ $product->images->count() > 0 ? 'disabled' : '' }}>
+                            
+                            <div class="absolute bottom-0 left-0 w-full bg-white/90 backdrop-blur py-3 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-900">Change Cover</span>
+                            </div>
                         </div>
+                        @error('images') <p class="text-red-500 text-[10px] tracking-wide uppercase text-center mt-1">{{ $message }}</p> @enderror
+
+                        {{-- 2. THUMBNAILS --}}
+                        <div class="grid grid-cols-5 gap-y-4 gap-x-2">
+                            <div id="thumbnailContainer" class="contents">
+                                {{-- Existing Images --}}
+                                @foreach($product->images as $index => $image)
+                                    <div class="relative existing-image-thumb" data-existing-id="{{ $image->id }}">
+                                        <div class="thumbnail-item aspect-square cursor-pointer overflow-hidden border-2 {{ $index === 0 ? 'border-gray-900' : 'border-gray-100' }} hover:border-gray-400 transition-colors rounded-sm" 
+                                             data-index="{{ $index }}"
+                                             onclick="setMainImageFromExisting('{{ asset('storage/' . $image->image) }}', {{ $index }})">
+                                            <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover">
+                                        </div>
+                                        
+                                        @if($index === 0)
+                                        <span class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-[9px] font-bold text-gray-900 tracking-widest uppercase">COVER</span>
+                                        @endif
+                                        
+                                        <button type="button" onclick="event.stopPropagation(); removeExistingImage({{ $image->id }}, this)"
+                                                class="absolute -top-1.5 -right-1.5 bg-white text-gray-900 border border-gray-200 shadow-sm rounded-full w-4 h-4 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-all z-10">
+                                            <span class="text-[10px] leading-none mb-0.5">&times;</span>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            {{-- Add More Button --}}
+                            <div id="addMoreButton" class="{{ $product->images->count() > 0 ? '' : 'hidden' }} aspect-square border border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition-all">
+                                <label for="additionalImages" class="w-full h-full flex items-center justify-center cursor-pointer">
+                                    <span class="text-xl text-gray-400 font-light">+</span>
+                                </label>
+                                <input type="file" id="additionalImages" class="hidden" accept="image/*" multiple onchange="handleAdditionalImages(this)">
+                            </div>
+                        </div>
+
+                        {{-- Hidden Form Inputs --}}
+                        <input type="file" name="images[]" id="formImages" class="hidden" multiple accept="image/*">
+                        <input type="hidden" name="deleted_images" id="deletedImages" value="">
                         
-                        <!-- Add More Images Button -->
-                        <div id="addMoreButton" class="{{ $product->images->count() > 0 ? '' : 'hidden' }}">
-                            <label for="additionalImages" class="flex-shrink-0 w-16 h-16 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
-                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
-                            </label>
-                            <input type="file" 
-                                   id="additionalImages" 
-                                   class="hidden" 
-                                   accept="image/*" 
-                                   multiple 
-                                   onchange="handleAdditionalImages(this)">
-                        </div>
+                        <p class="text-[10px] text-gray-400 text-center uppercase tracking-wider pt-2">
+                            Recommended: 1080 x 1080px (Square)
+                        </p>
                     </div>
-                    
-                    <!-- Hidden inputs -->
-                    <input type="file" name="images[]" id="formImages" class="hidden" multiple accept="image/*">
-                    <input type="hidden" name="deleted_images" id="deletedImages" value="">
-                    
-                    @error('images')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                    @error('images.*')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
+            </div>
+
+            {{-- RIGHT COLUMN: DETAILS --}}
+            <div class="lg:col-span-6 xl:col-span-7 space-y-12">
                 
-                <!-- Right Side - Product Details -->
-                <div class="space-y-6">
-                    <!-- Product Name -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Product Name *
-                        </label>
-                        <input type="text" 
-                               id="name" 
-                               name="name" 
-                               required
-                               value="{{ old('name', $product->name) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                               placeholder="Enter product name">
-                        
+                {{-- SECTION 1: ESSENTIALS --}}
+                <div class="space-y-8">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">01. The Essentials</h2>
+                    </div>
+
+                    <div class="group">
+                        <label for="name" class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 group-focus-within:text-gray-900 transition-colors">Product Name</label>
+                        <input type="text" id="name" name="name" required value="{{ old('name', $product->name) }}"
+                               class="w-full bg-transparent border-b border-gray-200 py-3 text-xl md:text-2xl text-gray-900 placeholder-gray-200 focus:border-gray-900 focus:outline-none transition-all"
+                               placeholder="e.g. The Sapphire Eternity Ring">
                         <input type="hidden" name="slug" id="slug" value="{{ old('slug', $product->slug) }}">
-                        
-                        @error('name')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        @error('name') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- Price Row (IDR & USD) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Price IDR -->
-                        <div>
-                            <label for="price_idr" class="block text-sm font-medium text-gray-700 mb-2">
-                                Price (IDR) <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-3 text-gray-500 text-lg">Rp</span>
-                                <input type="number" 
-                                    id="price_idr" 
-                                    name="price_idr" 
-                                    value="{{ old('price_idr', $product->price_idr) }}"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                                    placeholder="0.00">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="group">
+                            <label for="price_idr" class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 group-focus-within:text-gray-900">Price (IDR)</label>
+                            <div class="flex items-center border-b border-gray-200 group-focus-within:border-gray-900 transition-colors">
+                                <span class="text-sm text-gray-400 mr-2">Rp</span>
+                                <input type="number" id="price_idr" name="price_idr" value="{{ old('price_idr', $product->price_idr) }}" step="0.01" required
+                                       class="w-full bg-transparent border-none py-3 text-lg font-light text-gray-900 focus:ring-0 placeholder-gray-200"
+                                       placeholder="0">
                             </div>
-                            
-                            @error('price_idr')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('price_idr') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Price USD -->
-                        <div>
-                            <label for="price_usd" class="block text-sm font-medium text-gray-700 mb-2">
-                                Price (USD) <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-3 text-gray-500 text-lg">$</span>
-                                <input type="number" 
-                                    id="price_usd" 
-                                    name="price_usd" 
-                                    value="{{ old('price_usd', $product->price_usd) }}"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                                    placeholder="0.00">
+                        <div class="group">
+                            <label for="price_usd" class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 group-focus-within:text-gray-900">Price (USD)</label>
+                            <div class="flex items-center border-b border-gray-200 group-focus-within:border-gray-900 transition-colors">
+                                <span class="text-sm text-gray-400 mr-2">$</span>
+                                <input type="number" id="price_usd" name="price_usd" value="{{ old('price_usd', $product->price_usd) }}" step="0.01" required
+                                       class="w-full bg-transparent border-none py-3 text-lg font-light text-gray-900 focus:ring-0 placeholder-gray-200"
+                                       placeholder="0.00">
                             </div>
-                            
-                            @error('price_usd')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('price_usd') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
+                </div>
 
-                    <!-- Category Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Parent Category -->
-                        <div>
-                            <label for="parent_category_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Parent Category <span class="text-red-500">*</span>
-                            </label>
-                            <select name="parent_category_id" 
-                                    id="parent_category_id"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('parent_category_id') border-red-500 @enderror">
-                                <option value="">-- Select Parent Category --</option>
+                {{-- SECTION 2: CATEGORIZATION --}}
+                <div class="space-y-8">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">02. Categorization</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="group relative">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Collection (Parent)</label>
+                            <select name="parent_category_id" id="parent_category_id"
+                                    class="w-full bg-transparent border-b border-gray-200 py-3 text-sm text-gray-900 focus:border-gray-900 focus:ring-0 focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select Collection</option>
                                 @foreach($parentCategories as $parent)
-                                    <option value="{{ $parent->id }}" 
-                                            {{ old('parent_category_id', $selectedParentId) == $parent->id ? 'selected' : '' }}>
-                                        {{ $parent->name }}
-                                    </option>
+                                    <option value="{{ $parent->id }}" {{ old('parent_category_id', $selectedParentId) == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
                                 @endforeach
                             </select>
-                            
-                            @error('parent_category_id')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('parent_category_id') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Sub-Category -->
-                        <div>
-                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Sub-Category (Optional)
-                            </label>
-                            <select name="category_id" 
-                                    id="category_id"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category_id') border-red-500 @enderror">
-                                <option value="">-- Select Parent First --</option>
+                        <div class="group relative">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Category (Sub)</label>
+                            <select name="category_id" id="category_id"
+                                    class="w-full bg-transparent border-b border-gray-200 py-3 text-sm text-gray-900 focus:border-gray-900 focus:ring-0 focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select Parent First</option>
                             </select>
-                            
-                            @error('category_id')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                            
-                            <p class="text-xs text-gray-500 mt-1">
-                                Leave empty to use parent category
-                            </p>
+                            @error('category_id') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
+                </div>
 
-                    {{-- Color section row --}}
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <label class="block text-sm font-medium text-gray-700">
-                                Product Colors (Optional)
-                            </label>
-                            <button type="button" 
-                                    onclick="addColorOption()"
-                                    class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg transition-colors flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Add Color
-                            </button>
-                        </div>
-
-                        <!-- Colors Container -->
-                        <div id="colorsContainer" class="space-y-3">
-                            <!-- ⬅️ EXISTING COLORS -->
-                            @forelse($product->colors as $index => $color)
-                            <div class="color-option bg-gray-50 p-4 rounded-lg border border-gray-200" data-index="{{ $index }}" data-existing-id="{{ $color->id }}">
-                                <div class="flex items-center gap-3">
-                                    <!-- Color Picker -->
-                                    <div class="flex-shrink-0">
-                                        <input type="color" 
-                                               name="colors[{{ $index }}][hex_code]" 
-                                               value="{{ $color->hex_code }}"
-                                               class="color-picker-input w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer"
-                                               title="Choose color">
-                                    </div>
-
-                                    <!-- Color Name Input -->
-                                    <div class="flex-1">
-                                        <input type="text" 
-                                               name="colors[{{ $index }}][name]" 
-                                               value="{{ $color->name }}"
-                                               placeholder="e.g., 18k gold plated, Rose Gold, Silver"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                               required>
-                                        <input type="hidden" name="colors[{{ $index }}][id]" value="{{ $color->id }}">
-                                    </div>
-
-                                    <!-- Remove Button -->
-                                    <button type="button" 
-                                            onclick="removeColorOption({{ $index }})"
-                                            class="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors p-2">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            @empty
-                            <p id="noColorsText" class="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                                No colors added yet. Click "Add Color" to start.
-                            </p>
-                            @endforelse
-                        </div>
-
-                        <!-- Hidden input untuk deleted color IDs -->
-                        <input type="hidden" name="deleted_colors" id="deletedColors" value="">
-
-                        @error('colors')
-                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Specification section row --}}
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <label class="block text-sm font-medium text-gray-700">
-                                Product Specifications (Optional)
-                            </label>
-                            <button type="button" 
-                                    onclick="addSpecificationSection()"
-                                    class="text-sm bg-purple-50 hover:bg-purple-100 text-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Add Section
-                            </button>
-                        </div>
-
-                        <!-- Specifications Container -->
-                        <div id="specificationsContainer" class="space-y-4">
-                            <!-- ⬅️ EXISTING SPECIFICATIONS -->
-                            @forelse($product->specifications as $index => $spec)
-                            <div class="specification-section bg-purple-50 p-4 rounded-lg border border-purple-200" data-index="{{ $index }}" data-existing-id="{{ $spec->id }}">
-                                <div class="space-y-3">
-                                    <!-- Section Title -->
-                                    <div class="flex items-center gap-2">
-                                        <input type="text" 
-                                               name="specifications[{{ $index }}][section_title]" 
-                                               value="{{ $spec->section_title }}"
-                                               placeholder="Section header"
-                                               class="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
-                                               required>
-                                        
-                                        <button type="button" 
-                                                onclick="removeSpecificationSection({{ $index }})"
-                                                class="text-red-500 hover:text-red-700 transition-colors p-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                        </button>
-                                        <input type="hidden" name="specifications[{{ $index }}][id]" value="{{ $spec->id }}">
-                                    </div>
-
-                                    <!-- Items List -->
-                                    <div class="spec-items-container space-y-2" id="spec-items-{{ $index }}">
-                                        @foreach($spec->items as $itemIndex => $item)
-                                        <div class="flex items-center gap-2">
-                                            <input type="text" 
-                                                   name="specifications[{{ $index }}][items][]" 
-                                                   value="{{ $item }}"
-                                                   placeholder="e.g., 18k gold vermeil"
-                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
-                                                   required>
-                                            <button type="button" 
-                                                    onclick="removeSpecItem(this)"
-                                                    class="text-gray-400 hover:text-red-500 transition-colors p-1">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        @endforeach
-                                    </div>
-
-                                    <!-- Add Item Button -->
-                                    <button type="button" 
-                                            onclick="addSpecItem({{ $index }})"
-                                            class="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                        </svg>
-                                        Add item
-                                    </button>
-                                </div>
-                            </div>
-                            @empty
-                            <p id="noSpecsText" class="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                                No specifications added yet. Click "Add Section" to start.
-                            </p>
-                            @endforelse
-                        </div>
-
-                        <!-- Hidden input untuk deleted specification IDs -->
-                        <input type="hidden" name="deleted_specifications" id="deletedSpecifications" value="">
-
-                        @error('specifications')
-                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
-                        </label>
-                        <textarea name="description" 
-                                  id="description"
-                                  rows="6"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                  placeholder="Describe your product...">{{ old('description', $product->description) }}</textarea>
-                        
-                        @error('description')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Submit Buttons -->
-                    <div class="flex space-x-4 pt-1">
-                        <button type="submit" 
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 text-lg">
-                            Update Product
+                {{-- SECTION 3: VARIANTS --}}
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">03. Variations</h2>
+                        <button type="button" onclick="addColorOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                            <span>+ Add Color</span>
                         </button>
-                        <a href="{{ route('products.index') }}" 
-                           class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-4 px-6 rounded-lg transition duration-200 text-center text-lg">
-                            Cancel
-                        </a>
                     </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 
-<script>
-    // CATEGORY MANAGEMENT
-    const allCategories = @json($allCategories);
-    const initialParentId = {{ $selectedParentId ?? 'null' }};
-    const initialSubId = {{ $selectedSubCategoryId ?? 'null' }};
-
-    const parentSelect = document.getElementById('parent_category_id');
-    const subSelect = document.getElementById('category_id');
-
-    // Load sub-categories function
-    function loadSubCategories(parentId, selectedSubId = null) {
-        subSelect.innerHTML = '<option value="">None</option>';
-        subSelect.disabled = true;
-        subSelect.classList.add('bg-gray-50');
-        
-        if (parentId) {
-            const children = allCategories.filter(cat => cat.parent_id === parseInt(parentId));
-            
-            if (children.length > 0) {
-                children.forEach(child => {
-                    const option = document.createElement('option');
-                    option.value = child.id;
-                    option.textContent = child.name;
-                    if (selectedSubId && child.id === selectedSubId) {
-                        option.selected = true;
-                    }
-                    subSelect.appendChild(option);
-                });
-                
-                subSelect.disabled = false;
-                subSelect.classList.remove('bg-gray-50');
-            } else {
-                subSelect.innerHTML = '<option value="">-- No sub-categories --</option>';
-            }
-        }
-    }
-
-    // Load initial sub-categories
-    if (initialParentId) {
-        loadSubCategories(initialParentId, initialSubId);
-    }
-
-    // Handle parent change
-    parentSelect.addEventListener('change', function() {
-        loadSubCategories(this.value);
-    });
-
-
-
-    // ⬅️ COLOR MANAGEMENT
-    let colorIndex = {{ $product->colors->count() }}; // Start from existing count
-    let deletedColorIds = [];
-
-    function addColorOption() {
-        const container = document.getElementById('colorsContainer');
-        const noColorsText = document.getElementById('noColorsText');
-        
-        // Hide "no colors" text
-        if (noColorsText) {
-            noColorsText.style.display = 'none';
-        }
-
-        const colorDiv = document.createElement('div');
-        colorDiv.className = 'color-option bg-gray-50 p-4 rounded-lg border border-gray-200';
-        colorDiv.dataset.index = colorIndex;
-        
-        colorDiv.innerHTML = `
-            <div class="flex items-center gap-3">
-                <!-- Color Picker -->
-                <div class="flex-shrink-0">
-                    <input type="color" 
-                           name="colors[${colorIndex}][hex_code]" 
-                           value="#D4AF37"
-                           class="color-picker-input w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer"
-                           title="Choose color">
+                    <div id="colorsContainer" class="space-y-0 divide-y divide-gray-50">
+                        @forelse($product->colors as $index => $color)
+                        <div class="color-option py-4 flex items-center gap-4 group" data-index="{{ $index }}" data-existing-id="{{ $color->id }}">
+                            <div class="relative w-10 h-10 flex-shrink-0">
+                                <input type="color" name="colors[{{ $index }}][hex_code]" value="{{ $color->hex_code }}" 
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="updateColorPreview(this, {{ $index }})">
+                                <div class="w-full h-full rounded-full border border-gray-200 shadow-sm color-preview-{{ $index }}" style="background-color: {{ $color->hex_code }}"></div>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" name="colors[{{ $index }}][name]" value="{{ $color->name }}" 
+                                       placeholder="Color Name (e.g. Midnight Blue)" 
+                                       class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+                                <input type="hidden" name="colors[{{ $index }}][id]" value="{{ $color->id }}">
+                            </div>
+                            <button type="button" onclick="removeColorOption({{ $index }})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
+                        </div>
+                        @empty
+                        <div id="noColorsText" class="py-6 text-center">
+                            <p class="text-sm font-light text-gray-400 italic">No color variants defined.</p>
+                        </div>
+                        @endforelse
+                    </div>
+                    <input type="hidden" name="deleted_colors" id="deletedColors" value="">
+                    @error('colors') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Color Name Input -->
-                <div class="flex-1">
-                    <input type="text" 
-                           name="colors[${colorIndex}][name]" 
-                           placeholder="e.g., 18k gold plated, Rose Gold, Silver"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           required>
+                {{-- SECTION 4: SPECIFICATIONS --}}
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">04. Specifications</h2>
+                        <button type="button" onclick="addSpecificationSection()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                            <span>+ Add Section</span>
+                        </button>
+                    </div>
+
+                    <div id="specificationsContainer" class="space-y-6">
+                        @forelse($product->specifications as $index => $spec)
+                        <div class="specification-section border border-gray-100 p-6 bg-[#FAFAFA] relative group transition-all hover:border-gray-200" data-index="{{ $index }}" data-existing-id="{{ $spec->id }}">
+                            <div class="mb-4 pr-10">
+                                <input type="text" name="specifications[{{ $index }}][section_title]" value="{{ $spec->section_title }}" 
+                                       placeholder="SECTION TITLE (e.g. MATERIALS)" 
+                                       class="w-full bg-transparent text-xs font-bold tracking-[0.2em] uppercase text-gray-900 placeholder-gray-300 border-none p-0 focus:ring-0"
+                                       required>
+                                <input type="hidden" name="specifications[{{ $index }}][id]" value="{{ $spec->id }}">
+                            </div>
+                            <button type="button" onclick="removeSpecificationSection({{ $index }})" class="absolute top-6 right-6 text-[10px] uppercase tracking-widest text-gray-300 hover:text-red-500">Remove Section</button>
+                            
+                            <div class="spec-items-container pl-1 border-l border-gray-200" id="spec-items-{{ $index }}">
+                                @foreach($spec->items as $itemIndex => $item)
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+                                    <input type="text" name="specifications[{{ $index }}][items][]" value="{{ $item }}" 
+                                           placeholder="Detail item" 
+                                           class="flex-1 bg-transparent border-b border-transparent hover:border-gray-200 focus:border-gray-900 text-sm py-1 focus:outline-none font-light"
+                                           required>
+                                    <button type="button" onclick="removeSpecItem(this)" class="text-gray-300 hover:text-red-500">&times;</button>
+                                </div>
+                                @endforeach
+                            </div>
+                            <button type="button" onclick="addSpecItem({{ $index }})" class="mt-3 text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 ml-4">+ Add Item</button>
+                        </div>
+                        @empty
+                        <div id="noSpecsText" class="py-6 text-center">
+                            <p class="text-sm font-light text-gray-400 italic">No detailed specifications added.</p>
+                        </div>
+                        @endforelse
+                    </div>
+                    <input type="hidden" name="deleted_specifications" id="deletedSpecifications" value="">
+                    @error('specifications') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Remove Button -->
-                <button type="button" 
-                        onclick="removeColorOption(${colorIndex})"
-                        class="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors p-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
-            </div>
-        `;
-
-        container.appendChild(colorDiv);
-        colorIndex++;
-    }
-
-    function removeColorOption(index) {
-        const colorDiv = document.querySelector(`.color-option[data-index="${index}"]`);
-        
-        if (colorDiv) {
-            // CEK APAKAH INI EXISTING COLOR (ada data-existing-id)
-            const existingId = colorDiv.dataset.existingId;
-            
-            if (existingId) {
-                // Mark untuk dihapus dari database
-                if (!deletedColorIds.includes(existingId)) {
-                    deletedColorIds.push(existingId);
-                }
-                document.getElementById('deletedColors').value = deletedColorIds.join(',');
-                
-                // Visual feedback
-                colorDiv.style.opacity = '0.5';
-                colorDiv.style.pointerEvents = 'none';
-                
-                // Ganti button remove dengan label "Will be deleted"
-                const removeBtn = colorDiv.querySelector('button');
-                if (removeBtn) {
-                    removeBtn.style.display = 'none';
-                }
-                
-                // Cek apakah sudah ada label "Will be deleted"
-                if (!colorDiv.querySelector('.deleted-label')) {
-                    const deletedLabel = document.createElement('span');
-                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-label';
-                    deletedLabel.textContent = 'Will be deleted';
-                    colorDiv.querySelector('.flex-1').appendChild(deletedLabel);
-                }
-            } else {
-                // Hapus langsung (new color yang belum disave)
-                colorDiv.remove();
-            }
-        }
-
-        // Show "no colors" text if no colors left
-        const container = document.getElementById('colorsContainer');
-        const noColorsText = document.getElementById('noColorsText');
-        const remainingColors = container.querySelectorAll('.color-option:not([style*="opacity: 0.5"])');
-        
-        if (remainingColors.length === 0 && noColorsText) {
-            noColorsText.style.display = 'block';
-        }
-    }
-
-
-
-    // ⬅️ SPECIFICATIONS MANAGEMENT
-    let specIndex = {{ $product->specifications->count() }}; // Start from existing count
-    let deletedSpecificationIds = [];
-
-    function addSpecificationSection() {
-        addSpecificationSectionWithData('', ['']);
-    }
-
-    function addSpecificationSectionWithData(sectionTitle = '', items = ['']) {
-        const container = document.getElementById('specificationsContainer');
-        const noSpecsText = document.getElementById('noSpecsText');
-        
-        if (noSpecsText) {
-            noSpecsText.style.display = 'none';
-        }
-
-        const specDiv = document.createElement('div');
-        specDiv.className = 'specification-section bg-purple-50 p-4 rounded-lg border border-purple-200';
-        specDiv.dataset.index = specIndex;
-        
-        // Generate items HTML
-        const itemsHtml = items.map((item, itemIndex) => `
-            <div class="flex items-center gap-2">
-                <input type="text" 
-                       name="specifications[${specIndex}][items][]" 
-                       value="${item || ''}"
-                       placeholder="e.g., 18k gold vermeil"
-                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
-                       required>
-                <button type="button" 
-                        onclick="removeSpecItem(this)"
-                        class="text-gray-400 hover:text-red-500 transition-colors p-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-        `).join('');
-        
-        specDiv.innerHTML = `
-            <div class="space-y-3">
-                <!-- Section Title -->
-                <div class="flex items-center gap-2">
-                    <input type="text" 
-                           name="specifications[${specIndex}][section_title]" 
-                           value="${sectionTitle || ''}"
-                           placeholder="Section header"
-                           class="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
-                           required>
+                {{-- SECTION 5: STORYTELLING --}}
+                <div class="space-y-4">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. The Story</h2>
+                    </div>
                     
-                    <button type="button" 
-                            onclick="removeSpecificationSection(${specIndex})"
-                            class="text-red-500 hover:text-red-700 transition-colors p-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
+                    <div class="group">
+                        <textarea name="description" id="description" rows="8"
+                                  class="w-full bg-[#FAFAFA] border-0 p-6 text-sm text-gray-600 font-light leading-relaxed focus:ring-1 focus:ring-gray-200 resize-none placeholder-gray-400"
+                                  placeholder="Describe the craftsmanship, materials, and inspiration behind this piece...">{{ old('description', $product->description) }}</textarea>
+                    </div>
+                    @error('description') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- ACTION BUTTONS --}}
+                <div class="pt-10 flex flex-col md:flex-row gap-4 items-center justify-end">
+                    <a href="{{ route('products.index') }}" class="px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase text-gray-500 hover:text-gray-900 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" class="w-full md:w-auto px-12 py-4 bg-gray-900 text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-all hover:shadow-lg transform hover:-translate-y-0.5">
+                        Update Product
                     </button>
                 </div>
 
-                <!-- Items List -->
-                <div class="spec-items-container space-y-2" id="spec-items-${specIndex}">
-                    ${itemsHtml}
-                </div>
-
-                <!-- Add Item Button -->
-                <button type="button" 
-                        onclick="addSpecItem(${specIndex})"
-                        class="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add item
-                </button>
             </div>
-        `;
+        </div>
+    </form>
+</div>
 
-        container.appendChild(specDiv);
-        specIndex++;
-    }
-
-    function addSpecItem(sectionIndex) {
-        const itemsContainer = document.getElementById(`spec-items-${sectionIndex}`);
-        
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'flex items-center gap-2';
-        itemDiv.innerHTML = `
-            <input type="text" 
-                   name="specifications[${sectionIndex}][items][]" 
-                   placeholder="e.g., 925 sterling silver"
-                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
-                   required>
-            <button type="button" 
-                    onclick="removeSpecItem(this)"
-                    class="text-gray-400 hover:text-red-500 transition-colors p-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        `;
-        
-        itemsContainer.appendChild(itemDiv);
-    }
-
-    function removeSpecItem(button) {
-        const itemsContainer = button.closest('.spec-items-container');
-        const items = itemsContainer.querySelectorAll('.flex.items-center');
-        
-        // Minimal 1 item per section
-        if (items.length > 1) {
-            button.closest('.flex.items-center').remove();
-        } else {
-            alert('Each section must have at least one item');
-        }
-    }
-
-    function removeSpecificationSection(index) {
-        const specDiv = document.querySelector(`.specification-section[data-index="${index}"]`);
-        
-        if (specDiv) {
-            // CEK APAKAH INI EXISTING SPECIFICATION (ada data-existing-id)
-            const existingId = specDiv.dataset.existingId;
-            
-            if (existingId) {
-                // Mark untuk dihapus dari database
-                if (!deletedSpecificationIds.includes(existingId)) {
-                    deletedSpecificationIds.push(existingId);
-                }
-                document.getElementById('deletedSpecifications').value = deletedSpecificationIds.join(',');
-                
-                // Visual feedback
-                specDiv.style.opacity = '0.5';
-                specDiv.style.pointerEvents = 'none';
-                
-                // Ganti button remove dengan label "Will be deleted"
-                const removeBtn = specDiv.querySelector('button[onclick*="removeSpecificationSection"]');
-                if (removeBtn) {
-                    removeBtn.style.display = 'none';
-                }
-                
-                // Cek apakah sudah ada label "Will be deleted"
-                if (!specDiv.querySelector('.deleted-spec-label')) {
-                    const deletedLabel = document.createElement('span');
-                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-spec-label ml-2';
-                    deletedLabel.textContent = 'Will be deleted';
-                    specDiv.querySelector('.flex.items-center.gap-2').appendChild(deletedLabel);
-                }
-            } else {
-                // Hapus langsung (new specification yang belum disave)
-                specDiv.remove();
-            }
-        }
-
-        // Show "no specs" text if no specs left
-        const container = document.getElementById('specificationsContainer');
-        const noSpecsText = document.getElementById('noSpecsText');
-        const remainingSpecs = container.querySelectorAll('.specification-section:not([style*="opacity: 0.5"])');
-        
-        if (remainingSpecs.length === 0 && noSpecsText) {
-            noSpecsText.style.display = 'block';
-        }
-    }
-
-
-    // ⬅️ GLOBAL VARIABLES
+<script>
+    // ==========================================
+    // GLOBAL VARIABLES
+    // ==========================================
     let selectedFiles = [];
-    let currentMainIndex = 0;
+    let currentPreviewIndex = 0;
     let deletedImageIds = [];
     let hasExistingImages = {{ $product->images->count() > 0 ? 'true' : 'false' }};
     const form = document.querySelector('#editProductForm');
-    let isSubmitting = false; // ⬅️ PREVENT DOUBLE SUBMIT
+    let isSubmitting = false;
+    
+    // Color & Spec Management
+    let colorIndex = {{ $product->colors->count() }};
+    let deletedColorIds = [];
+    let specIndex = {{ $product->specifications->count() }};
+    let deletedSpecificationIds = [];
 
-    // Auto-generate slug
+    // ==========================================
+    // 1. SLUG GENERATOR
+    // ==========================================
     const name = document.querySelector('#name');
     const slug = document.querySelector('#slug');
     const productId = {{ $product->id }};
@@ -732,7 +325,6 @@
     name.addEventListener('input', function() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            // Only update slug if name changed from original
             if (name.value.length > 0 && name.value !== originalName) {
                 fetch('/products/checkSlug?name=' + encodeURIComponent(name.value) + '&id=' + productId)
                 .then(response => response.json())
@@ -742,23 +334,22 @@
         }, 300);
     });
 
-    // ⬅️ HANDLE MAIN IMAGE UPLOAD (ONLY if no existing images)
+    // ==========================================
+    // 2. IMAGE MANAGEMENT (EDIT MODE)
+    // ==========================================
+    
     function handleMainImageUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
             selectedFiles = [file];
-            currentMainIndex = 0;
-            
+            currentPreviewIndex = 0;
             updateImageDisplay();
             updateFormFiles();
-            
-            // Disable main image input
             input.disabled = true;
             input.style.pointerEvents = 'none';
         }
     }
 
-    // ⬅️ HANDLE ADDITIONAL IMAGES (ADD to existing)
     function handleAdditionalImages(input) {
         if (input.files && input.files.length > 0) {
             Array.from(input.files).forEach(file => {
@@ -767,76 +358,64 @@
             updateImageDisplay();
             updateFormFiles();
         }
-        // ⬅️ RESET INPUT VALUE UNTUK ALLOW RE-SELECT FILE YANG SAMA
         input.value = '';
     }
 
-    // Set main image from existing image
     function setMainImageFromExisting(imageSrc, index) {
         document.getElementById('mainImage').src = imageSrc;
         document.getElementById('mainImage').classList.remove('hidden');
         document.getElementById('noImageState').classList.add('hidden');
         
-        // Update border colors for existing images
-        document.querySelectorAll('[data-existing-id] > div').forEach(el => {
-            el.classList.remove('border-blue-500');
-            el.classList.add('border-gray-200');
+        // Update borders
+        document.querySelectorAll('.existing-image-thumb .thumbnail-item').forEach(el => {
+            el.classList.remove('border-gray-900');
+            el.classList.add('border-gray-100');
         });
         
-        // Remove border from new images
-        document.querySelectorAll('.new-image-thumb .border-blue-500').forEach(el => {
-            el.classList.remove('border-blue-500');
-            el.classList.add('border-gray-200');
+        document.querySelectorAll('.new-image-thumb .border-gray-900').forEach(el => {
+            el.classList.remove('border-gray-900');
+            el.classList.add('border-gray-100');
         });
         
-        // Add blue border to selected existing image
-        const existingThumbnails = document.querySelectorAll('[data-existing-id]');
+        const existingThumbnails = document.querySelectorAll('.existing-image-thumb');
         if (existingThumbnails[index] && existingThumbnails[index].style.opacity !== '0.5') {
-            const thumbnail = existingThumbnails[index].querySelector('div');
-            thumbnail.classList.remove('border-gray-200');
-            thumbnail.classList.add('border-blue-500');
+            const thumbnail = existingThumbnails[index].querySelector('.thumbnail-item');
+            thumbnail.classList.remove('border-gray-100');
+            thumbnail.classList.add('border-gray-900');
         }
     }
 
-    // Remove existing image (mark for deletion)
     function removeExistingImage(imageId, button) {
         if (!deletedImageIds.includes(imageId.toString())) {
             deletedImageIds.push(imageId.toString());
         }
         
-        const thumbnail = button.closest('[data-existing-id]');
+        const thumbnail = button.closest('.existing-image-thumb');
         thumbnail.style.opacity = '0.5';
         thumbnail.style.pointerEvents = 'none';
-        
-        // Hide delete button and show "Will be deleted" text
         button.style.display = 'none';
         
-        // ⬅️ CEK APAKAH SUDAH ADA LABEL
         if (!thumbnail.querySelector('.deleted-image-label')) {
             const deletedLabel = document.createElement('div');
-            deletedLabel.className = 'absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-red-500 font-medium whitespace-nowrap deleted-image-label';
+            deletedLabel.className = 'absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-[9px] text-red-500 font-medium whitespace-nowrap deleted-image-label tracking-widest uppercase';
             deletedLabel.textContent = 'Deleted';
             thumbnail.appendChild(deletedLabel);
         }
         
-        // Update deleted images input
         document.getElementById('deletedImages').value = deletedImageIds.join(',');
         
-        // Check if this was the main image, switch to another
-        const wasMainImage = thumbnail.querySelector('.border-blue-500');
+        const wasMainImage = thumbnail.querySelector('.border-gray-900');
         if (wasMainImage) {
-            // Find first remaining existing image or new image
-            const remainingExisting = Array.from(document.querySelectorAll('[data-existing-id]'))
+            const remainingExisting = Array.from(document.querySelectorAll('.existing-image-thumb'))
                 .find(thumb => thumb.style.opacity !== '0.5');
             
             if (remainingExisting) {
                 const img = remainingExisting.querySelector('img');
-                const index = Array.from(document.querySelectorAll('[data-existing-id]')).indexOf(remainingExisting);
+                const index = Array.from(document.querySelectorAll('.existing-image-thumb')).indexOf(remainingExisting);
                 setMainImageFromExisting(img.src, index);
             } else if (selectedFiles.length > 0) {
                 setMainImage(0);
             } else {
-                // No images left
                 document.getElementById('noImageState').classList.remove('hidden');
                 document.getElementById('mainImage').classList.add('hidden');
             }
@@ -845,37 +424,39 @@
         checkMainImageInputState();
     }
 
-    // Update image display for new images
     function updateImageDisplay() {
         const thumbnailContainer = document.getElementById('thumbnailContainer');
         const addMoreButton = document.getElementById('addMoreButton');
 
-        // Remove previous new image thumbnails (keep existing ones)
         const existingNewThumbs = document.querySelectorAll('.new-image-thumb');
         existingNewThumbs.forEach(thumb => thumb.remove());
 
         if (selectedFiles.length > 0) {
             selectedFiles.forEach((file, index) => {
                 const thumbnailDiv = document.createElement('div');
-                thumbnailDiv.className = 'relative flex-shrink-0 new-image-thumb';
+                thumbnailDiv.className = 'relative new-image-thumb';
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    const isCover = (index === 0 && !hasActiveExistingImage());
+                    const isActive = (index === currentPreviewIndex && !hasActiveExistingImage());
+                    
                     thumbnailDiv.innerHTML = `
-                        <div class="w-16 h-16 rounded-lg overflow-hidden border-2 ${index === currentMainIndex && !hasActiveExistingImage() ? 'border-blue-500' : 'border-gray-200'} cursor-pointer hover:border-blue-300 transition-colors" 
+                        <div class="thumbnail-item aspect-square cursor-pointer overflow-hidden border-2 ${isActive ? 'border-gray-900' : 'border-gray-100'} hover:border-gray-400 transition-colors rounded-sm" 
+                             data-index="${index}"
                              onclick="setMainImage(${index})">
                             <img src="${e.target.result}" class="w-full h-full object-cover">
                         </div>
-                        <button type="button" 
-                                onclick="removeNewImage(${index})"
-                                class="absolute top-0 right-0 bg-red-500 text-white rounded-tr-lg rounded-bl-xs font-bold w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
-                            ×
+                        
+                        ${isCover ? '<span class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-[9px] font-bold text-green-600 tracking-widest uppercase">NEW</span>' : ''}
+                        
+                        <button type="button" onclick="event.stopPropagation(); removeNewImage(${index})"
+                                class="absolute -top-1.5 -right-1.5 bg-white text-gray-900 border border-gray-200 shadow-sm rounded-full w-4 h-4 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-all z-10">
+                            <span class="text-[10px] leading-none mb-0.5">&times;</span>
                         </button>
-                        <span class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-green-500 font-medium">New</span>
                     `;
                     
-                    // Set as main image if no existing images are active
-                    if (index === currentMainIndex && !hasActiveExistingImage()) {
+                    if (index === currentPreviewIndex && !hasActiveExistingImage()) {
                         document.getElementById('mainImage').src = e.target.result;
                         document.getElementById('mainImage').classList.remove('hidden');
                         document.getElementById('noImageState').classList.add('hidden');
@@ -892,32 +473,27 @@
         checkMainImageInputState();
     }
 
-    // Check if there are active (not deleted) existing images
     function hasActiveExistingImage() {
-        const existingThumbs = document.querySelectorAll('[data-existing-id]');
+        const existingThumbs = document.querySelectorAll('.existing-image-thumb');
         return Array.from(existingThumbs).some(thumb => thumb.style.opacity !== '0.5');
     }
 
-    // Set main image from new uploads
     function setMainImage(index) {
         if (index < selectedFiles.length) {
-            currentMainIndex = index;
+            currentPreviewIndex = index;
             
-            // Remove blue border from all images
-            document.querySelectorAll('.border-blue-500').forEach(el => {
-                el.classList.remove('border-blue-500');
-                el.classList.add('border-gray-200');
+            document.querySelectorAll('.border-gray-900').forEach(el => {
+                el.classList.remove('border-gray-900');
+                el.classList.add('border-gray-100');
             });
             
-            // Add blue border to selected new image
             const newThumbs = document.querySelectorAll('.new-image-thumb');
             if (newThumbs[index]) {
-                const thumbnail = newThumbs[index].querySelector('div');
-                thumbnail.classList.remove('border-gray-200');
-                thumbnail.classList.add('border-blue-500');
+                const thumbnail = newThumbs[index].querySelector('.thumbnail-item');
+                thumbnail.classList.remove('border-gray-100');
+                thumbnail.classList.add('border-gray-900');
             }
             
-            // Update main image
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('mainImage').src = e.target.result;
@@ -928,19 +504,17 @@
         }
     }
 
-    // Remove new uploaded image
     function removeNewImage(index) {
         selectedFiles.splice(index, 1);
         
-        if (currentMainIndex >= selectedFiles.length) {
-            currentMainIndex = Math.max(0, selectedFiles.length - 1);
+        if (currentPreviewIndex >= selectedFiles.length) {
+            currentPreviewIndex = Math.max(0, selectedFiles.length - 1);
         }
         
         updateImageDisplay();
         updateFormFiles();
     }
 
-    // Check if main image input should be enabled
     function checkMainImageInputState() {
         const hasActiveExisting = hasActiveExistingImage();
         const hasNewImages = selectedFiles.length > 0;
@@ -948,19 +522,16 @@
         const mainImageInput = document.getElementById('mainImageInput');
         
         if (!hasActiveExisting && !hasNewImages) {
-            // No images at all - enable main upload
             mainImageInput.disabled = false;
             mainImageInput.style.pointerEvents = 'auto';
             document.getElementById('addMoreButton').classList.add('hidden');
         } else {
-            // Has images - disable main upload
             mainImageInput.disabled = true;
             mainImageInput.style.pointerEvents = 'none';
             document.getElementById('addMoreButton').classList.remove('hidden');
         }
     }
 
-    // Update form files for submission
     function updateFormFiles() {
         const dt = new DataTransfer();
         selectedFiles.forEach(file => {
@@ -970,11 +541,236 @@
         document.getElementById('deletedImages').value = deletedImageIds.join(',');
     }
 
-    // ⬅️ FORM SUBMISSION VALIDATION (PREVENT DOUBLE SUBMIT)
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault(); // ⬅️ PREVENT DEFAULT SUBMIT
+    // ==========================================
+    // 3. COLOR MANAGEMENT
+    // ==========================================
+    
+    function addColorOptionWithData(colorName = '', hexCode = '#000000') {
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        if(noColorsText) noColorsText.style.display = 'none';
+
+        const div = document.createElement('div');
+        div.className = 'color-option py-4 flex items-center gap-4 group';
+        div.dataset.index = colorIndex;
+        div.innerHTML = `
+            <div class="relative w-10 h-10 flex-shrink-0">
+                <input type="color" name="colors[${colorIndex}][hex_code]" value="${hexCode}" 
+                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="updateColorPreview(this, ${colorIndex})">
+                <div class="w-full h-full rounded-full border border-gray-200 shadow-sm color-preview-${colorIndex}" style="background-color: ${hexCode}"></div>
+            </div>
+            <div class="flex-1">
+                <input type="text" name="colors[${colorIndex}][name]" value="${colorName}" 
+                       placeholder="Color Name (e.g. Midnight Blue)" 
+                       class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+            </div>
+            <button type="button" onclick="removeColorOption(${colorIndex})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
+        `;
+        container.appendChild(div);
+        colorIndex++;
+    }
+
+    function addColorOption() { addColorOptionWithData(); }
+    
+    function updateColorPreview(input, index) {
+        const preview = document.querySelector(`.color-preview-${index}`);
+        if(preview) preview.style.backgroundColor = input.value;
+    }
+    
+    function removeColorOption(index) {
+        const colorDiv = document.querySelector(`.color-option[data-index="${index}"]`);
         
-        // ⬅️ PREVENT DOUBLE SUBMIT
+        if (colorDiv) {
+            const existingId = colorDiv.dataset.existingId;
+            
+            if (existingId) {
+                if (!deletedColorIds.includes(existingId)) {
+                    deletedColorIds.push(existingId);
+                }
+                document.getElementById('deletedColors').value = deletedColorIds.join(',');
+                
+                colorDiv.style.opacity = '0.5';
+                colorDiv.style.pointerEvents = 'none';
+                
+                const removeBtn = colorDiv.querySelector('button');
+                if (removeBtn) removeBtn.style.display = 'none';
+                
+                if (!colorDiv.querySelector('.deleted-label')) {
+                    const deletedLabel = document.createElement('span');
+                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-label uppercase tracking-widest';
+                    deletedLabel.textContent = 'Will be deleted';
+                    colorDiv.querySelector('.flex-1').appendChild(deletedLabel);
+                }
+            } else {
+                colorDiv.remove();
+            }
+        }
+
+        const container = document.getElementById('colorsContainer');
+        const noColorsText = document.getElementById('noColorsText');
+        const remainingColors = container.querySelectorAll('.color-option:not([style*="opacity: 0.5"])');
+        
+        if (remainingColors.length === 0 && noColorsText) {
+            noColorsText.style.display = 'block';
+        }
+    }
+
+    // ==========================================
+    // 4. SPECIFICATIONS MANAGEMENT
+    // ==========================================
+    
+    function addSpecificationSectionWithData(title = '', items = ['']) {
+        const container = document.getElementById('specificationsContainer');
+        const noSpecsText = document.getElementById('noSpecsText');
+        if(noSpecsText) noSpecsText.style.display = 'none';
+
+        const div = document.createElement('div');
+        div.className = 'specification-section border border-gray-100 p-6 bg-[#FAFAFA] relative group transition-all hover:border-gray-200';
+        div.dataset.index = specIndex;
+        
+        let itemsHtml = '';
+        if(Array.isArray(items)) {
+            itemsHtml = items.map(item => `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+                    <input type="text" name="specifications[${specIndex}][items][]" value="${item}" 
+                           placeholder="Detail item" 
+                           class="flex-1 bg-transparent border-b border-transparent hover:border-gray-200 focus:border-gray-900 text-sm py-1 focus:outline-none font-light"
+                           required>
+                    <button type="button" onclick="removeSpecItem(this)" class="text-gray-300 hover:text-red-500">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        div.innerHTML = `
+            <div class="mb-4 pr-10">
+                <input type="text" name="specifications[${specIndex}][section_title]" value="${title}" 
+                       placeholder="SECTION TITLE (e.g. MATERIALS)" 
+                       class="w-full bg-transparent text-xs font-bold tracking-[0.2em] uppercase text-gray-900 placeholder-gray-300 border-none p-0 focus:ring-0"
+                       required>
+            </div>
+            <button type="button" onclick="removeSpecificationSection(${specIndex})" class="absolute top-6 right-6 text-[10px] uppercase tracking-widest text-gray-300 hover:text-red-500">Remove Section</button>
+            
+            <div class="spec-items-container pl-1 border-l border-gray-200" id="spec-items-${specIndex}">
+                ${itemsHtml}
+            </div>
+            <button type="button" onclick="addSpecItem(${specIndex})" class="mt-3 text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 ml-4">+ Add Item</button>
+        `;
+        container.appendChild(div);
+        specIndex++;
+    }
+
+    function addSpecificationSection() { addSpecificationSectionWithData(); }
+    
+    function addSpecItem(idx) {
+        const container = document.getElementById(`spec-items-${idx}`);
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2 mb-2';
+        div.innerHTML = `
+            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <input type="text" name="specifications[${idx}][items][]" 
+                   placeholder="New Detail" 
+                   class="flex-1 bg-transparent border-b border-transparent hover:border-gray-200 focus:border-gray-900 text-sm py-1 focus:outline-none font-light"
+                   required>
+            <button type="button" onclick="removeSpecItem(this)" class="text-gray-300 hover:text-red-500">&times;</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function removeSpecItem(btn) {
+        const container = btn.closest('.spec-items-container');
+        if(container.children.length > 1) btn.parentElement.remove();
+    }
+
+    function removeSpecificationSection(index) {
+        const specDiv = document.querySelector(`.specification-section[data-index="${index}"]`);
+        
+        if (specDiv) {
+            const existingId = specDiv.dataset.existingId;
+            
+            if (existingId) {
+                if (!deletedSpecificationIds.includes(existingId)) {
+                    deletedSpecificationIds.push(existingId);
+                }
+                document.getElementById('deletedSpecifications').value = deletedSpecificationIds.join(',');
+                
+                specDiv.style.opacity = '0.5';
+                specDiv.style.pointerEvents = 'none';
+                
+                const removeBtn = specDiv.querySelector('button[onclick*="removeSpecificationSection"]');
+                if (removeBtn) removeBtn.style.display = 'none';
+                
+                if (!specDiv.querySelector('.deleted-spec-label')) {
+                    const deletedLabel = document.createElement('span');
+                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-spec-label ml-2 uppercase tracking-widest';
+                    deletedLabel.textContent = 'Will be deleted';
+                    specDiv.querySelector('.mb-4').appendChild(deletedLabel);
+                }
+            } else {
+                specDiv.remove();
+            }
+        }
+
+        const container = document.getElementById('specificationsContainer');
+        const noSpecsText = document.getElementById('noSpecsText');
+        const remainingSpecs = container.querySelectorAll('.specification-section:not([style*="opacity: 0.5"])');
+        
+        if (remainingSpecs.length === 0 && noSpecsText) {
+            noSpecsText.style.display = 'block';
+        }
+    }
+
+    // ==========================================
+    // 5. CATEGORY MANAGEMENT
+    // ==========================================
+    
+    const allCategories = @json($allCategories);
+    const initialParentId = {{ $selectedParentId ?? 'null' }};
+    const initialSubId = {{ $selectedSubCategoryId ?? 'null' }};
+
+    const parentSelect = document.getElementById('parent_category_id');
+    const subSelect = document.getElementById('category_id');
+
+    function loadSubCategories(parentId, selectedSubId = null) {
+        subSelect.innerHTML = '<option value="">None</option>';
+        subSelect.disabled = true;
+        
+        if (parentId) {
+            const children = allCategories.filter(cat => cat.parent_id === parseInt(parentId));
+            
+            if (children.length > 0) {
+                children.forEach(child => {
+                    const option = document.createElement('option');
+                    option.value = child.id;
+                    option.textContent = child.name;
+                    if (selectedSubId && child.id === selectedSubId) {
+                        option.selected = true;
+                    }
+                    subSelect.appendChild(option);
+                });
+                
+                subSelect.disabled = false;
+            } else {
+                subSelect.innerHTML = '<option value="">-- No sub-categories --</option>';
+            }
+        }
+    }
+
+    if (initialParentId) {
+        loadSubCategories(initialParentId, initialSubId);
+    }
+
+    parentSelect.addEventListener('change', function() {
+        loadSubCategories(this.value);
+    });
+
+    // ==========================================
+    // 6. FORM SUBMISSION
+    // ==========================================
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         if (isSubmitting) {
             return false;
         }
@@ -986,7 +782,6 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Updating...';
 
-        // Ensure form data is updated
         updateFormFiles();
         
         if (!subSelect.value && parentSelect.value) {
@@ -1000,7 +795,6 @@
             categoryInput.value = parentSelect.value;
         }
 
-        // Always fetch slug before submit
         if (name.value.length > 0) {
             if (name.value !== originalName) {
                 try {
@@ -1015,76 +809,11 @@
                     return false;
                 }
             }
-            // Jika name tidak berubah, slug tetap pakai yang lama
         } else {
             slug.value = '';
         }
 
-        // ⬅️ SUBMIT AFTER SLUG IS READY
         form.submit();
     });
 </script>
-
-<style>
-    /* Custom scrollbar for thumbnail gallery */
-    #thumbnailContainer::-webkit-scrollbar {
-        height: 4px;
-    }
-    
-    #thumbnailContainer::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 2px;
-    }
-    
-    #thumbnailContainer::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 2px;
-    }
-    
-    #thumbnailContainer::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-
-    /* ⬅️ CUSTOM COLOR PICKER BULAT SEMPURNA */
-    .color-picker-input {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-color: transparent;
-        padding: 0;
-        cursor: pointer;
-    }
-
-    /* Chrome/Safari/Edge */
-    .color-picker-input::-webkit-color-swatch-wrapper {
-        padding: 0;
-        border-radius: 9999px;
-    }
-
-    .color-picker-input::-webkit-color-swatch {
-        border: none;
-        border-radius: 9999px;
-    }
-
-    /* Firefox */
-    .color-picker-input::-moz-color-swatch {
-        border: none;
-        border-radius: 9999px;
-    }
-
-    .color-picker-input::-moz-focus-inner {
-        border: 0;
-        padding: 0;
-    }
-
-    /* Hover & Focus States */
-    .color-picker-input:hover {
-        border-color: #9ca3af;
-    }
-
-    .color-picker-input:focus {
-        outline: none;
-        border-color: #000000;
-    }
-</style>
 @endsection
