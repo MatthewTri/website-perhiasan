@@ -1,113 +1,165 @@
 @extends('layout.main')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Products</h1>
-        <a href="{{ route('products.create') }}" 
-           class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
-            Add Product
-        </a>
+<div class="w-full bg-white border-b border-gray-100 sticky top-[top-navbar-height] z-20">
+    <div class="max-w-screen-2xl mx-auto px-4 lg:px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center py-6 md:py-8">
+            <h1 class="text-xl md:text-2xl font-serif text-gray-900 tracking-widest uppercase mb-4 md:mb-0 text-center md:text-left">
+                All Products
+            </h1>
+            
+            <a href="{{ route('products.create') }}" class="group relative inline-flex items-center justify-start overflow-hidden px-6 py-2 bg-gray-900 font-medium transition-all hover:bg-white border border-gray-900">
+                <span class="w-48 h-48 rounded rotate-[-40deg] bg-white absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
+                <span class="relative w-full text-left text-white transition-colors duration-300 ease-in-out group-hover:text-gray-900 uppercase text-xs tracking-widest">
+                    + Add Product
+                </span>
+            </a>
+        </div>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+    <div class="border-t border-gray-100">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-[1fr_200px_100px] divide-x divide-gray-100">
+                <button class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors md:justify-start md:px-6">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    Filter
+                </button>
+                
+                <button class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors">
+                    Sort By <svg class="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @forelse($products as $product)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                <!-- Product Image -->
-                <div class="aspect-square bg-gray-100 relative">
-                    @if($product->featuredImage)
-                        <img src="{{ asset('storage/' . $product->featuredImage->image) }}" 
-                             alt="{{ $product->name }}"
-                             class="w-full h-full object-cover">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                            <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    @endif
-                    
-                    <!-- Category Badge -->
-                    @if($product->category)
-                        <div class="absolute top-3 left-3">
-                            <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                                {{ $product->category->name }}
-                            </span>
-                        </div>
-                    @endif
-
-                    <!-- Add to Cart Icon "+" -->
-                    <div class="absolute bottom-3 right-3">
-                        <button onclick="addToCartLater({{ $product->id }})" 
-                                class="bg-white hover:bg-blue-500 text-gray-800 hover:text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
-                            <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product Info -->
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg text-gray-900 mb-1 line-clamp-2">
-                        {{ $product->name }}
-                    </h3>
-                    
-                    <p class="text-gray-600 text-sm mb-2 line-clamp-2">
-                        {{ Str::limit($product->description, 80) }}
-                    </p>
-                    
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-xl font-bold text-gray-900">
-                            @currency(['idr' => $product->price_idr, 'usd' => $product->price_usd])
-                        </span>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded transition duration-200">
-                            View
-                        </button>
-                        <a href="{{ route('products.edit', $product) }}" 
-                        class="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition duration-200">
-                            Edit
-                        </a>
-                        <!-- Delete Button dengan Konfirmasi -->
-                        <form action="{{ route('products.destroy', $product) }}" 
-                              method="POST" 
-                              class="inline"
-                              onsubmit="return confirmDelete('{{ $product->name }}')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                                    class="bg-red-500 hover:bg-red-600 text-white text-sm py-2 px-3 rounded transition duration-200">
-                                Del
-                            </button>
-                        </form>
+                <div class="hidden md:flex items-center justify-center space-x-2">
+                    <div class="w-4 h-4 bg-gray-400"></div>
+                    <div class="grid grid-cols-2 gap-0.5 w-4 h-4">
+                        <div class="bg-gray-900 w-full h-full"></div>
+                        <div class="bg-gray-900 w-full h-full"></div>
+                        <div class="bg-gray-900 w-full h-full"></div>
+                        <div class="bg-gray-900 w-full h-full"></div>
                     </div>
                 </div>
             </div>
-        @empty
-            <div class="col-span-full">
-                <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No products</h3>
-                    <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
-                    <div class="mt-6">
-                        <a href="{{ route('products.create') }}" 
-                           class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                            Add Product
-                        </a>
-                    </div>
+        </div>
+    </div>
+</div>
+
+{{-- 2. PRODUCT GRID --}}
+<div class="max-w-screen-2xl mx-auto px-4 lg:px-6 py-8 md:py-12">
+    
+    @if(session('success'))
+        <div class="bg-gray-50 border-l-4 border-gray-900 text-gray-900 px-4 py-3 mb-8 text-xs tracking-wide uppercase" role="alert">
+            <p>{{ session('success') }}</p>
+        </div>
+    @endif
+
+    {{-- 
+       GRID SYSTEM:
+       Mobile: grid-cols-2 (Sesuai Gambar 5)
+       Tablet: grid-cols-3
+       Desktop: grid-cols-4
+       Gap: gap-x-4 gap-y-10 (Jarak vertikal lebih jauh untuk kesan elegan)
+    --}}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
+        @forelse($products as $product)
+            <div class="group relative flex flex-col">
+                
+                {{-- A. IMAGE CONTAINER --}}
+                <div class="relative w-full aspect-square bg-[#F9F9F9] overflow-hidden group/image">
+                    <a href="{{ route('products.show', $product) }}" class="block w-full h-full">
+                        @if($product->featuredImage)
+                            <img src="{{ asset('storage/' . $product->featuredImage->image) }}" 
+                                alt="{{ $product->name }}"
+                                class="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out group-hover/image:scale-105">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                <span class="text-[10px] uppercase tracking-widest">No Image</span>
+                            </div>
+                        @endif
+                    </a>
+
+                    {{-- ADMIN CONTROLS (Muncul saat Hover - Overlay di Kiri Atas) --}}
+                    @auth
+                        <div class="absolute top-2 left-2 flex flex-col space-y-2 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 z-10">
+                            <a href="{{ route('products.edit', $product) }}" class="bg-white/90 backdrop-blur text-gray-900 p-2 hover:bg-gray-900 hover:text-white transition shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </a>
+                            <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirmDelete('{{ $product->name }}')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="bg-white/90 backdrop-blur text-red-600 p-2 hover:bg-red-600 hover:text-white transition shadow-sm cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </form>
+                        </div>
+                    @endauth
+
+                    {{-- TOMBOL PLUS (+) - Kanan Bawah (Hanya muncul saat hover image) --}}
+                    <button onclick="addToCartLater({{ $product->id }})" 
+                            class="absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-0 group-hover/image:opacity-100 translate-y-2 group-hover/image:translate-y-0 cursor-pointer">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
                 </div>
+
+                {{-- B. PRODUCT INFO (Minimalist Text) --}}
+                <div class="mt-4 text-center">
+                    <h3 class="text-[10px] md:text-[11px] font-bold text-gray-900 uppercase tracking-[0.15em] mb-1 leading-relaxed">
+                        <a href="{{ route('products.show', $product) }}">
+                            {{ $product->name }}
+                        </a>
+                    </h3>
+
+                    <p class="text-[11px] md:text-xs text-gray-500 tracking-widest font-medium mb-3">
+                        @currency(['idr' => $product->price_idr, 'usd' => $product->price_usd])
+                    </p>
+
+                    @if($product->colors && $product->colors->count() > 0)
+                    <div class="flex justify-center items-center space-x-2 mb-2">
+                        @foreach($product->colors->sortBy('sort_order') as $color)
+                            <span class="w-3 h-3 rounded-full border border-transparent hover:border-gray-400 cursor-pointer transition-colors" 
+                                style="background-color: {{ $color->hex_code }}" 
+                                title="{{ $color->name }}"></span>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    {{-- Rating Stars (Dynamic with Partial Fill) --}}
+                    @if($product->rating_count > 0)
+                    <div class="flex justify-center items-center space-x-0.5">
+                        @for($i = 1; $i <= 5; $i++)
+                            @php
+                                $fillPercentage = 0;
+                                if ($product->rating_avg >= $i) {
+                                    $fillPercentage = 100; // Full star
+                                } elseif ($product->rating_avg > ($i - 1)) {
+                                    $fillPercentage = ($product->rating_avg - ($i - 1)) * 100; // Partial star
+                                }
+                            @endphp
+                            
+                            <div class="relative w-3 h-3">
+                                {{-- Background Star (Empty/Gray) --}}
+                                <svg class="absolute inset-0 w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                
+                                {{-- Foreground Star (Filled with gradient clip) --}}
+                                <div class="absolute inset-0 overflow-hidden" style="width: {{ $fillPercentage }}%;">
+                                    <svg class="w-3 h-3 text-[#E8B49E]" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        @endfor
+                        
+                        <span class="text-[10px] text-gray-400 ml-1">({{ number_format($product->rating_avg, 1) }})</span>
+                        {{-- <span class="text-[9px] text-gray-300">•</span>
+                        <span class="text-[10px] text-gray-400">{{ $product->rating_count }} {{ Str::plural('review', $product->rating_count) }}</span> --}}
+                    </div>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="col-span-full py-20 text-center">
+                <p class="text-xs uppercase tracking-widest text-gray-400">No products found in this collection.</p>
+                <a href="{{ route('products.create') }}" class="mt-4 inline-block border-b border-gray-900 text-xs uppercase tracking-widest pb-1 hover:text-gray-600">Create Product</a>
             </div>
         @endforelse
     </div>

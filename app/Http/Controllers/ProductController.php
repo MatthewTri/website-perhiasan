@@ -23,7 +23,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'featuredImage'])->latest()->get();
+        $products = Product::with(['category', 'featuredImage', 'colors'])->latest()->get();
         return view('products.index', compact('products'));
     }
 
