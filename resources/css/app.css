@@ -1,5 +1,6 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,11 +8,11 @@
 @source '../**/*.js';
 
 @theme {
-  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-roboto: "Roboto", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   body {
-    @apply font-poppins antialiased;
+    @apply font-roboto antialiased;
   }
 }
