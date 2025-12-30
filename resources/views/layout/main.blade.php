@@ -34,6 +34,9 @@
 
     {{-- Quick View Modal Product Component --}}
     <x-quick-view-modal />
+
+    {{-- Product Show Detail Component --}}
+    <x-product-show-detail />
     
     {{-- Reviews Modal Component --}}
     @include('components.reviews-modal')

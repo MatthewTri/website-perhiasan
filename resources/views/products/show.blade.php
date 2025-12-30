@@ -1,5 +1,17 @@
 @extends('layout.main')
 
+@php
+    $lightboxImages = [];
+    
+    foreach($product->images->sortBy('sort_order') as $img) {
+        $lightboxImages[] = asset('storage/' . $img->image);
+    }
+    
+    if(empty($lightboxImages)) {
+        $lightboxImages[] = asset('img/no-image.jpg');
+    }
+@endphp
+
 @section('content')
 <div class="min-h-screen bg-white">
     
@@ -20,24 +32,35 @@
             
             {{-- LEFT: IMAGE GALLERY (Sticky & Clean) --}}
             <div class="space-y-4 lg:sticky lg:top-24">
-                {{-- Main Image --}}
+                {{-- Main Image Wrapper --}}
                 <div class="aspect-square w-full bg-[#F7F7F7] overflow-hidden relative group">
+                    
                     @if($product->featuredImage)
-                        <img id="mainProductImage" 
-                             src="{{ asset('storage/' . $product->featuredImage->image) }}" 
-                             alt="{{ $product->name }}"
-                             class="w-full h-full object-cover object-center transition-transform duration-700">
+                        <img id="mainProductImage"
+                            src="{{ asset('storage/' . $product->featuredImage->image) }}"
+                            alt="{{ $product->name }}"
+                            class="w-full h-full object-cover object-center transition-transform duration-700 cursor-zoom-in"
+                            data-lightbox-images='@json($lightboxImages)'
+                            data-current-index="0"
+                            onclick="openMainImageLightbox(this)">
                     @else
                         <div class="w-full h-full flex items-center justify-center text-gray-300">
                             <span class="text-xs uppercase tracking-widest">No Image</span>
                         </div>
                     @endif
+
+                    {{-- Optional: Icon Zoom di pojok kanan bawah agar user sadar bisa diklik --}}
+                    <div class="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                        </svg>
+                    </div>
                 </div>
 
                 {{-- Thumbnails (LEBIH KECIL) --}}
                 @if($product->images->count() > 1)
-                <div class="grid grid-cols-8 gap-2">
-                    @foreach($product->images as $image)
+                <div class="grid grid-cols-10 gap-2">
+                    @foreach($product->images->sortBy('sort_order') as $image)
                         <div class="aspect-square cursor-pointer border border-transparent hover:border-gray-900 transition-all overflow-hidden thumbnail-image"
                             onclick="changeMainImage('{{ asset('storage/' . $image->image) }}', this)">
                             <img src="{{ asset('storage/' . $image->image) }}" 
@@ -228,16 +251,28 @@
     // 2. Image Switcher
     function changeMainImage(imageSrc, thumbnailElement) {
         const mainImg = document.getElementById('mainProductImage');
-        
+
+        // Fade out
+        mainImg.classList.add('fade-out');
+        mainImg.classList.remove('fade-in');
+
         // Preload image dulu biar ga lag
         const newImage = new Image();
         newImage.src = imageSrc;
-        
+
         newImage.onload = function() {
-            // Ganti src langsung (CSS transition handle smooth effect)
-            mainImg.src = imageSrc;
+            setTimeout(() => {
+                // Ganti src setelah fade out
+                mainImg.src = imageSrc;
+                // Fade in
+                mainImg.classList.remove('fade-out');
+                mainImg.classList.add('fade-in');
+                
+                // ✅ Update data-current-image agar lightbox tahu index yang benar
+                mainImg.setAttribute('data-current-image', imageSrc);
+            }, 200);
         };
-        
+
         // Update border thumbnail
         document.querySelectorAll('.thumbnail-image').forEach(el => {
             el.classList.remove('border-gray-900');
@@ -358,7 +393,23 @@
             firstThumbnail.classList.remove('border-transparent');
             firstThumbnail.classList.add('border-gray-900');
         }
+
+        const mainImg = document.getElementById('mainProductImage');
+        if (mainImg) {
+            mainImg.setAttribute('data-current-image', mainImg.src);
+        }
     });
+
+    function openMainImageLightbox(img) {
+        const images = JSON.parse(img.getAttribute('data-lightbox-images'));
+        const currentImage = img.getAttribute('data-current-image') || img.src;
+        
+        // ✅ Cari index gambar yang sedang ditampilkan di main image
+        const index = images.findIndex(src => src === currentImage);
+        
+        // Buka lightbox di index yang benar
+        openLightbox(images, index >= 0 ? index : 0);
+    }
 </script>
 
 <style>
@@ -371,5 +422,15 @@
     /* Hide default details marker */
     details > summary { list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
+
+    #mainProductImage {
+        transition: opacity 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    #mainProductImage.fade-out {
+        opacity: 0;
+    }
+    #mainProductImage.fade-in {
+        opacity: 1;
+    }
 </style>
 @endsection
