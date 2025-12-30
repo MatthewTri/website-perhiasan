@@ -25,6 +25,7 @@
     <title>Cecile Private Collection</title>
 </head>
 <body class="flex flex-col min-h-screen">
+    <x-loader />
     @include('partials.navbar')
 
     <div class="flex-grow">

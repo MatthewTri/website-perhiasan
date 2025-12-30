@@ -127,12 +127,6 @@
     <!-- Guest User Cart (handled by JavaScript) -->
     @guest
         <div id="guest-cart-container">
-            <!-- Loading state -->
-            <div id="cart-loading" class="text-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="mt-2 text-gray-600">Loading cart...</p>
-            </div>
-
             <!-- Cart content will be inserted here by JavaScript -->
             <div id="guest-cart-content" class="hidden"></div>
 
@@ -200,12 +194,10 @@ class GuestCart {
         const cart = this.getCart();
         const productIds = Object.keys(cart);
 
-        document.getElementById('cart-loading').style.display = 'block';
         document.getElementById('guest-cart-content').classList.add('hidden');
         document.getElementById('empty-cart').classList.add('hidden');
 
         if (productIds.length === 0) {
-            document.getElementById('cart-loading').style.display = 'none';
             document.getElementById('empty-cart').classList.remove('hidden');
             return;
         }
@@ -224,7 +216,6 @@ class GuestCart {
             this.displayCart(data.items);
         } catch (error) {
             console.error('Error loading cart:', error);
-            document.getElementById('cart-loading').style.display = 'none';
             document.getElementById('empty-cart').classList.remove('hidden');
         }
     }
@@ -335,7 +326,6 @@ class GuestCart {
             </div>
         `;
 
-        document.getElementById('cart-loading').style.display = 'none';
         document.getElementById('guest-cart-content').innerHTML = cartHtml;
         document.getElementById('guest-cart-content').classList.remove('hidden');
     }

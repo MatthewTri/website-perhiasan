@@ -46,7 +46,7 @@
                 <div class="mb-6">
                     <div class="inline-flex items-center border border-gray-200 h-11 w-32 bg-white">
                         <button type="button" id="decreaseQty"
-                                class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none">
+                                class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none cursor-pointer">
                             <svg fill="none" width="10" height="10" viewBox="0 0 12 12">
                                 <path d="M0 6h12" stroke="currentColor" stroke-width="1.5"></path>
                             </svg>
@@ -54,7 +54,7 @@
                         <input type="number" id="modalQuantity" value="1" min="1" readonly 
                             class="flex-1 w-full h-full border-none text-center text-sm font-medium text-gray-900 focus:ring-0 p-0 bg-transparent appearance-none">
                         <button type="button" id="increaseQty"
-                                class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none">
+                                class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none cursor-pointer">
                             <svg fill="none" width="10" height="10" viewBox="0 0 12 12">
                                 <path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="1.5"></path>
                             </svg>
@@ -64,7 +64,7 @@
 
                 {{-- Add to Cart Button --}}
                 <button type="button" id="modalAddToCartBtn"
-                        class="w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 mb-4">
+                        class="w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 cursor-pointer mb-4">
                     ADD TO CART
                 </button>
 
@@ -76,6 +76,7 @@
         </div>
     </div>
 </div>
+
 
 <style>
     input[type=number]::-webkit-inner-spin-button, 
@@ -91,8 +92,8 @@
         position: static !important;
     }
     #modalImageSwiperPagination .swiper-pagination-bullet {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         background-color: #D1D5DB;
         opacity: 1;
         margin: 0 4px !important;
@@ -261,7 +262,7 @@
             productData.colors.forEach((color, index) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = `modal-color-option w-8 h-8 rounded-full border transition-all ${index === 0 ? 'ring-1 ring-offset-2 ring-gray-900 border-transparent' : 'border-gray-200 hover:border-gray-400'}`;
+                btn.className = `modal-color-option cursor-pointer w-8 h-8 rounded-full border transition-all ${index === 0 ? 'ring-1 ring-offset-2 ring-gray-900 border-transparent' : 'border-gray-200 hover:border-gray-400'}`;
                 btn.style.backgroundColor = color.hex_code;
                 btn.title = color.name;
                 btn.addEventListener('click', function() { 
