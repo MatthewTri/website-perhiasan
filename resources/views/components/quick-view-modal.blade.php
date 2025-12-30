@@ -373,10 +373,24 @@
         .then(data => {
             if (data.success) {
                 @guest
+                // ✅ Guest: Simpan cart dengan format productId_color
                 if (data.product) {
                     const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
-                    cart[currentModalProduct.id] = (cart[currentModalProduct.id] || 0) + data.quantity;
+                    
+                    // ✅ Key format: productId_color (agar bisa bedakan warna)
+                    const colorKey = data.product.color || 'default';
+                    const cartKey = `${currentModalProduct.id}_${colorKey}`;
+                                        
+                    if (cart[cartKey]) {
+                        // Tambahkan quantity baru ke yang sudah ada
+                        cart[cartKey] = parseInt(cart[cartKey]) + data.quantity;
+                    } else {
+                        // Set quantity baru
+                        cart[cartKey] = data.quantity;
+                    }
+                    
                     localStorage.setItem('guest_cart', JSON.stringify(cart));
+                    console.log('✅ [Quick View] Updated localStorage:', cart);
                 }
                 @endguest
                 

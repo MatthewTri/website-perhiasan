@@ -53,6 +53,12 @@
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ $item->product->name }}
                                             </div>
+                                            {{-- ✅ Tampilkan Color jika ada --}}
+                                            @if($item->color)
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                Color: <span class="capitalize">{{ $item->color }}</span>
+                                            </p>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -183,9 +189,9 @@ class GuestCart {
         this.saveCart(cart);
     }
 
-    removeItem(productId) {
+    removeItem(cartKey) {
         const cart = this.getCart();
-        delete cart[productId];
+        delete cart[cartKey];
         this.saveCart(cart);
         this.loadGuestCart();
     }
@@ -213,6 +219,7 @@ class GuestCart {
             });
 
             const data = await response.json();
+
             this.displayCart(data.items);
         } catch (error) {
             console.error('Error loading cart:', error);
@@ -256,6 +263,9 @@ class GuestCart {
                                 total += itemTotal;
                                 totalItems += item.quantity;
                                 
+                                // ✅ Generate cart key untuk remove button
+                                const cartKey = `${item.product.id}_${item.color || 'default'}`;
+                                
                                 const imageHtml = item.product.featured_image 
                                     ? `<img class="h-16 w-16 rounded-lg object-cover" 
                                         src="/storage/${item.product.featured_image.image}" 
@@ -266,11 +276,6 @@ class GuestCart {
                                         </svg>
                                     </div>`;
                                 
-                                // Fix description handling - pastikan tidak undefined
-                                const description = item.product.description ? 
-                                    (item.product.description.length > 50 ? item.product.description.substring(0, 50) + '...' : item.product.description) 
-                                    : 'No description';
-                                
                                 return `
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -280,6 +285,11 @@ class GuestCart {
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900">${item.product.name}</div>
+                                                    ${item.color ? `
+                                                        <p class="text-xs text-gray-500 mt-1">
+                                                            Color: <span class="capitalize">${item.color}</span>
+                                                        </p>
+                                                    ` : ''}
                                                 </div>
                                             </div>
                                         </td>
@@ -293,7 +303,7 @@ class GuestCart {
                                             ${this.formatPrice(item.product.price_idr * item.quantity, item.product.price_usd * item.quantity)}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button onclick="guestCart.removeItem(${item.product.id})" 
+                                            <button onclick="guestCart.removeItem('${cartKey}')" 
                                                     class="text-red-600 hover:text-red-900 transition duration-200">
                                                 Remove
                                             </button>

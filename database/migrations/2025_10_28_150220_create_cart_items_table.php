@@ -23,9 +23,11 @@ return new class extends Migration
             // Jumlah barang
             $table->integer('quantity')->default(1);
 
+            $table->string('color')->nullable();
+
             // Tambahkan ini agar 1 produk tidak muncul 2x di keranjang yang sama
             // (Lebih baik qty-nya ditambah, bukan buat baris baru)
-            $table->unique(['cart_id', 'product_id']);
+            $table->unique(['cart_id', 'product_id', 'color'], 'cart_items_unique');
 
             $table->timestamps();
         });

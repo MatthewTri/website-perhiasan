@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -38,16 +39,22 @@ class CartController extends Controller
 
     public function addToCart(Request $request, $productId)
     {
-        // Validate quantity
-        $quantity = $request->input('quantity', 1);
-        $quantity = max(1, (int)$quantity); // Minimal 1
+
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'color' => 'nullable|string', // ✅ Validasi color
+        ]);
         
+        $quantity = $validated['quantity'];
+        $color = $validated['color'] ?? null; // ✅ Ambil color (nullable)
+
         if (Auth::check()) {
             // User authenticated - simpan ke database
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
             $cartItem = CartItem::where('cart_id', $cart->id)
                                 ->where('product_id', $productId)
+                                ->where('color', $color)
                                 ->first();
 
             if ($cartItem) {
@@ -59,7 +66,8 @@ class CartController extends Controller
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $productId,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                    'color' => $color
                 ]);
             }
 
@@ -85,6 +93,7 @@ class CartController extends Controller
                     'price_idr' => $product->price_idr,
                     'price_usd' => $product->price_usd,
                     'description' => $product->description,
+                    'color' => $color,
                     'featured_image' => $product->featuredImage ? [
                         'image' => $product->featuredImage->image
                     ] : null
@@ -123,27 +132,52 @@ class CartController extends Controller
             return response()->json(['items' => []]);
         }
 
-        // Tambahkan eager loading untuk featuredImage
-        $products = Product::with('featuredImage')->whereIn('id', array_keys($productIds))->get();
-        
-        $cartItems = $products->map(function($product) use ($productIds) {
-            return [
-                'id' => 'guest_' . $product->id,
+        $cartItems = [];
+
+        foreach ($productIds as $key => $quantity) {
+            $productId = null;
+            $color = null;
+
+            // ✅ Cek apakah key format lama (hanya angka) atau baru (productId_color)
+            if (strpos($key, '_') !== false) {
+                // Format baru: "123_red"
+                $parts = explode('_', $key, 2);
+                $productId = (int) $parts[0];
+                $color = $parts[1] !== 'default' ? $parts[1] : null;
+            } else {
+                // Format lama: "123" (hanya productId)
+                $productId = (int) $key;
+                $color = null;
+            }
+            
+            Log::info('Parsing cart key', [
+                'key' => $key, 
+                'productId' => $productId, 
+                'color' => $color
+            ]);
+            
+            $product = Product::with('featuredImage')->find($productId);
+            
+            if (!$product) continue;
+            
+            $cartItems[] = [
+                'id' => 'guest_' . $key,
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price_idr' => (float) $product->price_idr, // ⬅️ CAST TO FLOAT
-                    'price_usd' => (float) $product->price_usd, // ⬅️ CAST TO FLOAT
+                    'price_idr' => (float) $product->price_idr,
+                    'price_usd' => (float) $product->price_usd,
                     'description' => $product->description,
-                    // Tambahkan image data
                     'featured_image' => $product->featuredImage ? [
-                        'image' => $product->featuredImage->image,
-                        'alt' => $product->featuredImage->alt ?? $product->name
+                        'image' => $product->featuredImage->image
                     ] : null
                 ],
-                'quantity' => (int) $productIds[$product->id] // ⬅️ CAST TO INT
+                'quantity' => (int) $quantity,
+                'color' => $color // ✅ Color akan null jika format lama, atau sesuai pilihan jika format baru
             ];
-        });
+        }
+
+        Log::info('Guest cart items', ['items' => $cartItems]);
 
         return response()->json(['items' => $cartItems]);
     }
@@ -155,46 +189,66 @@ class CartController extends Controller
             return response()->json(['error' => 'User not authenticated'], 401);
         }
 
-        $guestCart = $request->all();
+        $guestCartData = $request->all();
         
-        if (empty($guestCart)) {
+        if (empty($guestCartData)) {
             return response()->json(['success' => true, 'message' => 'No items to migrate']);
         }
 
-        // Get or create user cart
         $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
-        
         $migratedCount = 0;
-        
-        foreach ($guestCart as $productId => $quantity) {
-            // Validate product exists
-            if (!Product::find($productId)) {
-                continue;
+
+        foreach ($guestCartData as $key => $quantity) {
+            $productId = null;
+            $color = null;
+
+            // ✅ Parse key: support format baru "productId_color" dan format lama "productId"
+            if (strpos($key, '_') !== false) {
+                // Format baru: "123_red" atau "123_default"
+                $parts = explode('_', $key, 2);
+                $productId = (int) $parts[0];
+                $color = $parts[1] !== 'default' ? $parts[1] : null;
+            } else {
+                // Format lama: "123" (hanya productId)
+                $productId = (int) $key;
+                $color = null;
             }
-            
+
+            if (!$productId || $quantity < 1) {
+                continue; // Skip invalid data
+            }
+
+            // ✅ Cek apakah produk + color sudah ada di cart user
             $cartItem = CartItem::where('cart_id', $cart->id)
-                            ->where('product_id', $productId)
-                            ->first();
-            
+                                ->where('product_id', $productId)
+                                ->where('color', $color) // ✅ Filter by color juga
+                                ->first();
+
             if ($cartItem) {
-                // Add to existing quantity
-                $cartItem->quantity += $quantity;
+                // ✅ Jika sudah ada, tambahkan quantity
+                $cartItem->quantity += (int) $quantity;
                 $cartItem->save();
             } else {
-                // Create new cart item
+                // ✅ Jika belum ada, buat cart item baru
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $productId,
-                    'quantity' => $quantity
+                    'quantity' => (int) $quantity,
+                    'color' => $color // ✅ Simpan color
                 ]);
             }
-            
+
             $migratedCount++;
         }
-        
+
+        Log::info('Guest cart migrated', [
+            'user_id' => Auth::id(),
+            'items_migrated' => $migratedCount
+        ]);
+
         return response()->json([
             'success' => true,
-            'message' => "Successfully migrated {$migratedCount} items to your cart"
+            'message' => "$migratedCount item(s) migrated to your cart"
         ]);
     }
 }

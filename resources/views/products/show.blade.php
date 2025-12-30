@@ -325,16 +325,22 @@
                 // Guest: Update localStorage dengan quantity yang benar
                 if (data.product) {
                     const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
+
+                    const colorKey = data.product.color || 'default';
+                    const cartKey = `${productId}_${colorKey}`;
                     
-                    if (cart[productId]) {
+                    console.log('💾 Saving to localStorage:', { cartKey, quantity: data.quantity }); // ✅ DEBUG
+
+                    if (cart[cartKey]) {
                         // Tambahkan quantity baru ke yang sudah ada
-                        cart[productId] = parseInt(cart[productId]) + data.quantity;
+                        cart[cartKey] = parseInt(cart[cartKey]) + data.quantity;
                     } else {
                         // Set quantity baru
-                        cart[productId] = data.quantity;
+                        cart[cartKey] = data.quantity;
                     }
                     
                     localStorage.setItem('guest_cart', JSON.stringify(cart));
+                    console.log('✅ Updated localStorage:', cart); // ✅ DEBUG
                 }
                 @endguest
                 
