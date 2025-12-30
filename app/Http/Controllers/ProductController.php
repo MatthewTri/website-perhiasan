@@ -23,7 +23,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'featuredImage', 'colors'])->latest()->get();
+        $products = Product::with([
+            'category', 
+            'featuredImage', 
+            'colors:id,product_id,name,hex_code,sort_order'  // ✅ Select only needed columns
+        ])->latest()->get();
         return view('products.index', compact('products'));
     }
 

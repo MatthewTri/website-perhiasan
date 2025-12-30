@@ -69,7 +69,7 @@
                         @if($product->featuredImage)
                             <img src="{{ asset('storage/' . $product->featuredImage->image) }}" 
                                 alt="{{ $product->name }}"
-                                class="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out group-hover/image:scale-105">
+                                class="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-300">
                                 <span class="text-[10px] uppercase tracking-widest">No Image</span>
@@ -93,9 +93,21 @@
                     @endauth
 
                     {{-- TOMBOL PLUS (+) - Kanan Bawah (Hanya muncul saat hover image) --}}
-                    <button onclick="addToCartLater({{ $product->id }})" 
-                            class="absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-0 group-hover/image:opacity-100 translate-y-2 group-hover/image:translate-y-0 cursor-pointer">
-                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                    <button type="button"
+                        class="quick-view-btn absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-0 group-hover/image:opacity-100 translate-y-2 group-hover/image:translate-y-0 cursor-pointer z-20 shadow-sm"
+                        data-product-id="{{ $product->id }}"
+                        data-product-name="{{ $product->name }}"
+                        data-product-slug="{{ $product->slug }}"
+                        data-price-idr="{{ $product->price_idr }}"
+                        data-price-usd="{{ $product->price_usd }}"
+                        data-product-url="{{ route('products.show', $product) }}"
+                        data-rating-avg="{{ $product->rating_avg ?? 0 }}"
+                        data-rating-count="{{ $product->rating_count ?? 0 }}"
+                        data-featured-image="{{ $product->featuredImage ? asset('storage/' . $product->featuredImage->image) : '' }}"
+                        data-colors='@json($product->colors ? $product->colors->map(fn($c) => ["name" => $c->name, "hex_code" => $c->hex_code])->values()->toArray() : [])'>
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path>
+                        </svg>
                     </button>
                 </div>
 
@@ -189,64 +201,64 @@
         });
     }
 
-    function addToCartLater(productId) {
-        // Kirim AJAX request untuk menambah ke cart
-        fetch(`/cart/add/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Jika guest user dan ada product data, simpan ke localStorage
-                @guest
-                if (data.product) {
-                    const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
-                    if (cart[productId]) {
-                        cart[productId]++;
-                    } else {
-                        cart[productId] = 1;
-                    }
-                    localStorage.setItem('guest_cart', JSON.stringify(cart));
-                }
-                @endguest
+    // function addToCartLater(productId) {
+    //     // Kirim AJAX request untuk menambah ke cart
+    //     fetch(`/cart/add/${productId}`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    //         }
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             // Jika guest user dan ada product data, simpan ke localStorage
+    //             @guest
+    //             if (data.product) {
+    //                 const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
+    //                 if (cart[productId]) {
+    //                     cart[productId]++;
+    //                 } else {
+    //                     cart[productId] = 1;
+    //                 }
+    //                 localStorage.setItem('guest_cart', JSON.stringify(cart));
+    //             }
+    //             @endguest
 
-                // success alert
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Product added to cart successfully!',
-                    icon: 'success',
-                    confirmButtonColor: '#111827',
-                    confirmButtonText: 'OK',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    customClass: {
-                        confirmButton: 'px-6 py-2 text-xs uppercase tracking-widest'
-                    }
-                });
-            } else {
-                // error alert
-                Swal.fire({
-                    title: 'Error!',
-                    text: data.error || 'Something went wrong!',
-                    icon: 'error',
-                    confirmButtonColor: '#EF4444',
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Something went wrong!',
-                icon: 'error',
-                confirmButtonColor: '#EF4444'
-            });
-        });
-    }
+    //             // success alert
+    //             Swal.fire({
+    //                 title: 'Success!',
+    //                 text: 'Product added to cart successfully!',
+    //                 icon: 'success',
+    //                 confirmButtonColor: '#111827',
+    //                 confirmButtonText: 'OK',
+    //                 timer: 2000,
+    //                 timerProgressBar: true,
+    //                 customClass: {
+    //                     confirmButton: 'px-6 py-2 text-xs uppercase tracking-widest'
+    //                 }
+    //             });
+    //         } else {
+    //             // error alert
+    //             Swal.fire({
+    //                 title: 'Error!',
+    //                 text: data.error || 'Something went wrong!',
+    //                 icon: 'error',
+    //                 confirmButtonColor: '#EF4444',
+    //                 confirmButtonText: 'OK'
+    //             });
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         Swal.fire({
+    //             title: 'Error!',
+    //             text: 'Something went wrong!',
+    //             icon: 'error',
+    //             confirmButtonColor: '#EF4444'
+    //         });
+    //     });
+    // }
 </script>
 @endsection

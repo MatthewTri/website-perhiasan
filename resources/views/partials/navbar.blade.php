@@ -94,8 +94,6 @@
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
-                {{-- Earrings duplicated as per prompt --}}
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li> 
                 
                 @auth
                 <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>

@@ -11,8 +11,15 @@
     {{-- Phone number country --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
     {{-- CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    
+    {{-- SweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @vite('resources/css/app.css')
 
     <title>Cecile Private Collection</title>
@@ -24,6 +31,10 @@
         @yield('content')
     </div>
 
+    {{-- Quick View Modal Product Component --}}
+    <x-quick-view-modal />
+    
+    {{-- Reviews Modal Component --}}
     @include('components.reviews-modal')
 
     @include('partials.footer')
@@ -120,6 +131,8 @@
         @endif
     </script>
 
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>
