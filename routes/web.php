@@ -48,6 +48,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+// Update quantity cart item
+Route::patch('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
 // API untuk guest cart
 Route::post('/api/cart/guest-items', [CartController::class, 'getGuestCartItems'])->name('cart.guest.items');

@@ -182,6 +182,44 @@ class CartController extends Controller
         return response()->json(['items' => $cartItems]);
     }
 
+    public function updateQuantity(Request $request, $cartItemId)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:increment,decrement',
+        ]);
+
+        if (Auth::check()) {
+            $cartItem = CartItem::where('id', $cartItemId)
+                            ->whereHas('cart', function($query) {
+                                $query->where('user_id', Auth::id());
+                            })
+                            ->first();
+
+            if (!$cartItem) {
+                return redirect()->route('cart.index')->with('error', 'Item not found');
+            }
+
+            if ($validated['action'] === 'increment') {
+                $cartItem->quantity += 1;
+            } else {
+                // Decrement, tapi jangan sampai 0
+                if ($cartItem->quantity > 1) {
+                    $cartItem->quantity -= 1;
+                } else {
+                    // Jika quantity = 1 dan decrement, hapus item
+                    $cartItem->delete();
+                    return redirect()->route('cart.index')->with('success', 'Item removed from cart');
+                }
+            }
+
+            $cartItem->save();
+
+            return redirect()->route('cart.index')->with('success', 'Cart updated');
+        }
+
+        return redirect()->route('cart.index');
+    }
+
     // Merge guest cart items into authenticated user's cart
     public function migrateGuestCart(Request $request)
     {
