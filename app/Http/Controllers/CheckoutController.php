@@ -90,20 +90,99 @@ class CheckoutController extends Controller
                 
                 $cartItems = $cart->cartItems;
             } else {
+                // ⬅️ GUEST CART HANDLING WITH COLOR SUPPORT
                 if (!$request->cart_data) {
                     return back()->with('error', 'Cart data is missing');
                 }
                 
                 $guestCart = json_decode($request->cart_data, true);
-                $productIds = array_keys($guestCart);
+                
+                Log::info('Guest cart data received at checkout', ['cart' => $guestCart]);
+                
+                if (empty($guestCart)) {
+                    return back()->with('error', 'Your cart is empty');
+                }
+                
+                // ⬅️ Parse guest cart keys dan group by product
+                $productQuantities = [];
+                $productColors = []; // Simpan color untuk setiap product
+                
+                foreach ($guestCart as $cartKey => $quantity) {
+                    // Parse "1_Midnight blue" => productId = 1, color = "Midnight blue"
+                    // Parse "1_default" => productId = 1, color = null
+                    // Parse "1" => productId = 1, color = null
+                    
+                    $productId = null;
+                    $color = null;
+                    
+                    if (strpos($cartKey, '_') !== false) {
+                        // Format: "productId_color"
+                        $parts = explode('_', $cartKey, 2); // Split max 2 parts
+                        $productId = (int)$parts[0];
+                        $color = isset($parts[1]) && $parts[1] !== 'default' ? $parts[1] : null;
+                    } else {
+                        // Format lama: hanya productId
+                        $productId = (int)$cartKey;
+                        $color = null;
+                    }
+                    
+                    if (!$productId || $quantity < 1) {
+                        continue; // Skip invalid data
+                    }
+                    
+                    Log::info('Parsed cart key at checkout', [
+                        'cartKey' => $cartKey,
+                        'productId' => $productId,
+                        'color' => $color,
+                        'quantity' => $quantity
+                    ]);
+                    
+                    // ⬅️ Jumlahkan quantity untuk product yang sama
+                    if (!isset($productQuantities[$productId])) {
+                        $productQuantities[$productId] = 0;
+                        $productColors[$productId] = [];
+                    }
+                    
+                    $productQuantities[$productId] += (int)$quantity;
+                    
+                    // Simpan color (untuk display nanti jika perlu)
+                    if ($color && !in_array($color, $productColors[$productId])) {
+                        $productColors[$productId][] = $color;
+                    }
+                }
+                
+                if (empty($productQuantities)) {
+                    return back()->with('error', 'No valid products in cart');
+                }
+                
+                $productIds = array_keys($productQuantities);
                 $products = Product::whereIn('id', $productIds)->get();
                 
-                $cartItems = $products->map(function ($product) use ($guestCart) {
+                if ($products->isEmpty()) {
+                    return back()->with('error', 'No valid products found');
+                }
+                
+                // ⬅️ Map products dengan quantity & color info
+                $cartItems = $products->map(function ($product) use ($productQuantities, $productColors) {
                     return (object)[
                         'product' => $product,
-                        'quantity' => $guestCart[$product->id]
+                        'quantity' => $productQuantities[$product->id],
+                        'color' => !empty($productColors[$product->id]) 
+                            ? implode(', ', $productColors[$product->id]) 
+                            : null // Gabungkan semua color jika ada
                     ];
                 });
+                
+                Log::info('Processed guest cart items', [
+                    'items' => $cartItems->map(function($item) {
+                        return [
+                            'product_id' => $item->product->id,
+                            'name' => $item->product->name,
+                            'quantity' => $item->quantity,
+                            'color' => $item->color
+                        ];
+                    })->toArray()
+                ]);
             }
 
             // ⬅️ HITUNG SUBTOTAL DALAM KEDUA CURRENCY
@@ -172,13 +251,20 @@ class CheckoutController extends Controller
                 'shipped_at' => null,
             ]);
 
-            // ⬅️ CREATE ORDER ITEMS DENGAN KEDUA HARGA
+            // ⬅️ CREATE ORDER ITEMS DENGAN KEDUA HARGA & COLOR INFO
             foreach ($cartItems as $item) {
+                $itemDescription = $item->product->description;
+                
+                // ⬅️ Tambahkan color info ke description jika ada
+                if (isset($item->color) && $item->color) {
+                    $itemDescription .= "\nColor: " . $item->color;
+                }
+                
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product->id,
                     'item_name' => $item->product->name,
-                    'item_description' => $item->product->description,
+                    'item_description' => $itemDescription,
                     'quantity' => $item->quantity,
                     
                     // ⬅️ SIMPAN KEDUA HARGA
@@ -205,7 +291,10 @@ class CheckoutController extends Controller
             }
 
         } catch (\Exception $e) {
-            Log::error('Checkout Error: ' . $e->getMessage());
+            Log::error('Checkout Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
             return back()->withInput()->with('error', 'Failed to place order: ' . $e->getMessage());
         }
     }

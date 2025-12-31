@@ -355,6 +355,9 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium text-gray-900 truncate">{{ $item->product->name }}</p>
+                                    @if(!empty($item->color))
+                                        <p class="text-xs text-gray-500 mt-1">Color: {{ $item->color }}</p>
+                                    @endif
                                     <p class="text-sm text-gray-500 item-price" 
                                     data-price-idr="{{ $item->product->price_idr }}"
                                     data-price-usd="{{ $item->product->price_usd }}">
@@ -510,6 +513,7 @@ function displayCheckoutSummary(items) {
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">${item.product.name}</p>
+                    ${item.color ? `<p class="text-xs text-gray-500 mt-1">Color: ${item.color}</p>` : ''}
                     <p class="text-sm text-gray-500 item-price"
                        data-price-idr="${item.product.price_idr}"
                        data-price-usd="${item.product.price_usd}">

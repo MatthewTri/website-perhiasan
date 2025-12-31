@@ -1,101 +1,110 @@
-<div id="reviews-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg max-w-xl w-full max-h-[80vh] flex flex-col shadow-2xl">
-        <!-- Modal Header -->
-        <div class="p-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">Let customers speak for us</h2>
-                    <div class="flex items-center mt-1">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                        </div>
-                        <span class="ml-2 text-xs text-gray-600">Based on <span id="total-reviews">0</span> reviews</span>
-                    </div>
+{{-- partials/reviews-modal.blade.php --}}
+
+<button onclick="openReviewsModal()" 
+        class="fixed right-6 bottom-6 z-40 bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-[#E8B49E] rounded-full p-4 transition-all duration-300 group flex items-center justify-center"
+        aria-label="Open Reviews">
+    <svg class="w-6 h-6 text-gray-900 group-hover:text-[#E8B49E] transition-colors" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+    </svg>
+    <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs uppercase tracking-widest px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+        Read Reviews
+    </span>
+</button>
+
+
+<div id="reviews-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" role="dialog" aria-modal="true">
+    <div class="bg-white w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl relative transform transition-all duration-300 scale-95">
+        
+        <button onclick="closeReviewsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors z-10 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="p-8 pb-4 text-center border-b border-gray-100">
+            <h2 class="text-xl md:text-2xl font-normal text-gray-900 uppercase tracking-[0.15em] mb-3">
+                Customer Reviews
+            </h2>
+            <div class="flex items-center justify-center space-x-3">
+                {{-- Bintang Statis (Sebagai Hiasan Header) --}}
+                <div class="flex text-[#E8B49E] space-x-0.5">
+                    @for($i=0; $i<5; $i++)
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    @endfor
                 </div>
-                <button onclick="closeReviewsModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                <span class="text-xs text-gray-500 tracking-wide font-light uppercase">
+                    Based on <span id="total-reviews" class="font-medium text-gray-900">0</span> reviews
+                </span>
             </div>
         </div>
 
-        <!-- Modal Body (Scrollable) -->
-        <div class="flex-1 overflow-y-auto pl-4">
-            <div id="reviews-list" class="space-y-4 overflow-y-auto max-h-96">
-                <!-- Reviews akan dimuat via AJAX -->
-                <div class="text-center py-8">
-                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mx-auto"></div>
+        <div class="flex-1 overflow-y-auto px-8 py-4 custom-scrollbar">
+            <div id="reviews-list" class="space-y-10">
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Footer (Pagination) -->
-        <div id="reviews-pagination" class="p-4 border-t border-gray-200 hidden">
-            <!-- Pagination akan dimuat via AJAX -->
-        </div>
+        <div id="reviews-pagination" class="p-6 border-t border-gray-100 hidden bg-white">
+            </div>
     </div>
 </div>
 
-<!-- Floating Reviews Button -->
-<button onclick="openReviewsModal()" 
-        class="fixed right-0 top-1/2 -translate-y-1/2 bg-gradient-to-b from-orange-400 to-orange-500 text-white px-3 py-5 rounded-l-lg shadow-lg hover:shadow-xl transition-all duration-300 z-40 group hover:px-4">
-    <div class="flex flex-col items-center space-y-1.5">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-        </svg>
-        <span class="text-xs font-semibold tracking-wider" style="writing-mode: vertical-rl; text-orientation: mixed;">
-            REVIEWS
-        </span>
-    </div>
-</button>
+<style>
+    /* Custom Scrollbar untuk Modal Body agar lebih rapi */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #D1D5DB; }
+</style>
 
 <script>
+// --- FUNGSI MEMBUKA MODAL (Dengan Animasi) ---
 function openReviewsModal() {
-    document.getElementById('reviews-modal').classList.remove('hidden');
+    const modal = document.getElementById('reviews-modal');
+    const modalContent = modal.querySelector('div');
+    
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+    });
     document.body.style.overflow = 'hidden';
     loadReviews(1);
 }
 
+// --- FUNGSI MENUTUP MODAL (Dengan Animasi) ---
 function closeReviewsModal() {
-    document.getElementById('reviews-modal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
+    const modal = document.getElementById('reviews-modal');
+    const modalContent = modal.querySelector('div');
+
+    modal.classList.add('opacity-0');
+    modalContent.classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }, 300);
 }
 
+// Close on outside click
 document.getElementById('reviews-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeReviewsModal();
-    }
+    if (e.target === this) closeReviewsModal();
 });
-
+// Close on Esc key
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeReviewsModal();
-    }
+    if (e.key === 'Escape') closeReviewsModal();
 });
 
+// --- FUNGSI AJAX LOAD REVIEWS ---
 async function loadReviews(page = 1) {
     const reviewsList = document.getElementById('reviews-list');
     const pagination = document.getElementById('reviews-pagination');
     
-    // TAMPILKAN LOADING DULU (sebelum fetch)
     reviewsList.innerHTML = `
-        <div class="text-center py-8">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mx-auto"></div>
+        <div class="text-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
         </div>
     `;
     
@@ -114,7 +123,11 @@ async function loadReviews(page = 1) {
                 pagination.classList.add('hidden');
             }
         } else {
-            reviewsList.innerHTML = '<p class="text-center text-gray-500 py-8 text-sm">No reviews yet.</p>';
+            reviewsList.innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-sm text-gray-500 uppercase tracking-widest font-light">No reviews yet.</p>
+                </div>
+            `;
             pagination.classList.add('hidden');
         }
     } catch (error) {
@@ -123,135 +136,92 @@ async function loadReviews(page = 1) {
     }
 }
 
+// --- FUNGSI RENDER SATU REVIEW (Desain Baru) ---
 function renderReview(review, index) {
     const stars = Array(5).fill(0).map((_, i) => {
         const filled = i < review.rating;
-        return `<svg class="w-4 h-4 ${filled ? 'text-yellow-400' : 'text-gray-300'} fill-current" viewBox="0 0 20 20">
-            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-        </svg>`;
+        // Pakai SVG Bintang yang lebih tajam
+        return `<svg class="w-3.5 h-3.5 ${filled ? 'text-[#E8B49E]' : 'text-gray-200'} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
     }).join('');
     
-    let userName = 'Customer';
-    if (!review.anonymous) {
-        if (review.order && review.order.shipment) {
-            userName = `${review.order.shipment.first_name} ${review.order.shipment.last_name}`;
-        }
-    } else {
-        userName = 'Anonymous';
+    let userName = 'Anonymous';
+    let initials = 'A';
+    if (!review.anonymous && review.order && review.order.shipment) {
+        userName = `${review.order.shipment.first_name} ${review.order.shipment.last_name}`;
+        initials = review.order.shipment.first_name.charAt(0).toUpperCase();
     }
     
-    const verifiedBadge = review.order_id ? '<span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">Verified</span>' : '';
-    
-    const imageHtml = review.image 
-        ? `<img src="/storage/${review.image}" alt="Review photo" class="mt-2 max-w-32 h-auto rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('/storage/${review.image}', '_blank')">`
+    const verifiedBadge = review.order_id 
+        ? '<span class="ml-3 text-[10px] uppercase tracking-wider text-gray-400 border border-gray-200 px-2 py-0.5">Verified Buyer</span>' 
         : '';
     
-    const paddingTop = index === 0 ? 'pt-4' : '';
-
+    const imageHtml = review.image 
+        ? `<div class="mt-4"><img src="/storage/${review.image}" alt="Review photo" class="w-24 h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity shadow-sm" onclick="window.open('/storage/${review.image}', '_blank')"></div>`
+        : '';
+    
     return `
-        <div class="border-b border-gray-200 ${paddingTop} pb-4 pr-4 last:border-0">
-            <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
+        <div class="flex items-start space-x-6">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-900 font-serif text-lg">
+                    ${initials}
                 </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <p class="font-semibold text-sm text-gray-900">${userName}</p>
-                            ${verifiedBadge}
-                        </div>
-                        <div class="flex">${stars}</div>
+            </div>
+            <div class="flex-1 min-w-0 pt-1">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center">
+                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">${userName}</h4>
+                        ${verifiedBadge}
                     </div>
-                    <p class="text-xs text-gray-500 mt-0.5">about <a href="/products/${review.product.slug}" class="text-orange-500 hover:underline">${review.product.name}</a></p>
-                    ${review.comment ? `<p class="mt-2 text-sm text-gray-700 leading-relaxed">${review.comment}</p>` : ''}
-                    ${imageHtml}
+                    <div class="flex space-x-0.5">${stars}</div>
                 </div>
+                
+                <p class="text-xs text-gray-400 tracking-wide mb-3 font-light">
+                    About: <a href="/products/${review.product.slug}" class="text-gray-900 hover:underline underline-offset-4 transition-colors">${review.product.name}</a>
+                </p>
+                
+                ${review.comment ? `<p class="text-sm text-gray-600 leading-relaxed font-light">${review.comment}</p>` : ''}
+                ${imageHtml}
             </div>
         </div>
     `;
 }
 
+// --- FUNGSI RENDER PAGINATION (Desain Baru: Minimalis) ---
 function renderPagination(data) {
     const pages = [];
-    
-    // ⬅️ TAMBAHAN: Double Left Arrow (Jump to First Page)
+    const btnClass = "w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none";
+    const activeBtnClass = "w-8 h-8 flex items-center justify-center text-sm font-bold text-gray-900 border-b-2 border-gray-900 focus:outline-none";
+    const textBtnClass = "w-8 h-8 flex items-center justify-center text-sm font-light text-gray-500 hover:text-gray-900 transition-colors focus:outline-none";
+
+    // Arrows SVG
+    const leftArrow = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/></svg>`;
+    const rightArrow = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>`;
+    const doubleLeftArrow = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 19l-7-7 7-7M18 19l-7-7 7-7"/></svg>`;
+    const doubleRightArrow = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>`;
+
     if (data.current_page > 1) {
-        pages.push(`
-            <button onclick="loadReviews(1)" 
-                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7M18 19l-7-7 7-7"/>
-                </svg>
-            </button>
-        `);
+        pages.push(`<button onclick="loadReviews(1)" class="${btnClass}">${doubleLeftArrow}</button>`);
+        pages.push(`<button onclick="loadReviews(${data.current_page - 1})" class="${btnClass}">${leftArrow}</button>`);
     }
     
-    // Previous button (Left Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE 1
-    if (data.current_page > 1) {
-        pages.push(`
-            <button onclick="loadReviews(${data.current_page - 1})" 
-                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-        `);
-    }
-    
-    // Page numbers
     const maxVisible = 5;
     let startPage = Math.max(1, data.current_page - Math.floor(maxVisible / 2));
     let endPage = Math.min(data.last_page, startPage + maxVisible - 1);
-    
-    if (endPage - startPage < maxVisible - 1) {
-        startPage = Math.max(1, endPage - maxVisible + 1);
-    }
+    if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
     
     for (let i = startPage; i <= endPage; i++) {
         if (i === data.current_page) {
-            pages.push(`
-                <button class="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-900 bg-transparent">
-                    ${i}
-                </button>
-            `);
+            pages.push(`<button class="${activeBtnClass}">${i}</button>`);
         } else {
-            pages.push(`
-                <button onclick="loadReviews(${i})" 
-                        class="w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-400 hover:text-orange-500 transition-colors">
-                    ${i}
-                </button>
-            `);
+            pages.push(`<button onclick="loadReviews(${i})" class="${textBtnClass}">${i}</button>`);
         }
     }
     
-    // Next button (Right Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE TERAKHIR
     if (data.current_page < data.last_page) {
-        pages.push(`
-            <button onclick="loadReviews(${data.current_page + 1})" 
-                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
-        `);
+        pages.push(`<button onclick="loadReviews(${data.current_page + 1})" class="${btnClass}">${rightArrow}</button>`);
+        pages.push(`<button onclick="loadReviews(${data.last_page})" class="${btnClass}">${doubleRightArrow}</button>`);
     }
     
-    // Last page button (Double Right Arrow) - ⬅️ HANYA TAMPIL JIKA BUKAN PAGE TERAKHIR
-    if (data.current_page < data.last_page) {
-        pages.push(`
-            <button onclick="loadReviews(${data.last_page})" 
-                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-orange-500 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
-                </svg>
-            </button>
-        `);
-    }
-    
-    return `<div class="flex items-center justify-center space-x-0.5">${pages.join('')}</div>`;
+    return `<div class="flex items-center justify-center space-x-2">${pages.join('')}</div>`;
 }
 </script>
