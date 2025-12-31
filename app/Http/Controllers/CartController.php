@@ -165,6 +165,7 @@ class CartController extends Controller
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->name,
+                    'slug' => $product->slug,
                     'price_idr' => (float) $product->price_idr,
                     'price_usd' => (float) $product->price_usd,
                     'description' => $product->description,

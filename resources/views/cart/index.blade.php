@@ -334,7 +334,7 @@
                         </div>
                         <div class="flex-1 min-w-0 pt-1">
                             <h3 class="text-xs font-bold text-gray-900 uppercase tracking-[0.15em] leading-relaxed mb-1">
-                                <a href="/products/${item.product.id}" class="hover:text-gray-600 transition-colors">
+                                <a href="/products/${item.product.slug}" class="hover:text-gray-600 transition-colors">
                                     ${item.product.name}
                                 </a>
                             </h3>
