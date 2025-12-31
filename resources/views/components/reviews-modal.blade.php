@@ -12,7 +12,7 @@
 </button>
 
 
-<div id="reviews-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" role="dialog" aria-modal="true">
+<div id="reviews-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" role="dialog" aria-modal="true">
     <div class="bg-white w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl relative transform transition-all duration-300 scale-95">
         
         <button onclick="closeReviewsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors z-10 p-2">
