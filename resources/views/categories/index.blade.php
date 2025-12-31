@@ -73,7 +73,13 @@
                                           <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                         </svg>
                                     </a>
-                                    <form action="{{ route('categories.destroy', $category->slug) }}" method="POST" class="inline" onsubmit="return confirm('Delete category &quot;{{ $category->name }}&quot;? This will affect sub-categories.')">
+                                    
+                                    {{-- FORM DELETE PARENT --}}
+                                    <form action="{{ route('categories.destroy', $category->slug) }}" 
+                                          method="POST" 
+                                          class="inline delete-form" 
+                                          data-title="Delete '{{ $category->name }}'?"
+                                          data-warning="This will also delete all sub-categories and unlink products.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-2 text-stone-400 hover:text-red-600 transition-colors" title="Delete">
@@ -89,7 +95,9 @@
                         @foreach($category->children as $child)
                         <tr class="hover:bg-stone-50 transition-colors duration-200">
                             <td class="px-8 py-4 relative">
-                                <div class="absolute left-12 top-0 bottom-1/2 w-px bg-stone-200"></div> <div class="absolute left-12 top-1/2 w-4 h-px bg-stone-200"></div> <div class="flex items-center pl-10">
+                                <div class="absolute left-12 top-0 bottom-1/2 w-px bg-stone-200"></div> 
+                                <div class="absolute left-12 top-1/2 w-4 h-px bg-stone-200"></div> 
+                                <div class="flex items-center pl-10">
                                     <span class="text-sm text-stone-600 group-hover:text-stone-900 tracking-wide">
                                         {{ $child->name }}
                                     </span>
@@ -109,7 +117,13 @@
                                         Edit
                                     </a>
                                     <span class="text-stone-300 text-xs">|</span>
-                                    <form action="{{ route('categories.destroy', $child->slug) }}" method="POST" class="inline" onsubmit="return confirm('Delete sub-category?')">
+                                    
+                                    {{-- FORM DELETE CHILD --}}
+                                    <form action="{{ route('categories.destroy', $child->slug) }}" 
+                                          method="POST" 
+                                          class="inline delete-form"
+                                          data-title="Delete '{{ $child->name }}'?"
+                                          data-warning="This action cannot be undone.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-xs text-stone-400 hover:text-red-600 hover:underline decoration-red-600 underline-offset-4 transition-all">
@@ -138,4 +152,44 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Menunggu DOM siap
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleksi semua form dengan class 'delete-form'
+        const deleteForms = document.querySelectorAll('.delete-form');
+
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Mencegah submit langsung
+
+                // Ambil data pesan dari atribut data-title dan data-warning
+                const titleText = this.getAttribute('data-title') || 'Are you sure?';
+                const warningText = this.getAttribute('data-warning') || 'You won\'t be able to revert this!';
+
+                Swal.fire({
+                    title: titleText,
+                    text: warningText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    // Styling Custom agar sesuai tema Stone/Jewelry
+                    confirmButtonColor: '#1c1917', // stone-900
+                    cancelButtonColor: '#a8a29e',  // stone-400
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        popup: 'font-sans',
+                        title: 'font-serif text-stone-800',
+                        confirmButton: 'px-6 py-2.5 rounded-sm font-medium tracking-wide',
+                        cancelButton: 'px-6 py-2.5 rounded-sm font-medium tracking-wide'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit(); // Submit form jika user klik Yes
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection
