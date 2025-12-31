@@ -156,7 +156,7 @@ function renderReview(review, index) {
         : '';
     
     const imageHtml = review.image 
-        ? `<div class="mt-4"><img src="/storage/${review.image}" alt="Review photo" class="w-24 h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity shadow-sm" onclick="window.open('/storage/${review.image}', '_blank')"></div>`
+        ? `<div class="mt-4"><img src="/storage/${review.image}" alt="Review photo" class="w-24 h-24 object-cover cursor-pointer hover:opacity-90 transition-opacity shadow-sm" onclick="openLightbox('/storage/${review.image}')"></div>`
         : '';
     
     return `
@@ -225,3 +225,5 @@ function renderPagination(data) {
     return `<div class="flex items-center justify-center space-x-2">${pages.join('')}</div>`;
 }
 </script>
+
+@include('components.image-lightbox')
