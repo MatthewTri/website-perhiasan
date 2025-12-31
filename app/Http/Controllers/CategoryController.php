@@ -80,10 +80,17 @@ class CategoryController extends Controller
             }
         }
 
+        // VALIDASI: Jika kategori ini punya child, tidak boleh di-assign ke parent lain
+        if ($category->children()->count() > 0 && $request->parent_id) {
+            return back()->withErrors([
+                'parent_id' => 'Cannot assign parent for a category that has sub-categories. Please remove all sub-categories first.'
+            ]);
+        }
+
         $category->update($request->validated());
 
         return redirect()->route('categories.index')
-                       ->with('success', 'Category successfully updated!');
+                    ->with('success', 'Category successfully updated!');
     }
 
     /**

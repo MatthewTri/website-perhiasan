@@ -42,6 +42,15 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function totalProductsCount()
+    {
+        $count = $this->products()->count();
+        foreach ($this->children as $child) {
+            $count += $child->totalProductsCount();
+        }
+        return $count;
+    }
+
     public function sluggable(): array
     {
         return [
