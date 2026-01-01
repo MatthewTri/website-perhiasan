@@ -514,6 +514,7 @@
                     fetch('https://ipapi.co/json/').then(res => res.json()).then(data => callback(data.country_code)).catch(() => callback("id"));
                 },
                 utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+                preferredCountries: [],
             });
             
             // Update hidden input on change

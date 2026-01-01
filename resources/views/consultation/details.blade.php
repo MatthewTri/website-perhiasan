@@ -73,7 +73,7 @@
                             type="text" 
                             id="first_name" 
                             name="first_name" 
-                            value="{{ old('first_name', Auth::user()->name ?? '') }}" 
+                            value="{{ old('first_name') }}" 
                             required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
@@ -221,11 +221,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
-
 <script>
-// ✅ Global variable untuk menyimpan semua files
 let selectedFiles = [];
 
 // ✅ Function untuk add AI image
@@ -382,6 +378,7 @@ function updateFileInput() {
 
 // ✅ Document ready
 document.addEventListener('DOMContentLoaded', function() {
+    // AI Dropdown Logic
     const dropdownToggle = document.getElementById('ai-dropdown-toggle');
     const dropdownMenu = document.getElementById('ai-dropdown-menu');
 
@@ -409,99 +406,108 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ✅ Phone input initialization
+    // ✅ Phone Input Initialization (Clean Version)
     const phoneInputField = document.querySelector("#user_phone");
     const hiddenPhoneInput = document.querySelector("#hidden_phone_input");
     
-    const phoneInput = window.intlTelInput(phoneInputField, {
-        initialCountry: "auto",
-        geoIpLookup: function(callback) {
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => callback(data.country_code))
-                .catch(() => callback("id"));
-        },
-        preferredCountries: ["id", "us", "sg", "my", "th", "ph", "vn", "au", "jp", "kr"],
-        separateDialCode: true,
-        formatOnDisplay: true,
-        nationalMode: false,
-        placeholderNumberType: "MOBILE",
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-    });
+    if (phoneInputField) {
+        const phoneInput = window.intlTelInput(phoneInputField, {
+            initialCountry: "auto",
+            geoIpLookup: callback => {
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => callback(data.country_code))
+                    .catch(() => callback("id"));
+            },
+            separateDialCode: true,
+            formatOnDisplay: true,
+            nationalMode: false,
+            placeholderNumberType: "MOBILE",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+            preferredCountries: [],
+        });
 
-    phoneInputField.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = value;
-        updateHiddenPhone();
-    });
+        // ✅ Update hidden phone number
+        const updateHiddenPhone = () => {
+            if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
+                hiddenPhoneInput.value = phoneInput.getNumber();
+                hidePhoneError();
+            } else if (phoneInputField.value.trim()) {
+                const selectedCountryData = phoneInput.getSelectedCountryData();
+                const dialCode = selectedCountryData.dialCode;
+                const nationalNumber = phoneInputField.value;
+                hiddenPhoneInput.value = `+${dialCode}${nationalNumber}`;
+            }
+        };
 
-    phoneInputField.addEventListener('paste', function(e) {
-        e.preventDefault();
-        let paste = (e.clipboardData || window.clipboardData).getData('text');
-        let numericPaste = paste.replace(/[^0-9]/g, '');
-        e.target.value = numericPaste;
-        setTimeout(() => updateHiddenPhone(), 100);
-    });
+        // ✅ Input event - only allow numbers
+        phoneInputField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = value;
+            updateHiddenPhone();
+        });
 
-    phoneInputField.addEventListener('keypress', function(e) {
-        if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-            (e.keyCode === 65 && e.ctrlKey === true) ||
-            (e.keyCode === 67 && e.ctrlKey === true) ||
-            (e.keyCode === 86 && e.ctrlKey === true) ||
-            (e.keyCode === 88 && e.ctrlKey === true)) {
-            return;
-        }
-        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        // ✅ Paste event - only allow numbers
+        phoneInputField.addEventListener('paste', function(e) {
             e.preventDefault();
-        }
-    });
+            let paste = (e.clipboardData || window.clipboardData).getData('text');
+            let numericPaste = paste.replace(/[^0-9]/g, '');
+            e.target.value = numericPaste;
+            setTimeout(updateHiddenPhone, 100);
+        });
 
-    phoneInputField.addEventListener("countrychange", function() {
-        updateHiddenPhone();
-    });
+        // ✅ Keypress validation - only numbers and control keys
+        phoneInputField.addEventListener('keypress', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true)) {
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
 
-    function updateHiddenPhone() {
-        if (phoneInputField.value.trim() && phoneInput.isValidNumber()) {
-            const fullNumber = phoneInput.getNumber();
-            hiddenPhoneInput.value = fullNumber;
-            hidePhoneError();
-        } else if (phoneInputField.value.trim()) {
-            const selectedCountryData = phoneInput.getSelectedCountryData();
-            const dialCode = selectedCountryData.dialCode;
-            const nationalNumber = phoneInputField.value;
-            const fullNumber = `+${dialCode}${nationalNumber}`;
-            hiddenPhoneInput.value = fullNumber;
+        // ✅ Country change event
+        phoneInputField.addEventListener("countrychange", updateHiddenPhone);
+
+        // ✅ Form submission validation
+        const form = document.getElementById('consultation-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = document.getElementById('submit-text');
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (phoneInputField.value.trim() === '') {
+                    e.preventDefault();
+                    showPhoneError('Please enter your phone number.');
+                    return;
+                }
+                
+                updateHiddenPhone();
+                
+                if (phoneInput.isValidNumber()) {
+                    submitBtn.disabled = true;
+                    submitText.textContent = 'Submitting...';
+                    
+                    const imageCount = selectedFiles.length;
+                    if (imageCount > 0) {
+                        submitText.textContent = `Uploading ${imageCount} image(s)...`;
+                    }
+                } else {
+                    e.preventDefault();
+                    showPhoneError('Please enter a valid phone number for the selected country.');
+                }
+            });
         }
     }
 
-    // ✅ Form submission
-    const form = document.getElementById('consultation-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    
-    form.addEventListener('submit', function(e) {
-        if (phoneInputField.value.trim() === '') {
-            e.preventDefault();
-            showPhoneError('Please enter your phone number.');
-            return;
-        }
-        
-        updateHiddenPhone();
-        
-        if (phoneInput.isValidNumber()) {
-            submitBtn.disabled = true;
-            submitText.textContent = 'Submitting...';
-            
-            const imageCount = selectedFiles.length;
-            if (imageCount > 0) {
-                submitText.textContent = `Uploading ${imageCount} image(s)...`;
-            }
-        } else {
-            e.preventDefault();
-            showPhoneError('Please enter a valid phone number for the selected country.');
-        }
-    });
-
+    // ✅ Phone error display functions
     function showPhoneError(message) {
         hidePhoneError();
         const errorDiv = document.getElementById('phone-error');

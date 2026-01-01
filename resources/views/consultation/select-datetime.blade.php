@@ -323,7 +323,7 @@ function createTimeSection(title, slots) {
                             ${isBooked ? 'disabled' : ''}
                             class="time-slot-btn py-2 px-4 border rounded-lg text-sm transition-colors ${
                                 isBooked 
-                                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
+                                    ? 'bg-gray-100 text-gray-400 border-gray-200' 
                                     : selectedTime === slot.time24 
                                         ? 'bg-gray-900 text-white border-gray-900' 
                                         : 'border-gray-300 text-gray-900 hover:border-gray-900 hover:bg-gray-50'
