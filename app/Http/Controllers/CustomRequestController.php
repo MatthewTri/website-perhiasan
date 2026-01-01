@@ -36,15 +36,70 @@ class CustomRequestController extends Controller
         return view('consultation.select-datetime', compact('type'));
     }
 
+    /**
+     * API untuk cek time slots yang sudah terbooked
+     */
+    public function checkAvailability(Request $request)
+    {
+        $date = $request->query('date');
+        $type = $request->query('type', 'short');
+        
+        if (!$date) {
+            return response()->json(['error' => 'Date is required'], 400);
+        }
+
+        // Get all bookings for this date
+        $bookings = CustomRequest::whereDate('appointment_date', $date)
+            ->where('status', '!=', 'CANCELLED')
+            ->get(['appointment_time', 'consultation_type']);
+
+        $bookedSlots = [];
+        
+        foreach ($bookings as $booking) {
+            $time = Carbon::parse($booking->appointment_time);
+            $duration = $booking->consultation_type === 'design' ? 60 : 30;
+            
+            // Add blocked time slots
+            $startMinutes = $time->hour * 60 + $time->minute;
+            $endMinutes = $startMinutes + $duration;
+            
+            // Jika consultation type yang diminta adalah SHORT
+            if ($type === 'short') {
+                // Block setiap 30 menit slot yang overlap
+                $currentMinute = $startMinutes;
+                while ($currentMinute < $endMinutes) {
+                    $hour = floor($currentMinute / 60);
+                    $minute = $currentMinute % 60;
+                    $timeSlot = sprintf('%02d:%02d', $hour, $minute);
+                    $bookedSlots[] = $timeSlot;
+                    $currentMinute += 30;
+                }
+            } 
+            // Jika consultation type yang diminta adalah DESIGN
+            else {
+                // Block setiap 1 jam slot yang overlap
+                $currentMinute = $startMinutes;
+                while ($currentMinute < $endMinutes) {
+                    $hour = floor($currentMinute / 60);
+                    $timeSlot = sprintf('%02d:00', $hour);
+                    if (!in_array($timeSlot, $bookedSlots)) {
+                        $bookedSlots[] = $timeSlot;
+                    }
+                    $currentMinute += 60;
+                }
+            }
+        }
+
+        return response()->json([
+            'booked_slots' => array_unique($bookedSlots)
+        ]);
+    }
+
     public function showDetails(Request $request)
     {
         $type = $request->query('type', 'short');
         $date = $request->query('date');
         $time = $request->query('time');
-
-        if (!$date || !$time) {
-            return redirect()->route('consultation.create', ['type' => $type]);
-        }
 
         $dateObj = Carbon::parse($date);
         $appointmentDisplay = $dateObj->format('l, F j, Y') . ' at ' . Carbon::parse($time)->format('g:i A');
@@ -60,7 +115,7 @@ class CustomRequestController extends Controller
         // Validasi input
         $validated = $request->validate([
             'consultation_type' => 'required|in:short,design',
-            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_date' => 'required|date|after:today',
             'appointment_time' => 'required',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -70,6 +125,18 @@ class CustomRequestController extends Controller
             'reference_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'reference_images' => 'nullable|array|max:6',
         ]);
+
+        // Double check: Cek apakah slot sudah terbooked
+        $existingBooking = CustomRequest::whereDate('appointment_date', $validated['appointment_date'])
+            ->whereTime('appointment_time', $validated['appointment_time'])
+            ->where('status', '!=', 'CANCELLED')
+            ->exists();
+
+        if ($existingBooking) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'This time slot is already booked. Please select another time.');
+        }
 
         // Tambahkan user_id jika login
         $validated['user_id'] = Auth::id();

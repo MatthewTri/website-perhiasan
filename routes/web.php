@@ -81,6 +81,10 @@ Route::get('/consultation/select-datetime', [CustomRequestController::class, 'cr
 Route::get('/consultation/details', [CustomRequestController::class, 'showDetails'])->name('consultation.details');
 Route::post('/consultation', [CustomRequestController::class, 'store'])->name('consultation.store');
 
+// API untuk cek ketersediaan slot konsultasi
+Route::get('/api/consultation/availability', [CustomRequestController::class, 'checkAvailability'])->name('consultation.availability');
+
+
 // Admin routes (tambahkan middleware admin nanti)
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/consultation', [CustomRequestController::class, 'index'])->name('admin.consultation.index');
