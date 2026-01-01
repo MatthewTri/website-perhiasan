@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Models\CustomRequest;
+use App\Http\Controllers\Controller;
+
+class ConsultationController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = CustomRequest::with(['user', 'images']);
+        
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('type') && $request->type != '') {
+            $query->where('consultation_type', $request->type);
+        }
+        
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('appointment_date', '>=', $request->date_from);
+        }
+        
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('appointment_date', '<=', $request->date_to);
+        }
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%')
+                  ->orWhere('user_email', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $consultations = $query->orderBy('appointment_date', 'asc')
+                             ->orderBy('appointment_time', 'asc')
+                             ->paginate(20);
+        
+        $stats = [
+            'total' => CustomRequest::count(),
+            'scheduled' => CustomRequest::where('status', 'SCHEDULED')->count(),
+            'completed' => CustomRequest::where('status', 'COMPLETED')->count(),
+            'cancelled' => CustomRequest::where('status', 'CANCELLED')->count(),
+            'rescheduled' => CustomRequest::where('status', 'RESCHEDULED')->count(),
+            'upcoming_today' => CustomRequest::whereDate('appointment_date', Carbon::today())->count(),
+            'upcoming_week' => CustomRequest::whereBetween('appointment_date', [
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek()
+            ])->count(),
+        ];
+        
+        return view('admin.consultation.index', compact('consultations', 'stats'));
+    }
+
+    public function show(CustomRequest $consultation)
+    {
+        $consultation->load(['user', 'images']);
+        return view('admin.consultation.show', compact('consultation'));
+    }
+
+    public function updateStatus(Request $request, CustomRequest $consultation)
+    {
+        $request->validate([
+            'status' => 'required|in:SCHEDULED,COMPLETED,CANCELLED,RESCHEDULED'
+        ]);
+
+        $consultation->update([
+            'status' => $request->status
+        ]);
+
+        return redirect()->back()->with('success', 'Consultation status updated successfully.');
+    }
+
+    public function reschedule(Request $request, CustomRequest $consultation)
+    {
+        $request->validate([
+            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_time' => 'required'
+        ]);
+
+        $existingBooking = CustomRequest::whereDate('appointment_date', $request->appointment_date)
+            ->whereTime('appointment_time', $request->appointment_time)
+            ->where('id', '!=', $consultation->id)
+            ->where('status', '!=', 'CANCELLED')
+            ->exists();
+
+        if ($existingBooking) {
+            return redirect()->back()->with('error', 'This time slot is already booked. Please select another time.');
+        }
+
+        $consultation->update([
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
+            'status' => 'RESCHEDULED'
+        ]);
+
+        return redirect()->back()->with('success', 'Consultation rescheduled successfully.');
+    }
+
+    public function destroy(CustomRequest $consultation)
+    {
+        foreach ($consultation->images as $image) {
+            $imagePath = str_replace(asset('storage/'), '', $image->image_url);
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+        }
+
+        $consultation->delete();
+        
+        return redirect()->route('admin.consultation.index')->with('success', 'Consultation request deleted successfully.');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:complete,cancel,delete',
+            'consultation_ids' => 'required|array',
+            'consultation_ids.*' => 'exists:custom_requests,id'
+        ]);
+
+        $consultations = CustomRequest::whereIn('id', $request->consultation_ids);
+
+        switch ($request->action) {
+            case 'complete':
+                $consultations->update(['status' => 'COMPLETED']);
+                return redirect()->back()->with('success', 'Selected consultations marked as completed.');
+                
+            case 'cancel':
+                $consultations->update(['status' => 'CANCELLED']);
+                return redirect()->back()->with('success', 'Selected consultations cancelled.');
+                
+            case 'delete':
+                foreach ($consultations->get() as $consultation) {
+                    foreach ($consultation->images as $image) {
+                        $imagePath = str_replace(asset('storage/'), '', $image->image_url);
+                        if (Storage::disk('public')->exists($imagePath)) {
+                            Storage::disk('public')->delete($imagePath);
+                        }
+                    }
+                }
+                $consultations->delete();
+                return redirect()->back()->with('success', 'Selected consultations deleted.');
+        }
+    }
+}

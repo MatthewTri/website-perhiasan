@@ -189,45 +189,4 @@ class CustomRequestController extends Controller
 
         return redirect()->back()->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
     }
-
-    /**
-     * TUGAS ADMIN: Menampilkan daftar semua permintaan konsultasi.
-     */
-    // public function index()
-    // {
-    //     // (Hanya untuk admin - pastikan ada middleware 'admin' di rute ini)
-    //     $requests = CustomRequest::latest()->get();
-    //     return view('admin.consultation.index', compact('requests'));
-    // }
-
-    /**
-     * TUGAS ADMIN: Menampilkan detail satu permintaan (termasuk form invoice).
-     */
-    public function show(CustomRequest $customRequest)
-    {
-        // (Hanya untuk admin)
-        // (Tampilkan gambar, notes, dan form untuk 'createInvoice')
-        return view('admin.consultation.show', compact('customRequest'));
-    }
-
-    /**
-     * TUGAS ADMIN: Memproses form "Buat Invoice".
-     */
-    public function createInvoice(Request $request, CustomRequest $customRequest)
-    {
-        // (Hanya untuk admin)
-        // (Logika validasi, panggil API Xendit/PayPal, dan UPDATE $customRequest)
-        // ...
-        return redirect()->back()->with('success', 'Invoice berhasil dibuat!');
-    }
-
-    /**
-     * TUGAS ADMIN: Menghapus permintaan konsultasi (misal: spam).
-     */
-    public function destroy(CustomRequest $customRequest)
-    {
-        // (Hanya untuk admin)
-        $customRequest->delete();
-        return redirect()->back()->with('success', 'Request dihapus.');
-    }
 }

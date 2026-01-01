@@ -86,10 +86,13 @@ Route::get('/api/consultation/availability', [CustomRequestController::class, 'c
 
 
 // Admin routes (tambahkan middleware admin nanti)
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/consultation', [CustomRequestController::class, 'index'])->name('admin.consultation.index');
-    Route::get('/admin/consultation/{customRequest}', [CustomRequestController::class, 'show'])->name('admin.consultation.show');
-    Route::delete('/admin/consultation/{customRequest}', [CustomRequestController::class, 'destroy'])->name('admin.consultation.destroy');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/consultation', [App\Http\Controllers\Admin\ConsultationController::class, 'index'])->name('consultation.index');
+    Route::get('/consultation/{consultation}', [App\Http\Controllers\Admin\ConsultationController::class, 'show'])->name('consultation.show');
+    Route::patch('/consultation/{consultation}/status', [App\Http\Controllers\Admin\ConsultationController::class, 'updateStatus'])->name('consultation.updateStatus');
+    Route::patch('/consultation/{consultation}/reschedule', [App\Http\Controllers\Admin\ConsultationController::class, 'reschedule'])->name('consultation.reschedule');
+    Route::delete('/consultation/{consultation}', [App\Http\Controllers\Admin\ConsultationController::class, 'destroy'])->name('consultation.destroy');
+    Route::post('/consultation/bulk-action', [App\Http\Controllers\Admin\ConsultationController::class, 'bulkAction'])->name('consultation.bulkAction');
 });
 
 // Admin Order Management routes

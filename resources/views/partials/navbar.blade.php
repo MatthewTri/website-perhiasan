@@ -39,7 +39,7 @@
                             <li><a href="{{ route('categories.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Categories</a></li>
                             <li><a href="{{ route('admin.reviews.index') }}" class="block px-4 py-2 hover:bg-gray-50">Manage Reviews</a></li>
                             <li><a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Orders</a></li>
-                            <li><a href="{{ route('admin.consultation.index') }}" class="block px-4 py-2 hover:bg-gray-50">Consultations</a></li>
+                            <li><a href="{{ route('admin.consultation.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Consultations</a></li>
                             <li><a href="{{ route('settings.index') }}" class="block px-4 py-2 hover:bg-gray-50">Admin Settings</a></li>
                         </ul>
                         <form action="{{ route('logout') }}" method="POST">

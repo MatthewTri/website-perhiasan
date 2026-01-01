@@ -41,10 +41,4 @@ class CustomRequest extends Model
     {
         return $this->first_name . ' ' . $this->last_name;
     }
-
-    // Helper untuk format appointment datetime
-    public function getFormattedAppointmentAttribute()
-    {
-        return Carbon::parse($this->appointment_date->format('Y-m-d') . ' ' . $this->appointment_time)->format('l, F j, Y \a\t g:i A');
-    }
 }
