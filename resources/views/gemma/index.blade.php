@@ -96,11 +96,11 @@
                                     
                                     <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <button onclick="window.open('{{ $chat->image_url }}', '_blank')" 
-                                                class="bg-white/90 backdrop-blur text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105" title="Open Full Size">
+                                                class="bg-white/90 text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105" title="Open Full Size">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                         </button>
                                         <button onclick="deleteChat({{ $chat->id }})" 
-                                                class="bg-white/90 backdrop-blur text-rose-600 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105" title="Remove Design">
+                                                class="bg-white/90 text-rose-600 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105" title="Remove Design">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </div>
@@ -306,10 +306,8 @@ class AIChat {
         const messageElement = document.createElement('div');
         messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
         messageElement.innerHTML = `
-            <div class="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center flex-shrink-0 text-stone-600 border border-stone-200">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                    <path fill-rule="evenodd" d="M9.661 2.237a.531.531 0 0 1 .678 0 11.947 11.947 0 0 0 6.878 2.743c.284 0 .548.06.748.243.2.184.288.455.288.79V11a9 9 0 0 1-9 9 9 9 0 0 1-9-9V6.013c0-.335.088-.606.288-.79.2-.184.464-.243.748-.243a11.947 11.947 0 0 0 6.878-2.744Z" clip-rule="evenodd" />
-                </svg>
+            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
             </div>
             <div class="flex-1 max-w-lg">
                 <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -341,7 +339,7 @@ class AIChat {
                              onclick="this.requestFullscreen()">
                         <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button onclick="window.open('${imageUrl}', '_blank')" 
-                                    class="bg-white/90 backdrop-blur text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105">
+                                    class="bg-white/90 text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                             </button>
                         </div>
@@ -359,10 +357,8 @@ class AIChat {
         loadingElement.className = 'flex items-start gap-4 animate-fade-in-up';
         loadingElement.id = 'loading-message';
         loadingElement.innerHTML = `
-            <div class="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center flex-shrink-0 text-stone-600 border border-stone-200">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 animate-pulse">
-                    <path fill-rule="evenodd" d="M9.661 2.237a.531.531 0 0 1 .678 0 11.947 11.947 0 0 0 6.878 2.743c.284 0 .548.06.748.243.2.184.288.455.288.79V11a9 9 0 0 1-9 9 9 9 0 0 1-9-9V6.013c0-.335.088-.606.288-.79.2-.184.464-.243.748-.243a11.947 11.947 0 0 0 6.878-2.744Z" clip-rule="evenodd" />
-                </svg>
+            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
             </div>
             <div class="bg-white rounded-2xl rounded-tl-none px-6 py-4 shadow-sm border border-stone-100">
                 <div class="flex items-center gap-3">
