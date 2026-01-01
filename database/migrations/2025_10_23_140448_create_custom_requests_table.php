@@ -13,33 +13,27 @@ return new class extends Migration
     {
         Schema::create('custom_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // Wajib user login
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             
-            // --- Data dari Form Awal (Saat Submit) ---
-            $table->string('user_name');
+            // Consultation Type
+            $table->enum('consultation_type', ['short', 'design'])->default('short');
+            
+            // Appointment DateTime
+            $table->date('appointment_date');
+            $table->time('appointment_time');
+            
+            // User Information
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('user_email');
-            $table->string('user_phone')->nullable();
-            $table->text('notes')->nullable();
-            $table->string('status')->default('BARU'); // BARU, DISKUSI, INVOICE_SENT, LUNAS, DITOLAK
-
-            // --- REVISI UNTUK MULTI-GATEWAY ---
-            $table->string('payment_gateway')->nullable(); // Akan diisi 'xendit' atau 'paypal'
-            $table->string('gateway_invoice_id')->nullable(); // ID dari Xendit/PayPal
-            $table->text('payment_link')->nullable(); // URL bayar (Xendit/PayPal)
+            $table->string('user_phone');
             
-            // --- REVISI PENTING (Menjawab "Lebih dari 1 Produk") ---
-            // Kita simpan detail invoice (yang diisi admin) sebagai JSON.
-            // Ini JAUH lebih fleksibel.
-            $table->json('invoice_details')->nullable(); 
-            // Contoh JSON: 
-            // {
-            //   "currency": "USD",
-            //   "items": [
-            //     {"name": "Cincin Kustom Safir", "qty": 1, "price": 800},
-            //     {"name": "Biaya Ongkir Internasional", "qty": 1, "price": 50}
-            //   ]
-            // }
-
+            // Appointment Notes
+            $table->text('appointment_notes')->nullable();
+            
+            // Status
+            $table->string('status')->default('SCHEDULED'); // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
+            
             $table->timestamps();
         });
     }

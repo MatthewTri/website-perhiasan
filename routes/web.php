@@ -76,7 +76,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Consultation routes
-Route::get('/consultation', [CustomRequestController::class, 'create'])->name('consultation.create');
+Route::get('/consultation', [CustomRequestController::class, 'index'])->name('consultation.index');
+Route::get('/consultation/select-datetime', [CustomRequestController::class, 'create'])->name('consultation.create');
+Route::get('/consultation/details', [CustomRequestController::class, 'showDetails'])->name('consultation.details');
 Route::post('/consultation', [CustomRequestController::class, 'store'])->name('consultation.store');
 
 // Admin routes (tambahkan middleware admin nanti)

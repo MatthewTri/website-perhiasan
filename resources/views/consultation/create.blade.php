@@ -32,6 +32,14 @@
             </div>
         @endif
 
+        <input type="hidden" name="consultation_type" value="{{ $type }}">
+
+        <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+            <h3 class="font-medium text-gray-900">
+                {{ $type === 'design' ? 'Design Consultation (1 hour)' : 'Short Consultation or Collection (30 mins)' }}
+            </h3>
+        </div>
+
         <!-- Main Content - 2 Columns -->
         <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
             

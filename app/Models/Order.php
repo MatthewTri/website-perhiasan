@@ -51,11 +51,10 @@ class Order extends Model
         return $this->hasOne(RefundRequest::class);
     }
 
-    public function customRequest()
-    {
-        // Sebuah Order 'belongsTo' satu CustomRequest (tapi bisa jadi null)
-        return $this->belongsTo(CustomRequest::class);
-    }
+    // public function customRequest()
+    // {
+    //     return $this->belongsTo(CustomRequest::class);
+    // }
 
     public function getRouteKeyName() {
         return 'slug';

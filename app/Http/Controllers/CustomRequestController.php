@@ -10,16 +10,46 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\NewConsultationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class CustomRequestController extends Controller
 {
     /**
+     * Menampilkan halaman pilihan konsultasi
+     */
+    public function index()
+    {
+        return view('consultation.index');
+    }
+    /**
      * TUGAS USER: Menampilkan form "Book a Consultation".
      */
-    public function create()
+    public function create(Request $request)
     {
-        // (Logika untuk menampilkan view form konsultasi)
-        return view('consultation.create');
+        $type = $request->query('type', 'short'); // default: short
+        
+        // Validasi type
+        if (!in_array($type, ['short', 'design'])) {
+            $type = 'short';
+        }
+
+        return view('consultation.select-datetime', compact('type'));
+    }
+
+    public function showDetails(Request $request)
+    {
+        $type = $request->query('type', 'short');
+        $date = $request->query('date');
+        $time = $request->query('time');
+
+        if (!$date || !$time) {
+            return redirect()->route('consultation.create', ['type' => $type]);
+        }
+
+        $dateObj = Carbon::parse($date);
+        $appointmentDisplay = $dateObj->format('l, F j, Y') . ' at ' . Carbon::parse($time)->format('g:i A');
+
+        return view('consultation.details', compact('type', 'date', 'time', 'appointmentDisplay'));
     }
 
     /**
@@ -29,10 +59,14 @@ class CustomRequestController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'user_name' => 'required|string|max:255',
+            'consultation_type' => 'required|in:short,design',
+            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_time' => 'required',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'user_email' => 'required|email|max:255',
             'user_phone' => 'required|string|max:20',
-            'notes' => 'nullable|string|max:2000',
+            'appointment_notes' => 'nullable|string|max:2000',
             'reference_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'reference_images' => 'nullable|array|max:6',
         ]);
@@ -71,7 +105,7 @@ class CustomRequestController extends Controller
             $adminEmail = config('mail.admin_email', 'admin@yoursite.com');
             
             // ✅ PERBAIKAN: Kirim object yang sudah di-load dengan images
-            Mail::to($adminEmail)->send(new NewConsultationMail($customRequestWithImages));
+            // Mail::to($adminEmail)->send(new NewConsultationMail($customRequestWithImages));
             
             Log::info('Consultation email sent successfully', [
                 'request_id' => $customRequest->id,
@@ -92,12 +126,12 @@ class CustomRequestController extends Controller
     /**
      * TUGAS ADMIN: Menampilkan daftar semua permintaan konsultasi.
      */
-    public function index()
-    {
-        // (Hanya untuk admin - pastikan ada middleware 'admin' di rute ini)
-        $requests = CustomRequest::latest()->get();
-        return view('admin.consultation.index', compact('requests'));
-    }
+    // public function index()
+    // {
+    //     // (Hanya untuk admin - pastikan ada middleware 'admin' di rute ini)
+    //     $requests = CustomRequest::latest()->get();
+    //     return view('admin.consultation.index', compact('requests'));
+    // }
 
     /**
      * TUGAS ADMIN: Menampilkan detail satu permintaan (termasuk form invoice).

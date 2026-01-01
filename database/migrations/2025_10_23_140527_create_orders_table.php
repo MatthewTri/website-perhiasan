@@ -31,7 +31,7 @@ return new class extends Migration
 
             // 3. Relasi ke Custom Request (Opsional)
             // Jika order_type = 'CUSTOM', ini akan terisi ID dari tabel custom_requests
-            $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
+            // $table->foreignId('custom_request_id')->nullable()->constrained()->onDelete('set null');
 
             // 4. Status & Keuangan
             $table->enum('status', [
