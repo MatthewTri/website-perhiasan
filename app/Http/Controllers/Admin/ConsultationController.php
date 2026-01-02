@@ -67,19 +67,42 @@ class ConsultationController extends Controller
 
     public function updateStatus(Request $request, CustomRequest $consultation)
     {
+        // Cek jika sudah completed atau cancelled, tidak bisa update lagi
+        if (in_array($consultation->status, ['COMPLETED', 'CANCELLED'])) {
+            return redirect()->back()->with('error', 'This consultation has already been ' . strtolower($consultation->status) . ' and cannot be updated.');
+        }
+
         $request->validate([
-            'status' => 'required|in:SCHEDULED,COMPLETED,CANCELLED,RESCHEDULED'
+            'status' => 'required|in:COMPLETED,CANCELLED',
+            'admin_notes' => 'nullable|string|max:1000'
         ]);
 
         $consultation->update([
-            'status' => $request->status
+            'status' => $request->status,
+            'admin_notes' => $request->admin_notes
         ]);
 
-        return redirect()->back()->with('success', 'Consultation status updated successfully.');
+        // TODO: Send email notification to customer
+        // if ($request->status === 'CANCELLED') {
+        //     Mail::to($consultation->user_email)->send(new ConsultationCancelledMail($consultation));
+        // } elseif ($request->status === 'COMPLETED') {
+        //     Mail::to($consultation->user_email)->send(new ConsultationCompletedMail($consultation));
+        // }
+
+        $message = $request->status === 'COMPLETED' 
+            ? 'Consultation marked as completed successfully.' 
+            : 'Consultation cancelled successfully. The time slot is now available for rebooking.';
+
+        return redirect()->back()->with('success', $message);
     }
 
     public function reschedule(Request $request, CustomRequest $consultation)
     {
+        // Cek jika sudah completed atau cancelled, tidak bisa reschedule
+        if (in_array($consultation->status, ['COMPLETED', 'CANCELLED'])) {
+            return redirect()->back()->with('error', 'Cannot reschedule a ' . strtolower($consultation->status) . ' consultation.');
+        }
+
         $request->validate([
             'appointment_date' => 'required|date|after:today',
             'appointment_time' => 'required'
@@ -100,6 +123,9 @@ class ConsultationController extends Controller
             'appointment_time' => $request->appointment_time,
             'status' => 'RESCHEDULED'
         ]);
+
+        // TODO: Send email notification to customer about reschedule
+        // Mail::to($consultation->user_email)->send(new ConsultationRescheduledMail($consultation));
 
         return redirect()->back()->with('success', 'Consultation rescheduled successfully.');
     }

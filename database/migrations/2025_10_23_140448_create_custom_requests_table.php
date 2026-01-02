@@ -31,6 +31,9 @@ return new class extends Migration
             // Appointment Notes
             $table->text('appointment_notes')->nullable();
             
+            // Admin Notes (for cancellation reason, etc)
+            $table->text('admin_notes')->nullable();
+            
             // Status
             $table->string('status')->default('SCHEDULED'); // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
             
