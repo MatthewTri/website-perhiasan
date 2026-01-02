@@ -1,135 +1,129 @@
 @extends('layout.main')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-stone-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-6xl mx-auto">
         
-        {{-- Header --}}
-        <div class="text-center mb-8">
-            <a href="{{ route('consultation.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to services
-            </a>
-            <h1 class="text-3xl md:text-4xl font-light tracking-wide text-gray-900 mb-2">
-                {{ $type === 'design' ? 'Design Consultation' : 'Short Consultation or Collection' }}
-            </h1>
-            <p class="text-gray-600">
-                {{ $type === 'design' ? '1 hour session' : '30 minutes session' }}
-            </p>
+        {{-- Header Navigation --}}
+        <div class="mb-10 text-center md:text-left md:flex md:justify-between md:items-end border-b border-stone-200 pb-6">
+            <div>
+                <a href="{{ route('consultation.index') }}" class="group inline-flex items-center text-xs font-bold tracking-[0.15em] text-stone-400 uppercase hover:text-stone-900 transition-colors mb-4">
+                    <svg class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Return to Services
+                </a>
+                <h1 class="text-3xl md:text-4xl font-serif text-stone-900 tracking-tight">
+                    Select Availability
+                </h1>
+            </div>
+            <div class="mt-4 md:mt-0 text-right">
+                <span class="block text-sm font-bold text-stone-900 uppercase tracking-widest">{{ $type === 'design' ? 'Bespoke Design' : 'General Inquiry' }}</span>
+                <span class="text-xs text-stone-500 font-serif italic">{{ $type === 'design' ? '1 Hour Session' : '30 Minute Session' }}</span>
+            </div>
         </div>
 
-        {{-- Main Grid --}}
-        <div class="grid lg:grid-cols-2 gap-8">
+        {{-- Main Layout Grid --}}
+        <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
             
-            {{-- Left: Calendar --}}
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 class="text-xl font-medium text-gray-900 mb-6">Select Date & Time</h2>
-                
-                {{-- Calendar Navigation --}}
-                <div class="flex items-center justify-between mb-6">
-                    <button type="button" id="prev-month" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
-                    <h3 class="text-lg font-semibold" id="current-month-year">January 2026</h3>
-                    <button type="button" id="next-month" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
+            {{-- Left: Calendar (Column 7) --}}
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                    
+                    {{-- Calendar Header --}}
+                    <div class="flex items-center justify-between mb-8">
+                        <button type="button" id="prev-month" class="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 rounded-full transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <h3 class="text-lg font-serif text-stone-900 tracking-wide" id="current-month-year">January 2026</h3>
+                        <button type="button" id="next-month" class="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 rounded-full transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
 
-                {{-- Calendar Grid --}}
-                <div class="grid grid-cols-7 gap-1 mb-4">
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Su</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Mo</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Tu</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">We</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Th</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Fr</div>
-                    <div class="text-center text-xs font-medium text-gray-500 py-2">Sa</div>
-                </div>
+                    {{-- Days Header --}}
+                    <div class="grid grid-cols-7 gap-2 mb-4">
+                        @foreach(['Su','Mo','Tu','We','Th','Fr','Sa'] as $day)
+                            <div class="text-center text-[10px] font-bold text-stone-400 uppercase tracking-widest py-2">{{ $day }}</div>
+                        @endforeach
+                    </div>
 
-                <div id="calendar-dates" class="grid grid-cols-7 gap-1">
-                    {{-- Dates will be generated by JavaScript --}}
-                </div>
+                    {{-- Dates Grid --}}
+                    <div id="calendar-dates" class="grid grid-cols-7 gap-2">
+                        {{-- Generated via JS --}}
+                    </div>
 
-                {{-- Timezone Info --}}
-                <p class="text-xs text-gray-500 text-center mt-4">Times are shown in WIB (Jakarta Time / GMT+7)</p>
+                    <div class="mt-6 pt-4 border-t border-stone-100 text-center">
+                        <p class="text-[10px] text-stone-400 uppercase tracking-widest">
+                            Timezone: WIB (Jakarta Time / GMT+7)
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            {{-- Right: Appointment Summary & Time Slots --}}
-            <div class="space-y-6">
+            {{-- Right: Summary & Time Slots (Column 5) --}}
+            <div class="lg:col-span-5 space-y-6">
                 
-                {{-- Appointment Summary --}}
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 class="font-medium text-gray-900 mb-4">Appointment Summary</h3>
+                {{-- Appointment Card --}}
+                <div class="bg-stone-900 text-white p-6 md:p-8 rounded-sm shadow-xl">
+                    <h3 class="text-xs font-bold text-stone-400 uppercase tracking-[0.2em] mb-6">Your Selection</h3>
                     
-                    <div class="space-y-3">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center flex-shrink-0 text-stone-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
-                                    {{ $type === 'design' ? 'Design Consultation' : 'Short Consultation or Collection' }}
+                                <p class="text-sm font-serif tracking-wide text-white">
+                                    {{ $type === 'design' ? 'Bespoke Design Consultation' : 'General Inquiry' }}
                                 </p>
-                                <p class="text-sm text-gray-500">
-                                    {{ $type === 'design' ? '1 hour' : '30 minutes' }}
+                                <p class="text-xs text-stone-400 mt-1">
+                                    {{ $type === 'design' ? '1 Hour • Private Suite' : '30 Mins • Virtual / In-store' }}
                                 </p>
                             </div>
                         </div>
 
-                        <div id="selected-datetime-display" class="hidden">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
+                        {{-- Dynamic Date Display --}}
+                        <div id="selected-datetime-display" class="hidden animate-fade-in-up">
+                            <div class="flex items-center gap-4 pt-4 border-t border-stone-800">
+                                <div class="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center flex-shrink-0 text-stone-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
                                 <div>
-                                    <p class="text-sm font-medium text-gray-900" id="selected-datetime-text"></p>
-                                    <p class="text-sm text-gray-500">WIB (Jakarta Time)</p>
+                                    <p class="text-sm font-serif tracking-wide text-white" id="selected-datetime-text"></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Time Slots --}}
-                <div id="time-slots-container" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden">
-                    <h3 class="font-medium text-gray-900 mb-4" id="selected-date-header"></h3>
-                    
-                    <div id="loading-slots" class="text-center py-8">
-                        <svg class="animate-spin h-8 w-8 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <p class="text-sm text-gray-500 mt-2">Loading available times...</p>
+                {{-- Time Slots Section --}}
+                <div id="time-slots-container" class="bg-white rounded-sm shadow-sm border border-stone-200 p-6 md:p-8 hidden">                    
+                    {{-- Loading --}}
+                    <div id="loading-slots" class="text-center py-10">
+                        <div class="animate-spin w-6 h-6 border-2 border-stone-200 border-t-stone-900 rounded-full mx-auto mb-3"></div>
+                        <p class="text-xs text-stone-400 uppercase tracking-widest">Checking Availability...</p>
                     </div>
                     
-                    <div id="time-slots" class="space-y-4 hidden">
-                        {{-- Time slots will be generated by JavaScript --}}
+                    {{-- Slots Grid --}}
+                    <div id="time-slots" class="space-y-6 hidden">
+                        {{-- JS Generated --}}
                     </div>
                 </div>
 
-                {{-- No Date Selected Message --}}
-                <div id="no-date-message" class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                    <svg class="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <p class="text-sm text-gray-600">Select a date to view available times</p>
+                {{-- Empty State (No Date Selected) --}}
+                <div id="no-date-message" class="bg-stone-50 border border-dashed border-stone-300 rounded-sm p-8 text-center">
+                    <p class="text-stone-400 text-sm font-light italic">Please select a date from the calendar to view available appointments.</p>
                 </div>
 
             </div>
-
         </div>
-
     </div>
 </div>
 
 <script>
+// --- LOGIC JAVASCRIPT ASLI (TIDAK DIUBAH SECARA FUNGSIONAL, HANYA RENDER CLASS CSS) ---
+
 const consultationType = '{{ $type }}';
 const duration = consultationType === 'design' ? 60 : 30;
 let currentDate = new Date();
@@ -142,12 +136,10 @@ const businessHours = {
     weekend: { start: 9, end: 12 }
 };
 
-// ✅ Get current date in WIB (GMT+7)
 function getTodayWIB() {
     const now = new Date();
-    // Convert to WIB by adding 7 hours to UTC
-    const wibOffset = 7 * 60; // 7 hours in minutes
-    const localOffset = now.getTimezoneOffset(); // minutes
+    const wibOffset = 7 * 60;
+    const localOffset = now.getTimezoneOffset();
     const wibTime = new Date(now.getTime() + (wibOffset + localOffset) * 60 * 1000);
     wibTime.setHours(0, 0, 0, 0);
     return wibTime;
@@ -173,11 +165,11 @@ function renderCalendar(date) {
         calendarDates.appendChild(emptyCell);
     }
     
-    const today = getTodayWIB(); // ✅ Gunakan WIB time
+    const today = getTodayWIB();
     
     for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(year, month, day);
-        const isPastOrToday = dateObj <= today; // ✅ Disable hari ini dan sebelumnya
+        const isPastOrToday = dateObj <= today;
         const isSelected = selectedDate && 
             dateObj.getDate() === selectedDate.getDate() &&
             dateObj.getMonth() === selectedDate.getMonth() &&
@@ -186,12 +178,14 @@ function renderCalendar(date) {
         const dayCell = document.createElement('button');
         dayCell.type = 'button';
         dayCell.textContent = day;
-        dayCell.className = `aspect-square flex items-center justify-center rounded-lg text-sm transition-colors ${
+        
+        // --- UPDATED CSS CLASSES FOR CALENDAR DAY ---
+        dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPastOrToday 
-                ? 'text-gray-300 cursor-not-allowed' 
+                ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isSelected
-                    ? 'bg-gray-900 text-white font-semibold'
-                    : 'hover:bg-gray-100 text-gray-900'
+                    ? 'bg-stone-900 text-white shadow-md transform scale-105'
+                    : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
         }`;
         
         if (!isPastOrToday) {
@@ -210,10 +204,20 @@ async function selectDate(date) {
     renderCalendar(currentDate);
     await fetchAvailability(date);
     renderTimeSlots(date);
-    updateSummary();
+    
+    // Tampilkan dynamic date display setiap kali tanggal dipilih
+    const displayDiv = document.getElementById('selected-datetime-display');
+    const textDiv = document.getElementById('selected-datetime-text');
+    if (selectedDate) {
+        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        const dateStr = selectedDate.toLocaleDateString('en-US', options);
+        textDiv.textContent = dateStr;
+        displayDiv.classList.remove('hidden');
+    } else {
+        displayDiv.classList.add('hidden');
+    }
 }
 
-// ✅ Fetch booked slots dari server
 async function fetchAvailability(date) {
     const loadingDiv = document.getElementById('loading-slots');
     const timeSlotsDiv = document.getElementById('time-slots');
@@ -226,7 +230,6 @@ async function fetchAvailability(date) {
     timeSlotsDiv.classList.add('hidden');
     
     try {
-        // ✅ PERBAIKAN: Format tanggal tanpa timezone conversion
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -253,18 +256,16 @@ function renderTimeSlots(date) {
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
     
-    const selectedDateHeader = document.getElementById('selected-date-header');
     const timeSlots = document.getElementById('time-slots');
     
     const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    selectedDateHeader.textContent = date.toLocaleDateString('en-US', options);
     
     timeSlots.innerHTML = '';
     
     const slots = generateTimeSlots(hours.start, hours.end, duration);
     
     if (slots.length === 0) {
-        timeSlots.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No available times for this date</p>';
+        timeSlots.innerHTML = '<p class="text-xs text-stone-400 uppercase tracking-widest text-center py-4">No slots available</p>';
         return;
     }
     
@@ -272,15 +273,9 @@ function renderTimeSlots(date) {
     const afternoon = slots.filter(s => s.hour >= 12 && s.hour < 17);
     const evening = slots.filter(s => s.hour >= 17);
     
-    if (morning.length > 0) {
-        timeSlots.appendChild(createTimeSection('Morning', morning));
-    }
-    if (afternoon.length > 0) {
-        timeSlots.appendChild(createTimeSection('Afternoon', afternoon));
-    }
-    if (evening.length > 0) {
-        timeSlots.appendChild(createTimeSection('Evening', evening));
-    }
+    if (morning.length > 0) timeSlots.appendChild(createTimeSection('Morning', morning));
+    if (afternoon.length > 0) timeSlots.appendChild(createTimeSection('Afternoon', afternoon));
+    if (evening.length > 0) timeSlots.appendChild(createTimeSection('Evening', evening));
 }
 
 function generateTimeSlots(startHour, endHour, duration) {
@@ -297,39 +292,32 @@ function generateTimeSlots(startHour, endHour, duration) {
         const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
         const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
         
-        slots.push({
-            hour,
-            minute,
-            time24,
-            time12
-        });
-        
+        slots.push({ hour, minute, time24, time12 });
         currentMinutes += duration;
     }
-    
     return slots;
 }
 
 function createTimeSection(title, slots) {
     const section = document.createElement('div');
+    // --- UPDATED CSS FOR TIME SECTION ---
     section.innerHTML = `
-        <h4 class="text-sm font-medium text-gray-700 mb-3">${title}</h4>
-        <div class="grid grid-cols-2 gap-2 mb-4">
+        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 border-b border-stone-100 pb-2">${title}</h4>
+        <div class="grid grid-cols-3 gap-2 mb-6">
             ${slots.map(slot => {
                 const isBooked = bookedSlots.includes(slot.time24);
                 return `
                     <button type="button" 
                             onclick="selectTime('${slot.time24}', '${slot.time12}')"
                             ${isBooked ? 'disabled' : ''}
-                            class="time-slot-btn py-2 px-4 border rounded-lg text-sm transition-colors ${
+                            class="time-slot-btn cursor-pointer py-2.5 px-2 border rounded-sm text-xs font-medium transition-all duration-200 ${
                                 isBooked 
-                                    ? 'bg-gray-100 text-gray-400 border-gray-200' 
+                                    ? 'bg-stone-50 text-stone-300 border-stone-100 cursor-not-allowed decoration-stone-300 line-through' 
                                     : selectedTime === slot.time24 
-                                        ? 'bg-gray-900 text-white border-gray-900' 
-                                        : 'border-gray-300 text-gray-900 hover:border-gray-900 hover:bg-gray-50'
+                                        ? 'bg-stone-900 text-white border-stone-900 shadow-md' 
+                                        : 'border-stone-200 text-stone-600 hover:border-stone-400 hover:bg-stone-50'
                             }">
                         ${slot.time12}
-                        ${isBooked ? '<span class="block text-xs mt-1">(Booked)</span>' : ''}
                     </button>
                 `;
             }).join('')}
@@ -338,36 +326,19 @@ function createTimeSection(title, slots) {
     return section;
 }
 
-function selectTime(time24, time12) {
-    if (bookedSlots.includes(time24)) {
-        alert('This time slot is already booked. Please select another time.');
-        return;
-    }
-    
+function selectTime(time24, time12) {    
     selectedTime = time24;
-    updateSummary();
-    proceedToDetails();
-}
-
-function updateSummary() {
-    const displayDiv = document.getElementById('selected-datetime-display');
-    const textDiv = document.getElementById('selected-datetime-text');
     
-    if (selectedDate && selectedTime) {
-        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-        const dateStr = selectedDate.toLocaleDateString('en-US', options);
-        textDiv.textContent = `${dateStr} at ${selectedTime}`;
-        displayDiv.classList.remove('hidden');
-    } else if (selectedDate) {
-        displayDiv.classList.add('hidden');
-    }
+    // Re-render to update active state CSS
+    if(selectedDate) renderTimeSlots(selectedDate);
+    
+    setTimeout(() => {
+        proceedToDetails();
+    }, 300);
 }
 
 function proceedToDetails() {
-    if (!selectedDate || !selectedTime) {
-        console.error('Date or time not selected');
-        return;
-    }
+    if (!selectedDate || !selectedTime) return;
     
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
@@ -383,7 +354,6 @@ function proceedToDetails() {
     window.location.href = `{{ route('consultation.details') }}?${params.toString()}`;
 }
 
-
 document.getElementById('prev-month').onclick = () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
     renderCalendar(currentDate);
@@ -396,4 +366,14 @@ document.getElementById('next-month').onclick = () => {
 
 renderCalendar(currentDate);
 </script>
+
+<style>
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 @endsection

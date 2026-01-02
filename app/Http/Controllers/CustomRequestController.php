@@ -102,7 +102,14 @@ class CustomRequestController extends Controller
         $time = $request->query('time');
 
         $dateObj = Carbon::parse($date);
-        $appointmentDisplay = $dateObj->format('l, F j, Y') . ' at ' . Carbon::parse($time)->format('g:i A');
+        $startTime = Carbon::parse($time);
+        $duration = $type === 'design' ? 60 : 30;
+        $endTime = $startTime->copy()->addMinutes($duration);
+
+        $timeDisplay = $startTime->format('g:i A') . ' – ' . $endTime->format('g:i A');
+
+
+        $appointmentDisplay = $dateObj->format('l, F j, Y') . ' at ' . $timeDisplay;
 
         return view('consultation.details', compact('type', 'date', 'time', 'appointmentDisplay'));
     }
@@ -187,6 +194,6 @@ class CustomRequestController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
+        return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
     }
 }
