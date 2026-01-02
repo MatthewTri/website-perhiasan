@@ -41,7 +41,7 @@ class ConsultationController extends Controller
         
         $consultations = $query->orderBy('appointment_date', 'asc')
                              ->orderBy('appointment_time', 'asc')
-                             ->paginate(20);
+                             ->paginate(5)->withQueryString();
         
         $stats = [
             'total' => CustomRequest::count(),
@@ -81,7 +81,7 @@ class ConsultationController extends Controller
     public function reschedule(Request $request, CustomRequest $consultation)
     {
         $request->validate([
-            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_date' => 'required|date|after:today',
             'appointment_time' => 'required'
         ]);
 
@@ -104,20 +104,6 @@ class ConsultationController extends Controller
         return redirect()->back()->with('success', 'Consultation rescheduled successfully.');
     }
 
-    public function destroy(CustomRequest $consultation)
-    {
-        foreach ($consultation->images as $image) {
-            $imagePath = str_replace(asset('storage/'), '', $image->image_url);
-            if (Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
-            }
-        }
-
-        $consultation->delete();
-        
-        return redirect()->route('admin.consultation.index')->with('success', 'Consultation request deleted successfully.');
-    }
-
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -136,18 +122,6 @@ class ConsultationController extends Controller
             case 'cancel':
                 $consultations->update(['status' => 'CANCELLED']);
                 return redirect()->back()->with('success', 'Selected consultations cancelled.');
-                
-            case 'delete':
-                foreach ($consultations->get() as $consultation) {
-                    foreach ($consultation->images as $image) {
-                        $imagePath = str_replace(asset('storage/'), '', $image->image_url);
-                        if (Storage::disk('public')->exists($imagePath)) {
-                            Storage::disk('public')->delete($imagePath);
-                        }
-                    }
-                }
-                $consultations->delete();
-                return redirect()->back()->with('success', 'Selected consultations deleted.');
         }
     }
 }

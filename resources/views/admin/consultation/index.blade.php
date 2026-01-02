@@ -26,7 +26,7 @@
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
                 </div>
                 <div class="bg-blue-50 rounded-lg shadow-sm border border-blue-200 p-4">
-                    <p class="text-xs text-blue-600 uppercase tracking-wide mb-1">Scheduled</p>
+                    <p class="text-xs text-blue-600 uppercase tracking-wide mb-1">Upcoming</p>
                     <p class="text-2xl font-semibold text-blue-900">{{ $stats['scheduled'] }}</p>
                 </div>
                 <div class="bg-green-50 rounded-lg shadow-sm border border-green-200 p-4">
@@ -85,7 +85,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">All Status</option>
-                        <option value="SCHEDULED" {{ request('status') == 'SCHEDULED' ? 'selected' : '' }}>Scheduled</option>
+                        <option value="SCHEDULED" {{ request('status') == 'SCHEDULED' ? 'selected' : '' }}>Upcoming</option>
                         <option value="COMPLETED" {{ request('status') == 'COMPLETED' ? 'selected' : '' }}>Completed</option>
                         <option value="CANCELLED" {{ request('status') == 'CANCELLED' ? 'selected' : '' }}>Cancelled</option>
                         <option value="RESCHEDULED" {{ request('status') == 'RESCHEDULED' ? 'selected' : '' }}>Rescheduled</option>
@@ -177,7 +177,7 @@
                                     {{-- Appointment DateTime --}}
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900">{{ $consultation->appointment_date->format('M j, Y') }}</div>
-                                        <div class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($consultation->appointment_time)->format('g:i A') }} WIB</div>
+                                        <div class="text-sm text-gray-500">{{ $consultation->formatted_appointment }}</div>
                                         @if($consultation->is_upcoming)
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
                                                 Upcoming
@@ -191,7 +191,7 @@
                                             @case('SCHEDULED')
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     <span class="w-2 h-2 mr-1.5 rounded-full bg-blue-400"></span>
-                                                    Scheduled
+                                                    Upcoming
                                                 </span>
                                                 @break
                                             @case('COMPLETED')
@@ -234,11 +234,6 @@
                                         <a href="{{ route('admin.consultation.show', $consultation) }}" class="text-blue-600 hover:text-blue-900 mr-4">
                                             View Details
                                         </a>
-                                        <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this consultation?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
