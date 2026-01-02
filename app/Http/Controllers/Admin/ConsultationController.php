@@ -93,7 +93,7 @@ class ConsultationController extends Controller
             ? 'Consultation marked as completed successfully.' 
             : 'Consultation cancelled successfully. The time slot is now available for rebooking.';
 
-        return redirect()->back()->with('success', $message);
+        return redirect()->route('admin.consultation.show', $consultation)->with('success', $message);  
     }
 
     public function reschedule(Request $request, CustomRequest $consultation)
@@ -111,7 +111,7 @@ class ConsultationController extends Controller
         $existingBooking = CustomRequest::whereDate('appointment_date', $request->appointment_date)
             ->whereTime('appointment_time', $request->appointment_time)
             ->where('id', '!=', $consultation->id)
-            ->where('status', '!=', 'CANCELLED')
+            ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
             ->exists();
 
         if ($existingBooking) {
@@ -127,7 +127,8 @@ class ConsultationController extends Controller
         // TODO: Send email notification to customer about reschedule
         // Mail::to($consultation->user_email)->send(new ConsultationRescheduledMail($consultation));
 
-        return redirect()->back()->with('success', 'Consultation rescheduled successfully.');
+        return redirect()->route('admin.consultation.show', $consultation)->with('success', 'Consultation rescheduled successfully.');
+
     }
 
     public function bulkAction(Request $request)

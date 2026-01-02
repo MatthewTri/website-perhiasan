@@ -20,7 +20,7 @@
             
             {{-- Appointment Summary Card --}}
             <div class="bg-stone-50 border border-stone-100 p-6 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-start gap-4">
+                <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-stone-200 text-stone-500 flex items-center justify-center rounded-sm flex-shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
@@ -194,7 +194,7 @@
 
                 {{-- Action --}}
                 <div class="pt-8 border-t border-stone-100">
-                    <button type="submit" id="submit-btn" class="w-full bg-stone-900 text-white py-4 px-8 text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 rounded-sm">
+                    <button type="submit" id="submit-btn" class="w-full bg-stone-900 text-white py-4 px-8 text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 rounded-sm cursor-pointer">
                         <span id="submit-text">Confirm Appointment</span>
                     </button>
                     <p class="text-center text-[10px] text-stone-400 mt-4 uppercase tracking-widest">
@@ -387,8 +387,20 @@ function updateImagePreview() {
             wrapper.className = 'relative group aspect-square bg-stone-100 rounded-sm overflow-hidden border border-stone-200';
             
             const img = document.createElement('img');
-            img.className = 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-110';
-            
+            img.className = 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in';
+
+            // Tambahkan event openLightbox
+            img.onclick = function() {
+                if (file.aiImageUrl) {
+                    openLightbox(file.aiImageUrl);
+                } else {
+                    // Untuk file upload manual, perlu FileReader untuk dapatkan dataURL
+                    const reader = new FileReader();
+                    reader.onload = (e) => openLightbox(e.target.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
             if (file.aiImageUrl) {
                 img.src = file.aiImageUrl;
             } else {
@@ -471,4 +483,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<style>
+@media (max-width: 1024px) {
+    #image-preview-container .group > button {
+        opacity: 1 !important;
+    }
+}
+</style>
 @endsection

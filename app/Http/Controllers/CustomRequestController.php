@@ -50,7 +50,7 @@ class CustomRequestController extends Controller
 
         // Get all bookings for this date
         $bookings = CustomRequest::whereDate('appointment_date', $date)
-            ->where('status', '!=', 'CANCELLED')
+            ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
             ->get(['appointment_time', 'consultation_type']);
 
         $bookedSlots = [];
@@ -136,7 +136,7 @@ class CustomRequestController extends Controller
         // Double check: Cek apakah slot sudah terbooked
         $existingBooking = CustomRequest::whereDate('appointment_date', $validated['appointment_date'])
             ->whereTime('appointment_time', $validated['appointment_time'])
-            ->where('status', '!=', 'CANCELLED')
+            ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
             ->exists();
 
         if ($existingBooking) {

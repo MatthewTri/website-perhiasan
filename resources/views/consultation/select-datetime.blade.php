@@ -184,8 +184,8 @@ function renderCalendar(date) {
             isPastOrToday 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isSelected
-                    ? 'bg-stone-900 text-white shadow-md transform scale-105'
-                    : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+                    ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
+                    : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
         }`;
         
         if (!isPastOrToday) {

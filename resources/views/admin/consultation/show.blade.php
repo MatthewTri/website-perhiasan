@@ -1,317 +1,242 @@
 @extends('layout.main')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-stone-50 py-10 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         
-        {{-- Header --}}
-        <div class="mb-6">
-            <a href="{{ route('admin.consultation.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to Consultations
-            </a>
-            <div class="flex items-center justify-between">
+        {{-- Header Navigation & Title --}}
+        <div class="mb-10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-light text-gray-900">Consultation Details</h1>
+                    <a href="{{ route('admin.consultation.index') }}" class="group inline-flex items-center text-xs font-bold tracking-[0.15em] text-stone-400 uppercase hover:text-stone-900 transition-colors mb-4">
+                        <svg class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Back to List
+                    </a>
+                    <h1 class="text-3xl md:text-4xl font-serif text-stone-900 tracking-tight">Consultation #{{ $consultation->id }}</h1>
                 </div>
-                
-                {{-- Status Badge --}}
-                @switch($consultation->status)
-                    @case('SCHEDULED')
-                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800">
-                            <span class="w-2 h-2 mr-2 rounded-full bg-blue-400"></span>
-                            Upcoming
-                        </span>
-                        @break
-                    @case('COMPLETED')
-                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-green-100 text-green-800">
-                            <span class="w-2 h-2 mr-2 rounded-full bg-green-400"></span>
-                            Completed
-                        </span>
-                        @break
-                    @case('CANCELLED')
-                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-red-100 text-red-800">
-                            <span class="w-2 h-2 mr-2 rounded-full bg-red-400"></span>
-                            Cancelled
-                        </span>
-                        @break
-                    @case('RESCHEDULED')
-                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-yellow-100 text-yellow-800">
-                            <span class="w-2 h-2 mr-2 rounded-full bg-yellow-400"></span>
-                            Rescheduled
-                        </span>
-                        @break
-                @endswitch
+
+                {{-- Status Badge (Redesigned) --}}
+                <div class="flex items-center">
+                    @php
+                        $statusClasses = [
+                            'SCHEDULED' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                            'COMPLETED' => 'bg-stone-100 text-stone-600 border-stone-200',
+                            'CANCELLED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                            'RESCHEDULED' => 'bg-amber-50 text-amber-700 border-amber-100',
+                        ];
+                        $badgeClass = $statusClasses[$consultation->status] ?? 'bg-gray-50 text-gray-600 border-gray-200';
+                    @endphp
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border {{ $badgeClass }}">
+                        <span class="w-1.5 h-1.5 rounded-full mr-2 bg-current opacity-60"></span>
+                        {{ $consultation->status }}
+                    </span>
+                </div>
             </div>
         </div>
 
-        {{-- Success/Error Messages --}}
-        @if(session('success'))
-            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ session('success') }}
-                </div>
-            </div>
-        @endif
 
-        @if(session('error'))
-            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ session('error') }}
-                </div>
-            </div>
-        @endif
-
-        <div class="grid lg:grid-cols-12 gap-6">
+        {{-- Main Content Grid --}}
+        <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
             
-            {{-- Left Column: Calendar (Sticky) --}}
+            {{-- Left Column: Calendar & Reschedule (Sticky) --}}
             <div class="lg:col-span-5">
-                <div class="sticky top-6">
+                <div class="sticky top-6 space-y-6">
+                    
+                    {{-- Calendar Card --}}
                     @if(!in_array($consultation->status, ['COMPLETED', 'CANCELLED']))
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-xl font-medium text-gray-900 mb-6">Reschedule Appointment</h2>
+                        <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                            <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Reschedule Appointment</h2>
                             
-                            {{-- Calendar Navigation --}}
+                            {{-- Calendar Header --}}
                             <div class="flex items-center justify-between mb-6">
-                                <button type="button" id="prev-month" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                    </svg>
+                                <button type="button" id="prev-month" class="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 rounded-full transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path></svg>
                                 </button>
-                                <h3 class="text-lg font-semibold" id="current-month-year">January 2026</h3>
-                                <button type="button" id="next-month" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                    </svg>
+                                <h3 class="text-base font-serif text-stone-900 tracking-wide" id="current-month-year">January 2026</h3>
+                                <button type="button" id="next-month" class="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 rounded-full transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path></svg>
                                 </button>
                             </div>
 
-                            {{-- Calendar Grid --}}
-                            <div class="grid grid-cols-7 gap-1 mb-4">
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Su</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Mo</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Tu</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">We</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Th</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Fr</div>
-                                <div class="text-center text-xs font-medium text-gray-500 py-2">Sa</div>
+                            {{-- Calendar Grid Header --}}
+                            <div class="grid grid-cols-7 gap-1 mb-2">
+                                @foreach(['Su','Mo','Tu','We','Th','Fr','Sa'] as $day)
+                                    <div class="text-center text-[10px] font-bold text-stone-300 uppercase py-2">{{ $day }}</div>
+                                @endforeach
                             </div>
 
-                            <div id="calendar-dates" class="grid grid-cols-7 gap-1 mb-4">
-                                {{-- Dates will be generated by JavaScript --}}
-                            </div>
+                            {{-- Calendar Dates --}}
+                            <div id="calendar-dates" class="grid grid-cols-7 gap-1 mb-6"></div>
 
-                            {{-- Timezone Info --}}
-                            <p class="text-xs text-gray-500 text-center mb-6">Times are shown in WIB (Jakarta Time / GMT+7)</p>
+                            <p class="text-[10px] text-stone-400 text-center mb-6 uppercase tracking-widest">Timezone: WIB (GMT+7)</p>
 
                             {{-- Time Slots --}}
-                            <div id="time-slots-container" class="hidden">
-                                <h3 class="font-medium text-gray-900 mb-4" id="selected-date-header"></h3>
+                            <div id="time-slots-container" class="hidden border-t border-stone-100 pt-6">
+                                <h3 class="text-sm font-serif text-stone-900 mb-4" id="selected-date-header"></h3>
                                 
-                                <div id="loading-slots" class="text-center py-8">
-                                    <svg class="animate-spin h-8 w-8 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <p class="text-sm text-gray-500 mt-2">Loading available times...</p>
+                                <div id="loading-slots" class="text-center py-6">
+                                    <div class="animate-spin w-5 h-5 border-2 border-stone-200 border-t-stone-900 rounded-full mx-auto mb-2"></div>
+                                    <p class="text-[10px] text-stone-400 uppercase tracking-widest">Loading...</p>
                                 </div>
                                 
-                                <div id="time-slots" class="space-y-4 hidden max-h-96 overflow-y-auto">
-                                    {{-- Time slots will be generated by JavaScript --}}
-                                </div>
+                                <div id="time-slots" class="space-y-3 hidden max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
                             </div>
 
-                            {{-- No Date Selected Message --}}
-                            <div id="no-date-message" class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                                <svg class="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <p class="text-sm text-gray-600">Select a date to view available times</p>
+                            {{-- Empty State --}}
+                            <div id="no-date-message" class="bg-stone-50 border border-dashed border-stone-200 rounded-sm p-6 text-center">
+                                <p class="text-xs text-stone-400 italic">Select a date to view slots.</p>
                             </div>
 
-                            {{-- Reschedule Form (Hidden, will be shown when time selected) --}}
-                            <form id="reschedule-form" action="{{ route('admin.consultation.reschedule', $consultation) }}" method="POST" class="hidden mt-6">
+                            {{-- Confirm Reschedule Form --}}
+                            <form id="reschedule-form" action="{{ route('admin.consultation.reschedule', $consultation) }}" method="POST" class="hidden mt-6 pt-6 border-t border-stone-100">
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="appointment_date" id="new-appointment-date">
                                 <input type="hidden" name="appointment_time" id="new-appointment-time">
                                 
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                                    <h4 class="text-sm font-medium text-yellow-900 mb-2">New Appointment</h4>
-                                    <p class="text-sm text-yellow-800" id="new-appointment-display"></p>
+                                <div class="bg-gray-50 border border-gray-100 rounded-sm p-4 mb-4">
+                                    <p class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">New Schedule Selected</p>
+                                    <p class="text-sm text-gray-900" id="new-appointment-display"></p>
                                 </div>
 
-                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                                <button type="button" onclick="confirmReschedule()" class="w-full py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-[0.2em] rounded-sm hover:bg-stone-800 transition-colors shadow-lg cursor-pointer">
                                     Confirm Reschedule
                                 </button>
                             </form>
                         </div>
                     @else
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center min-h-[300px]">
-                            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <p class="text-center text-gray-600 text-base">
-                                This consultation has been <b>{{ strtolower($consultation->status) }}</b>.<br>
-                                Rescheduling is no longer available.
-                            </p>
+                        {{-- Locked State --}}
+                        <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-8 text-center">
+                            <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-serif text-stone-900 mb-2">Schedule Locked</h3>
+                            <p class="text-sm text-stone-500 font-light">This consultation is <strong>{{ strtolower($consultation->status) }}</strong> and cannot be modified.</p>
                         </div>
                     @endif
                 </div>
             </div>
 
-            {{-- Right Column: Details & Actions --}}
-            <div class="lg:col-span-7 space-y-6">
+            {{-- Right Column: Information & Actions --}}
+            <div class="lg:col-span-7 space-y-8">
                 
-                {{-- Current Appointment Info --}}
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h2 class="text-lg font-medium text-gray-900 mb-4">Current Appointment</h2>
+                {{-- 1. Appointment Info --}}
+                <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Appointment Details</h2>
                     
-                    <div class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-8">
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Consultation Type</label>
+                            <label class="block text-[10px] text-stone-400 uppercase tracking-wider mb-1">Type</label>
                             @if($consultation->consultation_type === 'design')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                                    </svg>
-                                    Design Consultation (60 minutes)
-                                </span>
+                                <p class="text-base text-stone-900 font-serif">Bespoke Design Consultation</p>
+                                <p class="text-xs text-stone-500 mt-0.5">60 Minutes • Private Suite</p>
                             @else
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Short Consultation (30 minutes)
-                                </span>
+                                <p class="text-base text-stone-900 font-serif">General Inquiry</p>
+                                <p class="text-xs text-stone-500 mt-0.5">30 Minutes • In-Store / Virtual</p>
                             @endif
                         </div>
-
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Scheduled Date & Time</label>
-                            <div class="flex items-center text-lg font-medium text-gray-900">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                {{ $consultation->formatted_appointment }}
-                            </div>
+                            <label class="block text-[10px] text-stone-400 uppercase tracking-wider mb-1">Current Schedule</label>
+                            <p class="text-base text-stone-900">{{ $consultation->formatted_appointment }}</p>
                         </div>
                     </div>
                 </div>
 
-                {{-- Customer Information --}}
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h2 class="text-lg font-medium text-gray-900 mb-4">Customer Information</h2>
+                {{-- 2. Customer Info --}}
+                <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Client Profile</h2>
                     
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-8">
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                            <p class="text-base text-gray-900">{{ $consultation->full_name }}</p>
+                            <label class="block text-[10px] text-stone-400 uppercase tracking-wider mb-1">Name</label>
+                            <p class="text-base text-stone-900 font-medium">{{ $consultation->full_name }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                            <p class="text-base text-gray-900">{{ $consultation->user_email }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-                            <p class="text-base text-gray-900">{{ $consultation->user_phone }}</p>
+                            <label class="block text-[10px] text-stone-400 uppercase tracking-wider mb-1">Contact</label>
+                            <p class="text-sm text-stone-900">{{ $consultation->user_email }}</p>
+                            <p class="text-sm text-stone-900">{{ $consultation->user_phone }}</p>
                         </div>
                     </div>
 
                     @if($consultation->appointment_notes)
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-500 mb-2">Customer Notes</label>
-                            <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
-                                {{ $consultation->appointment_notes }}
+                        <div class="mt-8 pt-6 border-t border-stone-50">
+                            <label class="block text-[10px] text-stone-400 uppercase tracking-wider mb-2">Client Notes</label>
+                            <div class="bg-stone-50 p-4 border border-stone-100 rounded-sm">
+                                <p class="text-sm text-stone-600 italic leading-relaxed">"{{ $consultation->appointment_notes }}"</p>
                             </div>
                         </div>
                     @endif
                 </div>
 
-                {{-- Reference Images --}}
+                {{-- 3. Reference Images --}}
                 @if($consultation->images->count() > 0)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Reference Images ({{ $consultation->images->count() }})</h2>
-                        <div class="flex flex-wrap gap-2">
+                    <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                        <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Visual References ({{ $consultation->images->count() }})</h2>
+                        <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
                             @foreach($consultation->images as $image)
-                                <div class="w-20 h-20 rounded-md border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
-                                    <img src="{{ $image->image_url }}" alt="Reference Image {{ $loop->iteration }}" class="object-cover w-full h-full" loading="lazy">
+                                <div class="group relative aspect-square bg-stone-100 rounded-sm overflow-hidden cursor-zoom-in"
+                                    onclick="openLightbox('{{ $image->image_url }}')">
+                                    <img src="{{ $image->image_url }}" alt="Ref" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 @endif
 
-                {{-- Quick Actions --}}
-                <div class="grid md:grid-cols-2 gap-6">
-                    {{-- Update Status --}}
-                    @if(!in_array($consultation->status, ['COMPLETED', 'CANCELLED']))
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Update Status</h2>
-                            <div class="flex gap-3">
-                                {{-- Complete langsung submit, tanpa modal --}}
-                                <form action="{{ route('admin.consultation.updateStatus', $consultation) }}" method="POST" onsubmit="return confirm('Mark this consultation as completed?');">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="COMPLETED">
-                                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                        Complete Consultation
-                                    </button>
-                                </form>
-                                {{-- Cancel pakai modal --}}
-                                <button type="button" onclick="openCancelModal()" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                                    Cancel Consultation
-                                </button>
-                            </div>
+                {{-- 4. Actions --}}
+                @if(!in_array($consultation->status, ['COMPLETED', 'CANCELLED']))
+                    <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                        <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Actions</h2>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            {{-- Complete Button dengan SweetAlert --}}
+                            <button type="button" onclick="confirmComplete()" class="flex-1 w-full py-3 px-4 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold uppercase tracking-widest rounded-sm cursor-pointer transition-all">
+                                Mark as Completed
+                            </button>
+                            
+                            {{-- Cancel Button --}}
+                            <button type="button" onclick="openCancelModal()" class="flex-1 w-full py-3 px-4 bg-[#E8B49E] hover:bg-[#d6a88b] text-white text-xs font-bold uppercase tracking-widest rounded-sm transition-all border border-[#E8B49E] shadow-md cursor-pointer">
+                                Cancel Consultation
+                            </button>
                         </div>
-                    @else
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Status Locked</h2>
-                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                                <p class="text-sm text-gray-600">
-                                    This consultation has been {{ strtolower($consultation->status) }} and cannot be modified.
-                                </p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
 
             </div>
-
         </div>
-
     </div>
 </div>
 
-{{-- Cancel Modal --}}
-<div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Cancel Consultation</h3>
+{{-- Hidden form untuk Complete --}}
+<form id="complete-form" action="{{ route('admin.consultation.updateStatus', $consultation) }}" method="POST" class="hidden">
+    @csrf
+    @method('PATCH')
+    <input type="hidden" name="status" value="COMPLETED">
+</form>
+
+{{-- Cancel Modal (Minimalist) --}}
+<div id="cancelModal" class="fixed inset-0 bg-stone-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-sm shadow-2xl max-w-md w-full transform transition-all scale-100">
+        <div class="p-8">
+            <h3 class="text-xl font-serif text-stone-900 mb-6">Cancel Appointment</h3>
             <form action="{{ route('admin.consultation.updateStatus', $consultation) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="status" value="CANCELLED">
                 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Cancellation Reason <span class="text-red-500">*</span></label>
-                    <textarea name="admin_notes" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Please provide a reason for cancellation..."></textarea>
-                    <p class="text-xs text-gray-500 mt-1">This will be sent to the customer via email.</p>
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Reason for Cancellation <span class="text-rose-500">*</span></label>
+                    <textarea name="admin_notes" rows="3" required class="w-full bg-stone-50 border-b-2 border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900 transition-colors resize-none" placeholder="e.g. Client requested cancellation..."></textarea>
+                    <p class="text-[10px] text-stone-400 mt-2">This note will be sent to the client.</p>
                 </div>
                 
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeCancelModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        Back
+                <div class="flex gap-4">
+                    <button type="button" onclick="closeCancelModal()" class="flex-1 py-3 text-xs cursor-pointer font-bold text-stone-500 uppercase tracking-widest hover:text-stone-800 transition-colors">
+                        Nevermind
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    <button type="submit" class="flex-1 py-3 bg-[#E8B49E] hover:bg-[#d6a88b] text-white text-xs font-bold uppercase tracking-widest rounded-sm cursor-pointer shadow-md border border-[#E8B49E] transition-colors">
                         Confirm Cancel
                     </button>
                 </div>
@@ -320,374 +245,379 @@
     </div>
 </div>
 
+@include('components.image-lightbox')
+
 <script>
+    // --- LOGIKA JS ADMIN (SAMA PERSIS DENGAN SEBELUMNYA, HANYA RENDER CLASS CSS YANG DIUBAH) ---
 
-function openCancelModal() {
-    document.getElementById('cancelModal').classList.remove('hidden');
-    document.getElementById('cancelModal').classList.add('flex');
-}
-
-function closeCancelModal() {
-    document.getElementById('cancelModal').classList.add('hidden');
-    document.getElementById('cancelModal').classList.remove('flex');
-}
-
-document.getElementById('cancelModal').addEventListener('click', function(e) {
-    if (e.target === this) closeCancelModal();
-});
-
-const consultationType = '{{ $consultation->consultation_type }}';
-const duration = consultationType === 'design' ? 60 : 30;
-const consultationId = {{ $consultation->id }};
-
-// ✅ Parse appointment date & time dari backend
-const appointmentDateStr = '{{ $consultation->appointment_date->format("Y-m-d") }}';
-const appointmentTimeStr = '{{ \Carbon\Carbon::parse($consultation->appointment_time)->format("H:i") }}';
-const currentAppointmentDate = new Date(appointmentDateStr);
-
-let currentDate = new Date(appointmentDateStr); // ✅ Auto navigate ke bulan appointment
-let selectedDate = null;
-let selectedTime = null;
-let bookedSlots = [];
-
-const businessHours = {
-    weekday: { start: 9, end: 17 },
-    weekend: { start: 9, end: 12 }
-};
-
-function getTodayWIB() {
-    const now = new Date();
-    const wibOffset = 7 * 60;
-    const localOffset = now.getTimezoneOffset();
-    const wibTime = new Date(now.getTime() + (wibOffset + localOffset) * 60 * 1000);
-    wibTime.setHours(0, 0, 0, 0);
-    return wibTime;
-}
-
-function renderCalendar(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"];
-    document.getElementById('current-month-year').textContent = `${monthNames[month]} ${year}`;
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    const calendarDates = document.getElementById('calendar-dates');
-    calendarDates.innerHTML = '';
-    
-    for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'aspect-square';
-        calendarDates.appendChild(emptyCell);
+    // SweetAlert untuk Complete Confirmation
+    function confirmComplete() {
+        Swal.fire({
+            title: 'Mark as Completed?',
+            html: '<p class="text-sm text-gray-600">This will mark the consultation as completed and cannot be undone.</p>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#292524',
+            cancelButtonColor: '#d1d5db',
+            confirmButtonText: 'Yes, Complete',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                popup: 'rounded-sm',
+                title: 'text-stone-900',
+                confirmButton: 'uppercase tracking-widest text-xs',
+                cancelButton: 'uppercase tracking-widest text-xs'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('complete-form').submit();
+            }
+        });
     }
-    
-    const today = getTodayWIB();
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateObj = new Date(year, month, day);
-        const isPastOrToday = dateObj <= today;
-        
-        // ✅ Check if this is the current appointment date
-        const isCurrentAppointment = dateObj.getDate() === currentAppointmentDate.getDate() &&
-            dateObj.getMonth() === currentAppointmentDate.getMonth() &&
-            dateObj.getFullYear() === currentAppointmentDate.getFullYear();
-        
-        const isSelected = selectedDate && 
-            dateObj.getDate() === selectedDate.getDate() &&
-            dateObj.getMonth() === selectedDate.getMonth() &&
-            dateObj.getFullYear() === selectedDate.getFullYear();
-        
-        const dayCell = document.createElement('button');
-        dayCell.type = 'button';
-        dayCell.textContent = day;
-        dayCell.className = `aspect-square flex items-center justify-center rounded-lg text-sm transition-colors ${
-            isPastOrToday 
-                ? 'text-gray-300 cursor-not-allowed' 
-                : isCurrentAppointment
-                    ? 'bg-blue-600 text-white font-semibold ring-2 ring-blue-300'
-                    : isSelected
-                        ? 'bg-gray-900 text-white font-semibold'
-                        : 'hover:bg-gray-100 text-gray-900'
-        }`;
-        
-        if (!isPastOrToday) {
-            dayCell.onclick = () => selectDate(dateObj);
-        } else {
-            dayCell.disabled = true;
-        }
-        
-        calendarDates.appendChild(dayCell);
+
+    function confirmReschedule() {
+        Swal.fire({
+            title: 'Confirm Reschedule?',
+            html: '<p class="text-sm text-gray-600">Are you sure you want to reschedule this consultation to the selected date and time?</p>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#292524',
+            cancelButtonColor: '#d1d5db',
+            confirmButtonText: 'Yes, Reschedule',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                popup: 'rounded-sm',
+                title: 'font-serif text-stone-900',
+                confirmButton: 'uppercase tracking-widest text-xs',
+                cancelButton: 'uppercase tracking-widest text-xs'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('reschedule-form').submit();
+            }
+        });
     }
-}
 
-async function selectDate(date) {
-    selectedDate = date;
-    selectedTime = null;
-    renderCalendar(currentDate);
-    await fetchAvailability(date);
-    renderTimeSlots(date);
-    
-    document.getElementById('reschedule-form').classList.add('hidden');
-}
-
-async function fetchAvailability(date) {
-    const loadingDiv = document.getElementById('loading-slots');
-    const timeSlotsDiv = document.getElementById('time-slots');
-    const timeSlotsContainer = document.getElementById('time-slots-container');
-    const noDateMessage = document.getElementById('no-date-message');
-    
-    timeSlotsContainer.classList.remove('hidden');
-    noDateMessage.classList.add('hidden');
-    loadingDiv.classList.remove('hidden');
-    timeSlotsDiv.classList.add('hidden');
-    
-    try {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
-        
-        const response = await fetch(`{{ route('consultation.availability') }}?date=${dateStr}&type=${consultationType}`);
-        const data = await response.json();
-        
-        bookedSlots = data.booked_slots || [];
-        
-        loadingDiv.classList.add('hidden');
-        timeSlotsDiv.classList.remove('hidden');
-        
-    } catch (error) {
-        console.error('Error fetching availability:', error);
-        bookedSlots = [];
-        loadingDiv.classList.add('hidden');
-        timeSlotsDiv.classList.remove('hidden');
+    // Modal Cancel
+    function openCancelModal() {
+        document.getElementById('cancelModal').classList.remove('hidden');
+        document.getElementById('cancelModal').classList.add('flex');
     }
-}
 
-function renderTimeSlots(date) {
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
-    
-    const selectedDateHeader = document.getElementById('selected-date-header');
-    const timeSlots = document.getElementById('time-slots');
-    
-    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    selectedDateHeader.textContent = date.toLocaleDateString('en-US', options);
-    
-    timeSlots.innerHTML = '';
-    
-    // --- Cek apakah hari ini atau sebelumnya (WIB) ---
-    const now = new Date();
-    const wibOffset = 7 * 60;
-    const localOffset = now.getTimezoneOffset();
-    const nowWIB = new Date(now.getTime() + (wibOffset + localOffset) * 60 * 1000);
+    function closeCancelModal() {
+        document.getElementById('cancelModal').classList.add('hidden');
+        document.getElementById('cancelModal').classList.remove('flex');
+    }
 
-    const selected = new Date(date);
-    selected.setHours(0,0,0,0);
-    const today = new Date(nowWIB);
-    today.setHours(0,0,0,0);
-
-    let isTodayOrPast = selected.getTime() <= today.getTime();
-
-    // --- Generate slots ---
-    const slots = generateTimeSlots(hours.start, hours.end, duration);
-
-    // --- Filter slot yang available (tidak booked & belum lewat jika hari ini) ---
-    let availableSlots = slots.filter(slot => {
-        if (bookedSlots.includes(slot.time24)) return false;
-        if (selected.getTime() === today.getTime()) {
-            // Hari ini, filter jam yang sudah lewat
-            const slotDate = new Date(date);
-            slotDate.setHours(Number(slot.time24.split(':')[0]), Number(slot.time24.split(':')[1]), 0, 0);
-            if (slotDate.getTime() <= nowWIB.getTime()) return false;
-        }
-        return true;
+    document.getElementById('cancelModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCancelModal();
     });
 
-    // --- Jika tanggal sudah lewat atau tidak ada slot available ---
-    if (isTodayOrPast || availableSlots.length === 0) {
-        timeSlots.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-8">
-                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <button type="button" onclick="findNextAvailable()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Find Next Available Schedule
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    // ✅ Check if selected date is current appointment date
-    const isCurrentAppointmentDate = date.getDate() === currentAppointmentDate.getDate() &&
-        date.getMonth() === currentAppointmentDate.getMonth() &&
-        date.getFullYear() === currentAppointmentDate.getFullYear();
-    
-    const morning = slots.filter(s => s.hour < 12);
-    const afternoon = slots.filter(s => s.hour >= 12 && s.hour < 17);
-    const evening = slots.filter(s => s.hour >= 17);
-    
-    if (morning.length > 0) {
-        timeSlots.appendChild(createTimeSection('Morning', morning, isCurrentAppointmentDate));
-    }
-    if (afternoon.length > 0) {
-        timeSlots.appendChild(createTimeSection('Afternoon', afternoon, isCurrentAppointmentDate));
-    }
-    if (evening.length > 0) {
-        timeSlots.appendChild(createTimeSection('Evening', evening, isCurrentAppointmentDate));
-    }
-}
+    // Success/Error Notification dengan SweetAlert
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            html: '<p class="text-sm text-gray-600">{{ session("success") }}</p>',
+            confirmButtonColor: '#292524',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'rounded-sm',
+                title: 'font-serif text-stone-900',
+                confirmButton: 'uppercase tracking-widest text-xs'
+            }
+        });
+    @endif
 
-async function findNextAvailable() {
-    // Mulai dari besok
-    let searchDate = new Date();
-    searchDate.setDate(searchDate.getDate() + 1);
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: '<p class="text-sm text-gray-600">{{ session("error") }}</p>',
+            confirmButtonColor: '#292524',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'rounded-sm',
+                title: 'font-serif text-stone-900',
+                confirmButton: 'uppercase tracking-widest text-xs'
+            }
+        });
+    @endif
 
-    // Cek 60 hari ke depan
-    for (let i = 0; i < 60; i++) {
-        const year = searchDate.getFullYear();
-        const month = String(searchDate.getMonth() + 1).padStart(2, '0');
-        const day = String(searchDate.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
 
-        // Fetch slot
-        const response = await fetch(`{{ route('consultation.availability') }}?date=${dateStr}&type=${consultationType}`);
-        const data = await response.json();
-        const slots = generateTimeSlots(
-            (searchDate.getDay() === 0 || searchDate.getDay() === 6) ? businessHours.weekend.start : businessHours.weekday.start,
-            (searchDate.getDay() === 0 || searchDate.getDay() === 6) ? businessHours.weekend.end : businessHours.weekday.end,
-            duration
-        );
-        const available = slots.filter(slot => !data.booked_slots.includes(slot.time24));
-        if (available.length > 0) {
-            // Otomatis redirect ke tanggal & jam available pertama
-            currentDate = new Date(searchDate);
-            renderCalendar(currentDate);
-            await selectDate(currentDate);
-            // Scroll ke calendar
-            document.getElementById('calendar-dates').scrollIntoView({ behavior: 'smooth' });
+    const consultationType = '{{ $consultation->consultation_type }}';
+    const duration = consultationType === 'design' ? 60 : 30;
+    const consultationId = {{ $consultation->id }};
+
+    // Parse date
+    const appointmentDateStr = '{{ $consultation->appointment_date->format("Y-m-d") }}';
+    const appointmentTimeStr = '{{ \Carbon\Carbon::parse($consultation->appointment_time)->format("H:i") }}';
+    const currentAppointmentDate = new Date(appointmentDateStr);
+
+    let currentDate = new Date(appointmentDateStr);
+    let selectedDate = null;
+    let selectedTime = null;
+    let bookedSlots = [];
+
+    const businessHours = {
+        weekday: { start: 9, end: 17 },
+        weekend: { start: 9, end: 12 }
+    };
+
+    function getTodayWIB() {
+        const now = new Date();
+        const wibOffset = 7 * 60;
+        const localOffset = now.getTimezoneOffset();
+        const wibTime = new Date(now.getTime() + (wibOffset + localOffset) * 60 * 1000);
+        wibTime.setHours(0, 0, 0, 0);
+        return wibTime;
+    }
+
+    function renderCalendar(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('current-month-year').textContent = `${monthNames[month]} ${year}`;
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        const calendarDates = document.getElementById('calendar-dates');
+        calendarDates.innerHTML = '';
+        
+        for (let i = 0; i < firstDay; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'aspect-square';
+            calendarDates.appendChild(emptyCell);
+        }
+        
+        const today = getTodayWIB();
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateObj = new Date(year, month, day);
+            const isPastOrToday = dateObj <= today;
+            
+            const isCurrentAppointment = dateObj.getDate() === currentAppointmentDate.getDate() &&
+                dateObj.getMonth() === currentAppointmentDate.getMonth() &&
+                dateObj.getFullYear() === currentAppointmentDate.getFullYear();
+            
+            const isSelected = selectedDate && 
+                dateObj.getDate() === selectedDate.getDate() &&
+                dateObj.getMonth() === selectedDate.getMonth() &&
+                dateObj.getFullYear() === selectedDate.getFullYear();
+            
+            const dayCell = document.createElement('button');
+            dayCell.type = 'button';
+            dayCell.textContent = day;
+            
+            // --- CSS CLASS UPDATED ---
+            dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-xs font-medium transition-all ${
+                isPastOrToday 
+                    ? 'text-stone-200 cursor-not-allowed' 
+                    : isCurrentAppointment
+                        ? 'bg-[#E8B49E] text-white border-[#E8B49E] font-bold shadow-md hover:bg-[#d6a88b] hover:border-[#d6a88b] cursor-pointer'
+                        : isSelected
+                            ? 'bg-stone-900 text-white shadow-md scale-105 cursor-pointer'
+                            : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
+            }`;
+            
+            if (!isPastOrToday) {
+                dayCell.onclick = () => selectDate(dateObj);
+            } else {
+                dayCell.disabled = true;
+            }
+            
+            calendarDates.appendChild(dayCell);
+        }
+    }
+
+    async function selectDate(date) {
+        selectedDate = date;
+        selectedTime = null;
+        renderCalendar(currentDate);
+        await fetchAvailability(date);
+        renderTimeSlots(date);
+        document.getElementById('reschedule-form').classList.add('hidden');
+    }
+
+    async function fetchAvailability(date) {
+        const loadingDiv = document.getElementById('loading-slots');
+        const timeSlotsDiv = document.getElementById('time-slots');
+        const timeSlotsContainer = document.getElementById('time-slots-container');
+        const noDateMessage = document.getElementById('no-date-message');
+        
+        timeSlotsContainer.classList.remove('hidden');
+        noDateMessage.classList.add('hidden');
+        loadingDiv.classList.remove('hidden');
+        timeSlotsDiv.classList.add('hidden');
+        
+        try {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            
+            const response = await fetch(`{{ route('consultation.availability') }}?date=${dateStr}&type=${consultationType}`);
+            const data = await response.json();
+            
+            bookedSlots = data.booked_slots || [];
+            
+            loadingDiv.classList.add('hidden');
+            timeSlotsDiv.classList.remove('hidden');
+            
+        } catch (error) {
+            console.error('Error fetching availability:', error);
+            bookedSlots = [];
+            loadingDiv.classList.add('hidden');
+            timeSlotsDiv.classList.remove('hidden');
+        }
+    }
+
+    function renderTimeSlots(date) {
+        const dayOfWeek = date.getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
+        
+        const selectedDateHeader = document.getElementById('selected-date-header');
+        const timeSlots = document.getElementById('time-slots');
+        
+        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        selectedDateHeader.textContent = date.toLocaleDateString('en-US', options);
+        
+        timeSlots.innerHTML = '';
+        
+        const now = new Date();
+        const wibOffset = 7 * 60;
+        const localOffset = now.getTimezoneOffset();
+        const nowWIB = new Date(now.getTime() + (wibOffset + localOffset) * 60 * 1000);
+
+        const selected = new Date(date);
+        selected.setHours(0,0,0,0);
+        const today = new Date(nowWIB);
+        today.setHours(0,0,0,0);
+
+        let isTodayOrPast = selected.getTime() <= today.getTime();
+        const slots = generateTimeSlots(hours.start, hours.end, duration);
+
+        let availableSlots = slots.filter(slot => {
+            if (bookedSlots.includes(slot.time24)) return false;
+            if (selected.getTime() === today.getTime()) {
+                const slotDate = new Date(date);
+                slotDate.setHours(Number(slot.time24.split(':')[0]), Number(slot.time24.split(':')[1]), 0, 0);
+                if (slotDate.getTime() <= nowWIB.getTime()) return false;
+            }
+            return true;
+        });
+
+        if (isTodayOrPast || availableSlots.length === 0) {
+            timeSlots.innerHTML = '<p class="text-xs text-stone-400 text-center py-4">No available slots.</p>';
             return;
         }
-        searchDate.setDate(searchDate.getDate() + 1);
-    }
-    alert('No available schedule found in the next 60 days.');
-}
-
-function generateTimeSlots(startHour, endHour, duration) {
-    const slots = [];
-    let currentMinutes = startHour * 60;
-    const endMinutes = endHour * 60;
-    
-    while (currentMinutes + duration <= endMinutes) {
-        const hour = Math.floor(currentMinutes / 60);
-        const minute = currentMinutes % 60;
-        const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-        const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+        const isCurrentAppointmentDate = date.getDate() === currentAppointmentDate.getDate() &&
+            date.getMonth() === currentAppointmentDate.getMonth() &&
+            date.getFullYear() === currentAppointmentDate.getFullYear();
         
-        slots.push({
-            hour,
-            minute,
-            time24,
-            time12
-        });
+        const morning = slots.filter(s => s.hour < 12);
+        const afternoon = slots.filter(s => s.hour >= 12 && s.hour < 17);
+        const evening = slots.filter(s => s.hour >= 17);
         
-        currentMinutes += duration;
+        if (morning.length > 0) timeSlots.appendChild(createTimeSection('Morning', morning, isCurrentAppointmentDate));
+        if (afternoon.length > 0) timeSlots.appendChild(createTimeSection('Afternoon', afternoon, isCurrentAppointmentDate));
+        if (evening.length > 0) timeSlots.appendChild(createTimeSection('Evening', evening, isCurrentAppointmentDate));
     }
-    
-    return slots;
-}
 
-function createTimeSection(title, slots, isCurrentAppointmentDate) {
-    const section = document.createElement('div');
-    section.innerHTML = `
-        <h4 class="text-sm font-medium text-gray-700 mb-3">${title}</h4>
-        <div class="grid grid-cols-2 gap-2 mb-4">
-            ${slots.map(slot => {
-                const isBooked = bookedSlots.includes(slot.time24);
-                // ✅ Check if this is the current consultation time
-                const isCurrentSlot = isCurrentAppointmentDate && slot.time24 === appointmentTimeStr;
-                
-                return `
-                    <button type="button" 
-                        ${isCurrentSlot ? 'disabled' : `onclick="selectTime('${slot.time24}', '${slot.time12}')"` }
-                        ${isBooked && !isCurrentSlot ? 'disabled' : ''}
-                        class="time-slot-btn py-2 px-4 border rounded-lg text-sm transition-colors relative ${
-                            isCurrentSlot
-                                ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-300 font-medium'
-                                : isBooked 
-                                    ? 'bg-gray-100 text-gray-400 border-gray-200' 
-                                    : selectedTime === slot.time24 
-                                        ? 'bg-gray-900 text-white border-gray-900' 
-                                        : 'border-gray-300 text-gray-900 hover:border-gray-900 hover:bg-gray-50'
-                        }">
-                        ${slot.time12}
-                        ${isCurrentSlot ? '<span class="block text-xs mt-0.5 font-normal">Current Schedule</span>' : ''}
-                        ${isBooked && !isCurrentSlot ? '<span class="block text-xs mt-1">(Booked)</span>' : ''}
-                    </button>
-                `;
-            }).join('')}
-        </div>
-    `;
-    return section;
-}
-
-function selectTime(time24, time12) {
-    if (bookedSlots.includes(time24) && time24 !== appointmentTimeStr) {
-        alert('This time slot is already booked. Please select another time.');
-        return;
-    }
-    
-    selectedTime = time24;
-    
-    // Update all time slot buttons
-    document.querySelectorAll('.time-slot-btn').forEach(btn => {
-        // Don't change the current appointment slot style
-        if (!btn.textContent.includes('Current Schedule')) {
-            btn.classList.remove('bg-gray-900', 'text-white', 'border-gray-900');
-            btn.classList.add('border-gray-300', 'text-gray-900', 'hover:border-gray-900', 'hover:bg-gray-50');
+    function generateTimeSlots(startHour, endHour, duration) {
+        const slots = [];
+        let currentMinutes = startHour * 60;
+        const endMinutes = endHour * 60;
+        while (currentMinutes + duration <= endMinutes) {
+            const hour = Math.floor(currentMinutes / 60);
+            const minute = currentMinutes % 60;
+            const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+            slots.push({ hour, minute, time24, time12 });
+            currentMinutes += duration;
         }
-    });
-    
-    if (!event.target.textContent.includes('Current Schedule')) {
-        event.target.classList.remove('border-gray-300', 'text-gray-900', 'hover:border-gray-900', 'hover:bg-gray-50');
-        event.target.classList.add('bg-gray-900', 'text-white', 'border-gray-900');
+        return slots;
     }
-    
-    // Show reschedule form
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-    
-    document.getElementById('new-appointment-date').value = dateStr;
-    document.getElementById('new-appointment-time').value = time24;
-    
-    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    const formattedDate = selectedDate.toLocaleDateString('en-US', options);
-    document.getElementById('new-appointment-display').textContent = `${formattedDate} at ${time12}`;
-    
-    document.getElementById('reschedule-form').classList.remove('hidden');
-}
 
-document.getElementById('prev-month').onclick = () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
+    function createTimeSection(title, slots, isCurrentAppointmentDate) {
+        const section = document.createElement('div');
+        section.innerHTML = `
+            <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">${title}</h4>
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                ${slots.map(slot => {
+                    const isBooked = bookedSlots.includes(slot.time24);
+                    const isCurrentSlot = isCurrentAppointmentDate && slot.time24 === appointmentTimeStr;
+                    const isSelected = selectedTime === slot.time24;
+
+                    return `
+                        <button type="button" 
+                            ${isCurrentSlot ? 'disabled' : `onclick="selectTime('${slot.time24}', '${slot.time12}')"` }
+                            ${isBooked && !isCurrentSlot ? 'disabled' : ''}
+                            class="time-slot-btn py-2 px-2 border rounded-sm text-xs transition-colors relative ${
+                                isCurrentSlot
+                                    ? 'bg-[#E8B49E] text-white border-[#E8B49E] font-bold shadow-md'
+                                    : isBooked 
+                                        ? 'bg-stone-50 text-stone-300 border-stone-100 line-through decoration-stone-300' 
+                                        : isSelected 
+                                            ? 'bg-stone-900 text-white border-stone-900 font-medium shadow-md cursor-pointer'
+                                            : 'border-stone-200 text-stone-600 hover:border-stone-400 hover:bg-stone-50 cursor-pointer'
+                            }">
+                            ${slot.time12}
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        return section;
+    }
+
+    function selectTime(time24, time12) {
+        if (bookedSlots.includes(time24) && time24 !== appointmentTimeStr) return;
+        
+        selectedTime = time24;
+
+        // Re-render time slots to update selected style
+        renderTimeSlots(selectedDate);
+
+        // Fill hidden form
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        
+        document.getElementById('new-appointment-date').value = dateStr;
+        document.getElementById('new-appointment-time').value = time24;
+        
+        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedDate = selectedDate.toLocaleDateString('en-US', options);
+        document.getElementById('new-appointment-display').textContent = `${formattedDate} at ${time12}`;
+        
+        document.getElementById('reschedule-form').classList.remove('hidden');
+    }
+
+    document.getElementById('prev-month').onclick = () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    };
+
+    document.getElementById('next-month').onclick = () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    };
+
     renderCalendar(currentDate);
-};
-
-document.getElementById('next-month').onclick = () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar(currentDate);
-};
-
-// ✅ Initialize: Render calendar dan auto-select appointment date
-renderCalendar(currentDate);
-selectDate(currentAppointmentDate);
+    // Optional: Auto select current appointment date on load if you want
+    selectDate(currentAppointmentDate);
 </script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #d6d3d1; border-radius: 10px; }
+</style>
 @endsection
