@@ -130,6 +130,7 @@ let currentDate = new Date();
 let selectedDate = null;
 let selectedTime = null;
 let bookedSlots = [];
+let unavailableDates = []; // ✅ Global state
 
 const businessHours = {
     weekday: { start: 9, end: 17 },
@@ -145,8 +146,7 @@ function getTodayWIB() {
     return wibTime;
 }
 
-let unavailableDates = [];
-
+// ✅ Fetch unavailable dates (dipanggil hanya saat load/ganti bulan)
 async function fetchUnavailableDates(year, month) {
     try {
         const response = await fetch(`{{ route('consultation.unavailableDates') }}?year=${year}&month=${month}`);
@@ -158,12 +158,10 @@ async function fetchUnavailableDates(year, month) {
     }
 }
 
-async function renderCalendar(date) {
+// ✅ Render calendar (TIDAK fetch API lagi, pakai state global)
+function renderCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
-    
-    // ✅ Fetch unavailable dates untuk bulan ini
-    await fetchUnavailableDates(year, month + 1);
     
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -187,7 +185,7 @@ async function renderCalendar(date) {
         const dateObj = new Date(year, month, day);
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const isPastOrToday = dateObj <= today;
-        const isUnavailable = unavailableDates.includes(dateStr);
+        const isUnavailable = unavailableDates.includes(dateStr); // ✅ Pakai state global
         const isSelected = selectedDate && 
             dateObj.getDate() === selectedDate.getDate() &&
             dateObj.getMonth() === selectedDate.getMonth() &&
@@ -197,7 +195,6 @@ async function renderCalendar(date) {
         dayCell.type = 'button';
         dayCell.textContent = day;
         
-        // ✅ Update styling untuk unavailable
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPastOrToday || isUnavailable
                 ? 'text-stone-300 cursor-not-allowed bg-transparent line-through' 
@@ -216,24 +213,24 @@ async function renderCalendar(date) {
     }
 }
 
+// ✅ Select date: Update UI dulu, baru fetch
 async function selectDate(date) {
     selectedDate = date;
     selectedTime = null;
-    renderCalendar(currentDate);
-    await fetchAvailability(date);
-    // renderTimeSlots(date);
     
-    // Tampilkan dynamic date display setiap kali tanggal dipilih
+    // ✅ 1. Update calendar style dulu (instant feedback)
+    renderCalendar(currentDate);
+    
+    // ✅ 2. Update selected date display dulu
     const displayDiv = document.getElementById('selected-datetime-display');
     const textDiv = document.getElementById('selected-datetime-text');
-    if (selectedDate) {
-        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-        const dateStr = selectedDate.toLocaleDateString('en-US', options);
-        textDiv.textContent = dateStr;
-        displayDiv.classList.remove('hidden');
-    } else {
-        displayDiv.classList.add('hidden');
-    }
+    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    const dateStr = selectedDate.toLocaleDateString('en-US', options);
+    textDiv.textContent = dateStr;
+    displayDiv.classList.remove('hidden');
+    
+    // ✅ 3. Baru fetch availability (async, non-blocking)
+    await fetchAvailability(date);
 }
 
 async function fetchAvailability(date) {
@@ -242,6 +239,7 @@ async function fetchAvailability(date) {
     const timeSlotsContainer = document.getElementById('time-slots-container');
     const noDateMessage = document.getElementById('no-date-message');
     
+    // ✅ Show container & loading
     timeSlotsContainer.classList.remove('hidden');
     noDateMessage.classList.add('hidden');
     loadingDiv.classList.remove('hidden');
@@ -256,23 +254,23 @@ async function fetchAvailability(date) {
         const response = await fetch(`{{ route('consultation.availability') }}?date=${dateStr}&type=${consultationType}`);
         const data = await response.json();
         
+        loadingDiv.classList.add('hidden');
+        timeSlotsDiv.classList.remove('hidden');
+        
         if (data.is_unavailable) {
-            loadingDiv.classList.add('hidden');
-            timeSlotsDiv.classList.remove('hidden');
             timeSlotsDiv.innerHTML = `<div class="text-center py-8 text-rose-600 font-bold text-sm">Tanggal ini tidak tersedia untuk booking.</div>`;
             return;
         }
 
         bookedSlots = data.booked_slots || [];
-        
-        loadingDiv.classList.add('hidden');
-        timeSlotsDiv.classList.remove('hidden');
         renderTimeSlots(date);
+        
     } catch (error) {
         console.error('Error fetching availability:', error);
         bookedSlots = [];
         loadingDiv.classList.add('hidden');
         timeSlotsDiv.classList.remove('hidden');
+        timeSlotsDiv.innerHTML = `<div class="text-center py-8 text-stone-400 text-sm">Failed to load time slots. Please try again.</div>`;
     }
 }
 
@@ -282,9 +280,6 @@ function renderTimeSlots(date) {
     const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
     
     const timeSlots = document.getElementById('time-slots');
-    
-    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    
     timeSlots.innerHTML = '';
     
     const slots = generateTimeSlots(hours.start, hours.end, duration);
@@ -305,27 +300,41 @@ function renderTimeSlots(date) {
 
 function generateTimeSlots(startHour, endHour, duration) {
     const slots = [];
-    let currentMinutes = startHour * 60;
-    const endMinutes = endHour * 60;
     
-    while (currentMinutes + duration <= endMinutes) {
-        const hour = Math.floor(currentMinutes / 60);
-        const minute = currentMinutes % 60;
-        const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    if (duration === 60) {
+        // ✅ DESIGN: Generate hourly slots (09:00, 10:00, 11:00, ...)
+        for (let hour = startHour; hour < endHour; hour++) {
+            const time24 = `${hour.toString().padStart(2, '0')}:00`;
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            const time12 = `${hour12}:00 ${period}`;
+            
+            slots.push({ hour, minute: 0, time24, time12 });
+        }
+    } else {
+        // ✅ SHORT: Generate 30-min slots (existing logic)
+        let currentMinutes = startHour * 60;
+        const endMinutes = endHour * 60;
         
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-        const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
-        
-        slots.push({ hour, minute, time24, time12 });
-        currentMinutes += duration;
+        while (currentMinutes + duration <= endMinutes) {
+            const hour = Math.floor(currentMinutes / 60);
+            const minute = currentMinutes % 60;
+            const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+            
+            slots.push({ hour, minute, time24, time12 });
+            currentMinutes += duration;
+        }
     }
+    
     return slots;
 }
 
 function createTimeSection(title, slots) {
     const section = document.createElement('div');
-    // --- UPDATED CSS FOR TIME SECTION ---
     section.innerHTML = `
         <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 border-b border-stone-100 pb-2">${title}</h4>
         <div class="grid grid-cols-3 gap-2 mb-6">
@@ -353,13 +362,8 @@ function createTimeSection(title, slots) {
 
 function selectTime(time24, time12) {    
     selectedTime = time24;
-    
-    // Re-render to update active state CSS
     if(selectedDate) renderTimeSlots(selectedDate);
-    
-    setTimeout(() => {
-        proceedToDetails();
-    }, 300);
+    setTimeout(() => proceedToDetails(), 300);
 }
 
 function proceedToDetails() {
@@ -379,18 +383,23 @@ function proceedToDetails() {
     window.location.href = `{{ route('consultation.details') }}?${params.toString()}`;
 }
 
-document.getElementById('prev-month').onclick = () => {
+// ✅ Update prev/next month: Fetch unavailable dates, baru render
+document.getElementById('prev-month').onclick = async () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
+    await fetchUnavailableDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
     renderCalendar(currentDate);
 };
 
-document.getElementById('next-month').onclick = () => {
+document.getElementById('next-month').onclick = async () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
+    await fetchUnavailableDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
     renderCalendar(currentDate);
 };
 
+// ✅ Init: Fetch unavailable dates sekali, baru render
 (async function() {
-    await renderCalendar(currentDate);
+    await fetchUnavailableDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
+    renderCalendar(currentDate);
 })();
 </script>
 

@@ -76,15 +76,15 @@
                 <div id="time-slots-container" class="bg-white rounded-sm shadow-sm border border-stone-200 p-6 md:p-8 hidden">
                     
                     {{-- Loading --}}
-                    <div id="loading-slots" class="text-center py-10">
+                    <div id="loading-slots" class="text-center py-10 hidden">
                         <div class="animate-spin w-6 h-6 border-2 border-stone-200 border-t-stone-900 rounded-full mx-auto mb-3"></div>
                         <p class="text-xs text-stone-400 uppercase tracking-widest">Loading Slots...</p>
                     </div>
                     
                     {{-- Slots Grid --}}
-                    <div id="time-slots" class="space-y-6 hidden"></div>
+                    <div id="time-slots" class="space-y-6"></div>
 
-                    {{-- ✅ Tombol Disable/Enable Full Day --}}
+                    {{-- Tombol Disable/Enable Full Day --}}
                     <button 
                         type="button"
                         id="disable-full-day-btn"
@@ -107,14 +107,30 @@
 </div>
 
 <script>
-let currentDate = new Date();
-let selectedDate = null;
-let bookedSlots = [];
-let disabledSlots = [];
-let unavailableDates = []; // ✅ Tambahkan untuk track unavailable dates
+// ===================================
+// STATE MANAGEMENT
+// ===================================
+const state = {
+    currentDate: new Date(),
+    selectedDate: null,
+    bookedSlots: [],
+    disabledSlots: [],
+    unavailableDates: [],
+    cache: {
+        unavailableDates: new Map(), // Cache per month
+        slots: new Map() // Cache per date
+    }
+};
 
-const businessHours = { start: 9, end: 17 };
+const config = {
+    businessHours: { start: 9, weekdayEnd: 17, weekendEnd: 12 },
+    timezone: 'WIB (GMT+7)',
+    slotInterval: 30
+};
 
+// ===================================
+// UTILITY FUNCTIONS
+// ===================================
 function getTodayWIB() {
     const now = new Date();
     const wibOffset = 7 * 60;
@@ -124,25 +140,94 @@ function getTodayWIB() {
     return wibTime;
 }
 
-// ✅ Fetch unavailable dates untuk bulan tertentu
+function formatDateKey(year, month) {
+    return `${year}-${String(month).padStart(2, '0')}`;
+}
+
+function formatDateStr(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function isWeekend(date) {
+    const day = date.getDay();
+    return day === 0 || day === 6;
+}
+
+// ===================================
+// API CALLS (with caching)
+// ===================================
 async function fetchUnavailableDates(year, month) {
+    const cacheKey = formatDateKey(year, month);
+    
+    // Check cache first
+    if (state.cache.unavailableDates.has(cacheKey)) {
+        state.unavailableDates = state.cache.unavailableDates.get(cacheKey);
+        return;
+    }
+    
     try {
         const response = await fetch(`{{ route('admin.calendar.settings.unavailableDates') }}?year=${year}&month=${month}`);
+        if (!response.ok) throw new Error('Failed to fetch unavailable dates');
+        
         const data = await response.json();
-        unavailableDates = data.unavailable_dates || [];
+        state.unavailableDates = data.unavailable_dates || [];
+        
+        // Cache the result
+        state.cache.unavailableDates.set(cacheKey, state.unavailableDates);
     } catch (error) {
         console.error('Error fetching unavailable dates:', error);
-        unavailableDates = [];
+        state.unavailableDates = [];
     }
 }
 
-// ✅ Update renderCalendar dengan highlight unavailable dates
-async function renderCalendar(date) {
+async function fetchSlots(date) {
+    const dateStr = formatDateStr(date);
+    
+    // Check cache first
+    if (state.cache.slots.has(dateStr)) {
+        const cached = state.cache.slots.get(dateStr);
+        state.bookedSlots = cached.booked;
+        state.disabledSlots = cached.disabled;
+        return;
+    }
+    
+    try {
+        const [bookedRes, disabledRes] = await Promise.all([
+            fetch(`{{ route('admin.calendar.settings.booked') }}?date=${dateStr}`),
+            fetch(`{{ route('admin.calendar.settings.disabled') }}?date=${dateStr}`)
+        ]);
+        
+        if (!bookedRes.ok || !disabledRes.ok) throw new Error('Failed to fetch slots');
+        
+        const [bookedData, disabledData] = await Promise.all([
+            bookedRes.json(),
+            disabledRes.json()
+        ]);
+        
+        state.bookedSlots = bookedData.booked_slots || [];
+        state.disabledSlots = disabledData.disabled_slots || [];
+        
+        // Cache the result
+        state.cache.slots.set(dateStr, {
+            booked: state.bookedSlots,
+            disabled: state.disabledSlots
+        });
+    } catch (error) {
+        console.error('Error fetching slots:', error);
+        state.bookedSlots = [];
+        state.disabledSlots = [];
+    }
+}
+
+// ===================================
+// RENDER FUNCTIONS
+// ===================================
+function renderCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
-    
-    // Fetch unavailable dates untuk bulan ini
-    await fetchUnavailableDates(year, month + 1);
     
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById('current-month-year').textContent = `${monthNames[month]} ${year}`;
@@ -153,6 +238,7 @@ async function renderCalendar(date) {
     const calendarDates = document.getElementById('calendar-dates');
     calendarDates.innerHTML = '';
     
+    // Empty cells
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'aspect-square';
@@ -161,26 +247,23 @@ async function renderCalendar(date) {
     
     const today = getTodayWIB();
     
+    // Date cells
     for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(year, month, day);
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateStr = formatDateStr(dateObj);
         const isPast = dateObj < today;
-        const isUnavailable = unavailableDates.includes(dateStr); // ✅ Check unavailable
-        const isSelected = selectedDate && 
-            dateObj.getDate() === selectedDate.getDate() &&
-            dateObj.getMonth() === selectedDate.getMonth() &&
-            dateObj.getFullYear() === selectedDate.getFullYear();
+        const isUnavailable = state.unavailableDates.includes(dateStr);
+        const isSelected = state.selectedDate && formatDateStr(state.selectedDate) === dateStr;
         
         const dayCell = document.createElement('button');
         dayCell.type = 'button';
         dayCell.textContent = day;
         
-        // ✅ Update styling untuk unavailable dates
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPast 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isUnavailable
-                    ? 'bg-rose-100 text-rose-700 border-2 border-rose-300 cursor-pointer hover:bg-rose-200' // ✅ Highlight unavailable
+                    ? 'bg-rose-100 text-rose-700 border-2 border-rose-300 cursor-pointer hover:bg-rose-200'
                     : isSelected
                         ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
@@ -197,54 +280,52 @@ async function renderCalendar(date) {
 }
 
 async function selectDate(date) {
-    selectedDate = date;
-    await renderCalendar(currentDate);
+    state.selectedDate = date;
     
-    const infoDiv = document.getElementById('selected-date-info');
-    const textDiv = document.getElementById('selected-date-text');
-    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    textDiv.textContent = selectedDate.toLocaleDateString('en-US', options);
-    infoDiv.classList.remove('hidden');
+    // ✅ 1. Update UI immediately (instant feedback)
+    renderCalendar(state.currentDate);
+    updateSelectedDateInfo();
+    showTimeSlotsContainer();
     
+    // ✅ 2. Show loading state
+    showLoadingSlots();
+    
+    // ✅ 3. Fetch data in background
     await fetchSlots(date);
+    
+    // ✅ 4. Update UI with data
+    hideLoadingSlots();
     renderTimeSlots();
 }
 
-async function fetchSlots(date) {
-    const loadingDiv = document.getElementById('loading-slots');
-    const timeSlotsDiv = document.getElementById('time-slots');
-    const timeSlotsContainer = document.getElementById('time-slots-container');
-    const noDateMessage = document.getElementById('no-date-message');
+function updateSelectedDateInfo() {
+    const infoDiv = document.getElementById('selected-date-info');
+    const textDiv = document.getElementById('selected-date-text');
     
-    timeSlotsContainer.classList.remove('hidden');
-    noDateMessage.classList.add('hidden');
-    loadingDiv.classList.remove('hidden');
-    timeSlotsDiv.classList.add('hidden');
-    
-    try {
-        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        
-        const [bookedRes, disabledRes] = await Promise.all([
-            fetch(`{{ route('admin.calendar.settings.booked') }}?date=${dateStr}`),
-            fetch(`{{ route('admin.calendar.settings.disabled') }}?date=${dateStr}`)
-        ]);
-        
-        const bookedData = await bookedRes.json();
-        const disabledData = await disabledRes.json();
-        
-        bookedSlots = bookedData.booked_slots || [];
-        disabledSlots = disabledData.disabled_slots || [];
-        
-        loadingDiv.classList.add('hidden');
-        timeSlotsDiv.classList.remove('hidden');
-        
-    } catch (error) {
-        console.error('Error:', error);
-        bookedSlots = [];
-        disabledSlots = [];
-        loadingDiv.classList.add('hidden');
-        timeSlotsDiv.classList.remove('hidden');
+    if (state.selectedDate) {
+        const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        textDiv.textContent = state.selectedDate.toLocaleDateString('en-US', options);
+        infoDiv.classList.remove('hidden');
+    } else {
+        infoDiv.classList.add('hidden');
     }
+}
+
+function showTimeSlotsContainer() {
+    document.getElementById('time-slots-container').classList.remove('hidden');
+    document.getElementById('no-date-message').classList.add('hidden');
+}
+
+function showLoadingSlots() {
+    document.getElementById('loading-slots').classList.remove('hidden');
+    document.getElementById('time-slots').classList.add('hidden');
+    document.getElementById('disable-full-day-btn').classList.add('hidden');
+}
+
+function hideLoadingSlots() {
+    document.getElementById('loading-slots').classList.add('hidden');
+    document.getElementById('time-slots').classList.remove('hidden');
+    document.getElementById('disable-full-day-btn').classList.remove('hidden');
 }
 
 function renderTimeSlots() {
@@ -253,24 +334,25 @@ function renderTimeSlots() {
     const fullDayBtnText = document.getElementById('full-day-btn-text');
     
     timeSlots.innerHTML = '';
-    fullDayBtn.classList.remove('hidden');
     
-    // ✅ Cek apakah full day disabled
-    const isFullDayDisabled = disabledSlots.includes('full_day');
+    const isFullDayDisabled = state.disabledSlots.includes('full_day');
     
+    // Update full day button
     if (isFullDayDisabled) {
         timeSlots.innerHTML = `<div class="text-center py-8 text-rose-600 font-bold text-sm">All time slots disabled for this day.</div>`;
-        fullDayBtn.classList.remove('bg-rose-100', 'text-rose-700', 'border-rose-300', 'hover:bg-rose-200');
-        fullDayBtn.classList.add('bg-green-100', 'text-green-700', 'border-green-300', 'hover:bg-green-200');
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-green-100 text-green-700 border border-green-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-green-200 transition-all';
         fullDayBtnText.textContent = 'Enable Full Day';
         return;
     } else {
-        fullDayBtn.classList.remove('bg-green-100', 'text-green-700', 'border-green-300', 'hover:bg-green-200');
-        fullDayBtn.classList.add('bg-rose-100', 'text-rose-700', 'border-rose-300', 'hover:bg-rose-200');
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-rose-100 text-rose-700 border border-rose-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-rose-200 transition-all';
         fullDayBtnText.textContent = 'Disable Full Day';
     }
     
-    const slots = generateTimeSlots(businessHours.start, businessHours.end, 30);
+    // Generate slots based on weekend/weekday
+    const isWeekendDay = isWeekend(state.selectedDate);
+    const endHour = isWeekendDay ? config.businessHours.weekendEnd : config.businessHours.weekdayEnd;
+    
+    const slots = generateTimeSlots(config.businessHours.start, endHour, config.slotInterval);
     
     const morning = slots.filter(s => s.hour < 12);
     const afternoon = slots.filter(s => s.hour >= 12 && s.hour < 17);
@@ -279,6 +361,19 @@ function renderTimeSlots() {
     if (morning.length > 0) timeSlots.appendChild(createTimeSection('Morning', morning));
     if (afternoon.length > 0) timeSlots.appendChild(createTimeSection('Afternoon', afternoon));
     if (evening.length > 0) timeSlots.appendChild(createTimeSection('Evening', evening));
+    
+    // Weekend info
+    if (isWeekendDay) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded-sm';
+        infoDiv.innerHTML = `
+            <p class="text-xs text-blue-700 text-center">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Weekend hours: 9:00 AM - 12:00 PM only
+            </p>
+        `;
+        timeSlots.appendChild(infoDiv);
+    }
 }
 
 function generateTimeSlots(startHour, endHour, interval) {
@@ -307,8 +402,8 @@ function createTimeSection(title, slots) {
         <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 border-b border-stone-100 pb-2">${title}</h4>
         <div class="grid grid-cols-3 gap-2 mb-6">
             ${slots.map(slot => {
-                const isBooked = bookedSlots.includes(slot.time24);
-                const isDisabled = disabledSlots.includes(slot.time24);
+                const isBooked = state.bookedSlots.includes(slot.time24);
+                const isDisabled = state.disabledSlots.includes(slot.time24);
                 
                 return `
                     <button type="button" 
@@ -331,10 +426,13 @@ function createTimeSection(title, slots) {
     return section;
 }
 
+// ===================================
+// ACTION HANDLERS
+// ===================================
 async function toggleSlot(timeSlot) {
-    if (!selectedDate) return;
+    if (!state.selectedDate) return;
     
-    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+    const dateStr = formatDateStr(state.selectedDate);
     
     try {
         const response = await fetch('{{ route("admin.calendar.settings.toggle") }}', {
@@ -349,9 +447,15 @@ async function toggleSlot(timeSlot) {
             })
         });
         
+        if (!response.ok) throw new Error('Failed to toggle slot');
+        
         const data = await response.json();
         
-        await fetchSlots(selectedDate);
+        // Invalidate cache for this date
+        state.cache.slots.delete(dateStr);
+        
+        // Re-fetch and re-render
+        await fetchSlots(state.selectedDate);
         renderTimeSlots();
         
         const Toast = Swal.mixin({
@@ -373,21 +477,21 @@ async function toggleSlot(timeSlot) {
     }
 }
 
-// ✅ Toggle Full Day (Disable/Enable)
 async function toggleFullDay() {
-    if (!selectedDate) return;
+    if (!state.selectedDate) return;
 
-    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-    const isCurrentlyDisabled = disabledSlots.includes('full_day');
+    const dateStr = formatDateStr(state.selectedDate);
+    const isCurrentlyDisabled = state.disabledSlots.includes('full_day');
 
     const confirm = await Swal.fire({
         title: isCurrentlyDisabled ? 'Enable Full Day?' : 'Disable Full Day?',
-        text: `All time slots on ${selectedDate.toLocaleDateString('en-US')} will be ${isCurrentlyDisabled ? 'enabled' : 'disabled'}.`,
+        text: `All time slots on ${state.selectedDate.toLocaleDateString('en-US')} will be ${isCurrentlyDisabled ? 'enabled' : 'disabled'}.`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: `Yes, ${isCurrentlyDisabled ? 'Enable' : 'Disable'}`,
         cancelButtonText: 'Cancel'
     });
+    
     if (!confirm.isConfirmed) return;
 
     try {
@@ -403,10 +507,22 @@ async function toggleFullDay() {
             })
         });
 
+        if (!response.ok) throw new Error('Failed to toggle full day');
+
         const data = await response.json();
 
-        await fetchSlots(selectedDate);
-        await renderCalendar(currentDate); // ✅ Re-render calendar untuk update warna
+        // Invalidate caches
+        state.cache.slots.delete(dateStr);
+        const cacheKey = formatDateKey(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1);
+        state.cache.unavailableDates.delete(cacheKey);
+
+        // Re-fetch and re-render
+        await Promise.all([
+            fetchUnavailableDates(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1),
+            fetchSlots(state.selectedDate)
+        ]);
+        
+        renderCalendar(state.currentDate);
         renderTimeSlots();
 
         Swal.fire({
@@ -417,20 +533,33 @@ async function toggleFullDay() {
         });
 
     } catch (error) {
+        console.error('Error:', error);
         Swal.fire('Error', 'Failed to update full day status', 'error');
     }
 }
 
-document.getElementById('prev-month').onclick = async () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    await renderCalendar(currentDate);
-};
+async function changeMonth(direction) {
+    state.currentDate.setMonth(state.currentDate.getMonth() + direction);
+    
+    // Fetch unavailable dates for new month
+    await fetchUnavailableDates(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1);
+    
+    // Render calendar
+    renderCalendar(state.currentDate);
+}
 
-document.getElementById('next-month').onclick = async () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    await renderCalendar(currentDate);
-};
+// ===================================
+// EVENT LISTENERS
+// ===================================
+document.getElementById('prev-month').onclick = () => changeMonth(-1);
+document.getElementById('next-month').onclick = () => changeMonth(1);
 
-renderCalendar(currentDate);
+// ===================================
+// INITIALIZATION
+// ===================================
+(async function init() {
+    await fetchUnavailableDates(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1);
+    renderCalendar(state.currentDate);
+})();
 </script>
 @endsection

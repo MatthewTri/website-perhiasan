@@ -48,22 +48,40 @@ class CustomRequestController extends Controller
             return response()->json(['error' => 'Date is required'], 400);
         }
 
+        // Check full day disabled first
+        $isFullDayDisabled = \App\Models\DisabledSlot::where('date', $date)
+            ->whereNull('time_slot')
+            ->exists();
+
+        if ($isFullDayDisabled) {
+            return response()->json([
+                'booked_slots' => [],
+                'is_unavailable' => true
+            ]);
+        }
+
         // Get all bookings for this date
         $bookings = CustomRequest::whereDate('appointment_date', $date)
             ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
             ->get(['appointment_time', 'consultation_type']);
 
+        // Get disabled slots
+        $disabledSlots = \App\Models\DisabledSlot::where('date', $date)
+            ->whereNotNull('time_slot')
+            ->pluck('time_slot')
+            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+            ->toArray();
+
         $bookedSlots = [];
         
+        // Process bookings
         foreach ($bookings as $booking) {
             $time = Carbon::parse($booking->appointment_time);
             $duration = $booking->consultation_type === 'design' ? 60 : 30;
             
-            // Add blocked time slots
             $startMinutes = $time->hour * 60 + $time->minute;
             $endMinutes = $startMinutes + $duration;
             
-            // Jika consultation type yang diminta adalah SHORT
             if ($type === 'short') {
                 // Block setiap 30 menit slot yang overlap
                 $currentMinute = $startMinutes;
@@ -74,10 +92,8 @@ class CustomRequestController extends Controller
                     $bookedSlots[] = $timeSlot;
                     $currentMinute += 30;
                 }
-            } 
-            // Jika consultation type yang diminta adalah DESIGN
-            else {
-                // Block setiap 1 jam slot yang overlap
+            } else {
+                // DESIGN: Block setiap jam penuh yang overlap
                 $currentMinute = $startMinutes;
                 while ($currentMinute < $endMinutes) {
                     $hour = floor($currentMinute / 60);
@@ -90,25 +106,44 @@ class CustomRequestController extends Controller
             }
         }
 
-        // Tambahkan disabled slots
-        $disabledSlots = \App\Models\DisabledSlot::where('date', $date)
-            ->whereNotNull('time_slot')
-            ->pluck('time_slot')
-            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
-            ->toArray();
-
-        $bookedSlots = array_merge($bookedSlots, $disabledSlots);
-
-        // Check full day disabled
-        $isFullDayDisabled = \App\Models\DisabledSlot::where('date', $date)
-            ->whereNull('time_slot')
-            ->exists();
-
-        if ($isFullDayDisabled) {
-            return response()->json([
-                'booked_slots' => [],
-                'is_unavailable' => true
-            ]);
+        // ✅ Process disabled slots based on consultation type
+        if ($type === 'design') {
+            // Untuk DESIGN (1 jam), cek semua jam yang akan overlap dengan disabled slot
+            foreach ($disabledSlots as $disabledTime) {
+                list($disabledHour, $disabledMinute) = explode(':', $disabledTime);
+                $disabledMinutes = (int)$disabledHour * 60 + (int)$disabledMinute;
+                
+                // Cari semua hourly slot yang akan overlap dengan disabled slot ini
+                // Range: dari (disabledMinutes - 59) sampai disabledMinutes
+                // Contoh: jika disabled = 16:30 (990 min)
+                // - Check dari 931 min (15:31) sampai 990 min (16:30)
+                // - Jam yang overlap: 16:00 (karena 16:00+60min=17:00 melewati 16:30)
+                
+                $rangeStart = $disabledMinutes - 59; // 59 menit sebelumnya
+                
+                // Cari semua jam penuh (XX:00) dalam range ini
+                for ($min = 0; $min <= $disabledMinutes; $min += 60) {
+                    // Cek apakah jam ini + 60 menit akan melewati disabled slot
+                    if ($min >= $rangeStart && $min <= $disabledMinutes) {
+                        $hour = floor($min / 60);
+                        $slot = sprintf('%02d:00', $hour);
+                        if (!in_array($slot, $bookedSlots)) {
+                            $bookedSlots[] = $slot;
+                        }
+                    }
+                }
+                
+                // ✅ PERBAIKAN: Langsung block jam dari disabled slot juga
+                // Contoh: disabled 16:30 → block 16:00
+                $blockHour = floor($disabledMinutes / 60);
+                $blockSlot = sprintf('%02d:00', $blockHour);
+                if (!in_array($blockSlot, $bookedSlots)) {
+                    $bookedSlots[] = $blockSlot;
+                }
+            }
+        } else {
+            // Untuk SHORT (30 menit), langsung tambahkan disabled slots
+            $bookedSlots = array_merge($bookedSlots, $disabledSlots);
         }
         
         return response()->json([
