@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Consultation;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,7 +25,7 @@ class NewConsultationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Jewellery Consultation Request - ' . $this->customRequest->user_name,
+            subject: 'New Jewellery Consultation Request - ' . $this->customRequest->first_name,
         );
     }
 

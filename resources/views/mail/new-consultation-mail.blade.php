@@ -1,232 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>New Consultation Request</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333333;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-        .email-container {
-            max-width: 650px;
-            margin: 30px auto;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .header {
-            background: #ffd8d8;
-            padding: 40px 30px;
-            text-align: center;
-            border-bottom: 3px solid #FF9999;
-        }
-        .header h1 {
-            margin: 0;
-            color: #000000;
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        .header p {
-            margin: 10px 0 0 0;
-            color: #000000;
-            font-size: 15px;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #8B0000;
-            margin: 30px 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #FFCCCC;
-        }
-        .section-title:first-child {
-            margin-top: 0;
-        }
-        .info-row {
-            display: table;
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        .info-label {
-            display: table-cell;
-            width: 35%;
-            font-weight: 600;
-            color: #555555;
-            padding: 8px 12px 8px 0;
-            vertical-align: top;
-        }
-        .info-value {
-            display: table-cell;
-            width: 65%;
-            color: #333333;
-            padding: 8px 0;
-            vertical-align: top;
-        }
-        .notes-section {
-            background-color: #FFF5F5;
-            border-left: 4px solid #FFCCCC;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .notes-title {
-            font-weight: 600;
-            color: #8B0000;
-            margin: 0 0 10px 0;
-            font-size: 16px;
-        }
-        .notes-content {
-            color: #333333;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-        .images-section {
-            background-color: #FFFAFA;
-            border: 2px solid #FFCCCC;
-            border-radius: 6px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .images-count {
-            font-weight: 600;
-            color: #8B0000;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        .image-item {
-            background-color: #ffffff;
-            border: 1px solid #FFE0E0;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            color: #555555;
-        }
-        .image-item:last-child {
-            margin-bottom: 0;
-        }
-        .no-images {
-            color: #999999;
-            font-style: italic;
-            padding: 15px;
-            text-align: center;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-        .button-container {
-            text-align: center;
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .button {
-            display: inline-block;
-            padding: 14px 35px;
-            background: #ffd8d8;
-            color: #000000;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 16px;
-            border: 2px solid #FF9999;
-            transition: all 0.3s ease;
-        }
-        .button:hover {
-            background: linear-gradient(135deg, #FFB3B3 0%, #FF9999 100%);
-        }
-        .footer {
-            background-color: #f9f9f9;
-            padding: 25px 30px;
-            text-align: center;
-            border-top: 1px solid #e0e0e0;
-            color: #777777;
-            font-size: 13px;
-        }
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #FFCCCC, transparent);
-            margin: 25px 0;
+        /* Base Reset */
+        body { margin: 0; padding: 0; width: 100% !important; background-color: #f9fafb; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Mobile Responsive */
+        @media only screen and (max-width: 600px) {
+            .main-container { width: 100% !important; max-width: 100% !important; }
+            .mobile-stack { display: block !important; width: 100% !important; padding-bottom: 10px; }
+            .mobile-center { text-align: center !important; }
+            .inner-padding { padding: 30px 20px !important; }
         }
     </style>
 </head>
-<body>
-    <div class="email-container">
-        <div class="header">
-            <h1>New Consultation Request</h1>
-            <p>A new jewellery consultation request has been submitted</p>
-        </div>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
 
-        <div class="content">
-            <div class="section-title">Customer Information</div>
-            
-            <div class="info-row">
-                <div class="info-label">Customer Name:</div>
-                <div class="info-value">{{ $customRequest->user_name }}</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Email Address:</div>
-                <div class="info-value">{{ $customRequest->user_email }}</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Phone Number:</div>
-                <div class="info-value">{{ $customRequest->user_phone }}</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Request Date:</div>
-                <div class="info-value">{{ $customRequest->created_at->format('l, F j, Y \a\t g:i A') }}</div>
-            </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f9fafb">
+        <tr>
+            <td align="center" valign="top" style="padding-top: 40px; padding-bottom: 40px;">
+                
+                <table class="main-container" width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="max-width: 600px; width: 100%; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    
+                    <tr>
+                        <td align="center" style="padding: 40px 0 10px 0;">
+                            <span style="font-family: 'Georgia', serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #1c1917; font-weight: bold;">
+                                Cecile Private Collection
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-bottom: 40px;">
+                            <span style="font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 1px;">Admin Notification</span>
+                        </td>
+                    </tr>
 
-            @if($customRequest->notes)
-            <div class="divider"></div>
-            
-            <div class="section-title">Additional Notes</div>
-            <div class="notes-section">
-                <div class="notes-content">{{ $customRequest->notes }}</div>
-            </div>
-            @endif
+                    <tr>
+                        <td class="inner-padding" align="center" style="padding: 0 50px 40px 50px;">
+                            <h1 style="font-family: 'Georgia', serif; color: #1c1917; font-size: 28px; font-weight: 400; margin: 0 0 15px 0; line-height: 1.3;">
+                                New Consultation Request
+                            </h1>
+                            <p style="color: #78716c; font-size: 14px; margin: 0; line-height: 1.6;">
+                                A client has submitted a request for a consultation. <br>Please review the details below.
+                            </p>
+                        </td>
+                    </tr>
 
-            <div class="divider"></div>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 40px 40px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                                <tr>
+                                    <td align="center" style="padding: 30px 20px;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 10px 0;">
+                                            Requested Schedule
+                                        </p>
+                                        <h2 style="font-family: 'Georgia', serif; font-size: 24px; color: #1c1917; margin: 0 0 5px 0; font-weight: 400;">
+                                            {{ \Carbon\Carbon::parse($customRequest->appointment_date)->format('l, F j, Y') }}
+                                        </h2>
+                                        <p style="font-size: 16px; color: #44403c; margin: 0 0 20px 0;">
+                                            {{ \Carbon\Carbon::parse($customRequest->appointment_time)->format('g:i A') }} 
+                                            - 
+                                            @if($customRequest->consultation_type === 'design')
+                                                {{ \Carbon\Carbon::parse($customRequest->appointment_time)->addHour()->format('g:i A') }}
+                                            @else
+                                                {{ \Carbon\Carbon::parse($customRequest->appointment_time)->addMinutes(30)->format('g:i A') }}
+                                            @endif
+                                            <span style="color: #a8a29e; font-size: 12px;">(WIB)</span>
+                                        </p>
+                                        
+                                        <span style="background-color: #f5f5f4; color: #57534e; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 12px; border-radius: 2px;">
+                                            {{ $customRequest->consultation_type === 'design' ? 'Custom Design (60 Minutes)' : 'Short Consultation (30 Minutes)' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-            <div class="section-title">Design References</div>
-            
-            @if($customRequest->images->count() > 0)
-                <div class="images-section">
-                    <div class="images-count">
-                        Total Attached Images: {{ $customRequest->images->count() }}
-                    </div>
-                </div>
-            @else
-                <div class="no-images">
-                    No reference images attached
-                </div>
-            @endif
+                    <tr>
+                        <td class="inner-padding" style="padding: 0 50px 30px 50px;">
+                            <p style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #1c1917; margin-bottom: 20px; border-bottom: 1px solid #f5f5f4; padding-bottom: 10px;">
+                                Client Profile
+                            </p>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
+                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Full Name</span>
+                                        <span style="font-size: 14px; color: #1c1917; font-weight: 500;">{{ $customRequest->first_name }} {{ $customRequest->last_name }}</span>
+                                    </td>
+                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
+                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Submitted On</span>
+                                        <span style="font-size: 14px; color: #1c1917;">{{ $customRequest->created_at->format('M j, Y') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
+                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</span>
+                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</a>
+                                    </td>
+                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
+                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</span>
+                                        <a href="tel:{{ $customRequest->user_phone }}" style="font-size: 14px; color: #1c1917; text-decoration: none;">{{ $customRequest->user_phone }}</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-            <div class="button-container">
-                <a href="{{ route('admin.consultation.show', $customRequest->id) }}" 
-                    class="button" 
-                    style="color: #000000 !important; text-decoration: none !important;">
-                    View Full Details
-                </a>
-            </div>
-        </div>
+                    <tr>
+                        <td class="inner-padding" style="padding: 0 50px 40px 50px;">
+                            @if($customRequest->appointment_notes)
+                                <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E; margin-bottom: 20px;">
+                                    <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Client Notes</p>
+                                    <p style="font-size: 14px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
+                                        "{{ $customRequest->appointment_notes }}"
+                                    </p>
+                                </div>
+                            @endif
 
-        <div class="footer">
-            <p>This is an automated notification from Cecile Private Collection</p>
-            <p>Please do not reply directly to this email</p>
-        </div>
-    </div>
+                            @if($customRequest->images->count() > 0)
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td valign="middle">
+                                            <span style="font-size: 13px; color: #57534e;">
+                                                <strong>{{ $customRequest->images->count() }} Reference Image(s)</strong> attached to this request.
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding-bottom: 50px;">
+                            <a href="{{ route('admin.consultation.show', $customRequest->id) }}" 
+                               style="background-color: #1c1917; color: #ffffff; padding: 16px 32px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
+                                Review Application
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="border-top: 1px solid #f5f5f4; padding: 30px; background-color: #ffffff;">
+                            <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
+                                Cecile Private Collection
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                                &copy; {{ date('Y') }} All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td height="40">&nbsp;</td></tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

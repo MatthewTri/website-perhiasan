@@ -7,7 +7,7 @@ use App\Models\CustomRequest;
 use App\Models\CustomRequestImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NewConsultationMail;
+use App\Mail\Consultation\NewConsultationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -255,7 +255,7 @@ class CustomRequestController extends Controller
             $adminEmail = config('mail.admin_email', 'admin@yoursite.com');
             
             // ✅ PERBAIKAN: Kirim object yang sudah di-load dengan images
-            // Mail::to($adminEmail)->send(new NewConsultationMail($customRequestWithImages));
+            Mail::to($adminEmail)->send(new NewConsultationMail($customRequestWithImages));
             
             Log::info('Consultation email sent successfully', [
                 'request_id' => $customRequest->id,
@@ -270,7 +270,7 @@ class CustomRequestController extends Controller
             ]);
         }
 
-        return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
+        return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! Our team will contact you in due time.');
     }
 
 

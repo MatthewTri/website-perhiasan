@@ -339,14 +339,13 @@ function renderTimeSlots() {
     
     const isFullDayDisabled = state.disabledSlots.includes('full_day');
     
-    // ✅ UPDATED: Rose → #E8B49E
     if (isFullDayDisabled) {
         timeSlots.innerHTML = `<div class="text-center py-8 text-[#8B5A3C] font-bold text-sm">All time slots disabled for this day.</div>`;
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-green-100 text-green-700 border border-green-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-green-200 transition-all';
+        // Ganti class tombol enable full day:
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E8B49E] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
         fullDayBtnText.textContent = 'Enable Full Day';
         return;
     } else {
-        // ✅ UPDATED: Rose → #E8B49E
         fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E8B49E] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
         fullDayBtnText.textContent = 'Disable Full Day';
     }
@@ -368,9 +367,9 @@ function renderTimeSlots() {
     // Weekend info
     if (isWeekendDay) {
         const infoDiv = document.createElement('div');
-        infoDiv.className = 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded-sm';
+        infoDiv.className = 'mt-4 p-3 bg-[#F6EDE7] border border-[#E8B49E] rounded-sm';
         infoDiv.innerHTML = `
-            <p class="text-xs text-blue-700 text-center">
+            <p class="text-xs text-[#8B5A3C] text-center font-medium">
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Weekend hours: 9:00 AM - 12:00 PM only
             </p>
