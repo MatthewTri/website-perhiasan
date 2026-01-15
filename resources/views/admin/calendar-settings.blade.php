@@ -47,11 +47,12 @@
                     {{-- Dates Grid --}}
                     <div id="calendar-dates" class="grid grid-cols-7 gap-2"></div>
 
+                    {{-- Legend di bawah calendar --}}
                     <div class="mt-6 pt-4 border-t border-stone-100 flex justify-between items-center">
                         <p class="text-[10px] text-stone-400 uppercase tracking-widest">Timezone: WIB (GMT+7)</p>
                         <div class="flex gap-3 text-xs">
                             <span class="flex items-center gap-1.5">
-                                <span class="w-3 h-3 bg-rose-100 border border-rose-300 rounded-sm"></span>
+                                <span class="w-3 h-3 bg-[#E8B49E] border border-[#d6a88b] rounded-sm"></span>
                                 <span class="text-stone-500">Disabled</span>
                             </span>
                             <span class="flex items-center gap-1.5">
@@ -88,7 +89,7 @@
                     <button 
                         type="button"
                         id="disable-full-day-btn"
-                        class="w-full py-3 mt-4 bg-rose-100 text-rose-700 border border-rose-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-rose-200 transition-all hidden"
+                        class="w-full py-3 mt-4 bg-rose-100 text-rose-700 cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-rose-200 transition-all hidden"
                         onclick="toggleFullDay()"
                     >
                         <span id="full-day-btn-text">Disable Full Day</span>
@@ -259,11 +260,12 @@ function renderCalendar(date) {
         dayCell.type = 'button';
         dayCell.textContent = day;
         
+        // ✅ UPDATED: Rose → #E8B49E
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPast 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isUnavailable
-                    ? 'bg-rose-100 text-rose-700 border-2 border-rose-300 cursor-pointer hover:bg-rose-200'
+                    ? 'bg-[#E8B49E] text-white font-bold shadow-md cursor-pointer hover:bg-[#d6a88b]'
                     : isSelected
                         ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
@@ -337,14 +339,15 @@ function renderTimeSlots() {
     
     const isFullDayDisabled = state.disabledSlots.includes('full_day');
     
-    // Update full day button
+    // ✅ UPDATED: Rose → #E8B49E
     if (isFullDayDisabled) {
-        timeSlots.innerHTML = `<div class="text-center py-8 text-rose-600 font-bold text-sm">All time slots disabled for this day.</div>`;
+        timeSlots.innerHTML = `<div class="text-center py-8 text-[#8B5A3C] font-bold text-sm">All time slots disabled for this day.</div>`;
         fullDayBtn.className = 'w-full py-3 mt-4 bg-green-100 text-green-700 border border-green-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-green-200 transition-all';
         fullDayBtnText.textContent = 'Enable Full Day';
         return;
     } else {
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-rose-100 text-rose-700 border border-rose-300 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-rose-200 transition-all';
+        // ✅ UPDATED: Rose → #E8B49E
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E8B49E] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
         fullDayBtnText.textContent = 'Disable Full Day';
     }
     
@@ -405,6 +408,7 @@ function createTimeSection(title, slots) {
                 const isBooked = state.bookedSlots.includes(slot.time24);
                 const isDisabled = state.disabledSlots.includes(slot.time24);
                 
+                // ✅ UPDATED: Rose → #E8B49E
                 return `
                     <button type="button" 
                             onclick="${isBooked ? '' : `toggleSlot('${slot.time24}')`}"
@@ -413,7 +417,7 @@ function createTimeSection(title, slots) {
                                 isBooked 
                                     ? 'bg-amber-50 text-amber-600 border-amber-200 cursor-not-allowed' 
                                     : isDisabled
-                                        ? 'bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200 cursor-pointer'
+                                        ? 'bg-[#E8B49E] text-white border-[#d6a88b] hover:bg-[#d6a88b] cursor-pointer font-medium shadow-sm'
                                         : 'border-stone-200 text-stone-600 hover:bg-stone-100 cursor-pointer'
                             }">
                         ${slot.time12}

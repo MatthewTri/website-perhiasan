@@ -90,8 +90,8 @@
                     <div class="relative">
                         <select name="type" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
                             <option value="">All Services</option>
-                            <option value="short" {{ request('type') == 'short' ? 'selected' : '' }}>General Inquiry (30m)</option>
-                            <option value="design" {{ request('type') == 'design' ? 'selected' : '' }}>Bespoke Design (60m)</option>
+                            <option value="short" {{ request('type') == 'short' ? 'selected' : '' }}>Short Consultation (30m)</option>
+                            <option value="design" {{ request('type') == 'design' ? 'selected' : '' }}>Custom Design (60m)</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
@@ -151,12 +151,12 @@
                                     <td class="px-6 py-5">
                                         @if($consultation->consultation_type === 'design')
                                             <span class="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></span> Bespoke Design
+                                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></span> Custom Design
                                             </span>
                                             <span class="block text-[10px] text-stone-400 mt-1 pl-3.5">60 Mins</span>
                                         @else
                                             <span class="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 mr-2"></span> General Inquiry
+                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 mr-2"></span> Short Consultation
                                             </span>
                                             <span class="block text-[10px] text-stone-400 mt-1 pl-3.5">30 Mins</span>
                                         @endif

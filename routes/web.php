@@ -153,6 +153,7 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
     Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
+// Admin Calendar Settings
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/calendar-settings', [CalendarSettingController::class, 'index'])->name('calendar.settings');
