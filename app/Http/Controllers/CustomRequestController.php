@@ -90,9 +90,50 @@ class CustomRequestController extends Controller
             }
         }
 
+        // Tambahkan disabled slots
+        $disabledSlots = \App\Models\DisabledSlot::where('date', $date)
+            ->whereNotNull('time_slot')
+            ->pluck('time_slot')
+            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+            ->toArray();
+
+        $bookedSlots = array_merge($bookedSlots, $disabledSlots);
+
+        // Check full day disabled
+        $isFullDayDisabled = \App\Models\DisabledSlot::where('date', $date)
+            ->whereNull('time_slot')
+            ->exists();
+
+        if ($isFullDayDisabled) {
+            return response()->json([
+                'booked_slots' => [],
+                'is_unavailable' => true
+            ]);
+        }
+        
         return response()->json([
             'booked_slots' => array_unique($bookedSlots)
         ]);
+    }
+
+    public function getUnavailableDates(Request $request)
+    {
+        $year = $request->query('year');
+        $month = $request->query('month');
+        
+        if (!$year || !$month) {
+            return response()->json(['unavailable_dates' => []]);
+        }
+
+        // Fetch full day disabled slots untuk bulan tertentu
+        $dates = \App\Models\DisabledSlot::whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->whereNull('time_slot') // hanya full day
+            ->pluck('date')
+            ->map(fn($d) => $d->format('Y-m-d'))
+            ->toArray();
+
+        return response()->json(['unavailable_dates' => $dates]);
     }
 
     public function showDetails(Request $request)
@@ -196,4 +237,6 @@ class CustomRequestController extends Controller
 
         return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! We will contact you within 24-48 hours.');
     }
+
+
 }

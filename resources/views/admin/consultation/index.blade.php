@@ -12,7 +12,7 @@
             </div>
             
             <div class="flex gap-4">
-                <a href="#" class="group inline-flex items-center text-xs font-bold tracking-[0.15em] text-stone-600 uppercase hover:text-stone-900 transition-colors px-4 py-2 border border-stone-200 rounded-sm hover:border-stone-400 bg-white">
+                <a href="{{ route('admin.calendar.settings') }}" class="group inline-flex items-center text-xs font-bold tracking-[0.15em] text-stone-600 uppercase hover:text-stone-900 transition-colors px-4 py-2 border border-stone-200 rounded-sm hover:border-stone-400 bg-white">
                     <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Calendar Settings
                 </a>

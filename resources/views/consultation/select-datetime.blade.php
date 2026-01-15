@@ -145,9 +145,25 @@ function getTodayWIB() {
     return wibTime;
 }
 
-function renderCalendar(date) {
+let unavailableDates = [];
+
+async function fetchUnavailableDates(year, month) {
+    try {
+        const response = await fetch(`{{ route('consultation.unavailableDates') }}?year=${year}&month=${month}`);
+        const data = await response.json();
+        unavailableDates = data.unavailable_dates || [];
+    } catch (error) {
+        console.error('Error fetching unavailable dates:', error);
+        unavailableDates = [];
+    }
+}
+
+async function renderCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
+    
+    // ✅ Fetch unavailable dates untuk bulan ini
+    await fetchUnavailableDates(year, month + 1);
     
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -169,7 +185,9 @@ function renderCalendar(date) {
     
     for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(year, month, day);
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const isPastOrToday = dateObj <= today;
+        const isUnavailable = unavailableDates.includes(dateStr);
         const isSelected = selectedDate && 
             dateObj.getDate() === selectedDate.getDate() &&
             dateObj.getMonth() === selectedDate.getMonth() &&
@@ -179,16 +197,16 @@ function renderCalendar(date) {
         dayCell.type = 'button';
         dayCell.textContent = day;
         
-        // --- UPDATED CSS CLASSES FOR CALENDAR DAY ---
+        // ✅ Update styling untuk unavailable
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
-            isPastOrToday 
-                ? 'text-stone-300 cursor-not-allowed bg-transparent' 
+            isPastOrToday || isUnavailable
+                ? 'text-stone-300 cursor-not-allowed bg-transparent line-through' 
                 : isSelected
                     ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                     : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
         }`;
         
-        if (!isPastOrToday) {
+        if (!isPastOrToday && !isUnavailable) {
             dayCell.onclick = () => selectDate(dateObj);
         } else {
             dayCell.disabled = true;
@@ -203,7 +221,7 @@ async function selectDate(date) {
     selectedTime = null;
     renderCalendar(currentDate);
     await fetchAvailability(date);
-    renderTimeSlots(date);
+    // renderTimeSlots(date);
     
     // Tampilkan dynamic date display setiap kali tanggal dipilih
     const displayDiv = document.getElementById('selected-datetime-display');
@@ -238,11 +256,18 @@ async function fetchAvailability(date) {
         const response = await fetch(`{{ route('consultation.availability') }}?date=${dateStr}&type=${consultationType}`);
         const data = await response.json();
         
+        if (data.is_unavailable) {
+            loadingDiv.classList.add('hidden');
+            timeSlotsDiv.classList.remove('hidden');
+            timeSlotsDiv.innerHTML = `<div class="text-center py-8 text-rose-600 font-bold text-sm">Tanggal ini tidak tersedia untuk booking.</div>`;
+            return;
+        }
+
         bookedSlots = data.booked_slots || [];
         
         loadingDiv.classList.add('hidden');
         timeSlotsDiv.classList.remove('hidden');
-        
+        renderTimeSlots(date);
     } catch (error) {
         console.error('Error fetching availability:', error);
         bookedSlots = [];
@@ -364,7 +389,9 @@ document.getElementById('next-month').onclick = () => {
     renderCalendar(currentDate);
 };
 
-renderCalendar(currentDate);
+(async function() {
+    await renderCalendar(currentDate);
+})();
 </script>
 
 <style>

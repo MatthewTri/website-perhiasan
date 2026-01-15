@@ -17,6 +17,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Admin\CalendarSettingController;
 
 
 // Home Page
@@ -80,6 +81,7 @@ Route::get('/consultation', [CustomRequestController::class, 'index'])->name('co
 Route::get('/consultation/select-datetime', [CustomRequestController::class, 'create'])->name('consultation.create');
 Route::get('/consultation/details', [CustomRequestController::class, 'showDetails'])->name('consultation.details');
 Route::post('/consultation', [CustomRequestController::class, 'store'])->name('consultation.store');
+Route::get('/consultation/unavailable-dates', [CustomRequestController::class, 'getUnavailableDates'])->name('consultation.unavailableDates');
 
 // API untuk cek ketersediaan slot konsultasi
 Route::get('/api/consultation/availability', [CustomRequestController::class, 'checkAvailability'])->name('consultation.availability');
@@ -149,4 +151,13 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
     Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+});
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/calendar-settings', [CalendarSettingController::class, 'index'])->name('calendar.settings');
+    Route::get('/calendar-settings/booked', [CalendarSettingController::class, 'getBookedSlots'])->name('calendar.settings.booked');
+    Route::get('/calendar-settings/disabled', [CalendarSettingController::class, 'getDisabledSlots'])->name('calendar.settings.disabled');
+    Route::get('/calendar-settings/unavailable-dates', [CalendarSettingController::class, 'getUnavailableDates'])->name('calendar.settings.unavailableDates');
+    Route::post('/calendar-settings/toggle', [CalendarSettingController::class, 'toggleSlot'])->name('calendar.settings.toggle');
 });
