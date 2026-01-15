@@ -194,7 +194,16 @@
 
                 {{-- Action --}}
                 <div class="pt-8 border-t border-stone-100">
-                    <button type="submit" id="submit-btn" class="w-full bg-stone-900 text-white py-4 px-8 text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 rounded-sm cursor-pointer">
+                    {{-- Cancellation Policy Link --}}
+                    <div class="mb-6 text-center">
+                        <button type="button" onclick="showCancellationPolicy()" 
+                                class="text-xs text-stone-500 hover:text-stone-900 underline decoration-dotted underline-offset-4 cursor-pointer transition-colors">
+                            View Cancellation / Reschedule Policy
+                        </button>
+                    </div>
+
+                    <button type="submit" id="submit-btn" 
+                            class="w-full bg-stone-900 text-white py-4 px-8 text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 rounded-sm cursor-pointer">
                         <span id="submit-text">Confirm Appointment</span>
                     </button>
                     <p class="text-center text-[10px] text-stone-400 mt-4 uppercase tracking-widest">
@@ -207,83 +216,231 @@
     </div>
 </div>
 
+{{-- Modal: Cancellation Policy --}}
+<div id="cancellation-policy-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-sm shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+        <div class="bg-gradient-to-r from-[#E8B49E] to-[#d6a88b] p-6">
+            <h3 class="text-xl text-center text-white font-semibold">Cancellation / Reschedule Policy</h3>
+        </div>
+        <div class="p-8">
+            <div class="space-y-4 text-sm text-stone-700 leading-relaxed">
+                <p class="font-medium text-stone-900">
+                    We value your time and ours. Please note:
+                </p>
+                <ul class="space-y-2 ml-4">
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Cancellations or rescheduling requests must be made at least <strong>24 hours</strong> before your appointment.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Late cancellations (less than 24 hours) may result in appointment forfeiture.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>No-shows will be recorded and may affect future booking privileges.</span>
+                    </li>
+                </ul>
+                <p class="text-xs text-stone-500 italic pt-2 border-t border-stone-100 mt-4">
+                    For any changes, please <a href="#" class="cursor-pointer underline">contact us</a> as soon as possible via email or phone.
+                </p>
+            </div>
+        </div>
+        <div class="bg-stone-50 px-8 py-4 flex justify-end border-t border-stone-100">
+            <button type="button" onclick="closeCancellationPolicy()" 
+                    class="px-6 cursor-pointer py-2 bg-[#E8B49E] text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-[#d6a88b] transition-all shadow-md">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-let selectedFiles = [];
+    let selectedFiles = [];
 
-// Drag & Drop Handler
-document.addEventListener('DOMContentLoaded', function() {
-    const uploadLabel = document.querySelector('label[for="reference_images"]');
-    
-    if (uploadLabel) {
-        // Prevent default drag behaviors
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadLabel.addEventListener(eventName, preventDefaults, false);
-            document.body.addEventListener(eventName, preventDefaults, false);
-        });
-
-        // Highlight drop area when item is dragged over it
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadLabel.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadLabel.addEventListener(eventName, unhighlight, false);
-        });
-
-        // Handle dropped files
-        uploadLabel.addEventListener('drop', handleDrop, false);
+    // Modal Functions
+    function showCancellationPolicy() {
+        document.getElementById('cancellation-policy-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    function closeCancellationPolicy() {
+        document.getElementById('cancellation-policy-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
     }
 
-    function highlight(e) {
-        uploadLabel.classList.add('border-stone-900', 'bg-stone-100');
-    }
 
-    function unhighlight(e) {
-        uploadLabel.classList.remove('border-stone-900', 'bg-stone-100');
-    }
+    // Close modals on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCancellationPolicy();
+        }
+    });
 
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
+    // Close modals on backdrop click
+    document.getElementById('cancellation-policy-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeCancellationPolicy();
+    });
 
-    function handleFiles(files) {
-        const fileArray = Array.from(files);
-        const imageFiles = fileArray.filter(file => file.type.startsWith('image/'));
+
+    // Drag & Drop Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadLabel = document.querySelector('label[for="reference_images"]');
         
-        if (imageFiles.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Files',
-                text: 'Please upload only image files (PNG, JPG, GIF)',
-                confirmButtonColor: '#292524'
+        if (uploadLabel) {
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadLabel.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
             });
-            return;
+
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadLabel.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadLabel.addEventListener(eventName, unhighlight, false);
+            });
+
+            // Handle dropped files
+            uploadLabel.addEventListener('drop', handleDrop, false);
         }
 
-        for (let file of imageFiles) {
-            if (file.size > 5120 * 1024) { // 5MB
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight(e) {
+            uploadLabel.classList.add('border-stone-900', 'bg-stone-100');
+        }
+
+        function unhighlight(e) {
+            uploadLabel.classList.remove('border-stone-900', 'bg-stone-100');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            const fileArray = Array.from(files);
+            const imageFiles = fileArray.filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Files',
+                    text: 'Please upload only image files (PNG, JPG, GIF)',
+                    confirmButtonColor: '#292524'
+                });
+                return;
+            }
+
+            for (let file of imageFiles) {
+                if (file.size > 5120 * 1024) { // 5MB
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: `${file.name} exceeds 5MB limit`,
+                        confirmButtonColor: '#292524'
+                    });
+                    continue;
+                }
+
+                const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!isDuplicate && selectedFiles.length < 6) {
+                    selectedFiles.push(file);
+                }
+            }
+
+            if (selectedFiles.length > 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Maximum Images Reached',
+                    text: 'You can only upload up to 6 images',
+                    confirmButtonColor: '#292524'
+                });
+                selectedFiles = selectedFiles.slice(0, 6);
+            }
+
+            updateImagePreview();
+            updateFileInput();
+        }
+    });
+
+    async function addAiImageToPreview(imageUrl, prompt, displayName) {
+        try {
+            if (selectedFiles.length >= 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Maximum Images Reached',
+                    text: 'You can only select up to 6 images',
+                    confirmButtonColor: '#292524'
+                });
+                return;
+            }
+            const response = await fetch(imageUrl);
+            if (!response.ok) throw new Error('Failed to fetch image');
+            
+            const blob = await response.blob();
+            const fileName = `ai_design_${Date.now()}.png`;
+            const file = new File([blob], fileName, { type: blob.type || 'image/png' });
+            
+            file.aiImageUrl = imageUrl;
+            file.displayName = displayName;
+            selectedFiles.push(file);
+            
+            updateImagePreview();
+            updateFileInput();
+            updateDropdownOptions();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Add Image',
+                text: 'Could not fetch the AI-generated image',
+                confirmButtonColor: '#292524'
+            });
+        }
+    }
+
+    function updateDropdownOptions() {
+        const options = document.querySelectorAll('.ai-option');
+        options.forEach(option => {
+            const imageUrl = option.dataset.image;
+            const isAdded = selectedFiles.some(file => file.aiImageUrl === imageUrl);
+            option.style.display = isAdded ? 'none' : 'flex';
+        });
+    }
+
+    function previewImages(input) {
+        const newFiles = Array.from(input.files);
+        for (let newFile of newFiles) {
+            if (newFile.size > 5120 * 1024) { // 5MB
                 Swal.fire({
                     icon: 'error',
                     title: 'File Too Large',
-                    text: `${file.name} exceeds 5MB limit`,
+                    text: `${newFile.name} exceeds 5MB limit`,
                     confirmButtonColor: '#292524'
                 });
                 continue;
             }
 
-            const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
-            if (!isDuplicate && selectedFiles.length < 6) {
-                selectedFiles.push(file);
-            }
+            const isDuplicate = selectedFiles.some(f => f.name === newFile.name && f.size === newFile.size);
+            if (!isDuplicate && selectedFiles.length < 6) selectedFiles.push(newFile);
         }
-
+        
         if (selectedFiles.length > 6) {
             Swal.fire({
                 icon: 'warning',
@@ -293,202 +450,139 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             selectedFiles = selectedFiles.slice(0, 6);
         }
-
-        updateImagePreview();
-        updateFileInput();
-    }
-});
-
-async function addAiImageToPreview(imageUrl, prompt, displayName) {
-    try {
-        if (selectedFiles.length >= 6) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Maximum Images Reached',
-                text: 'You can only select up to 6 images',
-                confirmButtonColor: '#292524'
-            });
-            return;
-        }
-        const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error('Failed to fetch image');
-        
-        const blob = await response.blob();
-        const fileName = `ai_design_${Date.now()}.png`;
-        const file = new File([blob], fileName, { type: blob.type || 'image/png' });
-        
-        file.aiImageUrl = imageUrl;
-        file.displayName = displayName;
-        selectedFiles.push(file);
         
         updateImagePreview();
         updateFileInput();
-        updateDropdownOptions();
+    }
+
+    function updateImagePreview() {
+        const container = document.getElementById('image-preview-container');
+        container.innerHTML = '';
         
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Failed to Add Image',
-            text: 'Could not fetch the AI-generated image',
-            confirmButtonColor: '#292524'
-        });
-    }
-}
+        if (selectedFiles.length > 0) {
+            container.classList.remove('hidden');
+            selectedFiles.forEach((file, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative group aspect-square bg-stone-100 rounded-sm overflow-hidden border border-stone-200';
+                
+                const img = document.createElement('img');
+                img.className = 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in';
 
-function updateDropdownOptions() {
-    const options = document.querySelectorAll('.ai-option');
-    options.forEach(option => {
-        const imageUrl = option.dataset.image;
-        const isAdded = selectedFiles.some(file => file.aiImageUrl === imageUrl);
-        option.style.display = isAdded ? 'none' : 'flex';
-    });
-}
+                // Tambahkan event openLightbox
+                img.onclick = function() {
+                    if (file.aiImageUrl) {
+                        openLightbox(file.aiImageUrl);
+                    } else {
+                        // Untuk file upload manual, perlu FileReader untuk dapatkan dataURL
+                        const reader = new FileReader();
+                        reader.onload = (e) => openLightbox(e.target.result);
+                        reader.readAsDataURL(file);
+                    }
+                };
 
-function previewImages(input) {
-    const newFiles = Array.from(input.files);
-    for (let newFile of newFiles) {
-        if (newFile.size > 5120 * 1024) { // 5MB
-            Swal.fire({
-                icon: 'error',
-                title: 'File Too Large',
-                text: `${newFile.name} exceeds 5MB limit`,
-                confirmButtonColor: '#292524'
-            });
-            continue;
-        }
-
-        const isDuplicate = selectedFiles.some(f => f.name === newFile.name && f.size === newFile.size);
-        if (!isDuplicate && selectedFiles.length < 6) selectedFiles.push(newFile);
-    }
-    
-    if (selectedFiles.length > 6) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Maximum Images Reached',
-            text: 'You can only upload up to 6 images',
-            confirmButtonColor: '#292524'
-        });
-        selectedFiles = selectedFiles.slice(0, 6);
-    }
-    
-    updateImagePreview();
-    updateFileInput();
-}
-
-function updateImagePreview() {
-    const container = document.getElementById('image-preview-container');
-    container.innerHTML = '';
-    
-    if (selectedFiles.length > 0) {
-        container.classList.remove('hidden');
-        selectedFiles.forEach((file, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'relative group aspect-square bg-stone-100 rounded-sm overflow-hidden border border-stone-200';
-            
-            const img = document.createElement('img');
-            img.className = 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in';
-
-            // Tambahkan event openLightbox
-            img.onclick = function() {
                 if (file.aiImageUrl) {
-                    openLightbox(file.aiImageUrl);
+                    img.src = file.aiImageUrl;
                 } else {
-                    // Untuk file upload manual, perlu FileReader untuk dapatkan dataURL
                     const reader = new FileReader();
-                    reader.onload = (e) => openLightbox(e.target.result);
+                    reader.onload = (e) => img.src = e.target.result;
                     reader.readAsDataURL(file);
+                }
+                wrapper.appendChild(img);
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'absolute top-1 right-1 bg-white/90 text-stone-900 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-rose-600';
+                btn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                btn.onclick = () => removeImage(index);
+                wrapper.appendChild(btn);
+
+                container.appendChild(wrapper);
+            });
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    function removeImage(index) {
+        selectedFiles.splice(index, 1);
+        updateDropdownOptions();
+        updateImagePreview();
+        updateFileInput();
+    }
+
+    function updateFileInput() {
+        const input = document.getElementById('reference_images');
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        input.files = dt.files;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dropdown Logic
+        const toggle = document.getElementById('ai-dropdown-toggle');
+        const menu = document.getElementById('ai-dropdown-menu');
+        if (toggle && menu) {
+            toggle.addEventListener('click', () => menu.classList.toggle('hidden'));
+            document.addEventListener('click', (e) => {
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) menu.classList.add('hidden');
+            });
+            document.querySelectorAll('.ai-option').forEach(opt => {
+                opt.addEventListener('click', async function() {
+                    menu.classList.add('hidden');
+                    await addAiImageToPreview(this.dataset.image, this.dataset.prompt, `Design ${this.dataset.index}`);
+                });
+            });
+        }
+
+        // Phone Input
+        const phoneInput = document.querySelector("#user_phone");
+        const hiddenPhone = document.querySelector("#hidden_phone_input");
+
+        if(phoneInput) {
+            const iti = window.intlTelInput(phoneInput, {
+                initialCountry: "auto",
+                geoIpLookup: callback => {
+                    fetch('https://ipapi.co/json/')
+                        .then(res => res.json())
+                        .then(data => callback(data.country_code))
+                        .catch(() => callback("id"));
+                },
+                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+                separateDialCode: true,
+            });
+
+            const updateHidden = () => {
+                if (phoneInput.value.trim()) {
+                    hiddenPhone.value = iti.getNumber();
                 }
             };
 
-            if (file.aiImageUrl) {
-                img.src = file.aiImageUrl;
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => img.src = e.target.result;
-                reader.readAsDataURL(file);
-            }
-            wrapper.appendChild(img);
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'absolute top-1 right-1 bg-white/90 text-stone-900 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-rose-600';
-            btn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-            btn.onclick = () => removeImage(index);
-            wrapper.appendChild(btn);
-
-            container.appendChild(wrapper);
-        });
-    } else {
-        container.classList.add('hidden');
-    }
-}
-
-function removeImage(index) {
-    selectedFiles.splice(index, 1);
-    updateDropdownOptions();
-    updateImagePreview();
-    updateFileInput();
-}
-
-function updateFileInput() {
-    const input = document.getElementById('reference_images');
-    const dt = new DataTransfer();
-    selectedFiles.forEach(file => dt.items.add(file));
-    input.files = dt.files;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Dropdown Logic
-    const toggle = document.getElementById('ai-dropdown-toggle');
-    const menu = document.getElementById('ai-dropdown-menu');
-    if (toggle && menu) {
-        toggle.addEventListener('click', () => menu.classList.toggle('hidden'));
-        document.addEventListener('click', (e) => {
-            if (!toggle.contains(e.target) && !menu.contains(e.target)) menu.classList.add('hidden');
-        });
-        document.querySelectorAll('.ai-option').forEach(opt => {
-            opt.addEventListener('click', async function() {
-                menu.classList.add('hidden');
-                await addAiImageToPreview(this.dataset.image, this.dataset.prompt, `Design ${this.dataset.index}`);
+            phoneInput.addEventListener('input', updateHidden);
+            phoneInput.addEventListener('countrychange', updateHidden);
+            
+            // Validate on form submit
+            document.getElementById('consultation-form').addEventListener('submit', function(e) {
+                updateHidden();
+                
+                if (!iti.isValidNumber()) {
+                    e.preventDefault();
+                    document.getElementById('phone-error').textContent = "Please enter a valid phone number";
+                    document.getElementById('phone-error').classList.remove('hidden');
+                    phoneInput.classList.add('border-red-500');
+                } else {
+                    document.getElementById('phone-error').classList.add('hidden');
+                    phoneInput.classList.remove('border-red-500');
+                }
             });
-        });
-    }
-
-    // Phone Input
-    const phoneInput = document.querySelector("#user_phone");
-    const hiddenPhone = document.querySelector("#hidden_phone_input");
-    if(phoneInput) {
-        const iti = window.intlTelInput(phoneInput, {
-            initialCountry: "auto",
-            geoIpLookup: callback => fetch('https://ipapi.co/json/').then(res => res.json()).then(data => callback(data.country_code)).catch(() => callback("id")),
-            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-            separateDialCode: true,
-        });
-
-        const updateHidden = () => {
-            if (phoneInput.value.trim()) hiddenPhone.value = iti.getNumber();
-        };
-        phoneInput.addEventListener('input', updateHidden);
-        phoneInput.addEventListener('countrychange', updateHidden);
-        
-        document.getElementById('consultation-form').addEventListener('submit', function(e) {
-            updateHidden();
-            if (!iti.isValidNumber()) {
-                e.preventDefault();
-                document.getElementById('phone-error').textContent = "Invalid phone number";
-                document.getElementById('phone-error').classList.remove('hidden');
-            }
-        });
-    }
-});
+        }
+    });
 </script>
 
 <style>
-@media (max-width: 1024px) {
-    #image-preview-container .group > button {
-        opacity: 1 !important;
+    @media (max-width: 1024px) {
+        #image-preview-container .group > button {
+            opacity: 1 !important;
+        }
     }
-}
 </style>
 @endsection
