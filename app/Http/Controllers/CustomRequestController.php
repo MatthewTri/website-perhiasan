@@ -270,6 +270,25 @@ class CustomRequestController extends Controller
             ]);
         }
 
+        // Email konfirmasi ke client
+        try {
+            $customRequestWithImages = $customRequest->load('images');
+            
+            Mail::to($customRequest->user_email)->send(new \App\Mail\Consultation\ConsultationConfirmationMail($customRequestWithImages));
+            
+            Log::info('Client confirmation email sent', [
+                'request_id' => $customRequest->id,
+                'client_email' => $customRequest->user_email,
+                'images_count' => $customRequestWithImages->images->count()
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to send client confirmation email: ' . $e->getMessage(), [
+                'request_id' => $customRequest->id,
+                'error' => $e->getTraceAsString()
+            ]);
+        }
+
         return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! Our team will contact you in due time.');
     }
 
