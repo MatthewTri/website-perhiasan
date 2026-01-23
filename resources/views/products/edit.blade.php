@@ -222,10 +222,40 @@
                     @error('colors') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- SECTION 4: SPECIFICATIONS --}}
+                {{-- SECTION 4: SIZE OPTIONS --}}
                 <div class="space-y-6">
                     <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">04. Specifications</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">04. Size Options</h2>
+                        <button type="button" onclick="addSizeOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                            <span>+ Add Size</span>
+                        </button>
+                    </div>
+
+                    <div id="sizesContainer" class="space-y-0 divide-y divide-gray-50">
+                        @forelse($product->sizes as $index => $size)
+                        <div class="size-option py-4 flex items-center gap-4 group" data-index="{{ $index }}" data-existing-id="{{ $size->id }}">
+                            <div class="flex-1">
+                                <input type="text" name="sizes[{{ $index }}][size_name]" value="{{ $size->size_name }}" 
+                                    placeholder="Size Name (e.g. M, Ring 7)" 
+                                    class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+                                <input type="hidden" name="sizes[{{ $index }}][id]" value="{{ $size->id }}">
+                            </div>
+                            <button type="button" onclick="removeSizeOption({{ $index }})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
+                        </div>
+                        @empty
+                        <div id="noSizesText" class="py-6 text-center">
+                            <p class="text-sm font-light text-gray-400 italic">No size options defined.</p>
+                        </div>
+                        @endforelse
+                    </div>
+                    <input type="hidden" name="deleted_sizes" id="deletedSizes" value="">
+                    @error('sizes') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- SECTION 5: SPECIFICATIONS --}}
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Specifications</h2>
                         <button type="button" onclick="addSpecificationSection()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Section</span>
                         </button>
@@ -267,10 +297,10 @@
                     @error('specifications') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- SECTION 5: STORYTELLING --}}
+                {{-- SECTION 6: STORYTELLING --}}
                 <div class="space-y-4">
                     <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. The Story</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">06. The Story</h2>
                     </div>
                     
                     <div class="group">
@@ -616,7 +646,78 @@
     }
 
     // ==========================================
-    // 4. SPECIFICATIONS MANAGEMENT
+    // 4. SIZE MANAGEMENT
+    // ==========================================
+
+    let sizeIndex = {{ $product->sizes->count() }};
+    let deletedSizeIds = [];
+
+    function addSizeOptionWithData(sizeName = '') {
+        const container = document.getElementById('sizesContainer');
+        const noSizesText = document.getElementById('noSizesText');
+        if(noSizesText) noSizesText.style.display = 'none';
+
+        const div = document.createElement('div');
+        div.className = 'size-option py-4 flex items-center gap-4 group';
+        div.dataset.index = sizeIndex;
+        div.innerHTML = `
+            <div class="flex-1">
+                <input type="text" name="sizes[${sizeIndex}][size_name]" value="${sizeName}" 
+                    placeholder="Size Name (e.g. M, Ring 7, Bracelet 18cm)" 
+                    class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+            </div>
+            <button type="button" onclick="removeSizeOption(${sizeIndex})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
+        `;
+        container.appendChild(div);
+        sizeIndex++;
+    }
+
+    function addSizeOption() { 
+        addSizeOptionWithData(); 
+    }
+
+    function removeSizeOption(index) {
+        const sizeDiv = document.querySelector(`.size-option[data-index="${index}"]`);
+        
+        if (sizeDiv) {
+            const existingId = sizeDiv.dataset.existingId;
+            
+            if (existingId) {
+                // Existing size - mark for deletion
+                if (!deletedSizeIds.includes(existingId)) {
+                    deletedSizeIds.push(existingId);
+                }
+                document.getElementById('deletedSizes').value = deletedSizeIds.join(',');
+                
+                sizeDiv.style.opacity = '0.5';
+                sizeDiv.style.pointerEvents = 'none';
+                
+                const removeBtn = sizeDiv.querySelector('button');
+                if (removeBtn) removeBtn.style.display = 'none';
+                
+                if (!sizeDiv.querySelector('.deleted-label')) {
+                    const deletedLabel = document.createElement('span');
+                    deletedLabel.className = 'text-xs text-red-600 font-medium deleted-label uppercase tracking-widest ml-2';
+                    deletedLabel.textContent = 'Will be deleted';
+                    sizeDiv.querySelector('.flex-1').appendChild(deletedLabel);
+                }
+            } else {
+                // New size - just remove from DOM
+                sizeDiv.remove();
+            }
+        }
+
+        const container = document.getElementById('sizesContainer');
+        const noSizesText = document.getElementById('noSizesText');
+        const remainingSizes = container.querySelectorAll('.size-option:not([style*="opacity: 0.5"])');
+        
+        if (remainingSizes.length === 0 && noSizesText) {
+            noSizesText.style.display = 'block';
+        }
+    }
+
+    // ==========================================
+    // 5. SPECIFICATIONS MANAGEMENT
     // ==========================================
     
     function addSpecificationSectionWithData(title = '', items = ['']) {
@@ -721,7 +822,7 @@
     }
 
     // ==========================================
-    // 5. CATEGORY MANAGEMENT
+    // 6. CATEGORY MANAGEMENT
     // ==========================================
     
     const allCategories = @json($allCategories);
@@ -765,7 +866,7 @@
     });
 
     // ==========================================
-    // 6. FORM SUBMISSION
+    // 7. FORM SUBMISSION
     // ==========================================
     
     form.addEventListener('submit', async function(e) {

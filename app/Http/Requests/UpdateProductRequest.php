@@ -41,6 +41,10 @@ class UpdateProductRequest extends FormRequest
             'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'deleted_colors' => 'nullable|string',
 
+            'sizes' => 'nullable|array',
+            'sizes.*.id' => 'nullable|exists:product_sizes,id',
+            'sizes.*.size_name' => 'required_with:sizes|string|max:50',
+
             'specifications' => 'nullable|array',
             'specifications.*.id' => 'nullable|exists:product_specifications,id',
             'specifications.*.section_title' => 'required_with:specifications|string|max:255',

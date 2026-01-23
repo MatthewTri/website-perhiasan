@@ -177,6 +177,9 @@ class ProductController extends Controller
         $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
         $allCategories = Category::with('parent')->orderBy('name')->get();
         
+        // Load all relationships including sizes
+        $product->load(['images', 'colors', 'sizes', 'specifications']);
+        
         // Determine parent and sub-category
         $selectedParentId = $product->category->parent_id ?? $product->category_id;
         $selectedSubCategoryId = $product->category->parent_id ? $product->category_id : null;
@@ -263,6 +266,36 @@ class ProductController extends Controller
                         'product_id' => $product->id,
                         'name' => $colorData['name'],
                         'hex_code' => strtoupper($colorData['hex_code']),
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+        }
+
+        // HANDLE SIZE DELETION
+        if ($request->has('deleted_sizes') && $request->deleted_sizes) {
+            $deletedSizeIds = explode(',', $request->deleted_sizes);
+            ProductSize::whereIn('id', $deletedSizeIds)
+                    ->where('product_id', $product->id)
+                    ->delete();
+        }
+
+        // HANDLE SIZE UPDATE & CREATE
+        if ($request->has('sizes') && is_array($request->sizes)) {
+            foreach ($request->sizes as $index => $sizeData) {
+                if (isset($sizeData['id']) && !empty($sizeData['id'])) {
+                    // UPDATE EXISTING SIZE
+                    ProductSize::where('id', $sizeData['id'])
+                            ->where('product_id', $product->id)
+                            ->update([
+                                'size_name' => $sizeData['size_name'],
+                                'sort_order' => $index,
+                            ]);
+                } else {
+                    // CREATE NEW SIZE
+                    ProductSize::create([
+                        'product_id' => $product->id,
+                        'size_name' => $sizeData['size_name'],
                         'sort_order' => $index,
                     ]);
                 }
