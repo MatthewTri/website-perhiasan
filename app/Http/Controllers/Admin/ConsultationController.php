@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Consultation\ConsultationRescheduledMail;
 
 class ConsultationController extends Controller
 {
@@ -125,7 +127,7 @@ class ConsultationController extends Controller
         ]);
 
         // TODO: Send email notification to customer about reschedule
-        // Mail::to($consultation->user_email)->send(new ConsultationRescheduledMail($consultation));
+        Mail::to($consultation->user_email)->send(new ConsultationRescheduledMail($consultation));
 
         return redirect()->route('admin.consultation.show', $consultation)->with('success', 'Consultation rescheduled successfully.');
 

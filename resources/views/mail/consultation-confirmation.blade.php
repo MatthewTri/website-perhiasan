@@ -108,7 +108,7 @@
                                 <tr>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</span>
-                                        <span style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</span>
+                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</a>
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</span>
