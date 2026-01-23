@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductColor;
+use App\Models\ProductSize;
 use App\Models\ProductSpecification;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -64,6 +65,10 @@ class ProductController extends Controller
             'colors.*.name' => 'required_with:colors|string|max:100',
             'colors.*.hex_code' => 'required_with:colors|string|regex:/^#[0-9A-Fa-f]{6}$/',
 
+            // VALIDASI SIZES
+            'sizes' => 'nullable|array',
+            'sizes.*.size_name' => 'required_with:sizes|string|max:50',
+
             // VALIDASI SPECIFICATIONS
             'specifications' => 'nullable|array',
             'specifications.*.section_title' => 'required_with:specifications|string|max:255',
@@ -113,6 +118,17 @@ class ProductController extends Controller
                 }
             }
 
+            // CREATE SIZES
+            if ($request->has('sizes') && is_array($request->sizes)) {
+                foreach ($request->sizes as $index => $sizeData) {
+                    ProductSize::create([
+                        'product_id' => $product->id,
+                        'size_name' => $sizeData['size_name'],
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+            
             // CREATE SPECIFICATIONS
             if ($request->has('specifications') && is_array($request->specifications)) {
                 foreach ($request->specifications as $index => $specData) {

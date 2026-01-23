@@ -184,10 +184,27 @@
                     @error('colors') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- SECTION 4: SPECIFICATIONS (With OLD Value Persistence) --}}
+                {{-- SECTION 4: Sizes --}}
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">04. Size Options</h2>
+                        <button type="button" onclick="addSizeOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                            <span>+ Add Size</span>
+                        </button>
+                    </div>
+
+                    <div id="sizesContainer" class="space-y-0 divide-y divide-gray-50">
+                        <div id="noSizesText" class="py-6 text-center">
+                            <p class="text-sm font-light text-gray-400 italic">No size options defined.</p>
+                        </div>
+                    </div>
+                    @error('sizes') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- SECTION 5: SPECIFICATIONS (With OLD Value Persistence) --}}
                 <div class="space-y-6">
                      <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">04. Specifications</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Specifications</h2>
                         <button type="button" onclick="addSpecificationSection()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Section</span>
                         </button>
@@ -201,10 +218,10 @@
                     @error('specifications') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- SECTION 5: STORYTELLING --}}
+                {{-- SECTION 6: STORYTELLING --}}
                 <div class="space-y-4">
                      <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. The Story</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">06. The Story</h2>
                     </div>
                     
                     <div class="group">
@@ -441,7 +458,43 @@
         if(document.querySelectorAll('.color-option').length === 0) document.getElementById('noColorsText').style.display = 'block';
     }
 
-    // 4. SPECIFICATIONS LOGIC (Updated: Required Fields)
+    // 4. SIZE LOGIC (Same Pattern as Color)
+    let sizeIndex = 0;
+
+    function addSizeOptionWithData(sizeName = '') {
+        const container = document.getElementById('sizesContainer');
+        document.getElementById('noSizesText').style.display = 'none';
+
+        const div = document.createElement('div');
+        div.className = 'size-option py-4 flex items-center gap-4 group';
+        div.dataset.index = sizeIndex;
+        div.innerHTML = `
+            <div class="flex-1">
+                <input type="text" name="sizes[${sizeIndex}][size_name]" value="${sizeName}" 
+                    placeholder="Size Name (e.g. M, Ring 7, Bracelet 18cm)" 
+                    class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+            </div>
+            <button type="button" onclick="removeSizeOption(${sizeIndex})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
+        `;
+        container.appendChild(div);
+        sizeIndex++;
+    }
+
+    function addSizeOption() { 
+        addSizeOptionWithData(); 
+    }
+
+    function removeSizeOption(index) {
+        const el = document.querySelector(`.size-option[data-index="${index}"]`);
+        if(el) el.remove();
+        
+        const container = document.getElementById('sizesContainer');
+        if(container.querySelectorAll('.size-option').length === 0) {
+            document.getElementById('noSizesText').style.display = 'block';
+        }
+    }
+
+    // 5. SPECIFICATIONS LOGIC (Updated: Required Fields)
     let specIndex = 0;
 
     function addSpecificationSectionWithData(title = '', items = ['']) {
@@ -524,7 +577,7 @@
         if(container.children.length > 1) btn.parentElement.remove();
     }
 
-    // 5. CATEGORY LOGIC (Fix: Handle Disabled & Old Values)
+    // 6. CATEGORY LOGIC (Fix: Handle Disabled & Old Values)
     const allCategories = @json($allCategories);
     const parentSelect = document.getElementById('parent_category_id');
     const subSelect = document.getElementById('category_id');
@@ -566,6 +619,15 @@
         });
     }
 
+    // Restore Sizes
+    const oldSizes = @json(old('sizes', []));
+    if (oldSizes.length > 0) {
+        document.getElementById('noSizesText').style.display = 'none';
+        oldSizes.forEach(size => {
+            addSizeOptionWithData(size.size_name);
+        });
+    }
+    
     // Restore Specifications
     const oldSpecs = @json(old('specifications', []));
     if (oldSpecs.length > 0) {
