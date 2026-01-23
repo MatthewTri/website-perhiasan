@@ -157,8 +157,8 @@
                         </div>
 
                         <div class="group relative">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Category (Sub)</label>
-                            <select name="category_id" id="category_id" required disabled
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Category (Sub) - Optional</label>
+                            <select name="category_id" id="category_id" disabled
                                     class="w-full bg-transparent border-b border-gray-200 py-3 text-sm text-gray-400 focus:border-gray-900 focus:ring-0 focus:outline-none appearance-none cursor-pointer disabled:opacity-50">
                                 <option value="">Select Parent First</option>
                             </select>
@@ -502,6 +502,23 @@
         container.appendChild(div);
     }
 
+    function removeSpecificationSection(index) {
+        const specDiv = document.querySelector(`.specification-section[data-index="${index}"]`);
+        
+        if (specDiv) {
+            // Di create mode, tidak ada existing ID, jadi langsung hapus saja
+            specDiv.remove();
+        }
+
+        const container = document.getElementById('specificationsContainer');
+        const noSpecsText = document.getElementById('noSpecsText');
+        const remainingSpecs = container.querySelectorAll('.specification-section');
+        
+        if (remainingSpecs.length === 0 && noSpecsText) {
+            noSpecsText.style.display = 'block';
+        }
+    }
+
     function removeSpecItem(btn) {
         const container = btn.closest('.spec-items-container');
         if(container.children.length > 1) btn.parentElement.remove();
@@ -512,9 +529,10 @@
     const parentSelect = document.getElementById('parent_category_id');
     const subSelect = document.getElementById('category_id');
 
+    // Di bagian CATEGORY LOGIC, ganti menjadi:
     parentSelect.addEventListener('change', function() {
         const parentId = parseInt(this.value);
-        subSelect.innerHTML = '<option value="">Select Category</option>';
+        subSelect.innerHTML = '<option value="">None (Use Parent Category)</option>'; // UBAH TEXT
         subSelect.disabled = true;
         subSelect.classList.add('text-gray-400');
         
@@ -530,8 +548,6 @@
                 subSelect.disabled = false;
                 subSelect.classList.remove('text-gray-400');
                 subSelect.classList.add('text-gray-900');
-            } else {
-                subSelect.innerHTML = '<option value="">No sub-categories (Uses Parent)</option>';
             }
         }
     });

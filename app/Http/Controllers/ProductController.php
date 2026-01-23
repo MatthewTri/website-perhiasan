@@ -54,7 +54,8 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price_idr' => 'required|numeric|min:0',
             'price_usd' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
+            'parent_category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'images' => 'array|min:1',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             
@@ -73,6 +74,9 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
+            // TAMBAHKAN LOGIC: Jika tidak ada sub-category, gunakan parent sebagai category_id
+            $categoryId = $validated['category_id'] ?? $validated['parent_category_id'];
+
             // Create Product
             $product = Product::create([
                 'name' => $validated['name'],
@@ -80,7 +84,7 @@ class ProductController extends Controller
                 'description' => $validated['description'],
                 'price_idr' => $validated['price_idr'],
                 'price_usd' => $validated['price_usd'],
-                'category_id' => $validated['category_id'],
+                'category_id' => $categoryId,
             ]);
 
             // Upload Images

@@ -167,7 +167,7 @@
                         <div class="group relative">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Collection (Parent)</label>
                             <select name="parent_category_id" id="parent_category_id"
-                                    class="w-full bg-transparent border-b border-gray-200 py-3 text-sm text-gray-900 focus:border-gray-900 focus:ring-0 focus:outline-none appearance-none cursor-pointer">
+                                    class="w-full bg-transparent border-b border-gray-200 py-3 text-sm text-gray-900 focus:border-gray-900 focus:ring-0 focus:outline-none appearance-none cursor-pointer" required>
                                 <option value="">Select Collection</option>
                                 @foreach($parentCategories as $parent)
                                     <option value="{{ $parent->id }}" {{ old('parent_category_id', $selectedParentId) == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
