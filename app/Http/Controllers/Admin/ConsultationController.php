@@ -9,6 +9,8 @@ use App\Models\CustomRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Consultation\ConsultationRescheduledMail;
+use App\Mail\Consultation\ConsultationCancelledMail;
+
 
 class ConsultationController extends Controller
 {
@@ -84,12 +86,10 @@ class ConsultationController extends Controller
             'admin_notes' => $request->admin_notes
         ]);
 
-        // TODO: Send email notification to customer
-        // if ($request->status === 'CANCELLED') {
-        //     Mail::to($consultation->user_email)->send(new ConsultationCancelledMail($consultation));
-        // } elseif ($request->status === 'COMPLETED') {
-        //     Mail::to($consultation->user_email)->send(new ConsultationCompletedMail($consultation));
-        // }
+        // Send email notification to customer
+        if ($request->status === 'CANCELLED') {
+            Mail::to($consultation->user_email)->send(new ConsultationCancelledMail($consultation));
+        }
 
         $message = $request->status === 'COMPLETED' 
             ? 'Consultation marked as completed successfully.' 
