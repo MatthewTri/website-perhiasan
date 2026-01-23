@@ -100,38 +100,6 @@
                     </tr>
                     @endif
 
-                    {{-- Client Profile Section --}}
-                    <tr>
-                        <td class="inner-padding" style="padding: 0 50px 30px 50px;">
-                            <p style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #1c1917; margin-bottom: 20px; border-bottom: 1px solid #f5f5f4; padding-bottom: 10px;">
-                                Your Contact Information
-                            </p>
-                            
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
-                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Full Name</span>
-                                        <span style="font-size: 14px; color: #1c1917; font-weight: 500;">{{ $customRequest->first_name }} {{ $customRequest->last_name }}</span>
-                                    </td>
-                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
-                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Cancelled On</span>
-                                        <span style="font-size: 14px; color: #1c1917;">{{ now()->format('M j, Y') }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
-                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</span>
-                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</a>
-                                    </td>
-                                    <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
-                                        <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</span>
-                                        <a href="tel:{{ $customRequest->user_phone }}" style="font-size: 14px; color: #1c1917; text-decoration: none;">{{ $customRequest->user_phone }}</a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-
                     {{-- Next Steps --}}
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 30px 50px;">
