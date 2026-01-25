@@ -104,74 +104,61 @@ class CheckoutController extends Controller
                 }
                 
                 // ⬅️ Parse guest cart keys dan group by product
-                $productQuantities = [];
-                $productColors = []; // Simpan color untuk setiap product
-                
+                $productData = []; // ✅ GANTI dari $productQuantities
+
                 foreach ($guestCart as $cartKey => $quantity) {
-                    // Parse "1_Midnight blue" => productId = 1, color = "Midnight blue"
-                    // Parse "1_default" => productId = 1, color = null
-                    // Parse "1" => productId = 1, color = null
-                    
                     $productId = null;
                     $color = null;
+                    $size = null;
                     
+                    // ✅ Parse "productId_color_size"
                     if (strpos($cartKey, '_') !== false) {
-                        // Format: "productId_color"
-                        $parts = explode('_', $cartKey, 2); // Split max 2 parts
-                        $productId = (int)$parts[0];
+                        $parts = explode('_', $cartKey);
+                        $productId = (int) $parts[0];
                         $color = isset($parts[1]) && $parts[1] !== 'default' ? $parts[1] : null;
+                        $size = isset($parts[2]) && $parts[2] !== 'default' ? $parts[2] : null;
                     } else {
-                        // Format lama: hanya productId
-                        $productId = (int)$cartKey;
-                        $color = null;
+                        $productId = (int) $cartKey;
                     }
                     
                     if (!$productId || $quantity < 1) {
-                        continue; // Skip invalid data
+                        continue;
                     }
                     
-                    Log::info('Parsed cart key at checkout', [
-                        'cartKey' => $cartKey,
-                        'productId' => $productId,
+                    // ✅ Simpan sebagai item terpisah (tidak di-group lagi)
+                    $productData[] = [
+                        'product_id' => $productId,
+                        'quantity' => (int) $quantity,
                         'color' => $color,
-                        'quantity' => $quantity
-                    ]);
-                    
-                    // ⬅️ Jumlahkan quantity untuk product yang sama
-                    if (!isset($productQuantities[$productId])) {
-                        $productQuantities[$productId] = 0;
-                        $productColors[$productId] = [];
-                    }
-                    
-                    $productQuantities[$productId] += (int)$quantity;
-                    
-                    // Simpan color (untuk display nanti jika perlu)
-                    if ($color && !in_array($color, $productColors[$productId])) {
-                        $productColors[$productId][] = $color;
-                    }
+                        'size' => $size,
+                        'cart_key' => $cartKey // Untuk reference
+                    ];
                 }
-                
-                if (empty($productQuantities)) {
+
+                if (empty($productData)) {
                     return back()->with('error', 'No valid products in cart');
                 }
-                
-                $productIds = array_keys($productQuantities);
-                $products = Product::whereIn('id', $productIds)->get();
-                
+
+                $productIds = array_unique(array_column($productData, 'product_id'));
+                $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
                 if ($products->isEmpty()) {
                     return back()->with('error', 'No valid products found');
                 }
-                
-                // ⬅️ Map products dengan quantity & color info
-                $cartItems = $products->map(function ($product) use ($productQuantities, $productColors) {
+
+                // ✅ Map products dengan color & size masing-masing
+                $cartItems = collect($productData)->map(function ($data) use ($products) {
+                    $product = $products->get($data['product_id']);
+                    
+                    if (!$product) return null;
+                    
                     return (object)[
                         'product' => $product,
-                        'quantity' => $productQuantities[$product->id],
-                        'color' => !empty($productColors[$product->id]) 
-                            ? implode(', ', $productColors[$product->id]) 
-                            : null // Gabungkan semua color jika ada
+                        'quantity' => $data['quantity'],
+                        'color' => $data['color'],
+                        'size' => $data['size']
                     ];
-                });
+                })->filter(); // Remove null values
                 
                 Log::info('Processed guest cart items', [
                     'items' => $cartItems->map(function($item) {
@@ -255,9 +242,17 @@ class CheckoutController extends Controller
             foreach ($cartItems as $item) {
                 $itemDescription = $item->product->description;
                 
-                // ⬅️ Tambahkan color info ke description jika ada
+                // ✅ Tambahkan variant info
+                $variantParts = [];
                 if (isset($item->color) && $item->color) {
-                    $itemDescription .= "\nColor: " . $item->color;
+                    $variantParts[] = "Color: " . $item->color;
+                }
+                if (isset($item->size) && $item->size) {
+                    $variantParts[] = "Size: " . $item->size;
+                }
+                
+                if (!empty($variantParts)) {
+                    $itemDescription .= "\n" . implode(" | ", $variantParts);
                 }
                 
                 OrderItem::create([

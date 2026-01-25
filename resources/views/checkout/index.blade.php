@@ -236,12 +236,26 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium text-gray-900 truncate">{{ $item->product->name }}</p>
-                                    <p class="text-xs text-gray-500 mt-0.5">{{ $item->color }}</p>
+                                    
+                                    {{-- ✅ TAMBAHKAN: Display Color & Size --}}
+                                    @if($item->color || $item->size)
+                                        <p class="text-[10px] text-gray-500 mt-1 space-x-2">
+                                            @if($item->color)
+                                                <span>{{ $item->color }}</span>
+                                            @endif
+                                            @if($item->color && $item->size)
+                                                <span>•</span>
+                                            @endif
+                                            @if($item->size)
+                                                <span>{{ $item->size }}</span>
+                                            @endif
+                                        </p>
+                                    @endif
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 item-total"
-                                     data-price-idr="{{ $item->product->price_idr }}"
-                                     data-price-usd="{{ $item->product->price_usd }}"
-                                     data-qty="{{ $item->quantity }}">
+                                    data-price-idr="{{ $item->product->price_idr }}"
+                                    data-price-usd="{{ $item->product->price_usd }}"
+                                    data-qty="{{ $item->quantity }}">
                                     @currencyTotal(['idr' => $item->product->price_idr, 'usd' => $item->product->price_usd, 'qty' => $item->quantity])
                                 </div>
                             </div>
@@ -387,17 +401,25 @@
                 ? `/storage/${item.product.featured_image.image}` 
                 : '/img/no-image.jpg'; // Path placeholder
             
+            let variantInfo = '';
+            if (item.color || item.size) {
+                const parts = [];
+                if (item.color) parts.push(item.color);
+                if (item.size) parts.push(item.size);
+                variantInfo = `<p class="text-[10px] text-gray-500 mt-1">${parts.join(' • ')}</p>`;
+            }
+            
             itemsHtml += `
             <div class="flex items-center space-x-4">
                 <div class="relative w-16 h-16 bg-white border border-gray-100 rounded-none flex-shrink-0">
                     <img src="${imageSrc}" alt="${item.product.name}" class="w-full h-full object-cover p-1">
-                    <span class="absolute -top-2 -right-2 bg-gray-500 text-white text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                    <span class="absolute -top-2 -right-2 bg-[#E8B49E] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                         ${qty}
                     </span>
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">${item.product.name}</p>
-                    <p class="text-xs text-gray-500 mt-0.5">${item.color}</p>
+                    ${variantInfo}
                 </div>
                 <div class="text-sm font-medium text-gray-900">
                     ${formatPrice(item.product.price_idr * qty, item.product.price_usd * qty, currentCurrency)}
