@@ -70,6 +70,12 @@
                                             </p>
                                         @endif
 
+                                        @if($item->size)
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
+                                                Size: <span class="text-gray-600">{{ $item->size }}</span>
+                                            </p>
+                                        @endif
+
                                         {{-- Remove Button (Mobile Position) --}}
                                         <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-3 md:hidden">
                                             @csrf @method('DELETE')
@@ -319,7 +325,7 @@
                 total += itemTotal;
                 totalItems += quantity;
 
-                const cartKey = `${item.product.id}_${item.color || 'default'}`;
+                const cartKey = `${item.product.id}_${item.color || 'default'}_${item.size || 'default'}`; 
 
                 const imageSrc = item.product.featured_image 
                     ? `/storage/${item.product.featured_image.image}` 
@@ -342,14 +348,13 @@
                                 ${this.formatPrice(item.product.price_idr, item.product.price_usd)}
                             </p>
                             ${item.color ? `<p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Color: <span class="text-gray-600">${item.color}</span></p>` : ''}
-                            
+                            ${item.size ? `<p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Size: <span class="text-gray-600">${item.size}</span></p>` : ''}
                             <button onclick="guestCart.removeItem('${cartKey}')" class="mt-3 md:hidden text-[10px] uppercase tracking-widest text-gray-400 hover:text-red-600 border-b border-gray-200 hover:border-red-600 pb-0.5 transition-colors">
                                 Remove
                             </button>
                         </div>
                     </div>
 
-                    {{-- ✅ Update Quantity Selector untuk Guest --}}
                     <div class="col-span-1 md:col-span-2 flex justify-start md:justify-center">
                         <div class="inline-flex items-center border border-gray-200 h-9 w-24 bg-white">
                             <button onclick="guestCart.updateQuantity('${cartKey}', 'decrement')" 

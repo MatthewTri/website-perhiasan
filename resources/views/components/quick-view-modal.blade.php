@@ -2,7 +2,7 @@
     <div class="bg-white max-w-4xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl">
         
         {{-- Close Button --}}
-        <button type="button" id="closeModalBtn" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-900 transition-colors">
+        <button type="button" id="closeModalBtn" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -40,6 +40,25 @@
                         Colour: <span id="modalSelectedColor" class="text-gray-900 font-medium"></span>
                     </p>
                     <div id="modalColorOptions" class="flex items-center gap-2"></div>
+                </div>
+
+                {{-- Size Selection --}}
+                <div id="modalSizeSection" class="mb-6 hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-xs uppercase tracking-widest text-gray-500">
+                            Size: <span id="modalSelectedSizeText" class="text-gray-900 font-medium"></span>
+                        </p>
+                        <button type="button" class="text-xs text-gray-400 hover:text-gray-900 underline cursor-pointer">Size chart</button>
+                    </div>
+                    
+                    <div class="relative">
+                        <select id="modalSizeSelect" 
+                                class="w-full px-4 py-3 border border-gray-200 text-sm text-gray-900 focus:outline-none appearance-none bg-white cursor-pointer">
+                            <option value="">Select size</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Quantity --}}
@@ -136,10 +155,17 @@
                 rating_avg: parseFloat(btn.dataset.ratingAvg),
                 rating_count: parseInt(btn.dataset.ratingCount),
                 image: btn.dataset.featuredImage,
-                colors: JSON.parse(btn.dataset.colors || '[]')
+                colors: JSON.parse(btn.dataset.colors || '[]'),
+                sizes: JSON.parse(btn.dataset.sizes || '[]')
             };
             
             openQuickView(productData);
+        });
+
+        // Size select change
+        document.getElementById('modalSizeSelect')?.addEventListener('change', function() {
+            const selectedSize = this.value;
+            document.getElementById('modalSelectedSizeText').textContent = selectedSize || '-';
         });
 
         // Close button
@@ -275,7 +301,34 @@
             colorContainer.appendChild(fragment);
             colorSection.classList.remove('hidden');
         } else {
+            document.getElementById('modalSelectedColor').textContent = '-';
+            colorContainer.innerHTML = '';
             colorSection.classList.add('hidden');
+        }
+
+        // Sizes
+        const sizeSection = document.getElementById('modalSizeSection');
+        const sizeSelect = document.getElementById('modalSizeSelect');
+
+        if (productData.sizes && productData.sizes.length > 0) {
+            sizeSelect.innerHTML = ''; // ⬅️ HAPUS option "Select size"
+            
+            productData.sizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size;
+                sizeSelect.appendChild(option);
+            });
+            
+            // ⬇️ Auto select first size (langsung selected)
+            sizeSelect.value = productData.sizes[0];
+            document.getElementById('modalSelectedSizeText').textContent = productData.sizes[0];
+            
+            sizeSection.classList.remove('hidden');
+        } else {
+            sizeSelect.value = '';
+            document.getElementById('modalSelectedSizeText').textContent = '-';
+            sizeSection.classList.add('hidden');
         }
 
         // Reset quantity
@@ -351,7 +404,17 @@
         if (!currentModalProduct) return;
         
         const quantity = parseInt(document.getElementById('modalQuantity').value);
-        const selectedColor = document.getElementById('modalSelectedColor')?.textContent || null;
+        // ✅ Fix: Ambil color hanya jika section visible
+        const colorSection = document.getElementById('modalColorSection');
+        const selectedColor = !colorSection.classList.contains('hidden') 
+            ? (document.getElementById('modalSelectedColor')?.textContent || null)
+            : null;
+        
+        // ✅ Fix: Ambil size hanya jika section visible
+        const sizeSection = document.getElementById('modalSizeSection');
+        const selectedSize = !sizeSection.classList.contains('hidden')
+            ? (document.getElementById('modalSizeSelect')?.value || null)
+            : null;
         const btn = document.getElementById('modalAddToCartBtn');
         const originalText = btn.innerText;
         
@@ -366,6 +429,7 @@
             },
             body: JSON.stringify({
                 color: selectedColor,
+                size: selectedSize,
                 quantity: quantity
             })
         })
@@ -377,9 +441,10 @@
                 if (data.product) {
                     const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
                     
-                    // ✅ Key format: productId_color (agar bisa bedakan warna)
+                    // ✅ Key format: productId_color_size (agar bisa bedakan warna dan ukuran)
                     const colorKey = data.product.color || 'default';
-                    const cartKey = `${currentModalProduct.id}_${colorKey}`;
+                    const sizeKey = data.product.size || 'default';
+                    const cartKey = `${currentModalProduct.id}_${colorKey}_${sizeKey}`;
                                         
                     if (cart[cartKey]) {
                         // Tambahkan quantity baru ke yang sudah ada

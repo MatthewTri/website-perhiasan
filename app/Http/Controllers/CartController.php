@@ -43,10 +43,12 @@ class CartController extends Controller
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
             'color' => 'nullable|string', // ✅ Validasi color
+            'size' => 'nullable|string',
         ]);
         
         $quantity = $validated['quantity'];
         $color = $validated['color'] ?? null; // ✅ Ambil color (nullable)
+        $size = $validated['size'] ?? null;
 
         if (Auth::check()) {
             // User authenticated - simpan ke database
@@ -55,6 +57,7 @@ class CartController extends Controller
             $cartItem = CartItem::where('cart_id', $cart->id)
                                 ->where('product_id', $productId)
                                 ->where('color', $color)
+                                ->where('size', $size)
                                 ->first();
 
             if ($cartItem) {
@@ -67,7 +70,8 @@ class CartController extends Controller
                     'cart_id' => $cart->id,
                     'product_id' => $productId,
                     'quantity' => $quantity,
-                    'color' => $color
+                    'color' => $color,
+                    'size' => $size,
                 ]);
             }
 
@@ -94,6 +98,7 @@ class CartController extends Controller
                     'price_usd' => $product->price_usd,
                     'description' => $product->description,
                     'color' => $color,
+                    'size' => $size,
                     'featured_image' => $product->featuredImage ? [
                         'image' => $product->featuredImage->image
                     ] : null
@@ -137,24 +142,17 @@ class CartController extends Controller
         foreach ($productIds as $key => $quantity) {
             $productId = null;
             $color = null;
+            $size = null;
 
-            // ✅ Cek apakah key format lama (hanya angka) atau baru (productId_color)
+            // ✅ Parse key: "productId_color_size"
             if (strpos($key, '_') !== false) {
-                // Format baru: "123_red"
-                $parts = explode('_', $key, 2);
+                $parts = explode('_', $key);
                 $productId = (int) $parts[0];
-                $color = $parts[1] !== 'default' ? $parts[1] : null;
+                $color = isset($parts[1]) && $parts[1] !== 'default' ? $parts[1] : null;
+                $size = isset($parts[2]) && $parts[2] !== 'default' ? $parts[2] : null;
             } else {
-                // Format lama: "123" (hanya productId)
                 $productId = (int) $key;
-                $color = null;
             }
-            
-            Log::info('Parsing cart key', [
-                'key' => $key, 
-                'productId' => $productId, 
-                'color' => $color
-            ]);
             
             $product = Product::with('featuredImage')->find($productId);
             
@@ -174,11 +172,10 @@ class CartController extends Controller
                     ] : null
                 ],
                 'quantity' => (int) $quantity,
-                'color' => $color // ✅ Color akan null jika format lama, atau sesuai pilihan jika format baru
+                'color' => $color,
+                'size' => $size
             ];
         }
-
-        Log::info('Guest cart items', ['items' => $cartItems]);
 
         return response()->json(['items' => $cartItems]);
     }
@@ -240,17 +237,16 @@ class CartController extends Controller
         foreach ($guestCartData as $key => $quantity) {
             $productId = null;
             $color = null;
+            $size = null;
 
-            // ✅ Parse key: support format baru "productId_color" dan format lama "productId"
+            // ✅ Parse key: support format baru "productId_color_size" dan format lama "productId"
             if (strpos($key, '_') !== false) {
-                // Format baru: "123_red" atau "123_default"
-                $parts = explode('_', $key, 2);
+                $parts = explode('_', $key);
                 $productId = (int) $parts[0];
-                $color = $parts[1] !== 'default' ? $parts[1] : null;
+                $color = isset($parts[1]) && $parts[1] !== 'default' ? $parts[1] : null;
+                $size = isset($parts[2]) && $parts[2] !== 'default' ? $parts[2] : null; // ✅ TAMBAHKAN INI
             } else {
-                // Format lama: "123" (hanya productId)
                 $productId = (int) $key;
-                $color = null;
             }
 
             if (!$productId || $quantity < 1) {
@@ -261,6 +257,7 @@ class CartController extends Controller
             $cartItem = CartItem::where('cart_id', $cart->id)
                                 ->where('product_id', $productId)
                                 ->where('color', $color) // ✅ Filter by color juga
+                                ->where('size', $size) // ✅ Filter by size juga
                                 ->first();
 
             if ($cartItem) {
@@ -273,7 +270,8 @@ class CartController extends Controller
                     'cart_id' => $cart->id,
                     'product_id' => $productId,
                     'quantity' => (int) $quantity,
-                    'color' => $color // ✅ Simpan color
+                    'color' => $color, // ✅ Simpan color
+                    'size' => $size // ✅ Simpan size
                 ]);
             }
 

@@ -10,7 +10,7 @@ class CartItem extends Model
     /** @use HasFactory<\Database\Factories\CartItemFactory> */
     use HasFactory;
 
-    protected $fillable = ['cart_id', 'product_id', 'quantity', 'color'];
+    protected $fillable = ['cart_id', 'product_id', 'quantity', 'color','size'];
 
     // Relasi ke keranjang induknya
     public function cart()

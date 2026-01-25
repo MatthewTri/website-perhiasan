@@ -45,7 +45,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('user', 'orderItems.product', 'customRequest','shipment');
+        $order->load('user', 'orderItems.product','shipment');
         $paypalStatus = null;
         
         // ⬅️ HANYA FETCH PAYPAL STATUS JIKA ADA TRANSACTION_ID
