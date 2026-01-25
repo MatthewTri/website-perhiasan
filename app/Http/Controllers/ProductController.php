@@ -162,6 +162,7 @@ class ProductController extends Controller
     $product->load([
         'images' => fn($q) => $q->orderBy('sort_order'),
         'colors' => fn($q) => $q->orderBy('sort_order'),
+        'sizes' => fn($q) => $q->orderBy('sort_order'),
         'specifications' => fn($q) => $q->orderBy('sort_order'),
         'category'
     ]);

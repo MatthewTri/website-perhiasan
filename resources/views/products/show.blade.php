@@ -103,20 +103,32 @@
                 </div>
                 @endif
 
-                {{-- 4. DROPDOWN VARIANT (Example style based on image - e.g. Letter/Size) --}}
-                {{-- Jika produk punya spesifikasi ukuran/huruf, tampilkan disini --}}
-                {{-- <div class="mb-6">
-                    <label class="block text-xs text-gray-500 mb-2">Letter:</label>
+                {{-- 4. SIZE SELECTION (Mirip Quick View Modal) --}}
+                @if($product->sizes && $product->sizes->count() > 0)
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-xs uppercase tracking-widest text-gray-500">
+                            Size: <span id="selectedSizeName" class="text-gray-900 font-medium">{{ $product->sizes->first()->size_name }}</span>
+                        </p>
+                        <button type="button" class="text-xs text-gray-400 hover:text-gray-900 underline cursor-pointer">Size chart</button>
+                    </div>
+                    
                     <div class="relative">
-                        <select class="w-full appearance-none border border-gray-200 bg-white py-3 px-4 pr-8 rounded-none text-sm text-gray-900 focus:outline-none focus:border-gray-400 focus:ring-0 cursor-pointer">
-                            <option>A</option>
-                            <option>B</option>
+                        <select id="sizeSelect" 
+                                onchange="updateSelectedSize()"
+                                class="w-full px-4 py-3 border border-gray-200 text-sm text-gray-900 focus:outline-none focus:border-gray-400 focus:ring-0 appearance-none bg-white cursor-pointer">
+                            @foreach($product->sizes->sortBy('sort_order') as $size)
+                                <option value="{{ $size->size_name }}">{{ $size->size_name }}</option>
+                            @endforeach
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
+                            </svg>
                         </div>
                     </div>
-                </div> --}}
+                </div>
+                @endif
 
                 {{-- 5. QUANTITY & ADD TO CART --}}
                 <div class="mb-8">
@@ -296,11 +308,20 @@
         buttonElement.classList.add('ring-1', 'ring-offset-2', 'ring-gray-900', 'border-transparent');
     }
 
+    // Size Selection Update
+    function updateSelectedSize() {
+        const sizeSelect = document.getElementById('sizeSelect');
+        const selectedSize = sizeSelect.value;
+        document.getElementById('selectedSizeName').textContent = selectedSize;
+    }
+
     // 4. Add to Cart Logic
     function addToCart(productId) {
         const quantity = parseInt(document.getElementById('quantity').value);
         const selectedColor = document.getElementById('selectedColorName')?.textContent || null;
         
+        const sizeSelect = document.getElementById('sizeSelect');
+        const selectedSize = sizeSelect ? sizeSelect.value : null;
         // Loading State
         const btn = event.target;
         const originalText = btn.innerText;
@@ -315,6 +336,7 @@
             },
             body: JSON.stringify({
                 color: selectedColor,
+                size: selectedSize,
                 quantity: quantity // ✅ Kirim quantity
             })
         })
@@ -327,7 +349,8 @@
                     const cart = JSON.parse(localStorage.getItem('guest_cart') || '{}');
 
                     const colorKey = data.product.color || 'default';
-                    const cartKey = `${productId}_${colorKey}`;
+                    const sizeKey = data.product.size || 'default';
+                    const cartKey = `${productId}_${colorKey}_${sizeKey}`;
                     
                     console.log('💾 Saving to localStorage:', { cartKey, quantity: data.quantity }); // ✅ DEBUG
 
