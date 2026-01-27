@@ -36,25 +36,43 @@ class ReviewController extends Controller
         // Validasi: Order harus COMPLETED
         if ($order->status !== 'COMPLETED') {
             return redirect()->route('order.track', $guestToken)
-                           ->with('error', 'You can only review completed orders.');
+                        ->with('error', 'You can only review completed orders.');
         }
 
         // Validasi: Masih dalam masa review (30 hari)
         if (!$order->can_review) {
             return redirect()->route('order.track', $guestToken)
-                           ->with('error', 'Review period has expired (30 days from completion).');
+                        ->with('error', 'Review period has expired (30 days from completion).');
         }
 
-        // Validasi: Sudah pernah review
+        // Validasi: Sudah pernah review semua produk
         if ($order->is_reviewed) {
             return redirect()->route('order.track', $guestToken)
-                           ->with('info', 'You have already submitted a review for this order.');
+                        ->with('info', 'You have already submitted reviews for this order.');
         }
 
-        // Load order items dengan produk
+        // ✅ LOAD & GROUP BY PRODUCT
         $order->load(['orderItems.product.featuredImage', 'reviews']);
+        
+        // ✅ Group order items by product_id
+        $groupedItems = $order->orderItems->groupBy('product_id')->map(function ($items) {
+            $firstItem = $items->first();
+            
+            return (object)[
+                'product' => $firstItem->product,
+                'product_id' => $firstItem->product_id,
+                'variants' => $items->map(function ($item) {
+                    return [
+                        'color' => $item->color,
+                        'size' => $item->size,
+                        'quantity' => $item->quantity
+                    ];
+                })->toArray(),
+                'total_quantity' => $items->sum('quantity')
+            ];
+        })->values();
 
-        return view('reviews.create', compact('order'));
+        return view('reviews.create', compact('order', 'groupedItems'));
     }
 
     /**

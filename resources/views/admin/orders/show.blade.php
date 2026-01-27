@@ -74,26 +74,6 @@
                                 {{ $order->contact_email }}
                             </div>
                         </div>
-                        
-                        @if($order->user)
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                                </svg>
-                                <span class="text-sm font-medium text-green-800">Registered Member</span>
-                            </div>
-                        </div>
-                        @else
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gray-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
-                                </svg>
-                                <span class="text-sm font-medium text-gray-800">Guest Order</span>
-                            </div>
-                        </div>
-                        @endif
                     </div>
                 </div>
 
@@ -553,7 +533,29 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $item->item_name }}</p>
-                                <p class="text-sm text-gray-500">
+                                
+                                {{-- ✅ Display Color & Size dari Database --}}
+                                @if($item->color || $item->size)
+                                    <p class="text-[10px] text-gray-500 mt-1 flex items-center space-x-1.5">
+                                        @if($item->color)
+                                            <span class="inline-flex items-center">
+                                                <span class="font-medium">{{ $item->color }}</span>
+                                            </span>
+                                        @endif
+                                        
+                                        @if($item->color && $item->size)
+                                            <span class="text-gray-300">•</span>
+                                        @endif
+                                        
+                                        @if($item->size)
+                                            <span class="inline-flex items-center">
+                                                <span class="font-medium">{{ $item->size }}</span>
+                                            </span>
+                                        @endif
+                                    </p>
+                                @endif
+                                
+                                <p class="text-sm text-gray-500 mt-1">
                                     @if($order->currency === 'USD')
                                         ${{ number_format($item->price_usd, 2) }}
                                     @else
@@ -561,7 +563,7 @@
                                     @endif
                                 </p>
                             </div>
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 text-right">
                                 @if($order->currency === 'USD')
                                     ${{ number_format($item->price_usd * $item->quantity, 2) }}
                                 @else

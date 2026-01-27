@@ -86,11 +86,11 @@ class PaymentController extends Controller
 
             if ($captureResult['success']) {
                 // ✅ UPDATE ORDER (ini backup, webhook juga akan update)
-                // $order->update([
-                //     'status' => 'PAID',
-                //     'paid_at' => now(),
-                //     'capture_id' => $captureResult['capture_id'] ?? null,
-                // ]);
+                $order->update([
+                    'status' => 'PAID',
+                    'paid_at' => now(),
+                    'capture_id' => $captureResult['capture_id'] ?? null,
+                ]);
 
                 Log::info('TESTING WEBHOOK: Database TIDAK diupdate oleh Controller. Menunggu Webhook...');
 

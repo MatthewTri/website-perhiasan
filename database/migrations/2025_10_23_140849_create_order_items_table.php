@@ -26,6 +26,8 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('price_idr', 15, 2); // Harga per unit dalam IDR
             $table->decimal('price_usd', 15, 2); // Harga per unit dalam USD
+            $table->string('color')->nullable(); // Opsi warna (jika ada)
+            $table->string('size')->nullable(); // Opsi ukuran (jika ada)
             $table->timestamps();
         });
     }

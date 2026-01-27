@@ -4,7 +4,7 @@
 <div class="bg-gray-50 min-h-screen py-8">
     <div class="container mx-auto px-4 max-w-4xl">
         
-        <!-- Header -->
+        <!-- Header (UNCHANGED) -->
         <div class="mb-8">
             <a href="{{ route('order.track', $order->guest_token) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,9 +28,10 @@
             @csrf
 
             <div class="space-y-6">
-                @foreach($order->orderItems as $index => $item)
+                {{-- ✅ LOOP GROUPED ITEMS (1x per product) --}}
+                @foreach($groupedItems as $index => $item)
                 @php
-                    // ⬅️ CEK PER PRODUK: Apakah produk ini sudah direview di order ini?
+                    // Cek apakah produk ini sudah direview di order ini
                     $productReviewed = $order->reviews()->where('product_id', $item->product_id)->exists();
                 @endphp
 
@@ -40,7 +41,7 @@
                         <div class="flex-shrink-0 w-24 h-24">
                             @if($item->product && $item->product->featuredImage)
                                 <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
-                                     alt="{{ $item->item_name }}"
+                                     alt="{{ $item->product->name }}"
                                      class="w-full h-full object-cover rounded-lg border border-gray-200">
                             @else
                                 <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
@@ -53,11 +54,41 @@
 
                         <!-- Product Info & Review Form -->
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $item->item_name }}</h3>
-                            <p class="text-sm text-gray-500 mb-4">Quantity: {{ $item->quantity }}</p>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $item->product->name }}</h3>
+                            
+                            {{-- ✅ DISPLAY VARIANTS (Info Only) --}}
+                            @if(count($item->variants) > 0)
+                                <div class="flex flex-wrap gap-2 mb-2">
+                                    @foreach($item->variants as $variant)
+                                        <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded-md">
+                                            @if($variant['color'])
+                                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/>
+                                                </svg>
+                                                {{ $variant['color'] }}
+                                            @endif
+                                            
+                                            @if($variant['color'] && $variant['size'])
+                                                <span class="mx-1 text-gray-400">•</span>
+                                            @endif
+                                            
+                                            @if($variant['size'])
+                                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                                </svg>
+                                                {{ $variant['size'] }}
+                                            @endif
+                                            
+                                            <span class="ml-1 text-gray-500">×{{ $variant['quantity'] }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            <p class="text-sm text-gray-500 mb-4">Total Quantity: {{ $item->total_quantity }}</p>
 
                             @if($productReviewed)
-                                <!-- ⬅️ JIKA PRODUK INI SUDAH DIREVIEW -->
+                                <!-- JIKA PRODUK INI SUDAH DIREVIEW -->
                                 <div class="bg-green-50 border border-green-200 rounded-lg p-3">
                                     <div class="flex items-center text-green-800">
                                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -67,10 +98,10 @@
                                     </div>
                                 </div>
                             @else
-                                <!-- ⬅️ FORM REVIEW (BELUM DIREVIEW) -->
+                                <!-- ✅ FORM REVIEW (1x PER PRODUCT) -->
                                 <input type="hidden" name="reviews[{{ $index }}][product_id]" value="{{ $item->product_id }}">
 
-                                <!-- Star Rating -->
+                                <!-- Star Rating (UNCHANGED) -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Rating (Optional)
@@ -96,7 +127,7 @@
                                     <p class="text-xs text-gray-500 mt-1">Click on stars to rate</p>
                                 </div>
 
-                                <!-- Comment -->
+                                <!-- Comment (UNCHANGED) -->
                                 <div class="mb-4">
                                     <label for="comment_{{ $index }}" class="block text-sm font-medium text-gray-700 mb-2">
                                         Your Review (Optional)
@@ -110,7 +141,7 @@
                                     <p class="text-xs text-gray-500 mt-1">Maximum 1000 characters</p>
                                 </div>
 
-                                <!-- Image Upload -->
+                                <!-- Image Upload (UNCHANGED) -->
                                 <div>
                                     <label for="image_{{ $index }}" class="block text-sm font-medium text-gray-700 mb-2">
                                         Upload Photo (Optional)
@@ -123,7 +154,6 @@
                                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
                                     <p class="text-xs text-gray-500 mt-1">JPG, JPEG, or PNG (Max 5MB)</p>
                                     
-                                    <!-- Image Preview -->
                                     <div id="preview_{{ $index }}" class="mt-3 hidden">
                                         <img id="preview_img_{{ $index }}" src="" alt="Preview" class="max-w-xs rounded-lg border border-gray-300">
                                     </div>
@@ -150,7 +180,7 @@
                 @endforeach
             </div>
 
-            <!-- Submit Button -->
+            <!-- Submit Button (UNCHANGED) -->
             <div class="mt-8 flex items-center justify-between">
                 <a href="{{ route('order.track', $order->guest_token) }}" class="text-gray-600 hover:text-gray-800">
                     Skip for now

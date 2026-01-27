@@ -265,6 +265,10 @@ class CheckoutController extends Controller
                     // ⬅️ SIMPAN KEDUA HARGA
                     'price_idr' => $item->product->price_idr,
                     'price_usd' => $item->product->price_usd,
+
+                    // ✅ TAMBAHKAN: Simpan color & size
+                    'color' => $item->color ?? null,
+                    'size' => $item->size ?? null,
                 ]);
             }
 
