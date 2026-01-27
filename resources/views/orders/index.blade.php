@@ -1,234 +1,171 @@
 @extends('layout.main')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-4 max-w-6xl">
+<div class="min-h-screen bg-white">
+    
+    {{-- Header Section (Consistent with Cart) --}}
+    <div class="pt-16 pb-12 text-center border-b border-gray-100">
+        <h1 class="text-2xl md:text-3xl font-serif text-gray-900 uppercase tracking-[0.2em]">Order History</h1>
+        <p class="mt-3 text-xs text-gray-500 uppercase tracking-widest font-light">
+            Track and manage your purchases
+        </p>
+    </div>
+
+    <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-12">
         
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Orders</h1>
-            <p class="text-gray-600 mt-2">View and track all your orders</p>
-        </div>
-
-        <!-- Orders List -->
         @if($orders->isEmpty())
-        <div class="bg-white rounded-lg shadow-md p-12 text-center">
-            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">No orders yet</h3>
-            <p class="text-gray-600 mb-6">Start shopping to create your first order!</p>
-            <a href="{{ route('products.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                Browse Products
-            </a>
-        </div>
+            {{-- Empty State --}}
+            <div class="text-center py-20 border border-gray-100 bg-[#FAFAFA]">
+                <h3 class="text-xl font-serif text-gray-900 mb-2">No Orders Found</h3>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mb-8">You haven't placed any orders yet.</p>
+                <a href="{{ route('products.index') }}" class="inline-block border-b border-gray-900 pb-1 text-xs uppercase tracking-[0.2em] font-medium hover:text-gray-600 transition-colors">
+                    Start Shopping
+                </a>
+            </div>
         @else
-        <div class="space-y-4">
-            @foreach($orders as $order)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Order #{{ $order->order_number }}</h3>
-                        <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</p>
-                    </div>
-                    
-                    <!-- Status Badge -->
-                    @php
-                        $statusConfig = [
-                            'PENDING_REVIEW' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'label' => 'Pending Review'],
-                            'INVOICE_SENT' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Payment Pending'],
-                            'WAITING_VERIFICATION' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-800', 'label' => 'Verifying Payment'],
-                            'PAID' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'label' => 'Paid'],
-                            'SHIPPED' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'label' => 'Shipped'],
-                            'COMPLETED' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => 'Completed'],
-                            'CANCELLED' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Cancelled'],
-                        ];
-                        $status = $statusConfig[$order->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => $order->status];
-                    @endphp
-                    <span class="px-3 py-1 {{ $status['bg'] }} {{ $status['text'] }} text-sm font-semibold rounded-full">
-                        {{ $status['label'] }}
-                    </span>
-                </div>
+            <div class="space-y-16">
+                @foreach($orders as $order)
+                <div class="group">
+                    {{-- Order Header Info --}}
+                    <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-gray-200">
+                        <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 mb-4 md:mb-0">
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Order Number</p>
+                                <p class="text-sm font-medium text-gray-900 tracking-wide">#{{ $order->order_number }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Date</p>
+                                <p class="text-sm text-gray-900">{{ $order->created_at->format('F d, Y') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                                
+                                {{-- Elegant Status Indicator --}}
+                                @php
+                                    $statusConfig = [
+                                        'PENDING_REVIEW' => ['color' => 'text-yellow-600', 'label' => 'Pending Review'],
+                                        'INVOICE_SENT' => ['color' => 'text-gray-900', 'label' => 'Payment Required'],
+                                        'WAITING_VERIFICATION' => ['color' => 'text-purple-600', 'label' => 'Verifying Payment'],
+                                        'PAID' => ['color' => 'text-emerald-700', 'label' => 'Paid'],
+                                        'SHIPPED' => ['color' => 'text-blue-600', 'label' => 'In Transit'],
+                                        'COMPLETED' => ['color' => 'text-gray-900', 'label' => 'Completed'],
+                                        'CANCELLED' => ['color' => 'text-red-600', 'label' => 'Cancelled'],
+                                    ];
+                                    $status = $statusConfig[$order->status] ?? ['color' => 'text-gray-500', 'label' => $order->status];
+                                @endphp
+                                <div class="flex items-center">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ str_replace('text-', 'bg-', $status['color']) }} mr-2"></span>
+                                    <span class="text-xs font-medium uppercase tracking-[0.1em] {{ $status['color'] }}">
+                                        {{ $status['label'] }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Order Items Preview (first 3 items) -->
-                <div class="space-y-3 mb-4">
-                    @foreach($order->orderItems->take(3) as $item)
-                    @php
-                        // ⬅️ HITUNG HARGA & SUBTOTAL SESUAI CURRENCY ORDER
-                        $price = $order->currency === 'USD' ? $item->price_usd : $item->price_idr;
-                        $subtotal = $price * $item->quantity;
-                        $decimals = $order->currency === 'USD' ? 2 : 0;
-                    @endphp
-                    <div class="flex items-center space-x-4">
-                        @if($item->product && $item->product->images->first())
-                        <img src="{{ Storage::url($item->product->images->first()->image) }}" 
-                             alt="{{ $item->item_name }}"
-                             class="w-16 h-16 object-cover rounded-lg">
-                        @else
-                        <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        @endif
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">{{ $item->item_name }}</h4>
-                            <p class="text-sm text-gray-500">Qty: {{ $item->quantity }} × {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($price, $decimals, ',', '.') }}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-semibold text-gray-900">
-                                {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}
+                        {{-- Total & Detail Link --}}
+                        <div class="text-left md:text-right">
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Total Amount</p>
+                            <p class="text-lg font-serif text-gray-900">
+                                @if($order->currency === 'USD')
+                                    ${{ number_format($order->total_amount, 2) }}
+                                @else
+                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                @endif
                             </p>
                         </div>
                     </div>
-                    @endforeach
-                    
-                    @if($order->orderItems->count() > 3)
-                    <p class="text-sm text-gray-500 text-center">
-                        + {{ $order->orderItems->count() - 3 }} more item(s)
-                    </p>
-                    @endif
-                </div>
 
-                <!-- Order Summary -->
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <div>
-                        <p class="text-sm text-gray-600">Total Amount</p>
-                        @php
-                            $decimals = $order->currency === 'USD' ? 2 : 0;
-                        @endphp
-                        <p class="text-xl font-bold text-blue-600">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}
-                        </p>
-                    </div>
-                    <a href="{{ route('order.track', $order->guest_token) }}" 
-                           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 flex items-center">
-                            View Details
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                </div>
-
-                <!-- Quick Actions -->
-                @if($order->status === 'INVOICE_SENT')
-                <div class="mt-4 pt-4 border-t">
-                    @if($order->rejection_notes)
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-red-900 mb-1">Payment Proof Rejected</p>
-                                <p class="text-xs text-red-800 mb-2">{{ Str::limit($order->rejection_notes, 100) }}</p>
-                                <a href="{{ route('order.track', $order->guest_token) }}" 
-                                   class="inline-flex items-center text-xs text-red-700 hover:text-red-900 font-medium underline">
-                                    Upload new proof
-                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </a>
+                    {{-- Products Preview Grid --}}
+                    <div class="py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {{-- Items Section --}}
+                        <div class="lg:col-span-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach($order->orderItems->take(3) as $item)
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-20 h-20 bg-[#F7F7F7] flex-shrink-0 border border-gray-100">
+                                        @if($item->product && $item->product->images->first())
+                                            <img src="{{ Storage::url($item->product->images->first()->image) }}" 
+                                                 alt="{{ $item->item_name }}"
+                                                 class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                                <span class="text-[9px]">NO IMG</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0 py-1">
+                                        <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider truncate border-b border-transparent group-hover:border-gray-900 transition-colors inline-block mb-1">
+                                            {{ $item->item_name }}
+                                        </h4>
+                                        <p class="text-[10px] text-gray-500 uppercase tracking-wide">
+                                            Qty: {{ $item->quantity }}
+                                        </p>
+                                        
+                                        {{-- Variant Info --}}
+                                        @if($item->color || $item->size)
+                                            <p class="text-[10px] text-gray-400 mt-1">
+                                                {{ implode(' / ', array_filter([$item->color, $item->size])) }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endforeach
                             </div>
+                            
+                            @if($order->orderItems->count() > 3)
+                            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-widest pl-1">
+                                + {{ $order->orderItems->count() - 3 }} more item(s)
+                            </p>
+                            @endif
                         </div>
-                    </div>
-                    @endif
-                    @if($order->payment_gateway === 'MANUAL' && !$order->rejection_notes)
-                    <a href="{{ route('order.track', $order->guest_token) }}" 
-                       class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                        </svg>
-                        Upload Payment Proof
-                    </a>
-                    @elseif($order->payment_gateway === 'PAYPAL')
-                    <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
-                       class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.76-4.852a.932.932 0 0 1 .922-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
-                        </svg>
-                        Pay with PayPal
-                    </a>
-                    @endif
-                </div>
-                @elseif($order->status === 'WAITING_VERIFICATION')
-                <div class="mt-4 pt-4 border-t bg-purple-50 rounded-lg p-3">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-medium text-purple-900">Payment Proof Submitted</p>
-                            <p class="text-xs text-purple-700">Admin will verify within 24 hours</p>
-                        </div>
-                    </div>
-                </div>
-                @elseif($order->status === 'SHIPPED')
-                <div class="mt-4 pt-4 border-t bg-blue-50 rounded-lg p-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-                                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-blue-900">Order Shipped!</p>
-                                @if($order->tracking_number)
-                                <p class="text-xs text-blue-700">{{ $order->courier_name }}: {{ $order->tracking_number }}</p>
+
+                        {{-- Actions Section --}}
+                        <div class="lg:col-span-1 flex flex-col justify-center space-y-4 lg:border-l lg:border-gray-100 lg:pl-8">
+                            
+                            <a href="{{ route('order.track', $order->guest_token) }}" 
+                               class="w-full text-center bg-gray-900 hover:bg-gray-800 text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                View Details
+                            </a>
+
+                            {{-- Dynamic Action Buttons --}}
+                            @if($order->status === 'INVOICE_SENT')
+                                @if($order->rejection_notes)
+                                    <div class="p-3 border border-red-200 bg-red-50/50 text-center">
+                                        <p class="text-[10px] text-red-800 font-medium uppercase tracking-wide mb-2">Proof Rejected</p>
+                                        <a href="{{ route('order.track', $order->guest_token) }}" class="text-[10px] text-red-600 underline hover:text-red-800">Re-upload</a>
+                                    </div>
+                                @elseif($order->payment_gateway === 'MANUAL')
+                                    <a href="{{ route('order.track', $order->guest_token) }}" 
+                                       class="w-full text-center border border-[#E8B49E] text-[#E8B49E] hover:bg-[#E8B49E] hover:text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                        Confirm Payment
+                                    </a>
+                                @elseif($order->payment_gateway === 'PAYPAL')
+                                    <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
+                                       class="w-full text-center bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                        Pay with PayPal
+                                    </a>
                                 @endif
-                            </div>
+                            @elseif($order->status === 'SHIPPED')
+                                <form action="{{ route('order.track.complete', $order->guest_token) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" 
+                                            onclick="return confirm('Confirm receipt of this order?')"
+                                            class="w-full text-center bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                        Receive Order
+                                    </button>
+                                </form>
+                            @elseif($order->status === 'COMPLETED' && $order->can_review && !$order->is_reviewed)
+                                <a href="{{ route('order.track.review', $order->guest_token) }}" 
+                                   class="w-full text-center border border-gray-200 hover:border-gray-900 text-gray-500 hover:text-gray-900 text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                    Write Review
+                                </a>
+                            @endif
+
                         </div>
-                        <form action="{{ route('order.track.complete', $order->guest_token) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" 
-                                    onclick="return confirm('Have you received your order?')"
-                                    class="text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
-                                Order Received
-                            </button>
-                        </form>
                     </div>
                 </div>
-                @elseif($order->status === 'COMPLETED')
-                <div class="mt-4 pt-4 border-t bg-green-50 rounded-lg p-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <p class="text-sm font-medium text-green-900">Order Completed!</p>
-                        </div>
-                        
-                        @if($order->can_review)
-                            @if(!$order->is_reviewed)
-                            {{-- Belum review & masih dalam 30 hari --}}
-                            <a href="{{ route('order.track.review', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                </svg>
-                                Write Review
-                            </a>
-                            @else
-                            {{-- Sudah review & masih dalam 30 hari (bisa edit) --}}
-                            <a href="{{ route('order.track.review.edit', $order->guest_token) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                                Edit Review
-                            </a>
-                            @endif
-                        @else
-                            {{-- Sudah lewat 30 hari --}}
-                            @if($order->is_reviewed)
-                            <span class="text-sm text-gray-500">Reviewed ✓</span>
-                            @endif
-                            {{-- Jika tidak review & lewat 30 hari, tidak tampilkan apa-apa --}}
-                        @endif
-                    </div>
-                </div>
-                @endif
+                @endforeach
             </div>
-            @endforeach
-        </div>
         @endif
 
     </div>

@@ -64,7 +64,7 @@ class OrderTrackingController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Bukti berhasil diupload! Admin akan segera memverifikasi.');
+        return back()->with('success', 'Payment proof successfully uploaded. Our team will verify it shortly.');
     }
 
     public function createPaypalCheckout($guestToken)

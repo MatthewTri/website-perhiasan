@@ -31,7 +31,7 @@ class OrderController extends Controller
         if ($status) {
             $query->where('status', $status);
         } else {
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
+            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
         }
 
         $allOrders = Order::with(['user', 'orderItems'])->get();

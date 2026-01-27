@@ -59,7 +59,7 @@ class PaymentController extends Controller
         if ($order->status === 'PAID') {
             Log::info('Order already paid, skipping capture');
             return redirect()->route('order.track', $order->guest_token)
-                        ->with('success', '✅ Payment successful!');
+                        ->with('success', 'Payment successful!');
         }
 
         if ($order->status === 'CANCELLED') {
@@ -102,7 +102,7 @@ class PaymentController extends Controller
                 ]);
 
                 return redirect()->route('order.track', $order->guest_token)
-                            ->with('success', '✅ Payment successful! Your order #' . $order->order_number . ' is being processed.');
+                            ->with('success', 'Payment successful! Your order #' . $order->order_number . ' is being processed.');
             } else {
                 Log::error('❌ PayPal Capture FAILED', [
                     'result' => $captureResult

@@ -122,11 +122,19 @@
                             {{-- Phone (Full Width) --}}
                             <div class="md:col-span-2">
                                 <div class="relative">
-                                    <input type="tel" id="shipping_phone" value="{{ old('shipping_phone') }}" required
-                                           class="block w-full border border-gray-300 rounded-none px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 focus:ring-0 bg-transparent @error('shipping_phone') border-red-500 @enderror">
-                                    <input type="hidden" name="shipping_phone" id="hidden_shipping_phone" value="{{ old('shipping_phone') }}">
+                                    {{-- Input Visible untuk intlTelInput --}}
+                                    <input type="tel" 
+                                        id="shipping_phone" 
+                                        class="block w-full border border-gray-300 rounded-none px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 focus:ring-0 bg-transparent @error('shipping_phone') border-red-500 @enderror">
+                                    
+                                    {{-- Hidden Input yang akan di-submit (dengan attribute required) --}}
+                                    <input type="hidden" 
+                                        name="shipping_phone" 
+                                        id="hidden_shipping_phone" 
+                                        value="{{ old('shipping_phone') }}" 
+                                        required>
                                 </div>
-                                <div id="phone-error" class="hidden mt-1 text-xs text-red-500"></div>
+                                <div id="phone-error" class="hidden mt-1 text-xs text-red-500">Please enter a valid phone number.</div>
                                 @error('shipping_phone') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -177,8 +185,8 @@
 
                     {{-- Submit Button --}}
                     <div class="pt-6">
-                        <button type="submit" 
-                                class="w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
+                        <button type="button" onclick="openPreOrderModal()"
+                                class="w-full cursor-pointer bg-[#E8B49E] hover:bg-[#dcaea1] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
                             Pre Order Now
                         </button>
                         
@@ -303,6 +311,104 @@
     <a href="{{ route('products.index') }}" class="text-[#E8B49E] border-b border-[#E8B49E] text-xs uppercase tracking-widest pb-1 hover:text-black hover:border-black transition-colors">Return to Shop</a>
 </div>
 
+
+{{-- PRE-ORDER CONFIRMATION MODAL --}}
+<div id="preorder-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true">
+    
+    {{-- Fix: Tambahkan id="modal-backdrop" dan class opacity-0 untuk animasi --}}
+    <div id="modal-backdrop" class="fixed inset-0 bg-gray-900/60 transition-opacity duration-300 opacity-0" onclick="closePreOrderModal()"></div>
+
+    {{-- Modal Content --}}
+    {{-- Fix: Class opacity-0 dan scale-95 sebagai initial state --}}
+    <div id="preorder-modal-content" class="relative bg-white w-full max-w-lg shadow-2xl transform transition-all duration-300 scale-95 opacity-0 flex flex-col max-h-[90vh]">
+        
+        {{-- Header --}}
+        <div class="px-8 pt-8 pb-6 text-center border-b border-gray-100 bg-white rounded-t-lg">
+            <h3 class="text-2xl font-serif text-gray-900 mb-2">Pre-Order Process</h3>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-medium">Please review before confirming</p>
+        </div>
+
+        {{-- Scrollable Body --}}
+        <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
+            <div class="text-center mb-8">
+                <p class="text-sm text-gray-600 font-light leading-relaxed max-w-sm mx-auto">
+                    To ensure the highest quality, each piece is crafted with care. Here is how our pre-order system works:
+                </p>
+            </div>
+
+            {{-- Timeline Steps --}}
+            <div class="relative pl-2 sm:pl-4 space-y-8">
+
+                {{-- Step 1 --}}
+                <div class="relative flex items-start group">
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">1</span>
+                    </div>
+                    <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Order Review</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Our team will review your request within 24 hours to confirm availability.</p>
+                    </div>
+                </div>
+
+                {{-- Step 2 --}}
+                <div class="relative flex items-start group">
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">2</span>
+                    </div>
+                    <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Confirmation</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">We will contact you via <strong>Email</strong> or <strong>WhatsApp</strong> to confirm details.</p>
+                    </div>
+                </div>
+
+                {{-- Step 3 --}}
+                <div class="relative flex items-start group">
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">3</span>
+                    </div>
+                    <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Your Response Required</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Please respond to our message to proceed. Without confirmation, the order cannot continue.</p>
+                    </div>
+                </div>
+
+                {{-- Step 4 --}}
+                <div class="relative flex items-start group">
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">4</span>
+                    </div>
+                    <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Payment</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Once confirmed, you will receive a secure payment link via email.</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Important Notice Box --}}
+            <div class="mt-10 bg-gray-50 p-5 border border-gray-100 text-center rounded">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Important</p>
+                <p class="text-xs text-gray-800 leading-relaxed font-medium">
+                    Please ensure your contact details are correct. updates will be sent to the email provided in checkout.
+                </p>
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div class="p-6 border-t border-gray-100 bg-white rounded-b-lg">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" onclick="closePreOrderModal()" 
+                        class="cursor-pointer w-full sm:w-1/2 py-4 px-6 border border-gray-200 text-gray-600 text-[10px] sm:text-xs uppercase tracking-[0.2em] hover:bg-gray-50 hover:text-gray-900 transition-all font-medium">
+                    Cancel
+                </button>
+                <button type="button" onclick="submitPreOrder()" 
+                        class="cursor-pointer w-full sm:w-1/2 py-4 px-6 bg-gray-900 text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-lg shadow-gray-200 font-medium">
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Styles khusus Floating Label --}}
 <style>
     /* Styling Scrollbar Summary */
@@ -330,7 +436,7 @@
     const checkoutUrl = "{{ route('checkout.index') }}";
     const currentCurrency = "{{ $globalCurrency }}";
 
-    // Guest Cart Logic (Dipertahankan 100%)
+    // Guest Cart Logic
     document.addEventListener('DOMContentLoaded', async function() {
         const guestCart = localStorage.getItem('guest_cart');
         
@@ -342,9 +448,6 @@
         }
 
         const cart = JSON.parse(guestCart);
-        const productIds = Object.keys(cart).map(id => parseInt(id));
-        
-        // Show loader while fetching
         document.getElementById('checkout-loading').classList.remove('hidden');
 
         try {
@@ -365,7 +468,6 @@
                 document.getElementById('checkout-loading').classList.add('hidden');
                 document.getElementById('checkout-form').classList.remove('hidden');
             } else {
-                // If API returns empty valid items
                 document.getElementById('checkout-loading').classList.add('hidden');
                 document.getElementById('checkout-empty').classList.remove('hidden');
             }
@@ -377,7 +479,6 @@
     });
 
     function displayCheckoutSummary(items) {
-        // Render ulang HTML Summary untuk Guest agar sesuai desain baru
         let currentCurrency = '{{ $globalCurrency }}';
         
         const formatPrice = (priceIdr, priceUsd, currency) => {
@@ -399,7 +500,7 @@
             
             const imageSrc = item.product.featured_image 
                 ? `/storage/${item.product.featured_image.image}` 
-                : '/img/no-image.jpg'; // Path placeholder
+                : '/img/no-image.jpg';
             
             let variantInfo = '';
             if (item.color || item.size) {
@@ -427,10 +528,8 @@
             </div>`;
         });
         
-        // Inject HTML
         document.getElementById('summary-items').innerHTML = itemsHtml;
         
-        // Update Totals
         const subtotalEl = document.getElementById('summary-subtotal');
         const totalEl = document.getElementById('summary-total');
         
@@ -445,17 +544,15 @@
             totalEl.textContent = formatPrice(subtotalIdr, subtotalUsd, currentCurrency);
         }
         
-        // Update Mobile Summary Total Label
         const mobileTotalLabel = document.querySelector('.summary-total-display');
         if(mobileTotalLabel) mobileTotalLabel.textContent = formatPrice(subtotalIdr, subtotalUsd, currentCurrency);
     }
 </script>
 @endguest
 
+{{-- ✅ SCRIPT GLOBAL (UNTUK SEMUA USER - AUTH & GUEST) --}}
 <script>
-    // ===== LOGIC SWITCH CURRENCY & PAYMENT METHOD =====
-    // Logic ini tetap sama, hanya menyesuaikan selector ID baru jika perlu
-    
+    // ===== CURRENCY SWITCHER =====
     function updateOrderSummaryPrices(currency) {
         const formatPrice = (priceIdr, priceUsd, currency) => {
             if (currency === 'USD') {
@@ -465,15 +562,13 @@
             }
         };
 
-        // Update item totals
         document.querySelectorAll('.item-total').forEach(el => {
             const priceIdr = parseFloat(el.dataset.priceIdr);
             const priceUsd = parseFloat(el.dataset.priceUsd);
-            const qty = parseInt(el.dataset.qty || 1); // Fallback qty 1 if not set
+            const qty = parseInt(el.dataset.qty || 1);
             el.textContent = formatPrice(priceIdr * qty, priceUsd * qty, currency);
         });
 
-        // Update Summary Totals
         const subtotalEl = document.getElementById('summary-subtotal');
         const totalEl = document.getElementById('summary-total');
         
@@ -488,66 +583,88 @@
             const formattedTotal = formatPrice(idr, usd, currency);
             totalEl.textContent = formattedTotal;
             
-            // Update mobile header total
             const mobileLabel = document.querySelector('.summary-total-display');
             if(mobileLabel) mobileLabel.textContent = formattedTotal;
         }
     }
 
-    document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const selectedCurrency = this.value === 'paypal' ? 'USD' : 'IDR';
-            updateOrderSummaryPrices(selectedCurrency);
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Default currency handling
-        const checkedPayment = document.querySelector('input[name="payment_gateway"]:checked');
-        if(checkedPayment) {
-            const currency = checkedPayment.value === 'paypal' ? 'USD' : 'IDR';
-            updateOrderSummaryPrices(currency);
-        } else {
-            // Default IDR if nothing selected
-            updateOrderSummaryPrices('IDR');
-        }
-
-        // Phone Input & Countries Logic (Copy-Paste logika IntTelInput dan Fetch Countries Anda sebelumnya kesini)
-        // ... (Include your phone/country logic here exactly as before) ...
-        // Agar code tidak terlalu panjang di chat, saya asumsikan script phone/country logic
-        // Anda letakkan di bawah sini atau di file JS terpisah. 
-        // Struktur HTML ID-nya (shipping_phone, shipping_country) sudah saya samakan.
-        
-        initPhoneAndAddressLogic(); // Panggil fungsi wrapper (lihat bawah)
-    });
-    
+    // ===== PHONE & ADDRESS LOGIC =====
     function initPhoneAndAddressLogic() {
-        // COPY PASTE LOGIKA PHONE INPUT & COUNTRY API ANDA DISINI
-        // Pastikan selector ID-nya sesuai dengan HTML di atas:
-        // #shipping_phone, #shipping_country, #shipping_province, #shipping_city
-        
         const phoneInputField = document.querySelector("#shipping_phone");
         const hiddenPhoneInput = document.querySelector("#hidden_shipping_phone");
+        const phoneError = document.getElementById('phone-error');
         
-        if (phoneInputField) {
+        if (phoneInputField && hiddenPhoneInput) {
+            // ✅ Flag untuk track apakah user sudah interact
+            let hasInteracted = false;
+            
             const phoneInput = window.intlTelInput(phoneInputField, {
                 initialCountry: "auto",
                 geoIpLookup: callback => {
-                    fetch('https://ipapi.co/json/').then(res => res.json()).then(data => callback(data.country_code)).catch(() => callback("id"));
+                    fetch('https://ipapi.co/json/')
+                        .then(res => res.json())
+                        .then(data => callback(data.country_code))
+                        .catch(() => callback("id"));
                 },
                 utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-                preferredCountries: [],
+                separateDialCode: true,
             });
             
-            // Update hidden input on change
-            const updateHidden = () => {
-                if(phoneInput.isValidNumber()) hiddenPhoneInput.value = phoneInput.getNumber();
+            const updateHiddenPhone = () => {
+                const fullNumber = phoneInput.getNumber();
+                const isValid = phoneInput.isValidNumber();
+                
+                if (isValid) {
+                    hiddenPhoneInput.value = fullNumber;
+                    hiddenPhoneInput.setCustomValidity('');
+                    phoneError.classList.add('hidden');
+                    phoneInputField.classList.remove('border-red-500');
+                    phoneInputField.classList.add('border-gray-300');
+                } else {
+                    // ✅ Hanya set error jika user sudah interact
+                    if (hasInteracted) {
+                        hiddenPhoneInput.value = '';
+                        hiddenPhoneInput.setCustomValidity('Invalid phone number');
+                        phoneError.classList.remove('hidden');
+                        phoneInputField.classList.add('border-red-500');
+                        phoneInputField.classList.remove('border-gray-300');
+                    }
+                }
             };
-            phoneInputField.addEventListener('input', updateHidden);
-            phoneInputField.addEventListener('countrychange', updateHidden);
+            
+            // ✅ Set flag saat user mulai mengetik
+            phoneInputField.addEventListener('input', () => {
+                hasInteracted = true;
+                updateHiddenPhone();
+            });
+            
+            // ✅ Validasi saat blur (user keluar dari field)
+            phoneInputField.addEventListener('blur', () => {
+                if (phoneInputField.value) { // Hanya validasi jika ada input
+                    hasInteracted = true;
+                    updateHiddenPhone();
+                }
+            });
+            
+            phoneInputField.addEventListener('countrychange', () => {
+                phoneInputField.value = '';
+                hiddenPhoneInput.value = '';
+                hiddenPhoneInput.setCustomValidity('');
+                phoneError.classList.add('hidden');
+                phoneInputField.classList.remove('border-red-500');
+                phoneInputField.classList.add('border-gray-300');
+
+                hasInteracted = false;
+            });
+            
+            // ✅ Untuk old value (saat form error & kembali)
+            if (phoneInputField.value) {
+                hasInteracted = true;
+                updateHiddenPhone();
+            }
         }
 
-        // Country API
+        // ===== COUNTRY & ADDRESS LOGIC (TETAP SAMA) =====
         const countrySelect = document.getElementById('shipping_country');
         const provinceSelect = document.getElementById('shipping_province');
         const addressDetails = document.getElementById('address-details');
@@ -561,30 +678,37 @@
                             const opt = document.createElement('option');
                             opt.value = c.name;
                             opt.textContent = c.name;
+                            if(c.name === '{{ old("shipping_country") }}') opt.selected = true;
                             countrySelect.appendChild(opt);
                         });
+                        
+                        if(countrySelect.value) {
+                            countrySelect.dispatchEvent(new Event('change'));
+                        }
                     }
                 });
 
             countrySelect.addEventListener('change', function() {
                 if(this.value) {
                     addressDetails.classList.remove('hidden');
-                    // Load provinces logic...
+                    
                     fetch('https://countriesnow.space/api/v0.1/countries/states', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ country: this.value })
                     }).then(res => res.json()).then(data => {
                         provinceSelect.innerHTML = '<option value="">Select Province</option>';
-                        if(!data.error && data.data.states.length > 0) {
+                        if(!data.error && data.data.states && data.data.states.length > 0) {
                             data.data.states.forEach(s => {
                                 const opt = document.createElement('option');
                                 opt.value = s.name;
                                 opt.textContent = s.name;
+                                if(s.name === '{{ old("shipping_province") }}') opt.selected = true;
                                 provinceSelect.appendChild(opt);
                             });
                         } else {
-                            provinceSelect.innerHTML = '<option value="-">N/A</option>';
+                            provinceSelect.innerHTML = '<option value="">N/A</option>';
+                            provinceSelect.removeAttribute('required');
                         }
                     });
                 } else {
@@ -593,5 +717,91 @@
             });
         }
     }
+
+    // ===== PRE-ORDER MODAL FUNCTIONS (GLOBAL) =====
+    function openPreOrderModal() {
+        const form = document.getElementById('checkout-form');
+        const hiddenPhone = document.getElementById('hidden_shipping_phone');
+        const phoneError = document.getElementById('phone-error');
+        
+        // Step 1: HTML5 Validation
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // Step 2: Phone Validation
+        if (!hiddenPhone.value || hiddenPhone.value.trim() === '') {
+            phoneError.classList.remove('hidden');
+            document.getElementById('shipping_phone').focus();
+            document.getElementById('shipping_phone').classList.add('border-red-500');
+            return;
+        }
+        
+        // Step 3: Payment Method Check
+        const paymentMethod = document.querySelector('input[name="payment_gateway"]:checked');
+        if (!paymentMethod) {
+            alert('Please select a payment method.'); 
+            return;
+        }
+        
+        // Step 4: Show Modal
+        const modal = document.getElementById('preorder-modal');
+        const backdrop = document.getElementById('modal-backdrop');
+        const modalContent = document.getElementById('preorder-modal-content');
+        
+        modal.classList.remove('hidden');
+        
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            modalContent.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closePreOrderModal() {
+        const modal = document.getElementById('preorder-modal');
+        const backdrop = document.getElementById('modal-backdrop');
+        const modalContent = document.getElementById('preorder-modal-content');
+        
+        backdrop.classList.add('opacity-0');
+        modalContent.classList.add('opacity-0');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function submitPreOrder() {
+        document.getElementById('checkout-loading').classList.remove('hidden');
+        document.getElementById('checkout-form').submit();
+        closePreOrderModal();
+    }
+
+    // ===== DOM READY =====
+    document.addEventListener('DOMContentLoaded', function() {
+        // Payment Method Listener
+        document.querySelectorAll('input[name="payment_gateway"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const selectedCurrency = this.value === 'paypal' ? 'USD' : 'IDR';
+                updateOrderSummaryPrices(selectedCurrency);
+            });
+        });
+
+        // Default Currency
+        const checkedPayment = document.querySelector('input[name="payment_gateway"]:checked');
+        if(checkedPayment) {
+            const currency = checkedPayment.value === 'paypal' ? 'USD' : 'IDR';
+            updateOrderSummaryPrices(currency);
+        } else {
+            updateOrderSummaryPrices('IDR');
+        }
+
+        // Init Phone & Address
+        initPhoneAndAddressLogic();
+    });
 </script>
 @endsection
