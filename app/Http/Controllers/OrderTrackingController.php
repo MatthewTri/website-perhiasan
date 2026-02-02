@@ -40,7 +40,7 @@ class OrderTrackingController extends Controller
         $order = Order::where('guest_token', $token)->firstOrFail();
 
         // Validasi: Cuma boleh upload kalau metode MANUAL dan status INVOICE_SENT
-        if ($order->payment_preference != 'MANUAL' || $order->status != 'INVOICE_SENT') {
+        if ($order->payment_gateway != 'MANUAL' || $order->status != 'INVOICE_SENT') {
             return back()->with('error', 'Pesanan ini tidak membutuhkan upload bukti manual.');
         }
 

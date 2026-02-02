@@ -286,7 +286,7 @@
                             </div>
                             <div class="flex justify-between items-center border-t border-gray-200 pt-6 mt-6">
                                 <span class="text-base font-bold text-gray-900 uppercase tracking-widest">Total</span>
-                                <span class="text-xl font-serif font-medium text-gray-900" id="summary-total"
+                                <span class="text-xl font-medium text-gray-900" id="summary-total"
                                       data-idr="{{ $totalIdr ?? 0 }}" data-usd="{{ $totalUsd ?? 0 }}">
                                     @currency(['idr' => $totalIdr ?? 0, 'usd' => $totalUsd ?? 0])
                                 </span>

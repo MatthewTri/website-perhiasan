@@ -202,15 +202,18 @@ class OrderController extends Controller
         $order->shipment->update([
             'courier_name' => $validated['courier_name'],
             'tracking_number' => $validated['tracking_number'],
-            'shipped_at' => now(),
+            'shipped_at' => $order->status === 'PAID' ? now() : $order->shipment->shipped_at, // Keep original date if already shipped
         ]);
 
-        // UPDATE ORDER STATUS
-        $order->update([
-            'status' => 'SHIPPED',
-        ]);
+        // UPDATE ORDER STATUS hanya jika masih PAID
+        if ($order->status === 'PAID') {
+            $order->update([
+                'status' => 'SHIPPED',
+            ]);
+            return back()->with('success', 'Order marked as SHIPPED with tracking: ' . $validated['tracking_number']);
+        }
 
-        return back()->with('success', 'Tracking information updated successfully!');
+        return back()->with('success', 'Shipping information updated successfully!');
     }
 
     /**

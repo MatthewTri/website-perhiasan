@@ -1,472 +1,379 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-4">
-        <!-- Header with Back Button -->
-        <div class="mb-8 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('admin.orders.index') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Orders
-                </a>
-            </div>
-            <div class="text-center flex-1">
-                <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
-                <p class="text-gray-600 mt-1">Review and process order #{{ $order->order_number }}</p>
+<div class="min-h-screen bg-white">
+    
+    {{-- Header Bar --}}
+    <div class="border-b border-gray-100 bg-white sticky top-0 z-10">
+        <div class="container mx-auto px-4 lg:px-12 py-4 lg:py-6">
+            {{-- Mobile Layout --}}
+            <div class="flex lg:hidden flex-col space-y-3">
+                {{-- Back Button & Status --}}
+                <div class="flex items-center justify-between">
+                    <a href="{{ route('admin.orders.index') }}" 
+                    class="inline-flex items-center text-xs uppercase tracking-[0.2em] text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back
+                    </a>
+                    
+                    @php
+                    $statusColors = [
+                        'PENDING_REVIEW' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
+                        'INVOICE_SENT' => 'bg-blue-50 text-blue-800 border-blue-200',
+                        'WAITING_VERIFICATION' => 'bg-purple-50 text-purple-800 border-purple-200',
+                        'PAID' => 'bg-green-50 text-green-800 border-green-200',
+                        'SHIPPED' => 'bg-indigo-50 text-indigo-800 border-indigo-200',
+                        'COMPLETED' => 'bg-purple-50 text-purple-800 border-purple-200',
+                        'CANCELLED' => 'bg-red-50 text-red-800 border-red-200',
+                        'REFUNDED' => 'bg-orange-50 text-orange-800 border-orange-200',
+                    ];
+                    @endphp
+                    
+                    <span class="inline-flex items-center px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] font-medium border {{ $statusColors[$order->status] ?? 'bg-gray-50 text-gray-800 border-gray-200' }}">
+                        {{ str_replace('_', ' ', $order->status) }}
+                    </span>
+                </div>
+                
+                {{-- Order Number --}}
+                <div class="text-center">
+                    <h1 class="text-xl text-gray-900 tracking-wide">Order #{{ $order->order_number }}</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mt-1">{{ $order->created_at->format('M d, Y') }}</p>
+                </div>
             </div>
             
-            <!-- Order Status Badge -->
-            <div>
-                @php
-                $statusColors = [
-                    'PENDING_REVIEW' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                    'INVOICE_SENT' => 'bg-blue-100 text-blue-800 border-blue-200',
-                    'PAID' => 'bg-green-100 text-green-800 border-green-200',
-                    'SHIPPED' => 'bg-indigo-100 text-indigo-800 border-indigo-200',
-                    'COMPLETED' => 'bg-purple-100 text-purple-800 border-purple-200',
-                    'CANCELLED' => 'bg-red-100 text-red-800 border-red-200',
-                ];
-                @endphp
-                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold border-2 {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            {{-- Desktop Layout --}}
+            <div class="hidden lg:flex items-center justify-between">
+                {{-- Back Button --}}
+                <a href="{{ route('admin.orders.index') }}" 
+                class="inline-flex items-center text-xs uppercase tracking-[0.2em] text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
+                    Back
+                </a>
+                
+                {{-- Order Number (Centered) --}}
+                <div class="absolute left-1/2 transform -translate-x-1/2 text-center">
+                    <h1 class="text-2xl text-gray-900 tracking-wide whitespace-nowrap">Order #{{ $order->order_number }}</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mt-1">{{ $order->created_at->format('M d, Y') }}</p>
+                </div>
+                
+                {{-- Status Badge --}}
+                <span class="inline-flex items-center px-4 py-2 text-[10px] uppercase tracking-[0.15em] font-medium border flex-shrink-0 {{ $statusColors[$order->status] ?? 'bg-gray-50 text-gray-800 border-gray-200' }}">
                     {{ str_replace('_', ' ', $order->status) }}
                 </span>
             </div>
         </div>
+    </div>
 
-        <!-- Success Message -->
-        @if(session('success'))
-        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                {{ session('success') }}
-            </div>
+    {{-- Success Message --}}
+    @if(session('success'))
+    <div class="container mx-auto px-4 lg:px-12 py-4">
+        <div class="bg-green-50 border-l-4 border-green-400 px-4 py-3">
+            <p class="text-sm text-green-800">{{ session('success') }}</p>
         </div>
-        @endif
+    </div>
+    @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Side - Order Information (2/3 width) -->
-            <div class="lg:col-span-2 space-y-6">
+    {{-- Main Split Layout --}}
+    <div class="flex flex-col lg:flex-row">
+        
+        {{-- LEFT COLUMN: Order Details --}}
+        <div class="w-full lg:w-[58%] px-4 lg:px-12 py-8 lg:py-16 order-2 lg:order-1">
+            <div class="max-w-2xl mx-auto lg:mx-0 lg:ml-auto space-y-10">
                 
-                <!-- Contact Information -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        Contact Information
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address
-                            </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                {{ $order->contact_email }}
-                            </div>
+                {{-- Contact Information --}}
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Contact</h2>
+                    <div class="relative">
+                        <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                            {{ $order->contact_email }}
                         </div>
+                        <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Email Address</label>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        Shipping Address
-                    </h2>
+                {{-- Shipping Address --}}
+                @if($order->shipment)
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Shipping Address</h2>
                     
-                    @if($order->shipment)
-                    <div class="space-y-4">
-                        <!-- First & Last Name -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    First Name
-                                </label>
-                                <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                    {{ $order->shipment->first_name }}
-                                </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- First & Last Name --}}
+                        <div class="relative">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->first_name }}
                             </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Last Name
-                                </label>
-                                <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                    {{ $order->shipment->last_name }}
-                                </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">First Name</label>
+                        </div>
+                        
+                        <div class="relative">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->last_name }}
                             </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Last Name</label>
                         </div>
 
-                        <!-- Phone Number -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number
-                            </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
+                        {{-- Phone --}}
+                        <div class="relative md:col-span-2">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
                                 {{ $order->shipment->phone }}
                             </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Phone Number</label>
                         </div>
 
-                        <!-- Address -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Street Address
-                            </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 whitespace-pre-wrap">{{ $order->shipment->address_line1 }}</div>
+                        {{-- Address --}}
+                        <div class="relative md:col-span-2">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->address_line1 }}
+                            </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Street Address</label>
                         </div>
 
-                        <!-- Country -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Country
-                            </label>
-                            <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
+                        {{-- Country --}}
+                        <div class="relative md:col-span-2">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
                                 {{ $order->shipment->country }}
                             </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Country</label>
                         </div>
 
-                        <!-- Province, City, Postal Code -->
-                        <div class="space-y-4">
-                            @if($order->shipment->province)
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Province / State
-                                </label>
-                                <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                    {{ $order->shipment->province }}
+                        {{-- Province (if exists) --}}
+                        @if($order->shipment->province)
+                        <div class="relative md:col-span-2">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->province }}
+                            </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Province / State</label>
+                        </div>
+                        @endif
+
+                        {{-- City & Postal Code --}}
+                        <div class="relative">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->city }}
+                            </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">City</label>
+                        </div>
+                        
+                        @if($order->shipment->postal_code)
+                        <div class="relative">
+                            <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-900">
+                                {{ $order->shipment->postal_code }}
+                            </div>
+                            <label class="absolute left-4 -top-2.5 bg-white px-1 text-xs text-gray-500">Postal Code</label>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                {{-- Payment Information --}}
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Payment</h2>
+                    
+                    {{-- Customer's Preference --}}
+                    <div class="mb-4">
+                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Customer's Preference</label>
+                        <div class="p-4 border-2 border-blue-100 bg-blue-50">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    @if($order->payment_preference === 'MANUAL')
+                                    <p class="text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</p>
+                                    <p class="text-xs text-gray-600 mt-1">Manual bank transfer to BCA account</p>
+                                    @else
+                                    <p class="text-sm font-medium text-gray-900">PayPal (International)</p>
+                                    <p class="text-xs text-gray-600 mt-1">PayPal invoice payment</p>
+                                    @endif
+                                    <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Currency: {{ $order->currency }}</p>
                                 </div>
                             </div>
-                            @endif
+                        </div>
+                    </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        City
-                                    </label>
-                                    <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                        {{ $order->shipment->city }}
+                    {{-- Payment Gateway (if invoice created) --}}
+                    @if($order->payment_gateway)
+                    <div class="mb-4">
+                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Payment Method Used</label>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            @if($order->payment_gateway === 'MANUAL')
+                                <p class="text-sm font-medium text-gray-900">BCA Bank Transfer</p>
+                                <p class="text-xs text-gray-600 mt-1">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
+                                <p class="text-xs text-gray-600">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
+                            @else
+                                <p class="text-sm font-medium text-gray-900">PayPal</p>
+                                <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->transaction_id }}</p>
+                                
+                                @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])
+                                <div class="mt-3 p-3 bg-blue-50 border border-blue-100">
+                                    <p class="text-[10px] uppercase tracking-wider font-medium text-blue-900 mb-2">PayPal Order Status:</p>
+                                    <div class="space-y-1 text-xs text-blue-800">
+                                        <p><span class="font-medium">Status:</span> 
+                                            <span class="px-2 py-0.5 text-[10px] uppercase tracking-wider {{ 
+                                                $paypalStatus['status'] === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
+                                                ($paypalStatus['status'] === 'APPROVED' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') 
+                                            }}">
+                                                {{ $paypalStatus['status'] }}
+                                            </span>
+                                        </p>
+                                        <p><span class="font-medium">Payer Email:</span> {{ $paypalStatus['payer_email'] }}</p>
+                                        <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2, ',', '.') }}</p>
                                     </div>
                                 </div>
-                                @if($order->shipment->postal_code)
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Postal Code
-                                    </label>
-                                    <div class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                                        {{ $order->shipment->postal_code }}
-                                    </div>
+                                @elseif(isset($paypalStatus) && !$paypalStatus['success'])
+                                <div class="mt-2 p-3 bg-yellow-50 border border-yellow-100 text-xs text-yellow-700">
+                                    <p class="font-medium">PayPal Status Unavailable</p>
+                                    <button onclick="location.reload()" class="mt-2 text-blue-600 hover:text-blue-800 underline text-xs">
+                                        Retry Loading Status
+                                    </button>
                                 </div>
                                 @endif
+                            @endif
+                        </div>
+
+                        @if($order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
+                        <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3">
+                            <p class="text-xs text-yellow-800">
+                                <span class="font-medium">Payment Link Sent:</span> Customer received email at <strong>{{ $order->contact_email }}</strong>
+                            </p>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    {{-- Admin Notes Display --}}
+                    @if($order->admin_notes && $order->status !== 'PENDING_REVIEW')
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Admin Notes for Customer</label>
+                        <div class="p-4 bg-purple-50 border border-purple-100">
+                            <p class="text-sm text-gray-900">{{ $order->admin_notes }}</p>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    {{-- Payment Gateway Override (PENDING_REVIEW) --}}
+                    @if($order->status === 'PENDING_REVIEW')
+                    <div class="bg-gray-50 border border-gray-200 p-6 mt-4">
+                        <div class="mb-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Customer Preference</p>
+                                <span id="override-indicator" class="hidden text-[9px] uppercase tracking-wider px-2 py-1 bg-orange-100 text-orange-700 border border-orange-200">
+                                    ⚠ Override Active
+                                </span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-900">{{ $order->payment_preference === 'MANUAL' ? 'BCA Bank Transfer' : 'PayPal' }}</span>
+                                <span class="text-xs text-gray-500">•</span>
+                                <span class="text-xs text-gray-600">You can override if requested</span>
                             </div>
                         </div>
+
+                        <form action="{{ route('admin.orders.sendPaymentDetails', $order) }}" method="POST" id="invoice-form">
+                            @csrf
+                            
+                            <input type="hidden" name="customer_preference" value="{{ $order->payment_preference }}">
+                            
+                            <div class="space-y-3 mb-6">
+                                <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all group">
+                                    <input type="radio" name="payment_gateway_override" value="MANUAL" 
+                                        {{ $order->payment_preference === 'MANUAL' ? 'checked' : '' }}
+                                        class="peer sr-only payment-radio">
+                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400"></div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</span>
+                                        <span class="block text-xs text-gray-500 mt-0.5">Manual transfer in IDR</span>
+                                    </div>
+                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none"></div>
+                                </label>
+                                
+                                <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all group">
+                                    <input type="radio" name="payment_gateway_override" value="PAYPAL"
+                                        {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
+                                        class="peer sr-only payment-radio">
+                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400"></div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900">PayPal (International)</span>
+                                        <span class="block text-xs text-gray-500 mt-0.5">International payment in USD</span>
+                                    </div>
+                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none"></div>
+                                </label>
+                            </div>
+
+                            <div class="relative">
+                                <textarea name="admin_notes" rows="3"
+                                        class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white resize-none" 
+                                        placeholder="Notes">{{ old('admin_notes', $order->admin_notes) }}</textarea>
+                                <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
+                                    Notes for Customer (Optional)
+                                </label>
+                            </div>
+                        </form>
                     </div>
                     @endif
                 </div>
 
-                <!-- Payment Method Section -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
-                        Payment Information
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <!-- Customer's Payment Preference -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Customer's Payment Preference
-                            </label>
-                            <div class="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        @if($order->payment_preference === 'MANUAL')
-                                        <p class="text-base font-semibold text-gray-900">BCA Bank Transfer (Indonesia)</p>
-                                        <p class="text-sm text-gray-600">Manual bank transfer to BCA account</p>
-                                        @else
-                                        <p class="text-base font-semibold text-gray-900">PayPal (International)</p>
-                                        <p class="text-sm text-gray-600">PayPal invoice payment</p>
-                                        @endif
-                                        <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
-                                    </div>
-                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Gateway (if invoice created) -->
-                        @if($order->payment_gateway)
-                        <div>
-                            <div class="flex">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Payment Method Used
-                                </label>
-                            </div>
-                            <div class="p-4 border border-gray-300 bg-gray-50 rounded-lg">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex-1">
-                                        @if($order->payment_gateway === 'MANUAL')
-                                            <p class="text-base font-medium text-gray-900">BCA Bank Transfer</p>
-                                            <p class="text-sm text-gray-500">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
-                                            <p class="text-sm text-gray-500">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
-                                        @else
-                                            <p class="text-base font-medium text-gray-900">PayPal</p>
-                                            <p class="text-sm text-gray-500">Transaction ID: {{ $order->transaction_id }}</p>
-                                            
-                                            {{-- ⬅️ TAMPILKAN STATUS PAYPAL (READ-ONLY) --}}
-                                            @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])
-                                                <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                                    <p class="text-xs font-medium text-blue-900 mb-2">PayPal Order Status:</p>
-                                                    <div class="space-y-1 text-xs text-blue-800">
-                                                        <p><span class="font-medium">Status:</span> 
-                                                            <span class="px-2 py-0.5 rounded {{ 
-                                                                $paypalStatus['status'] === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
-                                                                ($paypalStatus['status'] === 'APPROVED' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') 
-                                                            }}">
-                                                                {{ $paypalStatus['status'] }}
-                                                            </span>
-                                                        </p>
-                                                        <p><span class="font-medium">Payer Email:</span> {{ $paypalStatus['payer_email'] }}</p>
-                                                        <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2, ',', '.') }}</p>
-                                                    </div>
-                                                </div>
-                                            @elseif(isset($paypalStatus) && !$paypalStatus['success'])
-                                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
-                                                    <div class="flex items-start">
-                                                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                                        </svg>
-                                                        <div>
-                                                            <p class="font-medium">PayPal Status Unavailable</p>
-                                                            <p class="mt-1">Transaction ID: {{ $order->transaction_id }}</p>
-                                                            <button onclick="location.reload()" class="mt-2 text-blue-600 hover:text-blue-800 underline text-xs">
-                                                                Retry Loading Status
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="mt-2 text-xs text-gray-500 italic">
-                                                    PayPal status will appear here after order creation
-                                                </div>
-                                            @endif
-
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- ⬅️ INFO BOX: Customer akan terima email --}}
-                            @if($order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
-                            <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                <div class="flex">
-                                    <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <div>
-                                        <p class="text-xs font-medium text-yellow-800">Payment Link Sent</p>
-                                        <p class="text-xs text-yellow-700 mt-1">
-                                            Customer received payment link via email to <strong>{{ $order->contact_email }}</strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                        @endif
-
-                        <!-- Admin Notes - Display (after invoice created) -->
-                        @if($order->admin_notes && $order->status !== 'PENDING_REVIEW')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                                <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                                Admin Notes for Customer
-                            </label>
-                            <div class="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                                <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ $order->admin_notes }}</p>
-                            </div>
-                        </div>
-                        @endif
-                        
-                        <!-- Change Payment Gateway (Only if PENDING_REVIEW) -->
-                        @if($order->status === 'PENDING_REVIEW')
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-yellow-800 mb-3">
-                                        Customer prefers {{ $order->payment_preference }}. Change payment method if customer requests.
-                                    </p>
-                                    <form action="{{ route('admin.orders.sendPaymentDetails', $order) }}" method="POST" id="invoice-form">
-                                        @csrf
-                                        
-                                        <!-- Payment Method Selection -->
-                                        <div class="space-y-2 mb-4">
-                                            <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                                                <input type="radio" 
-                                                    name="payment_gateway_override" 
-                                                    value="MANUAL"
-                                                    {{ $order->payment_preference === 'MANUAL' ? 'checked' : '' }}
-                                                    class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                                                <span class="ml-3 text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</span>
-                                            </label>
-                                            
-                                            <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                                                <input type="radio" 
-                                                    name="payment_gateway_override" 
-                                                    value="PAYPAL"
-                                                    {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
-                                                    class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                                                <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International)</span>
-                                            </label>
-                                        </div>
-
-                                        <!-- Admin Notes -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                </svg>
-                                                Notes for Customer (Optional)
-                                            </label>
-                                            <textarea 
-                                                name="admin_notes" 
-                                                rows="3"
-                                                placeholder="e.g., Thank you for your order! Payment details will be sent to your email."
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('admin_notes', $order->admin_notes) }}</textarea>
-                                            <p class="text-xs text-gray-500 mt-1">This note will be included in the payment email.</p>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Proof of Payment Section (if WAITING_VERIFICATION) -->
+                {{-- Proof of Payment --}}
                 @if($order->proof_of_payment)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        Payment Proof Verification
-                    </h2>
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Payment Proof Verification</h2>
                     
-                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                        @if($order->status === 'WAITING_VERIFICATION')
-                        <div class="flex items-center mb-3">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm font-medium text-purple-900">Customer has uploaded payment proof. Please verify below:</span>
-                        </div>
-                        @endif
-                        
-                        <div class="pt-4">
-                            <p class="text-sm font-medium text-gray-700 mb-3">Payment Proof:</p>
-                            <img src="{{ Storage::url($order->proof_of_payment) }}" 
-                                alt="Payment Proof" 
-                                class="w-48 sm:w-56 md:w-64 h-auto rounded-lg border border-gray-300 cursor-pointer hover:opacity-90 transition-all duration-200"
-                                onclick="openLightbox('{{ Storage::url($order->proof_of_payment) }}', 'admin-image-modal')">
-                            <p class="text-xs text-gray-500 mt-2">
-                                <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                </svg>
-                                Click to view full size
-                            </p>
-                        </div>
+                    @if($order->status === 'WAITING_VERIFICATION')
+                    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+                        <p class="text-xs text-purple-900 font-medium">Customer has uploaded payment proof. Please verify below:</p>
+                    </div>
+                    @endif
+                    
+                    <div class="border border-gray-200 p-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-500 mb-3">Payment Proof:</p>
+                        <img src="{{ Storage::url($order->proof_of_payment) }}" 
+                            alt="Payment Proof" 
+                            class="w-48 h-auto border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                            onclick="openLightbox('{{ Storage::url($order->proof_of_payment) }}', 'admin-image-modal')">
+                        <p class="text-xs text-gray-500 mt-2">Click to view full size</p>
                     </div>
 
-                    <!-- Shipping Form (Hidden by default, shown after clicking Approve) -->
-                    <div id="shipping-form" class="hidden mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-4 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                            </svg>
-                            Enter Shipping Details
-                        </h3>
+                    {{-- Shipping Form (Hidden, shown after approve) --}}
+                    <div id="shipping-form" class="hidden mt-6 p-6 bg-blue-50 border-l-4 border-blue-400">
+                        <h3 class="text-sm font-bold uppercase tracking-[0.15em] text-blue-900 mb-4">Enter Shipping Details</h3>
                         
                         <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
                             @csrf
                             <input type="hidden" name="action" value="approve">
                             
                             <div class="space-y-4">
-                                <!-- Courier Name -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Courier / Shipping Service <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="courier_name" 
-                                            required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <div class="relative">
+                                    <select name="courier_name" required
+                                            class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-transparent appearance-none">
                                         <option value="">Select Courier</option>
                                         <option value="JNE">JNE</option>
                                         <option value="Paxel">Paxel</option>
                                         <option value="RPX">RPX</option>
                                     </select>
-                                    @error('courier_name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                    <label class="absolute left-4 -top-2.5 bg-blue-50 px-1 text-xs text-gray-500">Courier / Shipping Service *</label>
+                                    @error('courier_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
-                                <!-- Tracking Number -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Tracking Number / Resi <span class="text-red-500">*</span>
+                                <div class="relative">
+                                    <input type="text" name="tracking_number" required
+                                           class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-transparent"
+                                           placeholder="Tracking Number">
+                                    <label class="absolute left-4 -top-2.5 bg-blue-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
+                                        Tracking Number / Resi *
                                     </label>
-                                    <input type="text" 
-                                        name="tracking_number" 
-                                        required
-                                        placeholder="e.g., JNE1234567890"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    @error('tracking_number')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                    @error('tracking_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 </div>
 
-                                <!-- Info Box -->
-                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                                    <div class="flex">
-                                        <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <div>
-                                            <p class="text-sm font-medium text-yellow-800">Important:</p>
-                                            <p class="text-sm text-yellow-700 mt-1">
-                                                After clicking "Approve & Ship", the order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3">
+                                    <p class="text-xs text-yellow-800">
+                                        After clicking "Approve & Ship", the order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
+                                    </p>
                                 </div>
 
-                                <!-- Submit Button -->
                                 <button type="submit" 
                                         onclick="return confirm('Approve payment and mark as SHIPPED?')"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
+                                        class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                                     Approve & Change Status to SHIPPED
                                 </button>
                             </div>
@@ -475,95 +382,56 @@
                 </div>
                 @endif
 
-                <!-- Customer's Notes -->
+                {{-- Customer's Notes --}}
                 @if($order->order_notes)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                        </svg>
-                        Customer's Notes
-                    </h2>
-                    
-                    <div class="w-full px-4 py-3 bg-yellow-50 border border-yellow-200 rounded-lg text-gray-900 whitespace-pre-wrap">{{ $order->order_notes }}</div>
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Customer's Notes</h2>
+                    <div class="w-full px-4 py-3 bg-yellow-50 border border-yellow-100 text-sm text-gray-900">
+                        {{ $order->order_notes }}
+                    </div>
                 </div>
                 @endif
             </div>
+        </div>
 
-            <!-- Right Side - Order Summary (1/3 width) -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-                    
-                    <!-- Order Info -->
-                    <div class="mb-4 pb-4 border-b border-gray-200">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-600">Order Number</span>
-                            <span class="font-medium text-gray-900">{{ $order->order_number }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-600">Order Date</span>
-                            <span class="font-medium text-gray-900">{{ $order->created_at->format('M d, Y') }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Order Time</span>
-                            <span class="font-medium text-gray-900">{{ $order->created_at->format('g:i A') }}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Cart Items -->
-                    <div id="summary-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto">
+        {{-- RIGHT COLUMN: Order Summary (Sticky) --}}
+        <div class="w-full lg:w-[42%] bg-[#FAFAFA] border-l border-gray-100 order-1 lg:order-2">
+            <div class="lg:sticky lg:top-0">
+                <div class="p-6 lg:p-16">
+                    <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-8 pb-4 border-b border-gray-200">
+                        Order Summary
+                    </h2>
+
+                    {{-- Cart Items --}}
+                    <div id="summary-items" class="space-y-6 mb-8 max-h-[calc(100vh-450px)] overflow-y-auto pr-2 custom-scrollbar">
                         @foreach($order->orderItems as $item)
-                        <div class="flex items-start space-x-4 pt-2 pb-4 border-b border-gray-200">
-                            <div class="flex-shrink-0 w-16 h-16 relative">
+                        <div class="flex items-center space-x-4 mt-2">
+                            <div class="relative w-16 h-16 bg-white border border-gray-100 flex-shrink-0">
                                 @if($item->product && $item->product->featuredImage)
                                     <img src="{{ asset('storage/' . $item->product->featuredImage->image) }}" 
                                         alt="{{ $item->item_name }}"
-                                        class="w-full h-full object-cover rounded-lg">
+                                        class="w-full h-full object-cover p-1">
                                 @else
-                                    <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                                        </svg>
+                                    <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
+                                        <span class="text-[9px]">NO IMG</span>
                                     </div>
                                 @endif
-                                <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                <span class="absolute -top-2 -right-2 bg-[#E8B49E] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center">
                                     {{ $item->quantity }}
                                 </span>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $item->item_name }}</p>
                                 
-                                {{-- ✅ Display Color & Size dari Database --}}
                                 @if($item->color || $item->size)
-                                    <p class="text-[10px] text-gray-500 mt-1 flex items-center space-x-1.5">
-                                        @if($item->color)
-                                            <span class="inline-flex items-center">
-                                                <span class="font-medium">{{ $item->color }}</span>
-                                            </span>
-                                        @endif
-                                        
-                                        @if($item->color && $item->size)
-                                            <span class="text-gray-300">•</span>
-                                        @endif
-                                        
-                                        @if($item->size)
-                                            <span class="inline-flex items-center">
-                                                <span class="font-medium">{{ $item->size }}</span>
-                                            </span>
-                                        @endif
-                                    </p>
-                                @endif
-                                
-                                <p class="text-sm text-gray-500 mt-1">
-                                    @if($order->currency === 'USD')
-                                        ${{ number_format($item->price_usd, 2) }}
-                                    @else
-                                        Rp {{ number_format($item->price_idr, 0, ',', '.') }}
-                                    @endif
+                                <p class="text-[10px] text-gray-500 mt-1 space-x-2">
+                                    @if($item->color)<span>{{ $item->color }}</span>@endif
+                                    @if($item->color && $item->size)<span>•</span>@endif
+                                    @if($item->size)<span>{{ $item->size }}</span>@endif
                                 </p>
+                                @endif
                             </div>
-                            <div class="text-sm font-medium text-gray-900 text-right">
+                            <div class="text-sm font-medium text-gray-900" id="item-price-{{ $item->id }}">
                                 @if($order->currency === 'USD')
                                     ${{ number_format($item->price_usd * $item->quantity, 2) }}
                                 @else
@@ -574,11 +442,11 @@
                         @endforeach
                     </div>
 
-                    <!-- Price Breakdown -->
-                    <div class="space-y-3 mb-6">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Subtotal</span>
-                            <span class="font-medium text-gray-900" id="subtotal-display">
+                    {{-- Price Breakdown --}}
+                    <div class="border-t border-gray-200 pt-6 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Subtotal</span>
+                            <span class="text-sm font-medium text-gray-900" id="subtotal-display">
                                 @if($order->currency === 'USD')
                                     ${{ number_format($order->subtotal_usd, 2) }}
                                 @else
@@ -587,462 +455,510 @@
                             </span>
                         </div>
                         
-                        <!-- ⬅️ SHIPPING COST (EDITABLE jika PENDING_REVIEW) -->
-                        <div class="flex justify-between text-sm items-center">
-                            <span class="text-gray-600">Shipping</span>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Shipping</span>
                             
                             @if($order->status === 'PENDING_REVIEW')
-                                <!-- Input editable -->
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-gray-600 text-xs">{{ $order->currency }}</span>
-                                    <input type="number" 
-                                        name="shipping_cost"
-                                        id="shipping_cost_input"
-                                        form="invoice-form"
-                                        value="{{ old('shipping_cost', $order->shipping_cost) }}"
-                                        step="0.01"
-                                        min="0"
-                                        placeholder="0.00"
-                                        class="w-24 px-2 py-1 border border-gray-300 rounded text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required>
-                                </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-gray-600" id="shipping-currency-label">{{ $order->currency }}</span>
+                                <input type="number" name="shipping_cost" id="shipping_cost_input" form="invoice-form"
+                                    value="{{ old('shipping_cost', $order->shipping_cost) }}" step="0.01" min="0" required
+                                    class="w-24 px-2 py-1 border border-gray-300 text-sm text-right focus:outline-none focus:border-gray-900">
+                            </div>
                             @else
-                                <!-- Display only -->
-                                <span class="font-medium text-gray-900">
-                                    @if($order->shipping_cost > 0)
-                                        {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
-                                    @else
-                                        <span class="text-blue-600">Free</span>
-                                    @endif
-                                </span>
+                            <span class="text-sm font-medium text-gray-900">
+                                @if($order->shipping_cost > 0)
+                                    {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                @else
+                                    <span class="text-green-600 text-xs uppercase tracking-wider">Free</span>
+                                @endif
+                            </span>
                             @endif
                         </div>
 
                         @if($order->status === 'PENDING_REVIEW')
-                        <!-- Quick Shipping Options (Optional) -->
                         <div class="flex justify-end flex-wrap gap-2">
-                            <button type="button" 
-                                    onclick="setShippingCost(0)"
-                                    class="px-3 py-1 text-xs bg-green-100 text-green-700 hover:bg-green-200 rounded-full transition">
-                                Free
+                            <button type="button" onclick="setShippingCost(0)"
+                                    class="px-3 py-1 text-xs bg-green-50 text-green-700 hover:bg-green-100 transition uppercase tracking-wider">
+                                Free Shipping
                             </button>
                         </div>
-                        
                         @error('shipping_cost')
                             <p class="text-red-500 text-xs">{{ $message }}</p>
                         @enderror
                         @endif
 
-                        <div class="border-t border-gray-200 pt-3">
-                            <div class="flex justify-between">
-                                <span class="text-base font-semibold text-gray-900">Total</span>
-                                <span class="text-xl font-bold text-gray-900" id="total-display">
-                                    {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}
-                                </span>
-                            </div>
+                        <div class="flex justify-between items-center border-t border-gray-200 pt-6 mt-6">
+                            <span class="text-base font-bold text-gray-900 uppercase tracking-widest">Total</span>
+                            <span class="text-xl font-medium text-gray-900" id="total-display">
+                                {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    @if($order->status === 'PENDING_REVIEW')
-                    <div class="space-y-3">
-                        <!-- ⬅️ HAPUS <form>, GUNAKAN button dengan form="invoice-form" -->
-                        <button type="submit" 
-                                form="invoice-form"
-                                onclick="return confirm('Are you sure you want to create invoice for this order?')"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+                    {{-- Action Buttons --}}
+                    <div class="mt-8 space-y-3">
+                        @if($order->status === 'PENDING_REVIEW')
+                        <button type="button" onclick="openInvoiceModal()"
+                                class="w-full cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Create Invoice
                         </button>
                         
                         <button type="button" 
-                                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
+                                class="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Cancel Order
                         </button>
-                    </div>
 
-                    @elseif($order->status === 'WAITING_VERIFICATION')
-                    <!-- ⬅️ VERIFICATION ACTIONS -->
-                    <div class="space-y-3">
-                        <!-- Approve Button (Toggle Form) -->
-                        <button type="button" 
-                                onclick="toggleForm('verification-shipping-form', 'reject-form-container')"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
+                        @elseif($order->status === 'WAITING_VERIFICATION')
+                        <button type="button" onclick="toggleForm('verification-shipping-form', 'reject-form-container')"
+                                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Approve Payment
                         </button>
 
-                        <!-- Reject Button (Toggle Form) -->
-                        <button type="button" 
-                                onclick="toggleForm('reject-form-container', 'verification-shipping-form')"
-                                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
+                        <button type="button" onclick="toggleForm('reject-form-container', 'verification-shipping-form')"
+                                class="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Reject Payment
                         </button>
-                    </div>
 
-                    <!-- Approve Shipping Form (Hidden by default) -->
-                    <div id="verification-shipping-form" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h3 class="text-sm font-semibold text-green-900 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                            </svg>
-                            Enter Shipping Details
-                        </h3>
-                        
-                        <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="action" value="approve">
+                        {{-- Approve Shipping Form --}}
+                        <div id="verification-shipping-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Enter Shipping Details</h3>
                             
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Courier / Shipping Service <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="courier_name" required
-                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                                        <option value="">Select Courier</option>
-                                        <option value="JNE">JNE</option>
-                                        <option value="Paxel">Paxel</option>
-                                        <option value="RPX">RPX</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Tracking Number / Resi <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="tracking_number" required
-                                        placeholder="e.g., JNE1234567890"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                                </div>
-
-                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                    <p class="text-xs text-yellow-800">
-                                        Order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification.
-                                    </p>
-                                </div>
-
-                                <button type="submit" 
-                                        onclick="return confirm('Approve payment and mark as SHIPPED?')"
-                                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    Approve & Mark as SHIPPED
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ⬅️ REJECT FORM (NEW - Hidden by default) -->
-                    <div id="reject-form-container" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <h3 class="text-sm font-semibold text-red-900 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
-                            Rejection Reason
-                        </h3>
-                        
-                        <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="action" value="reject">
-                            
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Why are you rejecting this payment proof? <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="rejection_notes" 
-                                              required
-                                              rows="4"
-                                              placeholder="e.g., The payment proof image is blurry/unclear. Please upload a clearer photo showing the transaction details."
-                                              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 resize-none"></textarea>
-                                    <p class="text-xs text-gray-500 mt-1">Customer will see this message and can re-upload a new proof.</p>
-                                    @error('rejection_notes')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                    <p class="text-xs text-yellow-800">
-                                        <strong>Important:</strong> Order will return to <strong>INVOICE_SENT</strong> status. Customer can upload a new payment proof.
-                                    </p>
-                                </div>
-
-                                <button type="submit" 
-                                        onclick="return confirm('Reject this payment proof? Customer will be notified to re-upload.')"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                    Reject & Request Re-upload
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    @elseif($order->status === 'PAID')
-
-                    <!-- ⬅️ SHIPPING FORM (COLLAPSIBLE) -->
-                    <button type="button" 
-                            onclick="document.getElementById('paid-shipping-form').classList.toggle('hidden')"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center mb-3">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                        </svg>
-                        Mark as Shipped
-                    </button>
-
-                    <!-- Shipping Form (Hidden by default) -->
-                    <div id="paid-shipping-form" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                            </svg>
-                            Enter Shipping Details
-                        </h3>
-                        
-                        <form action="{{ route('admin.orders.updateShipping', $order) }}" method="POST">
-                            @csrf
-                            
-                            <div class="space-y-3">
-                                <!-- Courier Name -->
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Courier / Shipping Service <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="courier_name" 
-                                            required
-                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Select Courier</option>
-                                        <option value="JNE">JNE</option>
-                                        <option value="Paxel">Paxel</option>
-                                        <option value="RPX">RPX</option>
-                                    </select>
-                                    @error('courier_name')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Tracking Number -->
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                        Tracking Number / Resi <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" 
-                                        name="tracking_number" 
-                                        required
-                                        placeholder="e.g., JNE1234567890"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    @error('tracking_number')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Info Box -->
-                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                    <div class="flex">
-                                        <svg class="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <div>
-                                            <p class="text-xs font-medium text-yellow-800">Important:</p>
-                                            <p class="text-xs text-yellow-700 mt-1">
-                                                Order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Submit Button -->
-                                <button type="submit" 
-                                        onclick="return confirm('Mark this order as SHIPPED with tracking number?')"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    Change Status to SHIPPED
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    @elseif($order->status === 'SHIPPED')
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <div class="flex items-center mb-2">
-                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-                                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
-                            </svg>
-                            <span class="text-sm font-medium text-blue-800">Order Shipped</span>
-                        </div>
-                        @if($order->shipment && $order->shipment->courier_name && $order->shipment->tracking_number)
-                        <p class="text-xs text-blue-700">Courier: {{ $order->shipment->courier_name }}</p>
-                        <p class="text-xs text-blue-700">Tracking: {{ $order->shipment->tracking_number }}</p>
-                        <p class="text-xs text-blue-700">Shipped: {{ $order->shipment->shipped_at->format('M d, Y') }}</p>
-                        @endif
-                    </div>
-                    
-                    <button type="button" 
-                            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Mark as Completed
-                    </button>
-
-                    @elseif($order->status === 'COMPLETED' && $order->can_request_refund && $order->payment_gateway !== 'PAYPAL')
-                    <div class="space-y-3">
-                        <!-- Refund Button (Toggle Form) -->
-                        <button type="button" 
-                                onclick="document.getElementById('manual-refund-form').classList.toggle('hidden')"
-                                class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                            Process Refund
-                        </button>
-                        
-                        <!-- Manual Refund Form -->
-                        <div id="manual-refund-form" class="hidden p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                            <form action="{{ route('admin.orders.processRefund', $order) }}" method="POST">
+                            <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
                                 @csrf
+                                <input type="hidden" name="action" value="approve">
                                 
-                                <div class="space-y-3">
-                                    <!-- Refund Amount -->
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">
-                                            Refund Amount <span class="text-red-500">*</span>
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <select name="courier_name" required
+                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
+                                            <option value="">Select Courier</option>
+                                            <option value="JNE">JNE</option>
+                                            <option value="Paxel">Paxel</option>
+                                            <option value="RPX">RPX</option>
+                                        </select>
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500">Courier / Shipping Service *</label>
+                                        @error('courier_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="relative">
+                                        <input type="text" name="tracking_number" required
+                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
+                                            placeholder="Tracking Number">
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 pointer-events-none transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">                                            
+                                            Tracking Number / Resi *
                                         </label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
-                                                Rp
-                                            </span>
-                                            <input type="number" 
-                                                name="refund_amount" 
-                                                required
-                                                step="0.01"
-                                                min="0.01"
-                                                max="{{ $order->total_amount }}"
-                                                value="{{ $order->total_amount }}"
-                                                placeholder="0"
-                                                class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-1">
-                                            Max: Rp {{ number_format($order->total_amount, 2, ',', '.') }}
+                                        @error('tracking_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="bg-gray-100 border border-gray-200 p-3">
+                                        <p class="text-xs text-gray-700">
+                                            Status will change to <span class="font-medium text-gray-900">SHIPPED</span>
                                         </p>
                                     </div>
 
-                                    <!-- Submit Button -->
                                     <button type="submit" 
-                                            onclick="return confirm('Process refund? Status will change to REFUNDED.')"
-                                            class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
+                                            onclick="return confirm('Approve payment and mark as SHIPPED?')"
+                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                        Approve & Ship Order
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {{-- Reject Form --}}
+                        <div id="reject-form-container" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Rejection Reason</h3>
+                            
+                            <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="action" value="reject">
+                                
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <textarea name="rejection_notes" required rows="3"
+                                                class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white resize-none"
+                                                placeholder="Reason"></textarea>
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
+                                            Why are you rejecting? *
+                                        </label>
+                                        @error('rejection_notes') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="bg-gray-100 border border-gray-200 p-3">
+                                        <p class="text-xs text-gray-700">
+                                            Order returns to <span class="font-medium text-gray-900">INVOICE_SENT</span>
+                                        </p>
+                                    </div>
+
+                                    <button type="submit" onclick="return confirm('Reject this payment proof?')"
+                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                        Reject & Request Re-upload
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        @elseif($order->status === 'PAID')
+                        <button type="button" onclick="document.getElementById('paid-shipping-form').classList.toggle('hidden')"
+                                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                            Mark as Shipped
+                        </button>
+
+                        <div id="paid-shipping-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Enter Shipping Details</h3>
+                            
+                            <form action="{{ route('admin.orders.updateShipping', $order) }}" method="POST">
+                                @csrf
+                                
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <select name="courier_name" required
+                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
+                                            <option value="">Select Courier</option>
+                                            <option value="JNE">JNE</option>
+                                            <option value="Paxel">Paxel</option>
+                                            <option value="RPX">RPX</option>
+                                        </select>
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500">Courier / Shipping Service *</label>
+                                        @error('courier_name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="relative">
+                                        <input type="text" 
+                                            id="tracking_number_field" 
+                                            name="tracking_number" 
+                                            required
+                                            class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white"
+                                            placeholder="Tracking Number">
+                                        
+                                        <label for="tracking_number_field" 
+                                            class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-[10px] font-bold uppercase tracking-wider text-gray-500 cursor-text">                                            
+                                            Tracking Number / Resi *
+                                        </label>
+                                        
+                                        @error('tracking_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="bg-gray-100 border border-gray-200 p-3">
+                                        <p class="text-xs text-gray-700">
+                                            Status will change to <span class="font-medium text-gray-900">SHIPPED</span>
+                                        </p>
+                                    </div>
+
+                                    <button type="submit" onclick="return confirm('Mark this order as SHIPPED?')"
+                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                        Change Status to SHIPPED
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        @elseif($order->status === 'SHIPPED')
+                        <div class="bg-gray-50 border border-gray-200 p-6 mb-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <svg class="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <p class="text-xs font-bold uppercase tracking-[0.15em] text-gray-900 mb-3">Order Shipped</p>
+                                        @if($order->shipment && $order->shipment->courier_name && $order->shipment->tracking_number)
+                                        <div class="space-y-2 text-xs text-gray-700">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Courier:</span>
+                                                <span class="font-medium">{{ $order->shipment->courier_name }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Tracking:</span>
+                                                <span class="font-medium font-mono">{{ $order->shipment->tracking_number }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Shipped:</span>
+                                                <span class="font-medium">{{ $order->shipment->shipped_at->format('M d, Y') }}</span>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                {{-- Edit Button --}}
+                                <button type="button" onclick="document.getElementById('edit-shipping-form').classList.toggle('hidden')"
+                                        class="ml-4 px-3 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 text-[10px] uppercase tracking-wider font-medium transition-all flex-shrink-0">
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Edit Shipping Form --}}
+                        <div id="edit-shipping-form" class="hidden mb-4 p-6 bg-gray-50 border border-gray-200">
+                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Update Shipping Details</h3>
+                            
+                            <form action="{{ route('admin.orders.updateShipping', $order) }}" method="POST">
+                                @csrf
+                                
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <select name="courier_name" required
+                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
+                                            <option value="">Select Courier</option>
+                                            <option value="JNE" {{ $order->shipment->courier_name === 'JNE' ? 'selected' : '' }}>JNE</option>
+                                            <option value="Paxel" {{ $order->shipment->courier_name === 'Paxel' ? 'selected' : '' }}>Paxel</option>
+                                            <option value="RPX" {{ $order->shipment->courier_name === 'RPX' ? 'selected' : '' }}>RPX</option>
+                                        </select>
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 pointer-events-none">Courier / Shipping Service *</label>
+                                        @error('courier_name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="relative">
+                                        <input type="text" name="tracking_number" required
+                                            value="{{ $order->shipment->tracking_number }}"
+                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
+                                            placeholder="Tracking">
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 pointer-events-none transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
+                                            Tracking Number / Resi *
+                                        </label>
+                                        @error('tracking_number') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <button type="button" onclick="document.getElementById('edit-shipping-form').classList.add('hidden')"
+                                                class="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 text-xs uppercase tracking-[0.15em] font-medium transition-all">
+                                            Cancel
+                                        </button>
+                                        <button type="submit"
+                                                class="flex-1 px-4 py-3 bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.15em] font-medium transition-all">
+                                            Update Shipping
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <button type="button"
+                                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                            Mark as Completed
+                        </button>
+
+                        <div id="complete-order-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                            <div class="mb-4">
+                                <p class="text-xs text-gray-700 mb-2">
+                                    Are you sure the customer has received this order?
+                                </p>
+                                <p class="text-[10px] text-gray-500">
+                                    This action will mark the order as completed and allow the customer to leave a review.
+                                </p>
+                            </div>
+                            
+                            
+                            <button type="submit" onclick="return confirm('Mark this order as COMPLETED?')"
+                                    class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                Confirm Completion
+                            </button>
+                            
+                        </div>
+
+                        @elseif($order->status === 'COMPLETED' && $order->can_request_refund && $order->payment_gateway !== 'PAYPAL')
+                        <button type="button" onclick="document.getElementById('manual-refund-form').classList.toggle('hidden')"
+                                class="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                            Process Refund
+                        </button>
+                        
+                        <div id="manual-refund-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Refund Details</h3>
+                            
+                            <form action="{{ route('admin.orders.processRefund', $order) }}" method="POST">
+                                @csrf
+                                
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <input type="number" name="refund_amount" required step="0.01" min="0.01" max="{{ $order->total_amount }}" value="{{ $order->total_amount }}"
+                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
+                                            placeholder="Amount">
+                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
+                                            Refund Amount ({{ $order->currency }}) *
+                                        </label>
+                                        <p class="text-xs text-gray-500 mt-1">Maximum: {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}</p>
+                                    </div>
+
+                                    <div class="bg-gray-100 border border-gray-200 p-3">
+                                        <p class="text-xs text-gray-700">
+                                            Status will change to <span class="font-medium text-gray-900">REFUNDED</span>
+                                        </p>
+                                    </div>
+
+                                    <button type="submit" onclick="return confirm('Process refund? This action cannot be undone.')"
+                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                                         Process Refund
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-                    </div>
-                    @else
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <p class="text-sm text-gray-600 text-center">Order status: <span class="font-medium">{{ str_replace('_', ' ', $order->status) }}</span></p>
-                    </div>
-                    @endif
-
-                    <!-- Security Note -->
-                    <div class="mt-4 flex items-start space-x-2 text-xs text-gray-500">
-                        <svg class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <p>All customer information is confidential</p>
+                        @else
+                        <div class="bg-gray-50 border border-gray-200 p-4 text-center">
+                            <p class="text-xs uppercase tracking-wider text-gray-600">
+                                Status: <span class="font-medium">{{ str_replace('_', ' ', $order->status) }}</span>
+                            </p>
+                        </div>
+                        @endif
                     </div>
 
+                    {{-- Refund Info --}}
                     @if($order->status === 'COMPLETED')
                         @if($order->can_request_refund)
-                        <div class="mt-2 p-4 bg-green-50 border-2 border-green-200 rounded-lg">
-                            <div class="flex items-start">
-                                <div class="flex-1">
-                                    <p class="text-xs text-green-700">
-                                        Refundable until <strong>{{ $order->refundable_until->format('M d, Y') }}</strong>
-                                    </p>
-                                    @if ($order->payment_gateway === 'PAYPAL')
-                                        <p class="text-xs text-green-600 mt-2 italic">
-                                            You can process refund from PayPal Dashboard
-                                        </p>
-                                    @endif
-                                </div>
-                            </div>
+                        <div class="mt-4 p-4 bg-green-50 border-l-4 border-green-400">
+                            <p class="text-xs text-green-800">
+                                Refundable until <strong>{{ $order->refundable_until->format('M d, Y') }}</strong>
+                            </p>
+                            @if ($order->payment_gateway === 'PAYPAL')
+                            <p class="text-xs text-green-600 mt-2 italic">Process refund from PayPal Dashboard</p>
+                            @endif
                         </div>
                         @else
-                        <div class="mt-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-gray-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-700">Refund Window Closed</p>
-                                    <p class="text-xs text-gray-600 mt-1">
-                                        Refund period expired on {{ $order->refundable_until->format('M d, Y') }}
-                                    </p>
-                                </div>
-                            </div>
+                        <div class="mt-4 p-4 bg-gray-100 border-l-4 border-gray-300">
+                            <p class="text-xs font-medium text-gray-700">Refund Window Closed</p>
+                            <p class="text-xs text-gray-600 mt-1">Expired on {{ $order->refundable_until->format('M d, Y') }}</p>
                         </div>
                         @endif
                     @elseif($order->status === 'REFUNDED')
-                        <div class="mt-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
-                            <div class="flex items-start">
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-orange-900">Order Refunded</p>
-                                    @if($order->refund_amount && $order->payment_method === 'PAYPAL')
-                                    <p class="text-xs text-orange-700 mt-1">
-                                        Amount: <strong>${{ number_format($order->refund_amount, 2) }}</strong>
-                                    </p>
-                                    @else
-                                    <p class="text-xs text-orange-700 mt-1">
-                                        Amount: <strong>Rp {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
-                                    </p>
-                                    @endif
-                                    <p class="text-xs text-orange-600 mt-1">
-                                        Refunded on {{ $order->refunded_at->format('M d, Y') }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mt-4 p-4 bg-orange-50 border-l-4 border-orange-400">
+                        <p class="text-xs font-medium text-orange-900">Order Refunded</p>
+                        <p class="text-xs text-orange-700 mt-1">
+                            Amount: <strong>{{ $order->currency }} {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
+                        </p>
+                        <p class="text-xs text-orange-600 mt-1">Refunded on {{ $order->refunded_at->format('M d, Y') }}</p>
+                    </div>
                     @endif
+
+                    {{-- Security Note --}}
+                    <div class="mt-6 flex items-center justify-center space-x-2 text-[10px] text-gray-400 uppercase tracking-wider">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Confidential Information</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+{{-- MODAL KONFIRMASI CREATE INVOICE - SIMPLE VERSION --}}
+<div id="invoice-confirmation-modal" class="fixed inset-0 z-50 hidden" style="background-color: rgba(0, 0, 0, 0.6);">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white w-full max-w-md shadow-2xl">
+            
+            {{-- Header --}}
+            <div class="px-6 py-5 border-b border-gray-100">
+                <h3 class="text-lg font-serif text-gray-900">Confirm Invoice Creation</h3>
+                <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Review details before sending</p>
+            </div>
+
+            {{-- Body --}}
+            <div class="px-6 py-6 space-y-5">
+                
+                {{-- Payment Method --}}
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Payment Method</p>
+                    <div class="p-3 bg-gray-50 border border-gray-200">
+                        <p class="text-sm font-medium text-gray-900" id="modal-payment-method">-</p>
+                        <p class="text-xs text-gray-600 mt-1" id="modal-currency">-</p>
+                    </div>
+                    
+                    {{-- Override Warning --}}
+                    <div id="modal-override-warning" class="hidden mt-2 p-3 bg-orange-50 border-l-4 border-orange-400">
+                        <p class="text-xs text-orange-800">
+                            <span class="font-medium">⚠ Override Active:</span> You selected different method than customer's preference
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Order Summary --}}
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-3">Invoice Amount</p>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span class="font-medium text-gray-900" id="modal-subtotal">-</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Shipping</span>
+                            <span class="font-medium text-gray-900" id="modal-shipping">-</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center border-t border-gray-200 pt-3 mt-3">
+                            <span class="text-base font-bold text-gray-900 uppercase tracking-wider">Total</span>
+                            <span class="text-xl text-gray-900" id="modal-total">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Customer Email --}}
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Send Invoice To</p>
+                    <div class="p-3 bg-blue-50 border border-blue-100">
+                        <p class="text-sm text-blue-900 font-medium">{{ $order->contact_email }}</p>
+                    </div>
+                </div>
+
+                {{-- Admin Notes Preview --}}
+                <div id="modal-notes-container" class="hidden">
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Notes for Customer</p>
+                    <div class="p-3 bg-purple-50 border border-purple-100">
+                        <p class="text-sm text-gray-900 whitespace-pre-wrap" id="modal-notes-text"></p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3">
+                <button type="button" onclick="closeInvoiceModal()"
+                        class="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 text-xs uppercase tracking-[0.15em] font-medium transition-all">
+                    Cancel
+                </button>
+                <button type="submit" form="invoice-form"
+                        class="flex-1 px-4 py-3 bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.15em] font-medium transition-all">
+                    Create & Send Invoice
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Image Lightbox Modal --}}
 <x-image-lightbox modalId="admin-image-modal" alt="Payment Proof" />
 
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 2px; }
+</style>
+
 <script>
-    // ⬅️ AMBIL SUBTOTAL SESUAI CURRENCY
+    // Shipping Cost Calculator & Currency Switcher
     const subtotalIdr = {{ $order->subtotal_idr }};
     const subtotalUsd = {{ $order->subtotal_usd }};
-    
-    // ⬅️ DETEKSI PAYMENT GATEWAY YANG DIPILIH
+
+    // Item prices data
+    const itemPrices = {
+        @foreach($order->orderItems as $item)
+        '{{ $item->id }}': {
+            idr: {{ $item->price_idr * $item->quantity }},
+            usd: {{ $item->price_usd * $item->quantity }}
+        },
+        @endforeach
+    };
+
     const paymentGatewayRadios = document.querySelectorAll('input[name="payment_gateway_override"]');
     const shippingInput = document.getElementById('shipping_cost_input');
     const totalDisplay = document.getElementById('total-display');
-    const subtotalDisplay = document.getElementById('subtotal-display');
 
     function updateTotal() {
         if (!shippingInput) return;
         
-        // ⬅️ CEK PAYMENT GATEWAY YANG DIPILIH
         const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
         const isPaypal = selectedGateway && selectedGateway.value === 'PAYPAL';
         const currency = isPaypal ? 'USD' : 'IDR';
@@ -1051,53 +967,216 @@
         const shipping = parseFloat(shippingInput.value) || 0;
         const total = subtotal + shipping;
         
-        // ⬅️ UPDATE DISPLAY SESUAI CURRENCY
-        if (currency === 'USD') {
-            subtotalDisplay.textContent = '$' + subtotal.toFixed(2);
-            totalDisplay.textContent = '$' + total.toFixed(2);
-        } else {
-            subtotalDisplay.textContent = 'Rp ' + subtotal.toLocaleString('id-ID', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-            totalDisplay.textContent = 'Rp ' + total.toLocaleString('id-ID', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+        if (totalDisplay) {
+            totalDisplay.textContent = currency + ' ' + total.toLocaleString(currency === 'USD' ? 'en-US' : 'id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             });
         }
     }
 
-    // ⬅️ LISTEN PAYMENT GATEWAY CHANGE
+    function updateCurrency() {
+        const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
+        const isPaypal = selectedGateway && selectedGateway.value === 'PAYPAL';
+        const currency = isPaypal ? 'USD' : 'IDR';
+        
+        // Update subtotal display
+        const subtotalDisplay = document.getElementById('subtotal-display');
+        if (subtotalDisplay) {
+            const subtotal = isPaypal ? subtotalUsd : subtotalIdr;
+            if (isPaypal) {
+                subtotalDisplay.textContent = '$' + subtotal.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            } else {
+                subtotalDisplay.textContent = 'Rp ' + subtotal.toLocaleString('id-ID', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+        }
+        
+        // Update each item price
+        @foreach($order->orderItems as $item)
+        const itemPrice{{ $item->id }} = document.getElementById('item-price-{{ $item->id }}');
+        if (itemPrice{{ $item->id }}) {
+            const price = isPaypal ? itemPrices['{{ $item->id }}'].usd : itemPrices['{{ $item->id }}'].idr;
+            if (isPaypal) {
+                itemPrice{{ $item->id }}.textContent = '$' + price.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            } else {
+                itemPrice{{ $item->id }}.textContent = 'Rp ' + price.toLocaleString('id-ID', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+        }
+        @endforeach
+        
+        // Update shipping currency label
+        const shippingCurrencyLabel = document.getElementById('shipping-currency-label');
+        if (shippingCurrencyLabel) {
+            shippingCurrencyLabel.textContent = currency;
+        }
+        
+        // Reset shipping to 0 when currency changes
+        if (shippingInput) {
+            shippingInput.value = '0.00';
+        }
+        
+        updateTotal();
+    }
+
     if (paymentGatewayRadios.length > 0) {
         paymentGatewayRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Reset shipping cost saat ganti gateway
-                if (shippingInput) {
-                    shippingInput.value = '0.00';
-                }
-                updateTotal();
-            });
+            radio.addEventListener('change', updateCurrency);
         });
     }
 
-    // ⬅️ LISTEN SHIPPING INPUT CHANGE
     if (shippingInput) {
         shippingInput.addEventListener('input', updateTotal);
-        updateTotal(); // Initial calculation
+        updateTotal();
     }
 
+    function setShippingCost(amount) {
+        if (shippingInput) {
+            shippingInput.value = amount.toFixed(2);
+            updateTotal();
+        }
+    }
 
     function toggleForm(showId, hideId) {
         const showElement = document.getElementById(showId);
         const hideElement = document.getElementById(hideId);
         
-        // Hide the other form first
         if (hideElement && !hideElement.classList.contains('hidden')) {
             hideElement.classList.add('hidden');
         }
         
-        // Toggle the clicked form
         showElement.classList.toggle('hidden');
     }
+</script>
+
+<script>
+    // Override Indicator Logic
+    const customerPreference = '{{ $order->payment_preference }}';
+    const paymentRadios = document.querySelectorAll('.payment-radio');
+    const overrideIndicator = document.getElementById('override-indicator');
+
+    if (paymentRadios.length > 0) {
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const selectedValue = this.value;
+                
+                // Show/hide override indicator
+                if (selectedValue !== customerPreference) {
+                    overrideIndicator?.classList.remove('hidden');
+                } else {
+                    overrideIndicator?.classList.add('hidden');
+                }
+                
+                // Update shipping cost to 0 when payment method changes
+                if (shippingInput) {
+                    shippingInput.value = '0.00';
+                    updateTotal();
+                }
+            });
+        });
+    }
+
+    // MODAL FUNCTIONS - SIMPLE VERSION
+    function openInvoiceModal() {
+        console.log('Opening modal...'); // Debug
+        
+        const modal = document.getElementById('invoice-confirmation-modal');
+        if (!modal) {
+            console.error('Modal not found!');
+            return;
+        }
+        
+        const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
+        const gateway = selectedGateway ? selectedGateway.value : customerPreference;
+        const isPaypal = gateway === 'PAYPAL';
+        const currency = isPaypal ? 'USD' : 'IDR';
+        
+        // Payment Method
+        document.getElementById('modal-payment-method').textContent = 
+            isPaypal ? 'PayPal (International)' : 'BCA Bank Transfer (Indonesia)';
+        document.getElementById('modal-currency').textContent = 
+            'Currency: ' + currency;
+        
+        // Show override warning if method is different
+        const overrideWarning = document.getElementById('modal-override-warning');
+        if (gateway !== customerPreference) {
+            overrideWarning.classList.remove('hidden');
+        } else {
+            overrideWarning.classList.add('hidden');
+        }
+        
+        // Calculate amounts
+        const subtotal = isPaypal ? {{ $order->subtotal_usd }} : {{ $order->subtotal_idr }};
+        const shipping = parseFloat(shippingInput?.value || 0);
+        const total = subtotal + shipping;
+        
+        // Format numbers
+        const formatPrice = (amount) => {
+            return amount.toLocaleString(isPaypal ? 'en-US' : 'id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+        
+        // Update modal values
+        document.getElementById('modal-subtotal').textContent = currency + ' ' + formatPrice(subtotal);
+        document.getElementById('modal-shipping').textContent = 
+            shipping > 0 ? currency + ' ' + formatPrice(shipping) : 'FREE';
+        document.getElementById('modal-total').textContent = currency + ' ' + formatPrice(total);
+        
+        // Admin notes
+        const notesTextarea = document.querySelector('textarea[name="admin_notes"]');
+        const notesContainer = document.getElementById('modal-notes-container');
+        const notesText = document.getElementById('modal-notes-text');
+        
+        if (notesTextarea && notesTextarea.value.trim()) {
+            notesText.textContent = notesTextarea.value;
+            notesContainer.classList.remove('hidden');
+        } else {
+            notesContainer.classList.add('hidden');
+        }
+        
+        // SHOW MODAL - SIMPLE, NO ANIMATION
+        modal.classList.remove('hidden');
+        console.log('Modal should be visible now');
+    }
+
+    function closeInvoiceModal() {
+        const modal = document.getElementById('invoice-confirmation-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    // Close modal on backdrop click
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('invoice-confirmation-modal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                // Close hanya jika click di backdrop (bukan di content)
+                if (e.target === modal) {
+                    closeInvoiceModal();
+                }
+            });
+        }
+    });
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeInvoiceModal();
+        }
+    });
 </script>
 @endsection
