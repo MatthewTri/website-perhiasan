@@ -202,10 +202,45 @@
                                 <p class="text-sm font-medium text-gray-900">BCA Bank Transfer</p>
                                 <p class="text-xs text-gray-600 mt-1">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
                                 <p class="text-xs text-gray-600">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
+                                
+                                {{-- ADMIN UPLOAD PROOF (INVOICE_SENT Only) --}}
+                                @if($order->status === 'INVOICE_SENT')
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <p class="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Admin: Upload Customer's Proof</p>
+                                    <p class="text-xs text-gray-600 mb-3 italic">If customer sent proof via WhatsApp or other channel, you can upload it here.</p>
+                                    
+                                    <form action="{{ route('admin.orders.uploadProof', $order) }}" method="POST" enctype="multipart/form-data" id="admin-upload-form">
+                                        @csrf
+                                        
+                                        <div class="mb-3">
+                                            <input type="file" 
+                                                name="proof_image" 
+                                                id="admin_proof_input"
+                                                required 
+                                                accept="image/jpeg,image/png,image/jpg"
+                                                onchange="previewAdminProof(event)"
+                                                class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-800 cursor-pointer bg-white border border-gray-200 p-2">
+                                            @error('proof_image') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                                        </div>
+                                        
+                                        <div id="admin-preview" class="hidden mb-3">
+                                            <img id="admin-preview-img" src="" class="max-h-32 border border-gray-200">
+                                        </div>
+
+                                        <button type="submit" 
+                                                onclick="return confirm('Upload this proof and change status to WAITING_VERIFICATION?')"
+                                                class="w-full bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.2em] py-3 transition-all">
+                                            Upload & Mark for Verification
+                                        </button>
+                                    </form>
+                                </div>
+                                @endif
+                                
                             @else
                                 <p class="text-sm font-medium text-gray-900">PayPal</p>
                                 <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->transaction_id }}</p>
                                 
+                                {{-- PayPal Status tetap sama seperti sebelumnya --}}
                                 @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])
                                 <div class="mt-3 p-3 bg-blue-50 border border-blue-100">
                                     <p class="text-[10px] uppercase tracking-wider font-medium text-blue-900 mb-2">PayPal Order Status:</p>
@@ -222,24 +257,9 @@
                                         <p><span class="font-medium">Amount:</span> {{ $paypalStatus['currency'] }} {{ number_format($paypalStatus['amount'], 2, ',', '.') }}</p>
                                     </div>
                                 </div>
-                                @elseif(isset($paypalStatus) && !$paypalStatus['success'])
-                                <div class="mt-2 p-3 bg-yellow-50 border border-yellow-100 text-xs text-yellow-700">
-                                    <p class="font-medium">PayPal Status Unavailable</p>
-                                    <button onclick="location.reload()" class="mt-2 text-blue-600 hover:text-blue-800 underline text-xs">
-                                        Retry Loading Status
-                                    </button>
-                                </div>
                                 @endif
                             @endif
                         </div>
-
-                        @if($order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
-                        <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3">
-                            <p class="text-xs text-yellow-800">
-                                <span class="font-medium">Payment Link Sent:</span> Customer received email at <strong>{{ $order->contact_email }}</strong>
-                            </p>
-                        </div>
-                        @endif
                     </div>
                     @endif
 
@@ -1057,6 +1077,24 @@
         }
         
         showElement.classList.toggle('hidden');
+    }
+
+    // Admin Upload Proof Preview
+    function previewAdminProof(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('admin-preview');
+        const previewImg = document.getElementById('admin-preview-img');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.classList.add('hidden');
+        }
     }
 </script>
 

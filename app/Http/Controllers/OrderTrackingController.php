@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Order;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use App\Services\PaymentService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class OrderTrackingController extends Controller
 {
@@ -37,34 +38,50 @@ class OrderTrackingController extends Controller
      */
     public function uploadProof(Request $request, $token)
     {
-        $order = Order::where('guest_token', $token)->firstOrFail();
+        $order = Order::where('guest_token', $token)->lockForUpdate()->firstOrFail();
 
         // Validasi: Cuma boleh upload kalau metode MANUAL dan status INVOICE_SENT
-        if ($order->payment_gateway != 'MANUAL' || $order->status != 'INVOICE_SENT') {
+        if ($order->payment_gateway !== 'MANUAL' || $order->status !== 'INVOICE_SENT') {
             return back()->with('error', 'Pesanan ini tidak membutuhkan upload bukti manual.');
         }
 
         $request->validate([
-            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Max 5MB
+            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
         if ($request->hasFile('proof_image')) {
-            // Hapus file lama jika ada (buat irit storage)
-            if ($order->proof_of_payment) {
-                Storage::disk('public')->delete($order->proof_of_payment);
+            DB::beginTransaction();
+            try {
+                $oldProof = $order->proof_of_payment;
+
+                // Simpan file dengan prefix customer dan timestamp
+                $filename = 'customer_' . time() . '_' . $order->id . '.' . $request->file('proof_image')->extension();
+                $path = $request->file('proof_image')->storeAs('payment_proofs', $filename, 'public');
+
+                // Update status jadi Waiting Verification
+                $order->update([
+                    'proof_of_payment' => $path,
+                    'status' => 'WAITING_VERIFICATION'
+                ]);
+
+                // Delete old proof after update
+                if ($oldProof && $oldProof !== $path) {
+                    Storage::disk('public')->delete($oldProof);
+                }
+
+                DB::commit();
+                return back()->with('success', 'Payment proof successfully uploaded. Our team will verify it shortly.');
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                if (isset($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+                return back()->with('error', 'Upload failed: ' . $e->getMessage());
             }
-
-            // Simpan file baru
-            $path = $request->file('proof_image')->store('payment_proofs', 'public');
-
-            // Update status jadi Waiting Verification
-            $order->update([
-                'proof_of_payment' => $path,
-                'status' => 'WAITING_VERIFICATION'
-            ]);
         }
 
-        return back()->with('success', 'Payment proof successfully uploaded. Our team will verify it shortly.');
+        return back()->with('error', 'No file uploaded.');
     }
 
     public function createPaypalCheckout($guestToken)

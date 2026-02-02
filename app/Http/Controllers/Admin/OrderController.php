@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Services\PaymentService;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentDetailsMail;
+use App\Services\PaymentService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+
 
 class OrderController extends Controller
 {
@@ -214,6 +217,58 @@ class OrderController extends Controller
         }
 
         return back()->with('success', 'Shipping information updated successfully!');
+    }
+
+    public function uploadProof(Request $request, Order $order)
+    {
+        // Lock row untuk mencegah concurrent update
+        $order = Order::where('id', $order->id)->lockForUpdate()->first();
+        
+        // Validasi: hanya boleh upload jika INVOICE_SENT dan MANUAL payment
+        if ($order->status !== 'INVOICE_SENT' || $order->payment_gateway !== 'MANUAL') {
+            return back()->with('error', 'Cannot upload proof for this order status or payment method.');
+        }
+
+        $request->validate([
+            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
+        if ($request->hasFile('proof_image')) {
+            DB::beginTransaction();
+            try {
+                // Delete old proof if exists
+                $oldProof = $order->proof_of_payment;
+                
+                // Store new proof dengan timestamp untuk avoid collision
+                $filename = 'admin_' . time() . '_' . $order->id . '.' . $request->file('proof_image')->extension();
+                $path = $request->file('proof_image')->storeAs('payment_proofs', $filename, 'public');
+
+                // Update order
+                $order->update([
+                    'proof_of_payment' => $path,
+                    'status' => 'WAITING_VERIFICATION',
+                    'rejection_notes' => null,
+                ]);
+
+                // Delete old proof setelah order updated (untuk avoid storage leak)
+                if ($oldProof && $oldProof !== $path) {
+                    Storage::disk('public')->delete($oldProof);
+                }
+
+                DB::commit();
+                return back()->with('success', 'Payment proof uploaded by admin successfully! Order status changed to WAITING_VERIFICATION.');
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                // Delete uploaded file jika transaction failed
+                if (isset($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+                return back()->with('error', 'Failed to upload proof: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('error', 'No file uploaded.');
     }
 
     /**
