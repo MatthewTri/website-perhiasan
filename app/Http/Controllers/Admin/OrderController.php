@@ -272,6 +272,52 @@ class OrderController extends Controller
     }
 
     /**
+     * Cancel Order
+     */
+    public function cancelOrder(Order $order)
+    {
+        // Only allow cancellation for certain statuses
+        $cancellableStatuses = ['PENDING_REVIEW', 'INVOICE_SENT', 'WAITING_VERIFICATION'];
+        
+        if (!in_array($order->status, $cancellableStatuses)) {
+            return back()->with('error', 'Cannot cancel order with status: ' . $order->status);
+        }
+
+        $order->update([
+            'status' => 'CANCELLED',
+        ]);
+
+        // TODO: Send cancellation email to customer
+        // Mail::to($order->contact_email)->send(new OrderCancelled($order));
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'Order has been cancelled successfully.');
+    }
+
+    /**
+     * Complete Order (Admin marks order as completed)
+     */
+    public function completeOrder(Order $order)
+    {
+        if ($order->status !== 'SHIPPED') {
+            return back()->with('error', 'Only SHIPPED orders can be marked as completed.');
+        }
+
+        $order->update([
+            'status' => 'COMPLETED',
+            'completed_at' => now(),
+        ]);
+
+        // TODO: Send complete email to customer (agar diarahkan review)
+        // Mail::to($order->contact_email)->send(new OrderCompleted($order));
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'Order has been marked as COMPLETED successfully.');
+    }
+
+    /**
      * Process Manual Refund (BCA)
      */
     public function processRefund(Request $request, Order $order)

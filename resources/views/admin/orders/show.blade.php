@@ -524,8 +524,8 @@
                             Create Invoice
                         </button>
                         
-                        <button type="button" 
-                                class="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                        <button type="button" onclick="confirmCancelOrder()"
+                                class="w-full cursor-pointer border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Cancel Order
                         </button>
 
@@ -755,28 +755,10 @@
                             </form>
                         </div>
                         
-                        <button type="button"
-                                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                        <button type="button" onclick="confirmCompleteOrder()"
+                                class="w-full cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Mark as Completed
                         </button>
-
-                        <div id="complete-order-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
-                            <div class="mb-4">
-                                <p class="text-xs text-gray-700 mb-2">
-                                    Are you sure the customer has received this order?
-                                </p>
-                                <p class="text-[10px] text-gray-500">
-                                    This action will mark the order as completed and allow the customer to leave a review.
-                                </p>
-                            </div>
-                            
-                            
-                            <button type="submit" onclick="return confirm('Mark this order as COMPLETED?')"
-                                    class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                                Confirm Completion
-                            </button>
-                            
-                        </div>
 
                         @elseif($order->status === 'COMPLETED' && $order->can_request_refund && $order->payment_gateway !== 'PAYPAL')
                         <button type="button" onclick="document.getElementById('manual-refund-form').classList.toggle('hidden')"
@@ -1216,5 +1198,69 @@
             closeInvoiceModal();
         }
     });
+</script>
+
+{{-- Script untuk berbagai sweetalert atau konfirmasi --}}
+<script>
+    // Cancel Order with SweetAlert
+    function confirmCancelOrder() {
+        Swal.fire({
+            title: 'Cancel Order?',
+            text: 'Are you sure you want to cancel this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Cancel Order',
+            cancelButtonText: 'No, Keep Order',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit cancel form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.orders.cancel", $order) }}';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                
+                form.appendChild(csrfToken);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Complete Order with SweetAlert
+    function confirmCompleteOrder() {
+        Swal.fire({
+            title: 'Mark as Completed?',
+            text: 'Are you sure the customer has received this order?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Mark Complete',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.orders.complete", $order) }}';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                
+                form.appendChild(csrfToken);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
 </script>
 @endsection

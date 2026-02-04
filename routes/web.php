@@ -108,6 +108,7 @@ Route::middleware(['auth' ,'admin'])->group(function () { // tambahkan middlewar
 // Member Orders (Must be authenticated)
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/my-orders/{guestToken}/complete', [OrderController::class, 'complete'])->name('orders.complete');
     // Route::get('/my-orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
 });
 
@@ -117,6 +118,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth' ,'admin'])->group(fun
     Route::post('orders/{order}/send-payment-details', [AdminOrderController::class, 'sendPaymentDetails'])->name('orders.sendPaymentDetails');
     Route::post('orders/{order}/update-shipping', [AdminOrderController::class, 'updateShipping'])->name('orders.updateShipping');
     Route::post('orders/{order}/verify-payment', [AdminOrderController::class, 'verifyPayment'])->name('orders.verifyPayment');
+    Route::post('orders/{order}/cancel', [AdminOrderController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::post('orders/{order}/complete', [AdminOrderController::class, 'completeOrder'])->name('orders.complete');
 });
 
 // Route Magic Link (Public Access)

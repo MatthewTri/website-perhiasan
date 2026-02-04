@@ -11,6 +11,24 @@
         </p>
     </div>
 
+    {{-- Flash Messages --}}
+    @if(session('success'))
+    <div class="max-w-screen-xl mx-auto px-4 md:px-6 pt-6">
+        <div class="bg-green-50 border-l-4 border-green-400 px-4 py-3">
+            <p class="text-sm text-green-800">{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="max-w-screen-xl mx-auto px-4 md:px-6 pt-6">
+        <div class="bg-red-50 border-l-4 border-red-400 px-4 py-3">
+            <p class="text-sm text-red-800">{{ session('error') }}</p>
+        </div>
+    </div>
+    @endif
+
+    {{-- Orders List Section --}}
     <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-12">
         
         @if($orders->isEmpty())
@@ -146,12 +164,12 @@
                                     </a>
                                 @endif
                             @elseif($order->status === 'SHIPPED')
-                                <form action="{{ route('order.track.complete', $order->guest_token) }}" method="POST">
+                                <form id="complete-form-{{ $order->id }}" action="{{ route('orders.complete', $order->guest_token) }}" method="POST">
                                     @csrf
-                                    <button type="submit" 
-                                            onclick="return confirm('Confirm receipt of this order?')"
+                                    <button type="button" 
+                                            onclick="confirmCompletion('{{ $order->id }}')"
                                             class="w-full text-center bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
-                                        Receive Order
+                                        Confirm Receipt
                                     </button>
                                 </form>
                             @elseif($order->status === 'COMPLETED' && $order->can_review && !$order->is_reviewed)
@@ -170,4 +188,25 @@
 
     </div>
 </div>
+
+<script>
+    // Confirm Order Completion
+    function confirmCompletion(orderId) {
+        Swal.fire({
+            title: 'Confirm Order Receipt?',
+            html: "This will complete your order.<br><small class='text-gray-500'>You'll be able to write a review within 30 days.</small>",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#9CA3AF',
+            confirmButtonText: 'Yes, I Received It',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('complete-form-' + orderId).submit();
+            }
+        });
+    }
+</script>
 @endsection

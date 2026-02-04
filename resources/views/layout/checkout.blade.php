@@ -15,6 +15,9 @@
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     @vite('resources/css/app.css')
 
+    {{-- SweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <title>Checkout - Cecile Private Collection</title>
 </head>
 <body class="bg-gray-50">
