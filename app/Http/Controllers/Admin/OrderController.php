@@ -213,6 +213,10 @@ class OrderController extends Controller
             $order->update([
                 'status' => 'SHIPPED',
             ]);
+
+            // TODO: Kirim email shipping notification
+            // Mail::to($order->contact_email)->send(new OrderShipped($order));
+            
             return back()->with('success', 'Order marked as SHIPPED with tracking: ' . $validated['tracking_number']);
         }
 

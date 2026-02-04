@@ -227,8 +227,8 @@
                                             <img id="admin-preview-img" src="" class="max-h-32 border border-gray-200">
                                         </div>
 
-                                        <button type="submit" 
-                                                onclick="return confirm('Upload this proof and change status to WAITING_VERIFICATION?')"
+                                        <button type="button" 
+                                                onclick="confirmUploadProof()"
                                                 class="w-full bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.2em] py-3 transition-all">
                                             Upload & Mark for Verification
                                         </button>
@@ -352,52 +352,6 @@
                             class="w-48 h-auto border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
                             onclick="openLightbox('{{ Storage::url($order->proof_of_payment) }}', 'admin-image-modal')">
                         <p class="text-xs text-gray-500 mt-2">Click to view full size</p>
-                    </div>
-
-                    {{-- Shipping Form (Hidden, shown after approve) --}}
-                    <div id="shipping-form" class="hidden mt-6 p-6 bg-blue-50 border-l-4 border-blue-400">
-                        <h3 class="text-sm font-bold uppercase tracking-[0.15em] text-blue-900 mb-4">Enter Shipping Details</h3>
-                        
-                        <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="action" value="approve">
-                            
-                            <div class="space-y-4">
-                                <div class="relative">
-                                    <select name="courier_name" required
-                                            class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-transparent appearance-none">
-                                        <option value="">Select Courier</option>
-                                        <option value="JNE">JNE</option>
-                                        <option value="Paxel">Paxel</option>
-                                        <option value="RPX">RPX</option>
-                                    </select>
-                                    <label class="absolute left-4 -top-2.5 bg-blue-50 px-1 text-xs text-gray-500">Courier / Shipping Service *</label>
-                                    @error('courier_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div class="relative">
-                                    <input type="text" name="tracking_number" required
-                                           class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-transparent"
-                                           placeholder="Tracking Number">
-                                    <label class="absolute left-4 -top-2.5 bg-blue-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
-                                        Tracking Number / Resi *
-                                    </label>
-                                    @error('tracking_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3">
-                                    <p class="text-xs text-yellow-800">
-                                        After clicking "Approve & Ship", the order status will change to <strong>SHIPPED</strong> and customer will receive shipping notification email.
-                                    </p>
-                                </div>
-
-                                <button type="submit" 
-                                        onclick="return confirm('Approve payment and mark as SHIPPED?')"
-                                        class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                                    Approve & Change Status to SHIPPED
-                                </button>
-                            </div>
-                        </form>
                     </div>
                 </div>
                 @endif
@@ -577,8 +531,7 @@
                                         </p>
                                     </div>
 
-                                    <button type="submit" 
-                                            onclick="return confirm('Approve payment and mark as SHIPPED?')"
+                                    <button type="button" onclick="confirmApproveShip()"
                                             class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                                         Approve & Ship Order
                                     </button>
@@ -611,8 +564,8 @@
                                         </p>
                                     </div>
 
-                                    <button type="submit" onclick="return confirm('Reject this payment proof?')"
-                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                    <button type="button" onclick="confirmRejectPayment()"
+                                            class="w-full cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                                         Reject & Request Re-upload
                                     </button>
                                 </div>
@@ -666,9 +619,9 @@
                                         </p>
                                     </div>
 
-                                    <button type="submit" onclick="return confirm('Mark this order as SHIPPED?')"
+                                    <button type="button" onclick="confirmMarkShipped()"
                                             class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                                        Change Status to SHIPPED
+                                        Approve & Ship Order
                                     </button>
                                 </div>
                             </form>
@@ -789,7 +742,7 @@
                                         </p>
                                     </div>
 
-                                    <button type="submit" onclick="return confirm('Process refund? This action cannot be undone.')"
+                                    <button type="button" onclick="confirmProcessRefund()"
                                             class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                                         Process Refund
                                     </button>
@@ -1258,6 +1211,187 @@
                 
                 form.appendChild(csrfToken);
                 document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Upload Proof Confirmation (Admin)
+    function confirmUploadProof() {
+        const fileInput = document.getElementById('admin_proof_input');
+        
+        if (!fileInput.files || fileInput.files.length === 0) {
+            Swal.fire({
+                title: 'No File Selected',
+                text: 'Please select a payment proof image first.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Upload Payment Proof?',
+            html: 'This will change order status to <strong>WAITING_VERIFICATION</strong>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Upload',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('admin-upload-form').submit();
+            }
+        });
+    }
+
+    // Reject Payment Confirmation
+    function confirmRejectPayment() {
+        const rejectionNotes = document.querySelector('#reject-form-container textarea[name="rejection_notes"]').value.trim();
+        
+        if (!rejectionNotes) {
+            Swal.fire({
+                title: 'Rejection Reason Required',
+                text: 'Please provide a reason for rejecting this payment proof.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Reject Payment Proof?',
+            html: `Order will return to <strong>INVOICE_SENT</strong> status.<br><small class="text-gray-500">Customer will be notified to re-upload proof.</small>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#DC2626',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Reject',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.querySelector('#reject-form-container form').submit();
+            }
+        });
+    }
+
+    // Process Refund Confirmation
+    function confirmProcessRefund() {
+        const form = document.querySelector('#manual-refund-form form');
+        const refundAmount = document.querySelector('input[name="refund_amount"]').value;
+        const currency = '{{ $order->currency }}';
+        
+        Swal.fire({
+            title: 'Process Refund?',
+            html: `Refund amount: <strong>${currency} ${parseFloat(refundAmount).toLocaleString()}</strong><br><small class="text-gray-500">This action cannot be undone.</small>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#DC2626',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Process Refund',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Confirm Approve & Ship (untuk WAITING_VERIFICATION)
+    function confirmApproveShip() {
+        const form = document.querySelector('#verification-shipping-form form');
+        const courier = form.querySelector('select[name="courier_name"]').value;
+        const tracking = form.querySelector('input[name="tracking_number"]').value.trim();
+        
+        // Validasi required fields
+        if (!courier || courier === '') {
+            Swal.fire({
+                title: 'Courier Required',
+                text: 'Please select a courier/shipping service.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+        
+        if (!tracking) {
+            Swal.fire({
+                title: 'Tracking Number Required',
+                text: 'Please enter tracking number/resi.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Approve & Ship Order?',
+            html: `<div class="text-left">
+                <p class="mb-2"><strong>Courier:</strong> ${courier}</p>
+                <p class="mb-2"><strong>Tracking:</strong> ${tracking}</p>
+                <p class="text-sm text-gray-500 mt-3">Order status will change to <strong>SHIPPED</strong></p>
+            </div>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Approve & Ship',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Confirm Mark as Shipped (untuk PAID status)
+    function confirmMarkShipped() {
+        const form = document.querySelector('#paid-shipping-form form');
+        const courier = form.querySelector('select[name="courier_name"]').value;
+        const tracking = form.querySelector('input[name="tracking_number"]').value.trim();
+        
+        // Validasi required fields
+        if (!courier || courier === '') {
+            Swal.fire({
+                title: 'Courier Required',
+                text: 'Please select a courier/shipping service.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+        
+        if (!tracking) {
+            Swal.fire({
+                title: 'Tracking Number Required',
+                text: 'Please enter tracking number/resi.',
+                icon: 'warning',
+                confirmButtonColor: '#111827',
+            });
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Mark as Shipped?',
+            html: `<div class="text-left">
+                <p class="mb-2"><strong>Courier:</strong> ${courier}</p>
+                <p class="mb-2"><strong>Tracking:</strong> ${tracking}</p>
+                <p class="text-sm text-gray-500 mt-3">Order status will change to <strong>SHIPPED</strong></p>
+            </div>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Mark as Shipped',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
                 form.submit();
             }
         });
