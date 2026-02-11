@@ -96,9 +96,9 @@
                                     <td width="30%" valign="top" align="right">
                                         <span style="font-size: 14px; color: #E8B49E; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($item->price * $item->quantity, 2) }}
+                                                ${{ number_format($item->price_usd * $item->quantity, 2) }}
                                             @else
-                                                Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
+                                                Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>

@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\Admin\PaymentReceivedNotification;
 
 class OrderTrackingController extends Controller
 {
@@ -70,6 +72,17 @@ class OrderTrackingController extends Controller
                 }
 
                 DB::commit();
+
+                // Send email notification to admin
+                try {
+                    Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'manual'));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send payment proof notification email to admin', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+
                 return back()->with('success', 'Payment proof successfully uploaded. Our team will verify it shortly.');
                 
             } catch (\Exception $e) {

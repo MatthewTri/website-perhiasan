@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\Admin\PaymentReceivedNotification;
 
 class PaymentController extends Controller
 {
@@ -333,6 +334,16 @@ class PaymentController extends Controller
             'capture_id' => $captureId,
             'amount' => $event['resource']['amount']['value'] ?? 'unknown'
         ]);
+
+        // Send email notification to admin
+        try {
+            Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
+        } catch (\Exception $e) {
+            Log::error('Failed to send PayPal payment notification email to admin', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return response()->json(['status' => 'success'], 200);
     }

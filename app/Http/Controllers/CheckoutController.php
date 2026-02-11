@@ -12,6 +12,8 @@ use App\Models\Shipment;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Admin\NewOrderNotification;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class CheckoutController extends Controller
@@ -278,6 +280,16 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
+
+            // Send email notification to admin
+            try {
+                Mail::to(config('mail.admin_email'))->send(new NewOrderNotification($order));
+            } catch (\Exception $e) {
+                Log::error('Failed to send new order email to admin', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment details to your email within 24 hours.';
             
