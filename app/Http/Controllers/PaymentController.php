@@ -102,6 +102,20 @@ class PaymentController extends Controller
                     'amount' => $captureResult['amount'] ?? 'N/A'
                 ]);
 
+                // ✅ KIRIM EMAIL KE ADMIN (PRIMARY TRIGGER)
+                try {
+                    Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
+                    Log::info('✅ PayPal payment notification email sent to admin', [
+                        'order_id' => $order->id,
+                        'admin_email' => config('mail.admin_email')
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send PayPal payment notification email to admin', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+
                 return redirect()->route('order.track', $order->guest_token)
                             ->with('success', 'Payment successful! Your order #' . $order->order_number . ' is being processed.');
             } else {
