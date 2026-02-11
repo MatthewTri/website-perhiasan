@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Order;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PaymentDetailsMail extends Mailable
+class OrderShippedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,7 +22,7 @@ class PaymentDetailsMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Payment Details - Order #' . $this->order->order_number)
-                    ->view('mail.payment-details');
+        return $this->subject('Your Order Has Been Shipped - Order #' . $this->order->order_number)
+                    ->view('mail.order.shipped');
     }
 }

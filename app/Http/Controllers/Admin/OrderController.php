@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Order;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
-use App\Mail\PaymentDetailsMail;
+use App\Mail\Order\PaymentDetailsMail;
+use App\Mail\Order\OrderShippedMail;
+use App\Mail\Order\PaymentRejectedMail;
+use App\Mail\Order\OrderCancelledMail;
+use App\Mail\Order\OrderCompletedMail;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -164,8 +168,16 @@ class OrderController extends Controller
                 'rejection_notes' => null,
             ]);
 
-            // TODO: Kirim email shipping notification
-            // Mail::to($order->contact_email)->send(new OrderShipped($order));
+            // Kirim email shipping notification
+            $magicLink = route('order.track', $order->guest_token);
+            try {
+                Mail::to($order->contact_email)->send(new OrderShippedMail($order, $magicLink));
+            } catch (\Exception $e) {
+                Log::error('Failed to send shipping notification email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return back()->with('success', 'Payment approved! Order marked as SHIPPED. Tracking: ' . $validated['tracking_number']);
         } 
@@ -182,8 +194,16 @@ class OrderController extends Controller
                 'proof_of_payment' => null, // Hapus bukti yang ditolak
             ]);
 
-            // TODO: Kirim email payment rejection
-            // Mail::to($order->contact_email)->send(new PaymentRejected($order));
+            // Kirim email payment rejection
+            $magicLink = route('order.track', $order->guest_token);
+            try {
+                Mail::to($order->contact_email)->send(new PaymentRejectedMail($order, $magicLink));
+            } catch (\Exception $e) {
+                Log::error('Failed to send payment rejection email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return back()->with('success', 'Payment rejected. Customer can re-upload new proof.');
         }
@@ -214,8 +234,16 @@ class OrderController extends Controller
                 'status' => 'SHIPPED',
             ]);
 
-            // TODO: Kirim email shipping notification
-            // Mail::to($order->contact_email)->send(new OrderShipped($order));
+            // Kirim email shipping notification
+            $magicLink = route('order.track', $order->guest_token);
+            try {
+                Mail::to($order->contact_email)->send(new OrderShippedMail($order, $magicLink));
+            } catch (\Exception $e) {
+                Log::error('Failed to send shipping notification email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
             
             return back()->with('success', 'Order marked as SHIPPED with tracking: ' . $validated['tracking_number']);
         }
@@ -291,8 +319,16 @@ class OrderController extends Controller
             'status' => 'CANCELLED',
         ]);
 
-        // TODO: Send cancellation email to customer
-        // Mail::to($order->contact_email)->send(new OrderCancelled($order));
+        // Send cancellation email to customer
+        $magicLink = route('order.track', $order->guest_token);
+        try {
+            Mail::to($order->contact_email)->send(new OrderCancelledMail($order, $magicLink));
+        } catch (\Exception $e) {
+            Log::error('Failed to send order cancellation email', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return redirect()
             ->route('admin.orders.show', $order)
@@ -313,8 +349,16 @@ class OrderController extends Controller
             'completed_at' => now(),
         ]);
 
-        // TODO: Send complete email to customer (agar diarahkan review)
-        // Mail::to($order->contact_email)->send(new OrderCompleted($order));
+        // Send complete email to customer (agar diarahkan review)
+        $magicLink = route('order.track', $order->guest_token);
+        try {
+            Mail::to($order->contact_email)->send(new OrderCompletedMail($order, $magicLink));
+        } catch (\Exception $e) {
+            Log::error('Failed to send order completion email', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return redirect()
             ->route('admin.orders.show', $order)
