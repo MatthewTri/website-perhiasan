@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\NewOrderNotification;
+use App\Mail\Order\OrderConfirmationMail;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class CheckoutController extends Controller
@@ -281,6 +282,23 @@ class CheckoutController extends Controller
 
             DB::commit();
 
+            // Generate magic link for order tracking
+            $magicLink = route('order.track', $order->guest_token);
+
+            // Send confirmation email to customer
+            try {
+                Mail::to($order->contact_email)->send(new OrderConfirmationMail($order, $magicLink));
+                Log::info('Order confirmation email sent to customer', [
+                    'order_id' => $order->id,
+                    'customer_email' => $order->contact_email
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send order confirmation email to customer', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
             // Send email notification to admin
             try {
                 Mail::to(config('mail.admin_email'))->send(new NewOrderNotification($order));
@@ -291,7 +309,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. We will send payment details to your email within 24 hours.';
+            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. Please check your email for order confirmation and next steps.';
             
             if ($isGuest) {
                 return redirect()->route('home', ['clear_cart' => '1'])
