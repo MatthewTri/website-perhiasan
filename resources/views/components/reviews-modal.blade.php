@@ -169,9 +169,14 @@ function renderReview(review, index) {
         ? '<svg class="w-3 h-3 text-emerald-500 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span class="ml-1 text-[9px] md:text-[10px] uppercase tracking-wider text-gray-400 font-medium">Verified</span>' 
         : '';
     
-    const imageHtml = review.image 
-        ? `<div class="mt-3 md:mt-4"><img src="/storage/${review.image}" alt="Review photo" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity border border-gray-100" onclick="openLightbox('/storage/${review.image}')"></div>`
-        : '';
+    // Multiple images support
+    let imagesHtml = '';
+    if (review.images && review.images.length > 0) {
+        const imageElements = review.images.map(img => 
+            `<img src="/storage/${img.image}" alt="Review photo" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity border border-gray-100" onclick="openLightbox('/storage/${img.image}')">`
+        ).join('');
+        imagesHtml = `<div class="mt-3 md:mt-4 flex gap-2">${imageElements}</div>`;
+    }
     
     // Perubahan Layout: Gap diperkecil (space-x-4) dan Avatar diperkecil di mobile
     return `
@@ -195,7 +200,7 @@ function renderReview(review, index) {
                 </p>
                 
                 ${review.comment ? `<p class="text-xs md:text-sm text-gray-600 leading-relaxed font-light">${review.comment}</p>` : ''}
-                ${imageHtml}
+                ${imagesHtml}
             </div>
         </div>
     `;

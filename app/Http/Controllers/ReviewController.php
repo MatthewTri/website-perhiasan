@@ -16,7 +16,8 @@ class ReviewController extends Controller
             'user', 
             'product:id,name,slug',
             'order:id',
-            'order.shipment:id,order_id,first_name,last_name' 
+            'order.shipment:id,order_id,first_name,last_name',
+            'images' // Load review images
         ])
         ->where('is_visible', true)
         ->whereHas('product') // Only reviews with existing products
@@ -92,7 +93,8 @@ class ReviewController extends Controller
             'reviews.*.product_id' => 'required|exists:products,id',
             'reviews.*.rating' => 'nullable|integer|min:1|max:5',
             'reviews.*.comment' => 'nullable|string|max:1000',
-            'reviews.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'reviews.*.images' => 'nullable|array|max:3', // Max 3 images
+            'reviews.*.images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Each image max 5MB
             'reviews.*.anonymous' => 'nullable|boolean',
         ]);
 
@@ -117,24 +119,29 @@ class ReviewController extends Controller
                 continue;
             }
 
-            // Handle Image Upload
-            $imagePath = null;
-            if (isset($reviewData['image'])) {
-                $imagePath = $reviewData['image']->store('reviews', 'public');
-            }
-
             // Create Review
-            Review::create([
+            $review = Review::create([
                 'user_id' => $order->user_id, // Bisa null jika Guest
                 'product_id' => $productId,
                 'order_id' => $order->id,
                 'rating' => $reviewData['rating'] ?? null,
                 'comment' => $reviewData['comment'] ?? null,
-                'image' => $imagePath,
                 'is_visible' => true,
                 'anonymous' => $order->user_id ? ($reviewData['anonymous'] ?? false) : false,
-
             ]);
+
+            // Handle Multiple Image Upload (Max 3)
+            if (isset($reviewData['images']) && is_array($reviewData['images'])) {
+                foreach ($reviewData['images'] as $index => $image) {
+                    if ($index >= 3) break; // Max 3 images
+                    
+                    $imagePath = $image->store('reviews', 'public');
+                    $review->images()->create([
+                        'image' => $imagePath,
+                        'order' => $index
+                    ]);
+                }
+            }
 
             // ⬅️ UPDATE PRODUCT RATING AGGREGATE
             $orderItem->product->updateRatingAggregate();
@@ -167,7 +174,7 @@ class ReviewController extends Controller
         }
 
         // Load order items dengan produk dan reviews
-        $order->load(['orderItems.product.featuredImage', 'reviews']);
+        $order->load(['orderItems.product.featuredImage', 'reviews.images']);
 
         return view('reviews.edit', compact('order'));
     }
@@ -189,8 +196,10 @@ class ReviewController extends Controller
             'reviews.*.review_id' => 'required|exists:reviews,id',
             'reviews.*.rating' => 'nullable|integer|min:1|max:5',
             'reviews.*.comment' => 'nullable|string|max:1000',
-            'reviews.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'reviews.*.delete_image' => 'nullable|boolean',
+            'reviews.*.images' => 'nullable|array|max:3', // Max 3 new images
+            'reviews.*.images.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+            'reviews.*.delete_images' => 'nullable|array', // Array of image IDs to delete
+            'reviews.*.delete_images.*' => 'integer|exists:review_images,id',
             'reviews.*.anonymous' => 'nullable|boolean',
         ]);
 
@@ -209,21 +218,31 @@ class ReviewController extends Controller
                 continue;
             }
 
-            // Handle Delete Image
-            if (isset($reviewData['delete_image']) && $reviewData['delete_image']) {
-                if ($review->image) {
-                    Storage::disk('public')->delete($review->image);
-                    $review->image = null;
+            // Handle Delete Images
+            if (isset($reviewData['delete_images']) && is_array($reviewData['delete_images'])) {
+                foreach ($reviewData['delete_images'] as $imageId) {
+                    $reviewImage = $review->images()->find($imageId);
+                    if ($reviewImage) {
+                        Storage::disk('public')->delete($reviewImage->image);
+                        $reviewImage->delete();
+                    }
                 }
             }
 
-            // Handle New Image Upload
-            if (isset($reviewData['image'])) {
-                // Delete old image
-                if ($review->image) {
-                    Storage::disk('public')->delete($review->image);
+            // Handle New Image Upload (Max 3 total)
+            if (isset($reviewData['images']) && is_array($reviewData['images'])) {
+                $currentImageCount = $review->images()->count();
+                $availableSlots = 3 - $currentImageCount;
+                
+                foreach ($reviewData['images'] as $index => $image) {
+                    if ($index >= $availableSlots) break; // Respect max 3 total
+                    
+                    $imagePath = $image->store('reviews', 'public');
+                    $review->images()->create([
+                        'image' => $imagePath,
+                        'order' => $currentImageCount + $index
+                    ]);
                 }
-                $review->image = $reviewData['image']->store('reviews', 'public');
             }
 
             // Update review data

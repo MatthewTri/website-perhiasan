@@ -27,7 +27,7 @@ return new class extends Migration
             // 2. Isi Review
             $table->unsignedTinyInteger('rating'); // Angka 1 sampai 5
             $table->text('comment')->nullable();   // Komentar teks (Boleh kosong kalau cuma kasih bintang)
-            $table->string('image')->nullable();   // Path foto (Upload bukti barang)
+            // REMOVED: $table->string('image')->nullable(); - Moved to review_images table
             $table->boolean('anonymous')->default(false); // Pilihan tampilkan nama atau tidak
 
             // 3. Status Moderasi
@@ -44,6 +44,17 @@ return new class extends Migration
             // Index untuk query cepat hanya yang visible
             $table->index('is_visible');
         });
+
+        // Tabel terpisah untuk multiple images (max 3 per review)
+        Schema::create('review_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('review_id')->constrained()->onDelete('cascade');
+            $table->string('image'); // Path to image file
+            $table->unsignedTinyInteger('order')->default(0); // Urutan gambar
+            $table->timestamps();
+
+            $table->index('review_id');
+        });
     }
 
     /**
@@ -51,6 +62,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('review_images');
         Schema::dropIfExists('reviews');
     }
 };

@@ -26,4 +26,10 @@ class Review extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    // Relasi ke Review Images (max 3)
+    public function images()
+    {
+        return $this->hasMany(ReviewImage::class)->orderBy('order');
+    }
 }

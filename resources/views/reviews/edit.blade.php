@@ -88,40 +88,79 @@
                                 <p class="text-xs text-gray-500 mt-1">Maximum 1000 characters</p>
                             </div>
 
-                            <!-- Current Image -->
-                            @if($existingReview->image)
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Current Photo</label>
-                                <div class="relative inline-block">
-                                    <img src="{{ asset('storage/' . $existingReview->image) }}" alt="Review" class="max-w-xs rounded-lg border border-gray-300">
-                                    <label class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full cursor-pointer shadow-lg">
-                                        <input type="checkbox" name="reviews[{{ $index }}][delete_image]" value="1" class="hidden" onchange="toggleImageDelete(this, {{ $index }})">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                    </label>
+                            <!-- Current Images -->
+                            @if($existingReview->images->count() > 0)
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Current Photos ({{ $existingReview->images->count() }}/3)
+                                </label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    @foreach($existingReview->images as $reviewImage)
+                                    <div class="relative group aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200" 
+                                         id="existing_image_{{ $reviewImage->id }}">
+                                        <img src="{{ asset('storage/' . $reviewImage->image) }}" 
+                                             alt="Review" 
+                                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
+                                             onclick="openLightbox('{{ asset('storage/' . $reviewImage->image) }}')">
+                                        
+                                        <label class="absolute top-1 right-1 bg-white/90 text-gray-900 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-rose-600 cursor-pointer">
+                                            <input type="checkbox" 
+                                                   name="reviews[{{ $index }}][delete_images][]" 
+                                                   value="{{ $reviewImage->id }}" 
+                                                   class="hidden" 
+                                                   onchange="toggleImageDelete(this, '{{ $reviewImage->id }}')">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </label>
+                                    </div>
+                                    @endforeach
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">Check the trash icon to remove this photo</p>
+                                <p class="text-xs text-gray-400 mt-2">Click images to view larger, X to remove</p>
                             </div>
                             @endif
 
-                            <!-- Upload New Image -->
+                            <!-- Upload New Images -->
                             <div>
-                                <label for="image_{{ $index }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                    {{ $existingReview->image ? 'Change Photo' : 'Upload Photo' }} (Optional)
-                                </label>
-                                <input type="file" 
-                                       id="image_{{ $index }}" 
-                                       name="reviews[{{ $index }}][image]"
-                                       accept="image/jpeg,image/png,image/jpg"
-                                       onchange="previewReviewImage(event, {{ $index }})"
-                                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
-                                <p class="text-xs text-gray-500 mt-1">JPG, JPEG, or PNG (Max 5MB)</p>
+                                @php
+                                    $currentCount = $existingReview->images->count();
+                                    $remainingSlots = 3 - $currentCount;
+                                @endphp
                                 
-                                <!-- Image Preview -->
-                                <div id="preview_{{ $index }}" class="mt-3 hidden">
-                                    <img id="preview_img_{{ $index }}" src="" alt="Preview" class="max-w-xs rounded-lg border border-gray-300">
+                                @if($remainingSlots > 0)
+                                <label for="images_{{ $index }}" 
+                                       class="block border-2 border-dashed border-gray-200 rounded-sm p-8 text-center cursor-pointer hover:border-gray-900 transition-all duration-300 bg-gray-50/30 hover:bg-gray-50"
+                                       data-edit-upload-area="{{ $index }}">
+                                    <div class="flex flex-col items-center">
+                                        <svg class="w-10 h-10 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <p class="text-sm font-medium text-gray-700 mb-1 uppercase tracking-wider">
+                                            Add More Photos
+                                        </p>
+                                        <p class="text-xs text-gray-400">{{ $remainingSlots }} slot{{ $remainingSlots > 1 ? 's' : '' }} available (Max 5MB each)</p>
+                                    </div>
+                                    <input type="file" 
+                                           id="images_{{ $index }}" 
+                                           name="reviews[{{ $index }}][images][]"
+                                           accept="image/jpeg,image/png,image/jpg"
+                                           onchange="handleEditReviewImages(this, {{ $index }}, {{ $remainingSlots }})"
+                                           multiple
+                                           class="hidden"
+                                           data-max-slots="{{ $remainingSlots }}">
+                                </label>
+                                
+                                <!-- New Images Preview -->
+                                <div id="new_previews_{{ $index }}" class="mt-4 grid grid-cols-3 gap-3 hidden"></div>
+                                @else
+                                <div class="border-2 border-dashed border-gray-200 rounded-sm p-8 text-center bg-gray-50/30">
+                                    <svg class="w-10 h-10 text-gray-300 mb-3 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Maximum Photos Reached (3/3)</p>
+                                    <p class="text-xs text-gray-400 mt-1">Delete existing photos to upload new ones</p>
                                 </div>
+                                @endif
                             </div>
 
                             @if($order->user_id)
@@ -221,36 +260,184 @@ document.querySelectorAll('.rating-star').forEach(star => {
     });
 });
 
-// Image Preview
-function previewReviewImage(event, index) {
-    const file = event.target.files[0];
-    const preview = document.getElementById(`preview_${index}`);
-    const previewImg = document.getElementById(`preview_img_${index}`);
+// Edit Review Images Management
+const editReviewImages = {};
+
+// Handle Edit Review Images Upload
+function handleEditReviewImages(input, index, maxSlots) {
+    if (!editReviewImages[index]) editReviewImages[index] = [];
     
-    if (file) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            preview.classList.remove('hidden');
+    const newFiles = Array.from(input.files);
+    
+    for (let newFile of newFiles) {
+        // Validate file size (5MB)
+        if (newFile.size > 5120 * 1024) {
+            alert(`${newFile.name} exceeds 5MB limit`);
+            continue;
         }
         
-        reader.readAsDataURL(file);
+        // Check duplicates
+        const isDuplicate = editReviewImages[index].some(f => f.name === newFile.name && f.size === newFile.size);
+        if (!isDuplicate && editReviewImages[index].length < maxSlots) {
+            editReviewImages[index].push(newFile);
+        }
+    }
+    
+    // Limit to available slots
+    if (editReviewImages[index].length > maxSlots) {
+        alert(`You can only add ${maxSlots} more image(s)`);
+        editReviewImages[index] = editReviewImages[index].slice(0, maxSlots);
+    }
+    
+    updateEditReviewPreview(index);
+    updateEditFileInput(index);
+}
+
+// Update Edit Review Preview
+function updateEditReviewPreview(index) {
+    const container = document.getElementById(`new_previews_${index}`);
+    container.innerHTML = '';
+    
+    if (editReviewImages[index] && editReviewImages[index].length > 0) {
+        container.classList.remove('hidden');
+        
+        editReviewImages[index].forEach((file, fileIndex) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative group aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200';
+            
+            const img = document.createElement('img');
+            img.className = 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in';
+            
+            // Read and display image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                // Add lightbox onclick
+                img.onclick = function() {
+                    if (typeof openLightbox === 'function') {
+                        openLightbox(e.target.result);
+                    }
+                };
+            };
+            reader.readAsDataURL(file);
+            
+            wrapper.appendChild(img);
+            
+            // "New" badge
+            const badge = document.createElement('div');
+            badge.className = 'absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded font-medium';
+            badge.textContent = 'New';
+            wrapper.appendChild(badge);
+            
+            // Remove button
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'absolute top-1 right-1 bg-white/90 text-gray-900 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-rose-600';
+            btn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            btn.onclick = () => removeEditReviewImage(index, fileIndex);
+            
+            wrapper.appendChild(btn);
+            container.appendChild(wrapper);
+        });
     } else {
-        preview.classList.add('hidden');
+        container.classList.add('hidden');
     }
 }
 
-// Toggle Delete Image
-function toggleImageDelete(checkbox, index) {
-    const img = checkbox.closest('div').querySelector('img');
+// Remove Edit Review Image
+function removeEditReviewImage(index, fileIndex) {
+    editReviewImages[index].splice(fileIndex, 1);
+    updateEditReviewPreview(index);
+    updateEditFileInput(index);
+}
+
+// Update Edit File Input
+function updateEditFileInput(index) {
+    const input = document.getElementById(`images_${index}`);
+    if (!input) return;
+    
+    const dt = new DataTransfer();
+    if (editReviewImages[index]) {
+        editReviewImages[index].forEach(file => dt.items.add(file));
+    }
+    input.files = dt.files;
+}
+
+// Toggle Delete Existing Image
+function toggleImageDelete(checkbox, imageId) {
+    const imgContainer = document.getElementById(`existing_image_${imageId}`);
+    const img = imgContainer.querySelector('img');
+    
     if (checkbox.checked) {
         img.style.opacity = '0.3';
         img.style.filter = 'grayscale(100%)';
+        imgContainer.classList.add('ring-2', 'ring-rose-500');
     } else {
         img.style.opacity = '1';
         img.style.filter = 'none';
+        imgContainer.classList.remove('ring-2', 'ring-rose-500');
     }
 }
+
+// Drag & Drop for Edit Upload Areas
+document.addEventListener('DOMContentLoaded', function() {
+    const editUploadAreas = document.querySelectorAll('[data-edit-upload-area]');
+    
+    editUploadAreas.forEach(area => {
+        const index = area.dataset.editUploadArea;
+        const input = document.getElementById(`images_${index}`);
+        const maxSlots = input ? parseInt(input.dataset.maxSlots) : 3;
+        
+        // Prevent default behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+        
+        // Highlight on drag
+        ['dragenter', 'dragover'].forEach(eventName => {
+            area.addEventListener(eventName, function() {
+                this.classList.add('border-gray-900', 'bg-gray-100');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, function() {
+                this.classList.remove('border-gray-900', 'bg-gray-100');
+            });
+        });
+        
+        // Handle drop
+        area.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            
+            if (files.length > 0 && input) {
+                // Create FileList from dropped files
+                const dt = new DataTransfer();
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        dt.items.add(file);
+                    }
+                });
+                input.files = dt.files;
+                
+                // Trigger onchange
+                handleEditReviewImages(input, index, maxSlots);
+            }
+        });
+    });
+    
+    // Mobile: Show remove buttons always on touch devices
+    if ('ontouchstart' in window) {
+        const style = document.createElement('style');
+        style.textContent = '.group button, .group label { opacity: 1 !important; }';
+        document.head.appendChild(style);
+    }
+});
 </script>
+
+@include('components.image-lightbox')
+
 @endsection

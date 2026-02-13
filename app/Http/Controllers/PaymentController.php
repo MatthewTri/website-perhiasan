@@ -105,7 +105,7 @@ class PaymentController extends Controller
 
                 // ✅ KIRIM EMAIL KE ADMIN (PRIMARY TRIGGER)
                 try {
-                    Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
+                    // Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
                     Log::info('✅ PayPal payment notification email sent to admin', [
                         'order_id' => $order->id,
                         'admin_email' => config('mail.admin_email')
@@ -352,7 +352,7 @@ class PaymentController extends Controller
 
         // Send email notification to admin
         try {
-            Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
+            // Mail::to(config('mail.admin_email'))->send(new PaymentReceivedNotification($order, 'paypal'));
         } catch (\Exception $e) {
             Log::error('Failed to send PayPal payment notification email to admin', [
                 'order_id' => $order->id,
@@ -479,7 +479,7 @@ class PaymentController extends Controller
         // Send refund confirmation email to customer
         $magicLink = route('order.track', $order->guest_token);
         try {
-            Mail::to($order->contact_email)->send(new RefundProcessedMail($order, $magicLink));
+            // Mail::to($order->contact_email)->send(new RefundProcessedMail($order, $magicLink));
             Log::info('✅ Refund confirmation email sent to customer', [
                 'order_id' => $order->id,
                 'customer_email' => $order->contact_email
