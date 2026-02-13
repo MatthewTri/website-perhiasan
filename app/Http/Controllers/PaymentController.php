@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\PaymentReceivedNotification;
+use App\Mail\Order\RefundProcessedMail;
 
 class PaymentController extends Controller
 {
@@ -475,8 +476,20 @@ class PaymentController extends Controller
             'previous_status' => $order->getOriginal('status')
         ]);
 
-        // TODO: Kirim email notifikasi refund ke customer
-        // Mail::to($order->contact_email)->send(new RefundNotificationMail($order, $refundAmount));
+        // Send refund confirmation email to customer
+        $magicLink = route('order.track', $order->guest_token);
+        try {
+            Mail::to($order->contact_email)->send(new RefundProcessedMail($order, $magicLink));
+            Log::info('✅ Refund confirmation email sent to customer', [
+                'order_id' => $order->id,
+                'customer_email' => $order->contact_email
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send refund confirmation email', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return response()->json(['status' => 'success'], 200);
     }

@@ -10,6 +10,7 @@ use App\Mail\Order\OrderShippedMail;
 use App\Mail\Order\PaymentRejectedMail;
 use App\Mail\Order\OrderCancelledMail;
 use App\Mail\Order\OrderCompletedMail;
+use App\Mail\Order\RefundProcessedMail;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -391,6 +392,17 @@ class OrderController extends Controller
             'refund_amount' => $validated['refund_amount'],
             'refunded_at' => now(),
         ]);
+
+        // Send refund confirmation email to customer
+        $magicLink = route('order.track', $order->guest_token);
+        try {
+            Mail::to($order->contact_email)->send(new RefundProcessedMail($order, $magicLink));
+        } catch (\Exception $e) {
+            Log::error('Failed to send refund confirmation email', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return redirect()
             ->route('admin.orders.show', $order)
