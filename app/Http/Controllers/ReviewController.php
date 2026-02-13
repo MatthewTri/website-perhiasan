@@ -91,22 +91,28 @@ class ReviewController extends Controller
         $validated = $request->validate([
             'reviews' => 'required|array',
             'reviews.*.product_id' => 'required|exists:products,id',
-            'reviews.*.rating' => 'nullable|integer|min:1|max:5',
+            'reviews.*.rating' => 'required|integer|min:1|max:5',
             'reviews.*.comment' => 'nullable|string|max:1000',
             'reviews.*.images' => 'nullable|array|max:3', // Max 3 images
             'reviews.*.images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Each image max 5MB
             'reviews.*.anonymous' => 'nullable|boolean',
+        ], [
+            // Custom error messages
+            'reviews.*.rating.required' => 'Please provide a rating for all products.',
+            'reviews.*.rating.integer' => 'Rating must be a valid number.',
+            'reviews.*.rating.min' => 'Rating must be at least 1 star.',
+            'reviews.*.rating.max' => 'Rating cannot exceed 5 stars.',
+            'reviews.*.comment.max' => 'Review comment cannot exceed 1000 characters.',
+            'reviews.*.images.max' => 'You can upload a maximum of 3 images per product.',
+            'reviews.*.images.*.image' => 'Uploaded file must be a valid image.',
+            'reviews.*.images.*.mimes' => 'Images must be in JPEG, PNG, or JPG format.',
+            'reviews.*.images.*.max' => 'Each image must not exceed 5MB.',
         ]);
 
         $reviewCount = 0;
 
         foreach ($validated['reviews'] as $reviewData) {
             $productId = $reviewData['product_id'];
-
-            // Skip jika tidak ada rating DAN comment
-            if (empty($reviewData['rating']) && empty($reviewData['comment'])) {
-                continue;
-            }
 
             // Skip jika sudah pernah review produk ini di order ini
             if ($order->reviews()->where('product_id', $productId)->exists()) {
@@ -124,7 +130,7 @@ class ReviewController extends Controller
                 'user_id' => $order->user_id, // Bisa null jika Guest
                 'product_id' => $productId,
                 'order_id' => $order->id,
-                'rating' => $reviewData['rating'] ?? null,
+                'rating' => $reviewData['rating'],
                 'comment' => $reviewData['comment'] ?? null,
                 'is_visible' => true,
                 'anonymous' => $order->user_id ? ($reviewData['anonymous'] ?? false) : false,
