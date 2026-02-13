@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Order\OrderCompletedMail;
 
 class AutoCompleteOrders extends Command
 {
@@ -68,7 +70,22 @@ class AutoCompleteOrders extends Command
                     'completed_at' => now()->toDateTimeString(),
                 ]);
 
-                $this->info("✅ Order {$order->order_number} marked as COMPLETED");
+                // Send completion email to customer
+                $magicLink = route('order.track', $order->guest_token);
+                try {
+                    Mail::to($order->contact_email)->send(new OrderCompletedMail($order, $magicLink));
+                    Log::info('✅ Auto-complete email sent to customer', [
+                        'order_number' => $order->order_number,
+                        'customer_email' => $order->contact_email
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send auto-complete email', [
+                        'order_number' => $order->order_number,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+
+                $this->info("✅ Order {$order->order_number} marked as COMPLETED & email sent");
             }
         }
 
