@@ -1,167 +1,194 @@
 @extends('layout.main')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Website Settings</h1>
-    </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
+<div class="min-h-screen bg-white">
+    
+    {{-- Main Container --}}
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+        
+        {{-- Header Section --}}
+        <div class="text-center mb-12 lg:mb-16">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-gray-900 mb-3 tracking-tight">
+                Website Settings
+            </h1>
+            <p class="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gray-400 font-medium">
+                Configure your platform preferences
+            </p>
         </div>
-    @endif
 
-    @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('settings.update') }}" method="POST" class="space-y-8">
-        @csrf
-        @method('PUT')
-
-        <!-- AI Settings Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center mb-4">
-                <span class="text-2xl mr-2">🤖</span>
-                <h2 class="text-xl font-semibold text-gray-900">Pengaturan Fitur AI</h2>
+        {{-- Success Message --}}
+        @if(session('success'))
+            <div class="mb-8 bg-[#F0F9FF] border border-[#E8B49E]/30 px-6 py-4 transition-all duration-300">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-[#E8B49E] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm text-gray-700">{{ session('success') }}</p>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- AI Toggle -->
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Aktif/Nonaktifkan Fitur AI
-                    </label>
+        @endif
+
+        {{-- Error Messages --}}
+        @if($errors->any())
+            <div class="mb-8 bg-red-50 border border-red-200 px-6 py-4">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <ul class="text-sm text-red-700 space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Settings Form --}}
+        <form action="{{ route('settings.update') }}" method="POST" class="space-y-8">
+            @csrf
+            @method('PUT')
+
+            {{-- AI Settings Card --}}
+            <div class="bg-white border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-md">
+                
+                {{-- Card Header --}}
+                <div class="px-6 sm:px-8 py-6 border-b border-gray-100 bg-[#FAFAFA]">
                     <div class="flex items-center">
-                        <label class="inline-flex items-center">
-                            <input type="hidden" name="ai_enabled" value="0">
-                            <input type="checkbox" 
-                                   name="ai_enabled" 
-                                   value="1" 
-                                   {{ $settings['ai_enabled'] ? 'checked' : '' }}
-                                   class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
-                            <span class="ml-2 text-sm text-gray-700">
-                                Aktifkan fitur visualisasi AI di seluruh website
-                            </span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- AI Quota -->
-                <div class="space-y-2">
-                    <label for="ai_quota_limit" class="block text-sm font-medium text-gray-700">
-                        Kuota Prompt AI per Pengguna
-                    </label>
-                    <div class="relative">
-                        <input type="number" 
-                               id="ai_quota_limit" 
-                               name="ai_quota_limit" 
-                               value="{{ $settings['ai_quota_limit'] }}"
-                               min="1" 
-                               max="1000"
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">kali</span>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#E8B49E] to-[#D4A088] rounded-full flex items-center justify-center mr-4 shadow-sm">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-serif text-gray-900 mb-1">AI Feature Settings</h2>
+                            <p class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-gray-400">
+                                Manage artificial intelligence capabilities
+                            </p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500">Maksimum berapa kali pengguna bisa menggunakan fitur AI</p>
                 </div>
-            </div>
-        </div>
+                
+                {{-- Card Body --}}
+                <div class="px-6 sm:px-8 py-8 sm:py-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                        
+                        {{-- AI Toggle --}}
+                        <div class="space-y-4">
+                            <label class="block">
+                                <span class="text-xs uppercase tracking-[0.1em] text-gray-500 font-medium mb-3 block">
+                                    Feature Status
+                                </span>
+                                <div class="bg-gray-50 border border-gray-200 px-5 py-4 transition-all duration-200 hover:border-[#E8B49E]/50">
+                                    <div class="flex items-start">
+                                        <div class="flex items-center h-6">
+                                            <input type="hidden" name="ai_enabled" value="0">
+                                            <input type="checkbox" 
+                                                   id="ai_enabled"
+                                                   name="ai_enabled" 
+                                                   value="1" 
+                                                   {{ $settings['ai_enabled'] ? 'checked' : '' }}
+                                                   class="w-5 h-5 text-[#E8B49E] border-gray-300 rounded focus:ring-[#E8B49E] focus:ring-offset-0 transition-colors cursor-pointer">
+                                        </div>
+                                        <div class="ml-4">
+                                            <label for="ai_enabled" class="text-sm text-gray-900 font-medium cursor-pointer block mb-1">
+                                                Enable AI Visualization
+                                            </label>
+                                            <p class="text-xs text-gray-500 leading-relaxed">
+                                                Activate AI-powered design visualization features across the entire platform
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
 
-        <!-- Financial Settings Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center mb-4">
-                <span class="text-2xl mr-2">💰</span>
-                <h2 class="text-xl font-semibold text-gray-900">Pengaturan Keuangan</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Tax Percentage -->
-                <div class="space-y-2">
-                    <label for="tax_percentage" class="block text-sm font-medium text-gray-700">
-                        Persentase Pajak (PPN)
-                    </label>
-                    <div class="relative">
-                        <input type="number" 
-                               id="tax_percentage" 
-                               name="tax_percentage" 
-                               value="{{ $settings['tax_percentage'] }}"
-                               min="0" 
-                               max="100" 
-                               step="0.01"
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">%</span>
+                        {{-- AI Quota --}}
+                        <div class="space-y-4">
+                            <label for="ai_quota_limit" class="block">
+                                <span class="text-xs uppercase tracking-[0.1em] text-gray-500 font-medium mb-3 block">
+                                    User Quota Limit
+                                </span>
+                                <div class="relative">
+                                    <input type="number" 
+                                           id="ai_quota_limit" 
+                                           name="ai_quota_limit" 
+                                           value="{{ $settings['ai_quota_limit'] }}"
+                                           min="1" 
+                                           max="1000"
+                                           class="block w-full px-5 py-4 pr-20 border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#E8B49E] focus:bg-white transition-all duration-200 text-sm">
+                                    <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
+                                        <span class="text-xs uppercase tracking-wider text-gray-400 font-medium">prompts</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3 leading-relaxed">
+                                    Maximum number of AI generations allowed per user account
+                                </p>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    {{-- Info Box --}}
+                    <div class="mt-8 lg:mt-10 bg-gradient-to-r from-[#FAFAFA] to-white border-l-2 border-[#E8B49E] px-6 py-4">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-[#E8B49E] mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="text-xs text-gray-600 leading-relaxed">
+                                <strong class="text-gray-900">Note:</strong> Changes to AI settings will take effect immediately for all users. Quota limits help manage API usage and costs.
+                            </div>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500">Persentase pajak yang akan ditambahkan saat checkout</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Shipping Settings Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center mb-4">
-                <span class="text-2xl mr-2">🚚</span>
-                <h2 class="text-xl font-semibold text-gray-900">Pengaturan Pengiriman (Flat-Rate)</h2>
+            {{-- Action Buttons --}}
+            <div class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 pt-4">
+                <a href="{{ route('home') }}" 
+                   class="px-8 py-4 text-center border border-gray-300 text-gray-700 text-xs uppercase tracking-[0.15em] font-medium hover:border-gray-900 hover:text-gray-900 transition-all duration-200">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="px-8 py-4 bg-[#E8B49E] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#D4A088] transition-all duration-200 shadow-sm hover:shadow-md">
+                    Save Changes
+                </button>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Domestic Shipping -->
-                <div class="space-y-2">
-                    <label for="shipping_domestic" class="block text-sm font-medium text-gray-700">
-                        Biaya Shipping Domestik
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">Rp</span>
-                        </div>
-                        <input type="number" 
-                               id="shipping_domestic" 
-                               name="shipping_domestic" 
-                               value="{{ $settings['shipping_domestic'] }}"
-                               min="0"
-                               class="block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <p class="text-xs text-gray-500">Biaya kirim flat-rate untuk pengiriman dalam negeri</p>
-                </div>
+        </form>
 
-                <!-- International Shipping -->
-                <div class="space-y-2">
-                    <label for="shipping_international" class="block text-sm font-medium text-gray-700">
-                        Biaya Shipping Internasional
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 text-sm">Rp</span>
-                        </div>
-                        <input type="number" 
-                               id="shipping_international" 
-                               name="shipping_international" 
-                               value="{{ $settings['shipping_international'] }}"
-                               min="0"
-                               class="block w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <p class="text-xs text-gray-500">Biaya kirim flat-rate untuk pengiriman ke luar negeri</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Save Button -->
-        <div class="flex justify-end">
-            <button type="submit" 
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                Save Settings
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
+
+{{-- Custom Styles --}}
+<style>
+    /* Smooth transitions for form elements */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.5;
+    }
+
+    input[type="number"]:hover::-webkit-inner-spin-button,
+    input[type="number"]:hover::-webkit-outer-spin-button {
+        opacity: 1;
+    }
+
+    /* Checkbox custom styling */
+    input[type="checkbox"]:checked {
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    }
+
+    /* Remove autofill styling */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0px 1000px #FAFAFA inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    input:focus:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px white inset;
+    }
+</style>
 @endsection
