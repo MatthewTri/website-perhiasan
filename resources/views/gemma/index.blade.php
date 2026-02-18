@@ -153,23 +153,49 @@
     <div class="flex-1 overflow-y-auto p-4 md:p-8" id="scrollArea">
         <div class="max-w-3xl mx-auto space-y-8" id="chatContainer">
             
-            {{-- Welcome Message --}}
-            <div class="flex items-start gap-4 animate-fade-in-up">
+            {{-- Welcome Message & First Question --}}
+            <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
-                        <p class="text-stone-700 text-sm leading-relaxed font-light">
-                            Welcome to your private design studio. I am Cecile AI. 
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Welcome to Cecile Private Collection. I am your personal design consultant. 
                             @auth
-                                Describe your dream jewelry piece — perhaps an <em>"Art Deco emerald ring"</em> or a <em>"minimalist gold pendant"</em> — and I shall visualize it for you.
+                                To begin our design journey, what type of masterpiece are you envisioning today?
                             @else
                                 Please <a href="{{ route('login') }}" class="text-stone-900 font-medium underline underline-offset-2 hover:text-amber-600 transition-colors">sign in</a> to begin your design journey.
                             @endauth
                         </p>
+                        @auth
+                        {{-- Category Buttons --}}
+                        <div class="grid grid-cols-2 gap-2 mt-4">
+                            <button onclick="window.aiChat.selectOption('category', 'Ring')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                Ring
+                            </button>
+                            <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                Necklace / Pendant
+                            </button>
+                            <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                Earrings
+                            </button>
+                            <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                Bracelet
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
+                        @endauth
                     </div>
-                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">SYSTEM &bull; NOW</span>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; NOW</span>
                 </div>
             </div>
 
@@ -222,30 +248,20 @@
         </div>
     </div>
 
-    {{-- INPUT FORM --}}
+    {{-- INPUT FORM - PERBAIKAN --}}
     <div class="bg-white border-t border-stone-200 px-4 py-6 flex-shrink-0 z-40">
         <div class="max-w-3xl mx-auto w-full">
             <form id="chatForm" class="relative group">
                 @csrf
-                {{-- 
-                    PERBAIKAN:
-                    1. Menghapus 'focus-within:border-stone-400' dan menggantinya dengan 'ring' custom agar tidak ada 'jump' layout.
-                    2. Menambahkan 'overflow-hidden' pada wrapper agar rapi.
-                --}}
                 <div class="relative bg-stone-50 rounded-2xl border border-stone-200 overflow-hidden transition-all duration-300 focus-within:bg-white focus-within:ring-1 focus-within:ring-stone-300 focus-within:border-stone-300 focus-within:shadow-[0_4px_20px_rgb(0,0,0,0.06)]">
                     
-                    {{-- 
-                        PERBAIKAN INPUT:
-                        1. focus:outline-none: Memastikan tidak ada outline biru browser.
-                        2. focus:ring-0: Mematikan ring Tailwind di textarea (kita pakai ring di wrapper).
-                        3. border-0: Memastikan tidak ada border sama sekali di textarea.
-                    --}}
                     <textarea 
                         id="promptInput" 
                         name="prompt" 
                         class="w-full px-5 py-4 pr-14 bg-transparent border-0 focus:ring-0 focus:outline-none text-stone-800 placeholder-stone-400 text-sm leading-relaxed resize-none"
                         rows="1"
-                        maxlength="500"></textarea>
+                        maxlength="500"
+                        placeholder="Type your choice or describe your jewelry..."></textarea>
                     
                     <button 
                         type="submit" 
@@ -267,287 +283,647 @@
 </div>
 
 <script>
-class AIChat {
-    constructor() {
-        this.chatContainer = document.getElementById('chatContainer'); // Selector tetap sama, tapi sekarang menunjuk ke wrapper inner
-        this.scrollArea = document.getElementById('scrollArea'); // Selector baru untuk scrollable area
-        this.chatForm = document.getElementById('chatForm');
-        this.promptInput = document.getElementById('promptInput');
-        this.sendButton = document.getElementById('sendButton');
-        this.sendIcon = document.getElementById('sendIcon');
-        this.loadingSpinner = document.getElementById('loadingSpinner');
-        this.charCount = document.getElementById('charCount');
-        
-        this.init();
-    }
+    class AIChat {
+        constructor() {
+            this.chatContainer = document.getElementById('chatContainer');
+            this.scrollArea = document.getElementById('scrollArea');
+            this.chatForm = document.getElementById('chatForm');
+            this.promptInput = document.getElementById('promptInput');
+            this.sendButton = document.getElementById('sendButton');
+            this.sendIcon = document.getElementById('sendIcon');
+            this.loadingSpinner = document.getElementById('loadingSpinner');
+            this.charCount = document.getElementById('charCount');
+            
+            // Guided conversation state
+            this.guidedMode = true;
+            this.currentStep = 1;
+            this.userSelections = {
+                category: null,
+                material: null,
+                gemstone: null,
+                cut: null,
+                style: null,
+                customNote: null
+            };
+            
+            this.init();
+            
+            // Make instance globally accessible
+            window.aiChat = this;
+        }
 
-    init() {
-        // ... (Logic init sama persis, tidak berubah) ...
-        this.promptInput.addEventListener('input', () => {
-            this.handleInputChange();
-            this.autoResize();
-        });
-        this.promptInput.addEventListener('input', () => {
-            this.toggleSendButton();
-        });
-        this.chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.sendMessage();
-        });
-        this.promptInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+        init() {
+            this.promptInput.addEventListener('input', () => {
+                this.handleInputChange();
+                this.autoResize();
+                this.toggleSendButton();
+            });
+            
+            this.chatForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.sendMessage();
-            }
-        });
-        this.toggleSendButton();
-        // Scroll ke bawah saat load
-        this.scrollToBottom();
-    }
-
-    handleInputChange() {
-        const count = this.promptInput.value.length;
-        this.charCount.textContent = count;
-        if (count > 450) {
-            this.charCount.classList.add('text-rose-500');
-        } else {
-            this.charCount.classList.remove('text-rose-500');
-        }
-    }
-
-    toggleSendButton() {
-        const hasText = this.promptInput.value.trim().length > 0;
-        if (hasText) {
-            this.sendButton.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
-            this.sendButton.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
-        } else {
-            this.sendButton.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
-            this.sendButton.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
-        }
-    }
-
-    autoResize() {
-        this.promptInput.style.height = 'auto';
-        const maxHeight = 120;
-        const newHeight = Math.min(this.promptInput.scrollHeight, maxHeight);
-        this.promptInput.style.height = newHeight + 'px';
-    }
-
-    async sendMessage() {
-        const prompt = this.promptInput.value.trim();
-        if (!prompt) return;
-
-        this.addUserMessage(prompt);
-        
-        this.promptInput.value = '';
-        this.charCount.textContent = '0';
-        this.promptInput.style.height = 'auto';
-        this.toggleSendButton();
-        
-        this.setLoading(true);
-        
-        try {
-            const response = await fetch('{{ route("gemma.generate") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ prompt: prompt })
             });
-
-            const data = await response.json();
-
-            if (data.success) {
-                this.addAIImageMessage(data.image_url);
-            } else {
-                const errorMessage = this.getUserFriendlyErrorMessage(data.error);
-                this.addAIMessage(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            let networkErrorMessage = 'Sorry, something went wrong. Please check your connection and try again.';
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                networkErrorMessage = 'Cannot connect to AI service. Please check if the service is running.';
-            } else if (error.name === 'AbortError') {
-                networkErrorMessage = 'Request timed out. The AI service might be busy. Please try again.';
-            }
-            this.addAIMessage(networkErrorMessage);
-        } finally {
-            this.setLoading(false);
+            
+            this.promptInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+            
+            this.toggleSendButton();
+            this.scrollToBottom();
         }
-    }
 
-    getUserFriendlyErrorMessage(error) {
-        const errorMap = {
-            'Prompt cannot be empty.': 'Please provide a description for the jewelry you want to generate.',
-            'Your prompt contains inappropriate content.': 'I cannot generate images with inappropriate content. Please try a different description.',
-            'Prompt should focus on jewelry.': 'Please describe jewelry items only. I specialize in creating jewelry images like rings, necklaces, earrings, etc.',
-            'Server belum siap, coba beberapa saat lagi.': 'AI service is starting up. Please try again in a moment.',
-            'Prompt tidak relevan dengan perhiasan.': 'Your description doesn\'t seem to be about jewelry. Please describe jewelry items like rings, necklaces, bracelets, etc.',
-            'Sorry, there\'s an issue with the AI service.': 'The AI service is temporarily unavailable. Please try again later.',
-            'AI service is not available. Please make sure the Node.js server is running on port 3001.': 'The AI service is temporarily unavailable. Please try again later.',
-            'You must be logged in to generate images.': 'Please log in to generate images and save your chat history.'
-        };
-        return errorMap[error] || (error.length < 150 ? error : 'Sorry, something went wrong. Please try again.');
-    }
+        selectOption(stepName, value) {
+            this.userSelections[stepName] = value;
+            this.addUserMessage(value);
+            this.currentStep++;
+            this.askNextQuestion();
+        }
 
-    // --- HTML RENDER METHODS ---
+        askNextQuestion() {
+            setTimeout(() => {
+                if (this.currentStep === 2) {
+                    this.askMaterial();
+                } else if (this.currentStep === 3) {
+                    this.askGemstone();
+                } else if (this.currentStep === 4) {
+                    if (this.userSelections.gemstone && this.userSelections.gemstone !== 'No Gemstone / Plain Metal') {
+                        this.askCut();
+                    } else {
+                        this.currentStep++;
+                        this.askStyle();
+                    }
+                } else if (this.currentStep === 5) {
+                    this.askStyle();
+                } else if (this.currentStep === 6) {
+                    this.showSummary();
+                }
+            }, 500);
+        }
 
-    addUserMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'flex justify-end animate-fade-in-up';
-        messageElement.innerHTML = `
-            <div class="max-w-[85%] md:max-w-lg">
-                <div class="bg-stone-900 text-stone-50 rounded-2xl rounded-tr-none px-6 py-4 shadow-md">
-                    <p class="text-sm font-light leading-relaxed">${this.escapeHtml(message)}</p>
+        askMaterial() {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
-                <span class="text-[10px] text-stone-400 mt-2 mr-2 block text-right font-mono">${this.getCurrentTime()}</span>
-            </div>
-        `;
-        this.chatContainer.appendChild(messageElement);
-        this.scrollToBottom();
-    }
-
-    addAIMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
-            </div>
-            <div class="flex-1 max-w-lg">
-                <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
-                    <p class="text-stone-700 text-sm leading-relaxed font-light">${this.escapeHtml(message)}</p>
-                </div>
-                <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI Cecile &bull; ${this.getCurrentTime()}</span>
-            </div>
-        `;
-        this.chatContainer.appendChild(messageElement);
-        this.scrollToBottom();
-    }
-
-    addAIImageMessage(imageUrl) {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center flex-shrink-0 text-stone-600 border border-stone-200">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                    <path fill-rule="evenodd" d="M9.661 2.237a.531.531 0 0 1 .678 0 11.947 11.947 0 0 0 6.878 2.743c.284 0 .548.06.748.243.2.184.288.455.288.79V11a9 9 0 0 1-9 9 9 9 0 0 1-9-9V6.013c0-.335.088-.606.288-.79.2-.184.464-.243.748-.243a11.947 11.947 0 0 0 6.878-2.744Z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <div class="flex-1 max-w-lg">
-                <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none p-2 shadow-[0_2px_15px_rgb(0,0,0,0.04)] overflow-hidden">
-                    <p class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 px-4 pt-3">Design Concept</p>
-                    <div class="relative group">
-                        <img src="${imageUrl}" 
-                             alt="Generated jewelry" 
-                             class="w-full rounded-xl shadow-inner cursor-zoom-in hover:brightness-105 transition duration-500 ease-in-out"
-                             onclick="this.requestFullscreen()">
-                        <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button onclick="window.open('${imageUrl}', '_blank')" 
-                                    class="bg-white/90 text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Excellent choice. Now, which precious metal speaks to your personal style?
+                        </p>
+                        <div class="grid grid-cols-1 gap-2 mt-4">
+                            <button onclick="window.aiChat.selectOption('material', '18k Yellow Gold')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">18k Yellow Gold</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Classic, Luxurious</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('material', '18k White Gold / Platinum')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">18k White Gold / Platinum</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Modern, Clean</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('material', '18k Rose Gold')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">18k Rose Gold</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Romantic, Feminine</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('material', 'Mixed Metals')" 
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Mixed Metals</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Unique, Combination</span>
                             </button>
                         </div>
+                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice...</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        askGemstone() {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Every piece has a heart. What gemstone should take center stage?
+                        </p>
+                        <div class="grid grid-cols-2 gap-2 mt-4">
+                            <button onclick="window.aiChat.selectOption('gemstone', 'Classic Diamond')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                Classic Diamond
+                            </button>
+                            <button onclick="window.aiChat.selectOption('gemstone', 'Blue Sapphire')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                Blue Sapphire
+                            </button>
+                            <button onclick="window.aiChat.selectOption('gemstone', 'Ruby')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                Ruby
+                            </button>
+                            <button onclick="window.aiChat.selectOption('gemstone', 'Emerald')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                Emerald
+                            </button>
+                            <button onclick="window.aiChat.selectOption('gemstone', 'No Gemstone / Plain Metal')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200 col-span-2">
+                                No Gemstone / Plain Metal
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own (e.g., Amethyst, Opal)...</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        askCut() {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            How should the gemstone be cut to capture the light?
+                        </p>
+                        <div class="grid grid-cols-1 gap-2 mt-4">
+                            <button onclick="window.aiChat.selectOption('cut', 'Round Brilliant')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Round Brilliant</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Most Popular Cut</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('cut', 'Oval Cut')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Oval Cut</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Elegant & Elongated</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('cut', 'Emerald Cut')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Emerald Cut</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Rectangular, Vintage Style</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('cut', 'Pear Shape')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Pear Shape</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Teardrop, Unique</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('cut', 'Princess Cut')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Princess Cut</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Square, Sharp & Modern</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred cut...</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        askStyle() {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Final touch. What is the aesthetic or era that inspires this piece?
+                        </p>
+                        <div class="grid grid-cols-1 gap-2 mt-4">
+                            <button onclick="window.aiChat.selectOption('style', 'Minimalist & Modern')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Minimalist & Modern</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Simple, Clean, Sleek</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('style', 'Art Deco / Vintage')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Art Deco / Vintage</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Intricate Details, 1920s Style</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('style', 'Nature Inspired')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Nature Inspired</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Floral, Leaves, Organic</span>
+                            </button>
+                            <button onclick="window.aiChat.selectOption('style', 'Royal & Luxurious')" 
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                <span class="font-medium">Royal & Luxurious</span>
+                                <span class="block text-xs text-stone-500 mt-0.5">Halo Setting, Ornate, Regal</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred style...</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        showSummary() {
+            let summaryParts = [];
+            if (this.userSelections.category) summaryParts.push(this.userSelections.category);
+            if (this.userSelections.material) summaryParts.push(`made of ${this.userSelections.material}`);
+            if (this.userSelections.gemstone && this.userSelections.gemstone !== 'No Gemstone / Plain Metal') {
+                if (this.userSelections.cut) {
+                    summaryParts.push(`featuring a ${this.userSelections.cut} ${this.userSelections.gemstone}`);
+                } else {
+                    summaryParts.push(`featuring ${this.userSelections.gemstone}`);
+                }
+            }
+            if (this.userSelections.style) summaryParts.push(`in a ${this.userSelections.style} style`);
+            
+            const summary = summaryParts.join(', ');
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-gradient-to-br from-white to-stone-50 border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Perfect! I have noted your preferences:
+                        </p>
+                        <div class="bg-white border border-stone-200 px-4 py-3 rounded-lg mb-4">
+                            <p class="text-stone-900 text-sm font-medium italic">"A ${summary}"</p>
+                        </div>
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            Is there any specific detail you would like to add? 
+                            <span class="text-stone-500 text-xs block mt-1">(e.g., "add small diamonds on the band", "make it look like a flower")</span>
+                        </p>
+                        <button onclick="window.aiChat.generateFromSummary()" 
+                                class="w-full px-6 py-3 bg-[#E8B49E] text-white text-sm font-medium uppercase tracking-wider hover:bg-[#D4A088] transition-all duration-200 shadow-sm">
+                            Generate Design
+                        </button>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+            
+            this.guidedMode = false;
+        }
+
+        generateFromSummary() {
+            const finalPrompt = this.buildFinalPrompt();
+            this.submitToAI(finalPrompt);
+        }
+
+        buildFinalPrompt() {
+            let prompt = '';
+            
+            if (this.userSelections.category) {
+                prompt += this.userSelections.category;
+            }
+            if (this.userSelections.material) {
+                prompt += ` made of ${this.userSelections.material}`;
+            }
+            if (this.userSelections.gemstone && this.userSelections.gemstone !== 'No Gemstone / Plain Metal') {
+                if (this.userSelections.cut) {
+                    prompt += `, featuring a ${this.userSelections.cut} ${this.userSelections.gemstone}`;
+                } else {
+                    prompt += `, featuring ${this.userSelections.gemstone}`;
+                }
+            }
+            if (this.userSelections.style) {
+                prompt += `, in a ${this.userSelections.style} style`;
+            }
+            if (this.userSelections.customNote) {
+                prompt += `, ${this.userSelections.customNote}`;
+            }
+            
+            return prompt;
+        }
+
+        async sendMessage() {
+            const prompt = this.promptInput.value.trim();
+            if (!prompt) return;
+
+            // ✅ FIX: Langsung submit ke AI tanpa guided mode complexity
+            if (this.guidedMode && this.currentStep <= 5) {
+                const stepNames = ['', 'category', 'material', 'gemstone', 'cut', 'style'];
+                const currentStepName = stepNames[this.currentStep];
+                
+                this.userSelections[currentStepName] = prompt;
+                this.addUserMessage(prompt);
+                
+                this.promptInput.value = '';
+                this.charCount.textContent = '0';
+                this.promptInput.style.height = 'auto';
+                this.toggleSendButton();
+                
+                this.currentStep++;
+                this.askNextQuestion();
+                return;
+            }
+            
+            if (this.currentStep === 6 && !this.guidedMode) {
+                this.userSelections.customNote = prompt;
+                this.addUserMessage(prompt);
+                
+                this.promptInput.value = '';
+                this.charCount.textContent = '0';
+                this.promptInput.style.height = 'auto';
+                this.toggleSendButton();
+                
+                const finalPrompt = this.buildFinalPrompt();
+                this.submitToAI(finalPrompt);
+                return;
+            }
+            
+            // Free mode
+            this.addUserMessage(prompt);
+            this.promptInput.value = '';
+            this.charCount.textContent = '0';
+            this.promptInput.style.height = 'auto';
+            this.toggleSendButton();
+            
+            this.submitToAI(prompt);
+        }
+
+        async submitToAI(prompt) {
+            this.setLoading(true);
+            
+            try {
+                // ✅ ADD: Mock parameter untuk testing tanpa API
+                const useMock = false; // SET false untuk production
+                
+                const response = await fetch('{{ route("gemma.generate") }}' + (useMock ? '?mock=1' : ''), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const data = await response.json();
+                
+                console.log('🔍 Response data:', data);
+
+                if (data.success) {
+                    this.addAIImageMessage(data.image_url);
+                    this.resetConversation();
+                } else {
+                    console.error('❌ Error response:', data);
+                    const errorMessage = this.getUserFriendlyErrorMessage(data.error);
+                    this.addAIMessage(errorMessage);
+                }
+            } catch (error) {
+                console.error('❌ Fetch error:', error);
+                this.addAIMessage('Sorry, something went wrong. Please try again.');
+            } finally {
+                this.setLoading(false);
+            }
+        }
+
+        resetConversation() {
+            setTimeout(() => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+                messageElement.innerHTML = `
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-1 max-w-lg">
+                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-3">
+                                Magnificent! Your design has been created. Would you like to create another piece?
+                            </p>
+                            <button onclick="window.aiChat.startNewDesign()" 
+                                    class="w-full px-6 py-3 border border-stone-300 text-stone-700 text-sm font-medium uppercase tracking-wider hover:border-stone-900 hover:text-stone-900 transition-all duration-200">
+                                Start New Design
+                            </button>
+                        </div>
+                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                    </div>
+                `;
+                this.chatContainer.appendChild(messageElement);
+                this.scrollToBottom();
+            }, 1000);
+        }
+
+        startNewDesign() {
+            this.guidedMode = true;
+            this.currentStep = 1;
+            this.userSelections = {
+                category: null,
+                material: null,
+                gemstone: null,
+                cut: null,
+                style: null,
+                customNote: null
+            };
+            
+            location.reload(); // Simplest way to reset
+        }
+
+        getUserFriendlyErrorMessage(error) {
+            const errorMap = {
+                'Prompt cannot be empty.': 'Please provide a description.',
+                'Your prompt contains inappropriate content.': 'Please use appropriate language.',
+                'Prompt should focus on jewelry.': 'Please describe jewelry items only.',
+                'You must be logged in to generate images.': 'Please log in first.'
+            };
+            return errorMap[error] || 'Something went wrong. Please try again.';
+        }
+
+        handleInputChange() {
+            const count = this.promptInput.value.length;
+            this.charCount.textContent = count;
+            if (count > 450) {
+                this.charCount.classList.add('text-rose-500');
+            } else {
+                this.charCount.classList.remove('text-rose-500');
+            }
+        }
+
+        toggleSendButton() {
+            const hasText = this.promptInput.value.trim().length > 0;
+            if (hasText) {
+                this.sendButton.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+                this.sendButton.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+            } else {
+                this.sendButton.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+                this.sendButton.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+        }
+
+        autoResize() {
+            this.promptInput.style.height = 'auto';
+            const newHeight = Math.min(this.promptInput.scrollHeight, 120);
+            this.promptInput.style.height = newHeight + 'px';
+        }
+
+        addUserMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex justify-end animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="max-w-[85%] md:max-w-lg">
+                    <div class="bg-stone-900 text-stone-50 rounded-2xl rounded-tr-none px-6 py-4 shadow-md">
+                        <p class="text-sm font-light leading-relaxed">${this.escapeHtml(message)}</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 mr-2 block text-right font-mono">${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        addAIMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light">${this.escapeHtml(message)}</p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI CECILE &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        addAIImageMessage(imageUrl) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none p-2 shadow-[0_2px_15px_rgb(0,0,0,0.04)] overflow-hidden">
+                        <p class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 px-4 pt-3">Design Concept</p>
+                        <div class="relative group">
+                            <img src="${imageUrl}" 
+                                alt="Generated jewelry" 
+                                class="w-full rounded-xl shadow-inner cursor-zoom-in hover:brightness-105 transition duration-500"
+                                onclick="this.requestFullscreen()">
+                            <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="window.open('${imageUrl}', '_blank')" 
+                                        class="bg-white/90 text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI CECILE &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+        }
+
+        addLoadingMessage() {
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            loadingElement.id = 'loading-message';
+            loadingElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="bg-white rounded-2xl rounded-tl-none px-6 py-4 shadow-sm border border-stone-100">
+                    <div class="flex items-center gap-3">
+                        <div class="flex space-x-1">
+                            <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce"></div>
+                            <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        </div>
+                        <span class="text-stone-400 text-xs font-medium uppercase tracking-wider">Crafting Design...</span>
                     </div>
                 </div>
-                <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI Cecile &bull; ${this.getCurrentTime()}</span>
-            </div>
-        `;
-        this.chatContainer.appendChild(messageElement);
-        this.scrollToBottom();
-    }
+            `;
+            this.chatContainer.appendChild(loadingElement);
+            this.scrollToBottom();
+        }
 
-    addLoadingMessage() {
-        const loadingElement = document.createElement('div');
-        loadingElement.className = 'flex items-start gap-4 animate-fade-in-up';
-        loadingElement.id = 'loading-message';
-        loadingElement.innerHTML = `
-            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
-            </div>
-            <div class="bg-white rounded-2xl rounded-tl-none px-6 py-4 shadow-sm border border-stone-100">
-                <div class="flex items-center gap-3">
-                    <div class="flex space-x-1">
-                        <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce"></div>
-                        <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                        <div class="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    </div>
-                    <span class="text-stone-400 text-xs font-medium uppercase tracking-wider">Crafting Design...</span>
-                </div>
-            </div>
-        `;
-        this.chatContainer.appendChild(loadingElement);
-        this.scrollToBottom();
-    }
+        removeLoadingMessage() {
+            const loadingElement = document.getElementById('loading-message');
+            if (loadingElement) loadingElement.remove();
+        }
 
-    removeLoadingMessage() {
-        const loadingElement = document.getElementById('loading-message');
-        if (loadingElement) {
-            loadingElement.remove();
+        setLoading(isLoading) {
+            if (isLoading) {
+                this.addLoadingMessage();
+                this.sendButton.disabled = true;
+                this.promptInput.disabled = true;
+                this.sendIcon.classList.add('hidden');
+                this.loadingSpinner.classList.remove('hidden');
+            } else {
+                this.removeLoadingMessage();
+                this.sendButton.disabled = false;
+                this.promptInput.disabled = false;
+                this.sendIcon.classList.remove('hidden');
+                this.loadingSpinner.classList.add('hidden');
+                this.promptInput.focus();
+            }
+        }
+
+        scrollToBottom() {
+            this.scrollArea.scrollTop = this.scrollArea.scrollHeight;
+        }
+
+        getCurrentTime() {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     }
 
-    setLoading(isLoading) {
-        if (isLoading) {
-            this.addLoadingMessage();
-            this.sendButton.disabled = true;
-            this.promptInput.disabled = true;
-            this.sendIcon.classList.add('hidden');
-            this.loadingSpinner.classList.remove('hidden');
-        } else {
-            this.removeLoadingMessage();
-            this.sendButton.disabled = false;
-            this.promptInput.disabled = false;
-            this.sendIcon.classList.remove('hidden');
-            this.loadingSpinner.classList.add('hidden');
-            this.promptInput.focus();
-        }
+    function deleteChat(chatId) {
+        if (!confirm('Are you sure you want to discard this design?')) return;
+        
+        fetch(`/gemma/delete/${chatId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Failed to delete chat');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong');
+        });
     }
 
-    // Scroll pada elemen pembungkus utama (#scrollArea), bukan inner wrapper (#chatContainer)
-    scrollToBottom() {
-        this.scrollArea.scrollTop = this.scrollArea.scrollHeight;
-    }
-
-    getCurrentTime() {
-        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-}
-
-function deleteChat(chatId) {
-    if (!confirm('Are you sure you want to discard this design?')) return;
-    
-    fetch(`/gemma/delete/${chatId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload(); 
-        } else {
-            alert('Failed to delete chat');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Something went wrong');
+    document.addEventListener('DOMContentLoaded', function() {
+        new AIChat();
     });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    new AIChat();
-});
 </script>
 
 <style>
