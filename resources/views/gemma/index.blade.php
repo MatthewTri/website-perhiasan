@@ -353,6 +353,55 @@
             this.askNextQuestion();
         }
 
+        goBack() {
+            if (this.currentStep <= 1) return;
+            
+            // Remove last user message
+            const messages = this.chatContainer.querySelectorAll('.flex.justify-end');
+            if (messages.length > 0) {
+                messages[messages.length - 1].remove();
+            }
+            
+            // Remove last AI question
+            const aiMessages = this.chatContainer.querySelectorAll('.flex.items-start');
+            if (aiMessages.length > 0) {
+                const lastAI = aiMessages[aiMessages.length - 1];
+                // Don't remove the initial welcome message
+                if (!lastAI.id || lastAI.id !== 'welcomeMessage') {
+                    lastAI.remove();
+                }
+            }
+            
+            // Go back one step
+            this.currentStep--;
+            
+            // Clear the selection for current step
+            const stepNames = ['', 'category', 'material', 'gemstone', 'cut', 'style'];
+            this.userSelections[stepNames[this.currentStep]] = null;
+            
+            this.scrollToBottom();
+        }
+
+        startOver() {
+            // Reset all state
+            this.guidedMode = true;
+            this.currentStep = 1;
+            this.userSelections = {
+                category: null,
+                material: null,
+                gemstone: null,
+                cut: null,
+                style: null,
+                customNote: null
+            };
+            
+            // Remove only current session messages (not history or welcome message)
+            const currentSessionMessages = this.chatContainer.querySelectorAll('[data-session="current"]');
+            currentSessionMessages.forEach(msg => msg.remove());
+            
+            this.scrollToBottom();
+        }
+
         askNextQuestion() {
             setTimeout(() => {
                 if (this.currentStep === 2) {
@@ -377,6 +426,7 @@
         askMaterial() {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -409,6 +459,16 @@
                             </button>
                         </div>
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice...</p>
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
+                            <button onclick="window.aiChat.goBack()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-stone-700 border border-stone-200 hover:border-stone-400 transition-all duration-200">
+                                ← Back
+                            </button>
+                            <button onclick="window.aiChat.startOver()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-400 transition-all duration-200">
+                                ↺ Start Over
+                            </button>
+                        </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
                 </div>
@@ -420,6 +480,7 @@
         askGemstone() {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -452,6 +513,16 @@
                             </button>
                         </div>
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own (e.g., Amethyst, Opal)...</p>
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
+                            <button onclick="window.aiChat.goBack()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-stone-700 border border-stone-200 hover:border-stone-400 transition-all duration-200">
+                                ← Back
+                            </button>
+                            <button onclick="window.aiChat.startOver()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-400 transition-all duration-200">
+                                ↺ Start Over
+                            </button>
+                        </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
                 </div>
@@ -463,6 +534,7 @@
         askCut() {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -500,6 +572,16 @@
                             </button>
                         </div>
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred cut...</p>
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
+                            <button onclick="window.aiChat.goBack()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-stone-700 border border-stone-200 hover:border-stone-400 transition-all duration-200">
+                                ← Back
+                            </button>
+                            <button onclick="window.aiChat.startOver()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-400 transition-all duration-200">
+                                ↺ Start Over
+                            </button>
+                        </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
                 </div>
@@ -511,6 +593,7 @@
         askStyle() {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -543,6 +626,16 @@
                             </button>
                         </div>
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred style...</p>
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
+                            <button onclick="window.aiChat.goBack()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-stone-700 border border-stone-200 hover:border-stone-400 transition-all duration-200">
+                                ← Back
+                            </button>
+                            <button onclick="window.aiChat.startOver()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-400 transition-all duration-200">
+                                ↺ Start Over
+                            </button>
+                        </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
                 </div>
@@ -568,6 +661,7 @@
             
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -588,6 +682,16 @@
                                 class="w-full px-6 py-3 bg-[#E8B49E] text-white text-sm font-medium uppercase tracking-wider hover:bg-[#D4A088] transition-all duration-200 shadow-sm">
                             Generate Design
                         </button>
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="window.aiChat.goBack()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-stone-700 border border-stone-200 hover:border-stone-400 transition-all duration-200">
+                                ← Back
+                            </button>
+                            <button onclick="window.aiChat.startOver()" 
+                                    class="flex-1 px-3 py-2 text-xs text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-400 transition-all duration-200">
+                                ↺ Start Over
+                            </button>
+                        </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
                 </div>
@@ -714,6 +818,10 @@
         }
 
         resetConversation() {
+            // Convert current session messages to history (remove the "current" session marker)
+            const currentSessionMessages = this.chatContainer.querySelectorAll('[data-session="current"]');
+            currentSessionMessages.forEach(msg => msg.removeAttribute('data-session'));
+            
             setTimeout(() => {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
@@ -752,6 +860,10 @@
                     style: null,
                     customNote: null
                 };
+
+                // Remove current session messages
+                const currentSessionMessages = this.chatContainer.querySelectorAll('[data-session="current"]');
+                currentSessionMessages.forEach(msg => msg.remove());
 
                 // Show welcome message again
                 const messageElement = document.createElement('div');
@@ -852,6 +964,7 @@
         addUserMessage(message) {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex justify-end animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="max-w-[85%] md:max-w-lg">
                     <div class="bg-stone-900 text-stone-50 rounded-2xl rounded-tr-none px-6 py-4 shadow-md">
@@ -867,6 +980,7 @@
         addAIMessage(message) {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -885,6 +999,7 @@
         addAIImageMessage(imageUrl) {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                     <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
