@@ -179,7 +179,7 @@
                                     <img src="{{ $chat->image_url }}" 
                                          alt="Generated jewelry" 
                                          class="w-full rounded-xl shadow-inner cursor-zoom-in hover:brightness-105 transition duration-500 ease-in-out"
-                                         onclick="this.requestFullscreen()">
+                                         onclick="openLightbox('{{ $chat->image_url }}', 'ai-image-modal')">
                                     
                                     <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <button onclick="window.open('{{ $chat->image_url }}', '_blank')" 
@@ -191,6 +191,19 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </div>
+                                </div>
+                                
+                                {{-- Consultation Button --}}
+                                <div class="px-4 pb-4 pt-2">
+                                    <a href="{{ route('consultation.index') }}" 
+                                       class="block w-full bg-gradient-to-r from-[#E8B49E] to-[#D4A088] hover:from-[#D4A088] hover:to-[#E8B49E] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                            </svg>
+                                            <span class="uppercase tracking-wide text-xs font-bold">Consult with this Design</span>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                             <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI Cecile &bull; {{ $chat->created_at->format('H:i') }}</span>
@@ -292,6 +305,9 @@
         </div>
     </div>
 </div>
+
+{{-- Image Lightbox Component --}}
+<x-image-lightbox modalId="ai-image-modal" alt="AI Generated Jewelry Design" />
 
 <script>
     class AIChat {
@@ -1011,13 +1027,26 @@
                             <img src="${imageUrl}" 
                                 alt="Generated jewelry" 
                                 class="w-full rounded-xl shadow-inner cursor-zoom-in hover:brightness-105 transition duration-500"
-                                onclick="this.requestFullscreen()">
+                                onclick="openLightbox('${imageUrl}', 'ai-image-modal')">
                             <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onclick="window.open('${imageUrl}', '_blank')" 
                                         class="bg-white/90 text-stone-900 p-2 rounded-full hover:bg-white shadow-sm transition-all hover:scale-105">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                 </button>
                             </div>
+                        </div>
+                        
+                        <!-- Consultation Button -->
+                        <div class="px-4 pb-4 pt-2">
+                            <a href="{{ route('consultation.index') }}" 
+                               class="block w-full bg-gradient-to-r from-[#E8B49E] to-[#D4A088] hover:from-[#D4A088] hover:to-[#E8B49E] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                    </svg>
+                                    <span class="uppercase tracking-wide text-xs font-bold">Consult with this Design</span>
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI CECILE &bull; ${this.getCurrentTime()}</span>
