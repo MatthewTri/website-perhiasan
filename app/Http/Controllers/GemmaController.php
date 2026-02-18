@@ -14,7 +14,7 @@ class GemmaController extends Controller
 {
     public function index()
     {
-        // Cek apakah fitur AI aktif dari settings
+    // Cek apakah fitur AI aktif dari settings
         $aiEnabled = Setting::getBoolValue('ai_enabled', false);
         if (!$aiEnabled) {
             return redirect()->back()->with('error', 'AI feature is currently disabled.');
@@ -22,11 +22,13 @@ class GemmaController extends Controller
 
         // Ambil chat history untuk user yang login
         $history = collect(); // Default empty collection untuk guest
+        $isGuest = !Auth::check();
+        
         if (Auth::check()) {
             $history = Auth::user()->chatHistory;
         }
 
-        return view('gemma.index', compact('history'));
+        return view('gemma.index', compact('history', 'isGuest'));
     }
 
     public function generate(Request $request)

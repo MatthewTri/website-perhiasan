@@ -1,6 +1,127 @@
 @extends('layout.ai')
 
 @section('content')
+
+@if(isset($isGuest) && $isGuest)
+{{-- GUEST VIEW: Login Required --}}
+<div class="flex flex-col h-screen bg-gradient-to-br from-white via-stone-50 to-stone-100">
+    
+    {{-- HEADER --}}
+    <div class="bg-white/80 backdrop-blur-md border-b border-stone-200 px-6 py-5 flex-shrink-0 sticky top-0 z-30">
+        <div class="flex items-center justify-between max-w-4xl mx-auto w-full">
+            <div class="flex items-center gap-4">
+                <button onclick="window.history.back()" 
+                        class="p-2 hover:bg-stone-100 rounded-full transition-all duration-200 group">
+                    <svg class="w-5 h-5 text-stone-600 group-hover:text-stone-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </button>
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-[#E8B49E] to-[#D4A088] rounded-full flex items-center justify-center shadow-sm">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-lg font-serif text-stone-900">AI Design Studio</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MAIN CONTENT: Login Prompt --}}
+    <div class="flex-1 flex items-center justify-center p-4 sm:p-8">
+        <div class="max-w-md w-full">
+            
+            {{-- Card --}}
+            <div class="bg-white border border-stone-200 shadow-xl relative overflow-hidden">
+                
+                {{-- Decorative gradient --}}
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#E8B49E] via-[#D4A088] to-[#E8B49E]"></div>
+                
+                {{-- Content --}}
+                <div class="p-8 sm:p-12 text-center">
+                    
+                    {{-- Icon --}}
+                    <div class="mb-6">
+                        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#E8B49E]/10 to-[#D4A088]/10 rounded-full flex items-center justify-center border border-[#E8B49E]/20">
+                            <svg class="w-10 h-10 text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- Title --}}
+                    <h2 class="text-2xl sm:text-3xl font-serif text-gray-900 mb-3">
+                        Authentication Required
+                    </h2>
+                    
+                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-6">
+                        Access Restricted to Members Only
+                    </p>
+
+                    {{-- Description --}}
+                    <div class="space-y-3 mb-8">
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Our AI Design Studio is an exclusive feature available to registered members.
+                        </p>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Create an account or sign in to start visualizing your custom jewelry designs with artificial intelligence.
+                        </p>
+                    </div>
+
+                    {{-- Benefits List --}}
+                    <div class="bg-gradient-to-br from-stone-50 to-stone-100/50 border border-stone-200 p-5 mb-8 text-left">
+                        <p class="text-[10px] uppercase tracking-[0.15em] text-gray-500 font-medium mb-3">Members Benefits</p>
+                        <ul class="space-y-2 text-xs text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>AI-powered jewelry design visualization</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Save and manage your design history</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {{-- Action Buttons --}}
+                    <div class="space-y-3">
+                        <a href="{{ route('login') }}" 
+                           class="block w-full px-8 py-4 bg-[#E8B49E] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#D4A088] transition-all duration-200 shadow-sm hover:shadow-md">
+                            Sign In to Continue
+                        </a>
+                        <a href="{{ route('register') }}" 
+                           class="block w-full px-8 py-4 border border-gray-300 text-gray-700 text-xs uppercase tracking-[0.15em] font-medium hover:border-gray-900 hover:text-gray-900 transition-all duration-200">
+                            Create New Account
+                        </a>
+                    </div>
+
+                    {{-- Footer Note --}}
+                    <p class="mt-6 text-[10px] text-gray-400 leading-relaxed">
+                        No credit card required. Free to join.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Additional Info --}}
+            <div class="mt-6 text-center">
+                <a href="{{ route('home') }}" class="text-xs text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider">
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@else
+{{-- AUTHENTICATED VIEW: Normal Chat Interface --}}
 <div class="flex flex-col h-screen bg-stone-50/50">
     
     {{-- HEADER WITH BACK BUTTON --}}
@@ -463,4 +584,5 @@ document.addEventListener('DOMContentLoaded', function() {
         animation: fadeInUp 0.4s ease-out forwards;
     }
 </style>
+@endif
 @endsection

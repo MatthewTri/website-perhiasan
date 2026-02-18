@@ -98,9 +98,7 @@
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
                 
-                @auth
                 <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>
-                @endauth
                 
                 <li><a href="{{ route('consultation.index') }}" class="hover:text-[#E8B49E] transition-colors">Book Consultation</a></li>
             </ul>
