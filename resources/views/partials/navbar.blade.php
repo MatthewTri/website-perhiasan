@@ -98,7 +98,9 @@
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
                 <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
                 
+                @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
                 <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>
+                @endif
                 
                 <li><a href="{{ route('consultation.index') }}" class="hover:text-[#E8B49E] transition-colors">Book Consultation</a></li>
             </ul>
@@ -134,9 +136,11 @@
         <li>
             <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Necklaces</a>
         </li>
+        @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
         <li>
             <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-[#E8B49E]">Chat With AI</a>
         </li>
+        @endif
         <li>
             <a href="{{ route('consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Book Consultation</a>
         </li>

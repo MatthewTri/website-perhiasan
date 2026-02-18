@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Session;
 
 class SettingController extends Controller
 {
@@ -29,6 +30,9 @@ class SettingController extends Controller
         // Update semua settings
         Setting::setValue('ai_enabled', $request->ai_enabled);
         Setting::setValue('ai_quota_limit', $request->ai_quota_limit);
+
+        // Clear cache untuk memastikan perubahan langsung terlihat
+        Session::flash('ai_settings_updated', true);
 
         return redirect()->route('settings.index')->with('success', 'Settings updated successfully!');
     }

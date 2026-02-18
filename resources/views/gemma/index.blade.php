@@ -44,20 +44,6 @@
                 {{-- Content --}}
                 <div class="p-8 sm:p-12 text-center">
                     
-                    {{-- Icon --}}
-                    <div class="mb-6">
-                        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#E8B49E]/10 to-[#D4A088]/10 rounded-full flex items-center justify-center border border-[#E8B49E]/20">
-                            <svg class="w-10 h-10 text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </div>
-                    </div>
-
-                    {{-- Title --}}
-                    <h2 class="text-2xl sm:text-3xl font-serif text-gray-900 mb-3">
-                        Authentication Required
-                    </h2>
-                    
                     <p class="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-6">
                         Access Restricted to Members Only
                     </p>

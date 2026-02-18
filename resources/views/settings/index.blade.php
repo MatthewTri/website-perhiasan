@@ -81,24 +81,28 @@
                                 <span class="text-xs uppercase tracking-[0.1em] text-gray-500 font-medium mb-3 block">
                                     Feature Status
                                 </span>
-                                <div class="bg-gray-50 border border-gray-200 px-5 py-4 transition-all duration-200 hover:border-[#E8B49E]/50">
-                                    <div class="flex items-start">
-                                        <div class="flex items-center h-6">
-                                            <input type="hidden" name="ai_enabled" value="0">
-                                            <input type="checkbox" 
-                                                   id="ai_enabled"
-                                                   name="ai_enabled" 
-                                                   value="1" 
-                                                   {{ $settings['ai_enabled'] ? 'checked' : '' }}
-                                                   class="w-5 h-5 text-[#E8B49E] border-gray-300 rounded focus:ring-[#E8B49E] focus:ring-offset-0 transition-colors cursor-pointer">
-                                        </div>
-                                        <div class="ml-4">
+                                <div class="bg-gray-50 border border-gray-200 px-6 py-5 transition-all duration-200 hover:border-[#E8B49E]/50">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1 mr-4">
                                             <label for="ai_enabled" class="text-sm text-gray-900 font-medium cursor-pointer block mb-1">
                                                 Enable AI Visualization
                                             </label>
                                             <p class="text-xs text-gray-500 leading-relaxed">
                                                 Activate AI-powered design visualization features across the entire platform
                                             </p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <input type="hidden" name="ai_enabled" value="0">
+                                            {{-- Toggle Switch --}}
+                                            <label for="ai_enabled" class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" 
+                                                       id="ai_enabled"
+                                                       name="ai_enabled" 
+                                                       value="1" 
+                                                       {{ $settings['ai_enabled'] ? 'checked' : '' }}
+                                                       class="sr-only peer">
+                                                <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#E8B49E]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#E8B49E] shadow-inner"></div>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -174,9 +178,13 @@
         opacity: 1;
     }
 
-    /* Checkbox custom styling */
-    input[type="checkbox"]:checked {
-        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    /* Toggle switch animation */
+    .peer:checked ~ div {
+        background-color: #E8B49E;
+    }
+    
+    .peer:focus ~ div {
+        box-shadow: 0 0 0 3px rgba(232, 180, 158, 0.1);
     }
 
     /* Remove autofill styling */
