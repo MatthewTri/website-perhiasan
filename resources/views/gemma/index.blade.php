@@ -153,53 +153,7 @@
     <div class="flex-1 overflow-y-auto p-4 md:p-8" id="scrollArea">
         <div class="max-w-3xl mx-auto space-y-8" id="chatContainer">
             
-            {{-- Welcome Message & First Question --}}
-            <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
-                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
-                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
-                            Welcome to Cecile Private Collection. I am your personal design consultant. 
-                            @auth
-                                To begin our design journey, what type of masterpiece are you envisioning today?
-                            @else
-                                Please <a href="{{ route('login') }}" class="text-stone-900 font-medium underline underline-offset-2 hover:text-amber-600 transition-colors">sign in</a> to begin your design journey.
-                            @endauth
-                        </p>
-                        @auth
-                        {{-- Category Buttons --}}
-                        <div class="grid grid-cols-2 gap-2 mt-4">
-                            <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                Ring
-                            </button>
-                            <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                Necklace / Pendant
-                            </button>
-                            <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                Earrings
-                            </button>
-                            <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                Bracelet
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
-                        @endauth
-                    </div>
-                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; NOW</span>
-                </div>
-            </div>
-
-            {{-- Chat History --}}
+            {{-- Chat History - Show FIRST (if exists) --}}
             @auth
                 @foreach($history as $chat)
                     {{-- User Message --}}
@@ -243,6 +197,63 @@
                         </div>
                     </div>
                 @endforeach
+            @endauth
+
+            {{-- Welcome Message & First Question - Show AFTER history --}}
+            @auth
+                <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                                Welcome to Cecile Private Collection. I am your personal design consultant. To begin our design journey, what type of masterpiece are you envisioning today?
+                            </p>
+                            {{-- Category Buttons --}}
+                            <div class="grid grid-cols-2 gap-2 mt-4">
+                                <button onclick="window.aiChat.selectOption('category', 'Ring')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Ring
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Necklace / Pendant
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Earrings
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Bracelet
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
+                        </div>
+                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; NOW</span>
+                    </div>
+                </div>
+            @else
+                {{-- Guest view welcome message --}}
+                <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                                Welcome to Cecile Private Collection. I am your personal design consultant. 
+                                Please <a href="{{ route('login') }}" class="text-stone-900 font-medium underline underline-offset-2 hover:text-amber-600 transition-colors">sign in</a> to begin your design journey.
+                            </p>
+                        </div>
+                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; NOW</span>
+                    </div>
+                </div>
             @endauth
             
         </div>
@@ -691,10 +702,12 @@
                     console.error('❌ Error response:', data);
                     const errorMessage = this.getUserFriendlyErrorMessage(data.error);
                     this.addAIMessage(errorMessage);
+                    this.resetAfterError();
                 }
             } catch (error) {
                 console.error('❌ Fetch error:', error);
                 this.addAIMessage('Sorry, something went wrong. Please try again.');
+                this.resetAfterError();
             } finally {
                 this.setLoading(false);
             }
@@ -724,6 +737,64 @@
                 this.chatContainer.appendChild(messageElement);
                 this.scrollToBottom();
             }, 1000);
+        }
+
+        resetAfterError() {
+            setTimeout(() => {
+                // Reset state
+                this.guidedMode = true;
+                this.currentStep = 1;
+                this.userSelections = {
+                    category: null,
+                    material: null,
+                    gemstone: null,
+                    cut: null,
+                    style: null,
+                    customNote: null
+                };
+
+                // Show welcome message again
+                const messageElement = document.createElement('div');
+                messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+                messageElement.innerHTML = `
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                                Let's try again. What type of masterpiece would you like to create?
+                            </p>
+                            <div class="grid grid-cols-2 gap-2 mt-4">
+                                <button onclick="window.aiChat.selectOption('category', 'Ring')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Ring
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Necklace / Pendant
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Earrings
+                                </button>
+                                <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                    Bracelet
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
+                        </div>
+                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                    </div>
+                `;
+                this.chatContainer.appendChild(messageElement);
+                this.scrollToBottom();
+            }, 2000); // Wait 2 seconds after error message before showing welcome again
         }
 
         startNewDesign() {
