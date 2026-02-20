@@ -21,6 +21,7 @@ return new class extends Migration
             // --- Fitur Kuota AI ---
             $table->integer('ai_quota')->default(20); // Kuota default, bisa di-update oleh Admin
             $table->integer('ai_prompt_count')->default(0); // Menghitung jumlah prompt yg sudah dipakai
+            $table->date('last_prompt_date')->nullable(); // Track tanggal terakhir prompt (untuk reset daily)
             $table->rememberToken();
             $table->timestamps();
         });

@@ -24,11 +24,35 @@ class GemmaController extends Controller
         $history = collect(); // Default empty collection untuk guest
         $isGuest = !Auth::check();
         
+        // ✅ NEW: Quota info
+        $quotaInfo = null;
+        
         if (Auth::check()) {
-            $history = Auth::user()->chatHistory;
+            $user = Auth::user();
+            $quotaLimit = Setting::getNumericValue('ai_quota_limit', 20);
+            
+            // Reset if new day
+            $today = now()->toDateString();
+            if ($user->last_prompt_date !== $today) {
+                $user->update([
+                    'ai_prompt_count' => 0,
+                    'last_prompt_date' => $today
+                ]);
+                $user->refresh();
+            }
+            
+            $history = $user->chatHistory;
+            
+            // ✅ Pass quota info to view
+            $quotaInfo = [
+                'used' => $user->ai_prompt_count,
+                'limit' => $quotaLimit,
+                'remaining' => $quotaLimit - $user->ai_prompt_count,
+                'is_exceeded' => $user->ai_prompt_count >= $quotaLimit
+            ];
         }
 
-        return view('gemma.index', compact('history', 'isGuest'));
+        return view('gemma.index', compact('history', 'isGuest', 'quotaInfo'));
     }
 
     public function generate(Request $request)
@@ -43,6 +67,30 @@ class GemmaController extends Controller
                 'success' => false,
                 'error' => 'You must be logged in to generate images.'
             ], 401);
+        }
+
+        $user = Auth::user();
+        $quotaLimit = Setting::getNumericValue('ai_quota_limit', 20);
+        
+        // ✅ Check & Reset Daily Quota
+        $today = now()->toDateString();
+        if ($user->last_prompt_date !== $today) {
+            // Reset counter jika hari berbeda
+            $user->update([
+                'ai_prompt_count' => 0,
+                'last_prompt_date' => $today
+            ]);
+            $user->refresh(); // Reload data setelah update
+        }
+
+        // ✅ Check if user has exceeded daily quota
+        if ($user->ai_prompt_count >= $quotaLimit) {
+            return response()->json([
+                'success' => false,
+                'error' => 'quota_exceeded',
+                'quota_limit' => $quotaLimit,
+                'message' => "You have reached your daily limit of {$quotaLimit} AI generations. Please try again tomorrow."
+            ], 403);
         }
 
         try {
@@ -98,11 +146,15 @@ class GemmaController extends Controller
                     'original_filename' => $fileName
                 ]);
 
+                // ✅ INCREMENT QUOTA COUNTER (hanya jika image berhasil di-generate)
+                $user->increment('ai_prompt_count');
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Image generated successfully!',
                     'image_url' => $permanentUrl,
-                    'chat_id' => $chatHistory->id
+                    'chat_id' => $chatHistory->id,
+                    'remaining_quota' => $quotaLimit - $user->ai_prompt_count
                 ]);
 
             } else {

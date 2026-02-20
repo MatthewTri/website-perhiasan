@@ -124,11 +124,11 @@
                                            max="1000"
                                            class="block w-full px-5 py-4 pr-20 border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#E8B49E] focus:bg-white transition-all duration-200 text-sm">
                                     <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
-                                        <span class="text-xs uppercase tracking-wider text-gray-400 font-medium">prompts</span>
+                                        <span class="text-xs uppercase tracking-wider text-gray-400 font-medium">per day</span>
                                     </div>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-3 leading-relaxed">
-                                    Maximum number of AI generations allowed per user account
+                                    Maximum number of successful AI image generations allowed per user per day. Quota resets automatically at midnight.
                                 </p>
                             </label>
                         </div>
@@ -142,7 +142,7 @@
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                             </svg>
                             <div class="text-xs text-gray-600 leading-relaxed">
-                                <strong class="text-gray-900">Note:</strong> Changes to AI settings will take effect immediately for all users. Quota limits help manage API usage and costs.
+                                <strong class="text-gray-900">Note:</strong> Quota limits are enforced per user per day and only count successful image generations. Failed attempts (e.g., moderation rejections) do not consume quota. The counter automatically resets at midnight.
                             </div>
                         </div>
                     </div>

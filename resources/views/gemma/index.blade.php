@@ -138,13 +138,28 @@
                 </div>
             </div>
             
-            {{-- RIGHT: Status Indicator --}}
-            <div class="flex items-center gap-2">
-                <span class="flex h-2 w-2 relative">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Active</span>
+            {{-- RIGHT: Status Indicator & Quota --}}
+            <div class="flex items-center gap-4">
+                @if(!isset($isGuest) || !$isGuest)
+                    {{-- Quota Indicator --}}
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full">
+                        <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                            {{ $quotaInfo['remaining'] ?? 0 }}/{{ $quotaInfo['limit'] ?? 20 }} Left
+                        </span>
+                    </div>
+                @endif
+                
+                {{-- Active Status --}}
+                <div class="flex items-center gap-2">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Active</span>
+                </div>
             </div>
         </div>
     </div>
@@ -214,6 +229,34 @@
 
             {{-- Welcome Message & First Question - Show AFTER history --}}
             @auth
+                @if(isset($quotaInfo) && $quotaInfo['is_exceeded'])
+                    {{-- Quota Exceeded Message --}}
+                    <div class="flex items-start gap-4 animate-fade-in-up" id="quotaExceededMessage">
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                            <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                        </div>
+                        <div class="flex-1 max-w-lg">
+                            <div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-sm">
+                                <p class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3">Daily Limit Reached</p>
+                                <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                                    You have reached your daily limit of <strong class="font-semibold">{{ $quotaInfo['limit'] }} AI generations</strong>. Your creativity knows no bounds, but our quota does!
+                                </p>
+                                <div class="bg-stone-50 rounded-lg px-4 py-3.5 border border-stone-100">
+                                    <div class="flex items-start gap-2.5">
+                                        <svg class="w-4 h-4 text-stone-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <p class="text-xs text-stone-600 leading-relaxed">
+                                            Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewelry collection.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; {{ now()->format('H:i') }}</span>
+                        </div>
+                    </div>
+                @else
+                    {{-- Normal Welcome Message --}}
                 <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
                     <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                         <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
@@ -251,6 +294,7 @@
                         <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; NOW</span>
                     </div>
                 </div>
+                @endif
             @else
                 {{-- Guest view welcome message --}}
                 <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
@@ -275,7 +319,18 @@
     {{-- INPUT FORM - PERBAIKAN --}}
     <div class="bg-white border-t border-stone-200 px-4 py-6 flex-shrink-0 z-40">
         <div class="max-w-3xl mx-auto w-full">
-            <form id="chatForm" class="relative group">
+            @if(isset($quotaInfo) && $quotaInfo['is_exceeded'])
+                {{-- Disabled Input Form (Quota Exceeded) --}}
+                <div class="relative">
+                    <div class="bg-stone-100 border border-stone-200 rounded-2xl px-6 py-4 opacity-60">
+                        <div class="flex items-center justify-center gap-2 text-stone-500">
+                            <span class="text-xs uppercase tracking-wider font-medium">Daily quota reached</span>
+                        </div>
+                    </div>
+                </div>
+            @else
+                {{-- Normal Input Form --}}
+                <form id="chatForm" class="relative group">
                 @csrf
                 <div class="relative bg-stone-50 rounded-2xl border border-stone-200 overflow-hidden transition-all duration-300 focus-within:bg-white focus-within:ring-1 focus-within:ring-stone-300 focus-within:border-stone-300 focus-within:shadow-[0_4px_20px_rgb(0,0,0,0.06)]">
                     
@@ -302,6 +357,7 @@
                     <span id="charCount">0</span>/500
                 </div>
             </form>
+            @endif
         </div>
     </div>
 </div>
@@ -332,6 +388,9 @@
                 style: null,
                 customNote: null
             };
+            
+            // Quota state
+            this.quotaExceeded = {{ isset($quotaInfo) && $quotaInfo['is_exceeded'] ? 'true' : 'false' }};
             
             this.init();
             
@@ -820,8 +879,14 @@
                     this.resetConversation();
                 } else {
                     console.error('❌ Error response:', data);
-                    const errorMessage = this.getUserFriendlyErrorMessage(data.error);
-                    this.addAIMessage(errorMessage);
+                    
+                    // ✅ Special handling for quota exceeded
+                    if (data.error === 'quota_exceeded') {
+                        this.addQuotaExceededMessage(data.quota_limit, data.message);
+                    } else {
+                        const errorMessage = this.getUserFriendlyErrorMessage(data.error);
+                        this.addAIMessage(errorMessage);
+                    }
                     this.resetAfterError();
                 }
             } catch (error) {
@@ -877,50 +942,51 @@
                     customNote: null
                 };
 
-                // Remove current session messages
-                const currentSessionMessages = this.chatContainer.querySelectorAll('[data-session="current"]');
-                currentSessionMessages.forEach(msg => msg.remove());
-
-                // Show welcome message again
-                const messageElement = document.createElement('div');
-                messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
-                messageElement.innerHTML = `
-                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
-                    </div>
-                    <div class="flex-1">
-                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
-                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
-                                Let's try again. What type of masterpiece would you like to create?
-                            </p>
-                            <div class="grid grid-cols-2 gap-2 mt-4">
-                                <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                    Ring
-                                </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                    Necklace / Pendant
-                                </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                    Earrings
-                                </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
-                                    Bracelet
-                                </button>
-                            </div>
-                            <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
+                // ✅ DON'T remove error messages - keep them visible
+                // Error message should stay, then show welcome message below it
+                
+                // Only show welcome message if quota is not exceeded
+                if (!this.quotaExceeded) {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+                    messageElement.innerHTML = `
+                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                            <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                         </div>
-                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
-                    </div>
-                `;
-                this.chatContainer.appendChild(messageElement);
+                        <div class="flex-1">
+                            <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                                <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                                    Let's try again. What type of masterpiece would you like to create?
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 mt-4">
+                                    <button onclick="window.aiChat.selectOption('category', 'Ring')" 
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        Ring
+                                    </button>
+                                    <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        Necklace / Pendant
+                                    </button>
+                                    <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        Earrings
+                                    </button>
+                                    <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        Bracelet
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
+                            </div>
+                            <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                        </div>
+                    `;
+                    this.chatContainer.appendChild(messageElement);
+                }
                 this.scrollToBottom();
             }, 2000); // Wait 2 seconds after error message before showing welcome again
         }
@@ -945,9 +1011,43 @@
                 'Prompt cannot be empty.': 'Please provide a description.',
                 'Your prompt contains inappropriate content.': 'Please use appropriate language.',
                 'Prompt should focus on jewelry.': 'Please describe jewelry items only.',
-                'You must be logged in to generate images.': 'Please log in first.'
+                'You must be logged in to generate images.': 'Please log in first.',
+                'quota_exceeded': 'Daily quota limit reached.'
             };
             return errorMap[error] || 'Something went wrong. Please try again.';
+        }
+
+        // ✅ NEW: Special message for quota exceeded
+        addQuotaExceededMessage(quotaLimit, message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-sm">
+                        <p class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3">Daily Limit Reached</p>
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
+                            You have reached your daily limit of <strong class="font-semibold">${quotaLimit} AI generations</strong>. Your creativity knows no bounds, but our quota does!
+                        </p>
+                        <div class="bg-stone-50 rounded-lg px-4 py-3.5 border border-stone-100">
+                            <div class="flex items-start gap-2.5">
+                                <svg class="w-4 h-4 text-stone-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <p class="text-xs text-stone-600 leading-relaxed">
+                                    Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewelry collection.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
         }
 
         handleInputChange() {
