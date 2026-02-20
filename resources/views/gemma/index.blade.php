@@ -753,7 +753,7 @@
                             Is there any specific detail you would like to add? 
                             <span class="text-stone-500 text-xs block mt-1">(e.g., "add small diamonds on the band", "make it look like a flower")</span>
                         </p>
-                        <button onclick="window.aiChat.generateFromSummary()" 
+                        <button id="generateButton-${Date.now()}" onclick="window.aiChat.generateFromSummary(this)" 
                                 class="w-full px-6 py-3 bg-[#E8B49E] text-white text-sm font-medium uppercase tracking-wider hover:bg-[#D4A088] transition-all duration-200 shadow-sm">
                             Generate Design
                         </button>
@@ -777,7 +777,14 @@
             this.guidedMode = false;
         }
 
-        generateFromSummary() {
+        generateFromSummary(buttonElement) {
+            // Disable the button to prevent multiple clicks
+            if (buttonElement) {
+                buttonElement.disabled = true;
+                buttonElement.classList.add('opacity-50', 'cursor-not-allowed');
+                buttonElement.classList.remove('hover:bg-[#D4A088]');
+            }
+            
             const finalPrompt = this.buildFinalPrompt();
             this.submitToAI(finalPrompt);
         }
