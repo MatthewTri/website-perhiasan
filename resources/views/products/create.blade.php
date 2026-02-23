@@ -170,7 +170,7 @@
                 {{-- SECTION 3: VARIANTS (With OLD Value Persistence) --}}
                 <div class="space-y-6">
                     <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">03. Variations</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">03. Colour</h2>
                         <button type="button" onclick="addColorOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Color</span>
                         </button>
@@ -178,7 +178,7 @@
 
                     <div id="colorsContainer" class="space-y-0 divide-y divide-gray-50">
                         <div id="noColorsText" class="py-6 text-center">
-                            <p class="text-sm font-light text-gray-400 italic">No color variants defined.</p>
+                            <p class="text-sm font-light text-gray-400 italic">No colour variants defined.</p>
                         </div>
                     </div>
                     @error('colors') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
@@ -186,11 +186,25 @@
 
                 {{-- SECTION 4: Sizes --}}
                 <div class="space-y-6">
-                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 border-b border-gray-900 pb-3 mb-6">
                         <h2 class="text-lg text-gray-900 tracking-wider italic">04. Size Options</h2>
-                        <button type="button" onclick="addSizeOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
-                            <span>+ Add Size</span>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-3">
+                            {{-- Toggle Default Ring Sizes Button --}}
+                            <button type="button" id="toggleDefaultSizesBtn" onclick="toggleDefaultRingSizes()" 
+                                    class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2 border-b border-transparent hover:border-gray-300 pb-0.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span id="defaultSizesBtnText">Default Ring Sizes</span>
+                            </button>
+                            {{-- Add Custom Size Button --}}
+                            <button type="button" onclick="addSizeOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>Add Size</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div id="sizesContainer" class="space-y-0 divide-y divide-gray-50">
@@ -204,7 +218,7 @@
                 {{-- SECTION 5: SPECIFICATIONS (With OLD Value Persistence) --}}
                 <div class="space-y-6">
                      <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Specifications</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Additional Information</h2>
                         <button type="button" onclick="addSpecificationSection()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Section</span>
                         </button>
@@ -212,7 +226,7 @@
 
                     <div id="specificationsContainer" class="space-y-6">
                         <div id="noSpecsText" class="py-6 text-center">
-                            <p class="text-sm font-light text-gray-400 italic">No detailed specifications added.</p>
+                            <p class="text-sm font-light text-gray-400 italic">No details added.</p>
                         </div>
                     </div>
                     @error('specifications') <p class="text-red-500 text-[10px] uppercase mt-1">{{ $message }}</p> @enderror
@@ -458,22 +472,53 @@
         if(document.querySelectorAll('.color-option').length === 0) document.getElementById('noColorsText').style.display = 'block';
     }
 
-    // 4. SIZE LOGIC (Same Pattern as Color)
+    // 4. SIZE LOGIC (Enhanced with Default Ring Sizes)
     let sizeIndex = 0;
+    let defaultSizeIndexes = []; // Track default ring size indexes
+    let defaultSizesAdded = false;
 
-    function addSizeOptionWithData(sizeName = '') {
+    // Default ring sizes based on standard ring size chart (US sizes 6-25)
+    const defaultRingSizes = [
+        "Ring 6 (d: 14.1mm, c: 44.3mm)",
+        "Ring 7 (d: 14.5mm, c: 45.5mm)",
+        "Ring 8 (d: 14.8mm, c: 46.5mm)",
+        "Ring 9 (d: 15.2mm, c: 47.7mm)",
+        "Ring 10 (d: 15.5mm, c: 48.7mm)",
+        "Ring 11 (d: 15.9mm, c: 49.9mm)",
+        "Ring 12 (d: 16.2mm, c: 50.9mm)",
+        "Ring 13 (d: 16.6mm, c: 52.1mm)",
+        "Ring 14 (d: 16.9mm, c: 53.1mm)",
+        "Ring 15 (d: 17.3mm, c: 54.3mm)",
+        "Ring 16 (d: 17.7mm, c: 55.6mm)",
+        "Ring 17 (d: 18.0mm, c: 56.5mm)",
+        "Ring 18 (d: 18.3mm, c: 57.5mm)",
+        "Ring 19 (d: 18.7mm, c: 58.7mm)",
+        "Ring 20 (d: 19.0mm, c: 59.7mm)",
+        "Ring 21 (d: 19.4mm, c: 60.9mm)",
+        "Ring 22 (d: 19.7mm, c: 61.9mm)",
+        "Ring 23 (d: 20.1mm, c: 63.1mm)",
+        "Ring 24 (d: 20.4mm, c: 64.1mm)",
+        "Ring 25 (d: 20.8mm, c: 65.3mm)"
+    ];
+
+    function addSizeOptionWithData(sizeName = '', isDefault = false) {
         const container = document.getElementById('sizesContainer');
         document.getElementById('noSizesText').style.display = 'none';
 
         const div = document.createElement('div');
         div.className = 'size-option py-4 flex items-center gap-4 group';
         div.dataset.index = sizeIndex;
+        if (isDefault) {
+            div.dataset.isDefault = 'true';
+            defaultSizeIndexes.push(sizeIndex);
+        }
         div.innerHTML = `
             <div class="flex-1">
                 <input type="text" name="sizes[${sizeIndex}][size_name]" value="${sizeName}" 
                     placeholder="Size Name (e.g. M, Ring 7, Bracelet 18cm)" 
-                    class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+                    class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors ${isDefault ? 'font-medium' : ''}" required>
             </div>
+            ${isDefault ? '<span class="text-[9px] uppercase tracking-[0.15em] text-gray-400 font-medium">Default</span>' : ''}
             <button type="button" onclick="removeSizeOption(${sizeIndex})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
         `;
         container.appendChild(div);
@@ -481,16 +526,73 @@
     }
 
     function addSizeOption() { 
-        addSizeOptionWithData(); 
+        addSizeOptionWithData('', false); 
     }
 
     function removeSizeOption(index) {
         const el = document.querySelector(`.size-option[data-index="${index}"]`);
-        if(el) el.remove();
+        if(el) {
+            // If removing a default size, update tracking
+            if(el.dataset.isDefault === 'true') {
+                const idx = defaultSizeIndexes.indexOf(index);
+                if(idx > -1) defaultSizeIndexes.splice(idx, 1);
+                
+                // If all defaults removed, reset state
+                if(defaultSizeIndexes.length === 0) {
+                    defaultSizesAdded = false;
+                    updateDefaultSizesButton();
+                }
+            }
+            el.remove();
+        }
         
         const container = document.getElementById('sizesContainer');
         if(container.querySelectorAll('.size-option').length === 0) {
             document.getElementById('noSizesText').style.display = 'block';
+        }
+    }
+
+    // Toggle function for default ring sizes
+    function toggleDefaultRingSizes() {
+        if (!defaultSizesAdded) {
+            // Add all default ring sizes
+            defaultRingSizes.forEach(sizeName => {
+                addSizeOptionWithData(sizeName, true);
+            });
+            defaultSizesAdded = true;
+        } else {
+            // Remove all default ring sizes
+            const defaultElements = document.querySelectorAll('.size-option[data-is-default="true"]');
+            defaultElements.forEach(el => {
+                const index = parseInt(el.dataset.index);
+                el.remove();
+            });
+            defaultSizeIndexes = [];
+            defaultSizesAdded = false;
+            
+            // Check if container is empty
+            const container = document.getElementById('sizesContainer');
+            if(container.querySelectorAll('.size-option').length === 0) {
+                document.getElementById('noSizesText').style.display = 'block';
+            }
+        }
+        
+        updateDefaultSizesButton();
+    }
+
+    // Update button text and style based on state
+    function updateDefaultSizesButton() {
+        const btn = document.getElementById('toggleDefaultSizesBtn');
+        const btnText = document.getElementById('defaultSizesBtnText');
+        
+        if (defaultSizesAdded) {
+            btnText.textContent = 'Remove Default Sizes';
+            btn.classList.remove('text-gray-500', 'hover:text-gray-900', 'hover:border-gray-300');
+            btn.classList.add('text-gray-900', 'hover:text-gray-400', 'border-gray-900', 'hover:border-gray-400');
+        } else {
+            btnText.textContent = 'Default Ring Sizes';
+            btn.classList.remove('text-gray-900', 'hover:text-gray-400', 'border-gray-900', 'hover:border-gray-400');
+            btn.classList.add('text-gray-500', 'hover:text-gray-900', 'hover:border-gray-300');
         }
     }
 
@@ -619,12 +721,25 @@
         });
     }
 
-    // Restore Sizes
+    // Restore Sizes (with Default Detection)
     const oldSizes = @json(old('sizes', []));
     if (oldSizes.length > 0) {
         document.getElementById('noSizesText').style.display = 'none';
+        
+        // Check if ALL old sizes are default ring sizes
+        const allAreDefaults = oldSizes.every(size => 
+            defaultRingSizes.includes(size.size_name)
+        );
+        
+        // If all are defaults and count matches, mark as default sizes added
+        if (allAreDefaults && oldSizes.length === defaultRingSizes.length) {
+            defaultSizesAdded = true;
+            updateDefaultSizesButton();
+        }
+        
         oldSizes.forEach(size => {
-            addSizeOptionWithData(size.size_name);
+            const isDefault = defaultRingSizes.includes(size.size_name);
+            addSizeOptionWithData(size.size_name, isDefault);
         });
     }
     

@@ -190,7 +190,7 @@
                 {{-- SECTION 3: VARIANTS --}}
                 <div class="space-y-6">
                     <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">03. Variations</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">03. Colour</h2>
                         <button type="button" onclick="addColorOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Color</span>
                         </button>
@@ -214,7 +214,7 @@
                         </div>
                         @empty
                         <div id="noColorsText" class="py-6 text-center">
-                            <p class="text-sm font-light text-gray-400 italic">No color variants defined.</p>
+                            <p class="text-sm font-light text-gray-400 italic">No colour variants defined.</p>
                         </div>
                         @endforelse
                     </div>
@@ -255,7 +255,7 @@
                 {{-- SECTION 5: SPECIFICATIONS --}}
                 <div class="space-y-6">
                     <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
-                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Specifications</h2>
+                        <h2 class="text-lg text-gray-900 tracking-wider italic">05. Additional Information</h2>
                         <button type="button" onclick="addSpecificationSection()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
                             <span>+ Add Section</span>
                         </button>
