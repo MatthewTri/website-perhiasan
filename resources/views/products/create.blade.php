@@ -169,11 +169,25 @@
 
                 {{-- SECTION 3: VARIANTS (With OLD Value Persistence) --}}
                 <div class="space-y-6">
-                    <div class="flex justify-between items-end border-b border-gray-900 pb-2 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 border-b border-gray-900 pb-3 mb-6">
                         <h2 class="text-lg text-gray-900 tracking-wider italic">03. Colour</h2>
-                        <button type="button" onclick="addColorOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
-                            <span>+ Add Color</span>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-3">
+                            {{-- Toggle Default Colors Button --}}
+                            <button type="button" id="toggleDefaultColorsBtn" onclick="toggleDefaultColors()" 
+                                    class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2 border-b border-transparent hover:border-gray-300 pb-0.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                                </svg>
+                                <span id="defaultColorsBtnText">Default Colors</span>
+                            </button>
+                            {{-- Add Custom Color Button --}}
+                            <button type="button" onclick="addColorOption()" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>Add Color</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div id="colorsContainer" class="space-y-0 divide-y divide-gray-50">
@@ -431,16 +445,29 @@
         document.getElementById('formImages').files = dt.files;
     }
 
-    // 3. COLOR LOGIC (Updated Style + Persistence)
+    // 3. COLOR LOGIC (Enhanced with Default Colors)
     let colorIndex = 0;
+    let defaultColorIndexes = []; // Track default color indexes
+    let defaultColorsAdded = false;
+
+    // Default colors for jewelry (Gold, Silver, Rose Gold)
+    const defaultColors = [
+        { name: 'Gold', hex: '#FFD700' },
+        { name: 'Silver', hex: '#C0C0C0' },
+        { name: 'Rose Gold', hex: '#E0BFB8' }
+    ];
     
-    function addColorOptionWithData(colorName = '', hexCode = '#000000') {
+    function addColorOptionWithData(colorName = '', hexCode = '#000000', isDefault = false) {
         const container = document.getElementById('colorsContainer');
         document.getElementById('noColorsText').style.display = 'none';
 
         const div = document.createElement('div');
         div.className = 'color-option py-4 flex items-center gap-4 group';
         div.dataset.index = colorIndex;
+        if (isDefault) {
+            div.dataset.isDefault = 'true';
+            defaultColorIndexes.push(colorIndex);
+        }
         div.innerHTML = `
             <div class="relative w-10 h-10 flex-shrink-0">
                 <input type="color" name="colors[${colorIndex}][hex_code]" value="${hexCode}" 
@@ -450,8 +477,9 @@
             <div class="flex-1">
                 <input type="text" name="colors[${colorIndex}][name]" value="${colorName}" 
                        placeholder="Color Name (e.g. Midnight Blue)" 
-                       class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors" required>
+                       class="w-full bg-transparent border-b border-transparent group-hover:border-gray-200 focus:border-gray-900 py-2 text-sm text-gray-900 focus:outline-none transition-colors ${isDefault ? 'font-medium' : ''}" required>
             </div>
+            ${isDefault ? '<span class="text-[9px] uppercase tracking-[0.15em] text-gray-400 font-medium">Standard</span>' : ''}
             <button type="button" onclick="removeColorOption(${colorIndex})" class="text-gray-300 hover:text-red-500 transition-colors text-xs uppercase tracking-widest">Remove</button>
         `;
         container.appendChild(div);
@@ -464,12 +492,69 @@
         colorIndex++;
     }
 
-    function addColorOption() { addColorOptionWithData(); }
+    function addColorOption() { addColorOptionWithData('', '#000000', false); }
     
     function removeColorOption(index) {
         const el = document.querySelector(`.color-option[data-index="${index}"]`);
-        if(el) el.remove();
+        if(el) {
+            // If removing a default color, update tracking
+            if(el.dataset.isDefault === 'true') {
+                const idx = defaultColorIndexes.indexOf(index);
+                if(idx > -1) defaultColorIndexes.splice(idx, 1);
+                
+                // If all defaults removed, reset state
+                if(defaultColorIndexes.length === 0) {
+                    defaultColorsAdded = false;
+                    updateDefaultColorsButton();
+                }
+            }
+            el.remove();
+        }
         if(document.querySelectorAll('.color-option').length === 0) document.getElementById('noColorsText').style.display = 'block';
+    }
+
+    // Toggle function for default colors
+    function toggleDefaultColors() {
+        if (!defaultColorsAdded) {
+            // Add all default colors
+            defaultColors.forEach(color => {
+                addColorOptionWithData(color.name, color.hex, true);
+            });
+            defaultColorsAdded = true;
+        } else {
+            // Remove all default colors
+            const defaultElements = document.querySelectorAll('.color-option[data-is-default="true"]');
+            defaultElements.forEach(el => {
+                const index = parseInt(el.dataset.index);
+                el.remove();
+            });
+            defaultColorIndexes = [];
+            defaultColorsAdded = false;
+            
+            // Check if container is empty
+            const container = document.getElementById('colorsContainer');
+            if(container.querySelectorAll('.color-option').length === 0) {
+                document.getElementById('noColorsText').style.display = 'block';
+            }
+        }
+        
+        updateDefaultColorsButton();
+    }
+
+    // Update button text and style based on state
+    function updateDefaultColorsButton() {
+        const btn = document.getElementById('toggleDefaultColorsBtn');
+        const btnText = document.getElementById('defaultColorsBtnText');
+        
+        if (defaultColorsAdded) {
+            btnText.textContent = 'Remove Default Colors';
+            btn.classList.remove('text-gray-500', 'hover:text-gray-900', 'hover:border-gray-300');
+            btn.classList.add('text-gray-900', 'hover:text-gray-400', 'border-gray-900', 'hover:border-gray-400');
+        } else {
+            btnText.textContent = 'Default Colors';
+            btn.classList.remove('text-gray-900', 'hover:text-gray-400', 'border-gray-900', 'hover:border-gray-400');
+            btn.classList.add('text-gray-500', 'hover:text-gray-900', 'hover:border-gray-300');
+        }
     }
 
     // 4. SIZE LOGIC (Enhanced with Default Ring Sizes)
@@ -711,13 +796,25 @@
     // CRITICAL: RESTORE OLD VALUES (PERSISTENCE)
     // ============================================
 
-    // Restore Colors
+    // Restore Colors (with Default Detection)
     const oldColors = @json(old('colors', []));
     if (oldColors.length > 0) {
-        // Clear empty state immediately if we have old data
         document.getElementById('noColorsText').style.display = 'none';
+        
+        // Check if ALL old colors are default colors
+        const allAreDefaults = oldColors.every(color => 
+            defaultColors.some(dc => dc.name === color.name && dc.hex === color.hex_code)
+        );
+        
+        // If all are defaults and count matches, mark as default colors added
+        if (allAreDefaults && oldColors.length === defaultColors.length) {
+            defaultColorsAdded = true;
+            updateDefaultColorsButton();
+        }
+        
         oldColors.forEach(color => {
-            addColorOptionWithData(color.name, color.hex_code);
+            const isDefault = defaultColors.some(dc => dc.name === color.name && dc.hex === color.hex_code);
+            addColorOptionWithData(color.name, color.hex_code, isDefault);
         });
     }
 
