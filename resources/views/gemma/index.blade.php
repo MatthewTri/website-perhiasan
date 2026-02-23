@@ -139,27 +139,25 @@
             </div>
             
             {{-- RIGHT: Status Indicator & Quota --}}
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
                 @if(!isset($isGuest) || !$isGuest)
-                    {{-- Quota Indicator --}}
-                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full">
-                        <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
-                            {{ $quotaInfo['remaining'] ?? 0 }}/{{ $quotaInfo['limit'] ?? 20 }} Left
-                        </span>
+                    {{-- Quota Indicator - Responsive Design --}}
+                    <div class="flex items-center gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 bg-white rounded-md shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-1.5">
+                            <span class="text-xs sm:text-sm font-bold text-amber-900 tabular-nums leading-tight">
+                                {{ $quotaInfo['remaining'] ?? 0 }}<span class="text-amber-600/60">/</span>{{ $quotaInfo['limit'] ?? 20 }}
+                            </span>
+                            <span class="hidden sm:inline text-[10px] font-semibold text-amber-600 uppercase tracking-wide">
+                                Left
+                            </span>
+                        </div>
                     </div>
                 @endif
-                
-                {{-- Active Status --}}
-                <div class="flex items-center gap-2">
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Active</span>
-                </div>
             </div>
         </div>
     </div>
