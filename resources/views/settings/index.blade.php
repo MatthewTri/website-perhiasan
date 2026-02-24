@@ -156,8 +156,10 @@
                     Cancel
                 </a>
                 <button type="submit" 
-                        class="px-8 py-4 bg-[#E8B49E] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#D4A088] transition-all duration-200 shadow-sm hover:shadow-md">
-                    Save Changes
+                        id="save-button"
+                        disabled
+                        class="px-8 py-4 bg-[#E8B49E] text-white text-xs uppercase tracking-[0.15em] font-medium transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none hover:bg-[#D4A088] hover:shadow-md disabled:hover:bg-gray-300">
+                    <span id="button-text">Save Changes</span>
                 </button>
             </div>
         </form>
@@ -199,4 +201,42 @@
         -webkit-box-shadow: 0 0 0px 1000px white inset;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const saveButton = document.getElementById('save-button');
+        const aiEnabledCheckbox = document.getElementById('ai_enabled');
+        const aiQuotaInput = document.getElementById('ai_quota_limit');
+        
+        // Store initial values
+        const initialValues = {
+            ai_enabled: aiEnabledCheckbox.checked,
+            ai_quota_limit: aiQuotaInput.value
+        };
+        
+        // Function to check if form has changes
+        function checkFormChanges() {
+            const hasChanges = 
+                aiEnabledCheckbox.checked !== initialValues.ai_enabled ||
+                aiQuotaInput.value !== initialValues.ai_quota_limit;
+            
+            saveButton.disabled = !hasChanges;
+            
+            // Update button text based on state
+            if (hasChanges) {
+                document.getElementById('button-text').textContent = 'Save Changes';
+            } else {
+                document.getElementById('button-text').textContent = 'No Changes';
+            }
+        }
+        
+        // Listen for changes on both inputs
+        aiEnabledCheckbox.addEventListener('change', checkFormChanges);
+        aiQuotaInput.addEventListener('input', checkFormChanges);
+        
+        // Initial check on page load
+        checkFormChanges();
+    });
+</script>
 @endsection

@@ -44,7 +44,7 @@ class OrderController extends Controller
 
         $allOrders = Order::with(['user', 'orderItems'])->get();
 
-        $orders = $query->latest()->get();
+        $orders = $query->latest()->paginate(1)->withQueryString();
         return view('admin.orders.index', compact('orders', 'allOrders'));
     }
 

@@ -214,8 +214,8 @@
                 </div>
 
                 {{-- Pagination --}}
-                <div class="px-6 py-6 border-t border-stone-100">
-                    {{ $consultations->links() }}
+                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30">
+                    {{ $consultations->links('vendor.pagination.custom') }}
                 </div>
             @else
                 {{-- Empty State --}}

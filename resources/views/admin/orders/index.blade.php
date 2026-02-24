@@ -23,68 +23,41 @@
         </div>
         @endif
 
-        <div class="flex overflow-x-auto pb-4 gap-4 mb-10 custom-scrollbar md:grid md:grid-cols-4 lg:grid-cols-7 md:overflow-visible">
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Pending</p>
+        {{-- Statistics Cards (Elegant Grid) --}}
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-10">
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending</p>
                 <p class="text-2xl font-serif text-amber-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
-                <div class="w-8 h-0.5 bg-amber-600 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Invoiced</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Invoiced</p>
                 <p class="text-2xl font-serif text-blue-600">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</p>
-                <div class="w-8 h-0.5 bg-blue-600 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Verifying</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Verifying</p>
                 <p class="text-2xl font-serif text-orange-500">{{ $allOrders->where('status', 'WAITING_VERIFICATION')->count() }}</p>
-                <div class="w-8 h-0.5 bg-orange-500 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Paid</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Paid</p>
                 <p class="text-2xl font-serif text-emerald-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
-                <div class="w-8 h-0.5 bg-emerald-600 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-indigo-600" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Shipped</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Shipped</p>
                 <p class="text-2xl font-serif text-indigo-600">{{ $allOrders->where('status', 'SHIPPED')->count() }}</p>
-                <div class="w-8 h-0.5 bg-indigo-600 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg class="w-12 h-12 text-stone-800" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Done</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Completed</p>
                 <p class="text-2xl font-serif text-stone-800">{{ $allOrders->where('status', 'COMPLETED')->count() }}</p>
-                <div class="w-8 h-0.5 bg-stone-800 mt-3"></div>
             </div>
 
-            <div class="min-w-[160px] bg-white p-4 border border-stone-100 shadow-sm rounded-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                   <svg class="w-12 h-12 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                </div>
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Void</p>
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Void</p>
                 <p class="text-2xl font-serif text-rose-500">{{ $allOrders->whereIn('status', ['CANCELLED', 'REFUNDED'])->count() }}</p>
-                <div class="w-8 h-0.5 bg-rose-500 mt-3"></div>
             </div>
         </div>
 
@@ -199,6 +172,11 @@
                         </tbody>
                     </table>
                 </div>
+                
+                {{-- Pagination --}}
+                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30">
+                    {{ $orders->links('vendor.pagination.custom') }}
+                </div>
             </div>
 
             {{-- MOBILE CARD VIEW (Visible on < md) --}}
@@ -245,10 +223,11 @@
                     </a>
                 </div>
                 @endforeach
-            </div>
-
-            <div class="mt-8 text-center text-xs text-stone-400 tracking-wide">
-                Showing {{ $orders->count() }} of {{ $allOrders->count() }} Orders
+                
+                {{-- Mobile Pagination --}}
+                <div class="mt-6">
+                    {{ $orders->links('vendor.pagination.custom') }}
+                </div>
             </div>
 
         @else
