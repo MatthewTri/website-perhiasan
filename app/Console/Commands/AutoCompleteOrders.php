@@ -73,7 +73,7 @@ class AutoCompleteOrders extends Command
                 // Send completion email to customer
                 $magicLink = route('order.track', $order->guest_token);
                 try {
-                    Mail::to($order->contact_email)->send(new OrderCompletedMail($order, $magicLink));
+                    Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
                     Log::info('✅ Auto-complete email sent to customer', [
                         'order_number' => $order->order_number,
                         'customer_email' => $order->contact_email

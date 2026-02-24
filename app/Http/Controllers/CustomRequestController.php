@@ -255,7 +255,7 @@ class CustomRequestController extends Controller
             $adminEmail = config('mail.admin_email', 'admin@yoursite.com');
             
             // ✅ PERBAIKAN: Kirim object yang sudah di-load dengan images
-            Mail::to($adminEmail)->send(new NewConsultationMail($customRequestWithImages));
+            Mail::to($adminEmail)->queue(new NewConsultationMail($customRequestWithImages));
             
             Log::info('Consultation email sent successfully', [
                 'request_id' => $customRequest->id,
@@ -274,7 +274,7 @@ class CustomRequestController extends Controller
         try {
             $customRequestWithImages = $customRequest->load('images');
             
-            Mail::to($customRequest->user_email)->send(new \App\Mail\Consultation\ConsultationConfirmationMail($customRequestWithImages));
+            Mail::to($customRequest->user_email)->queue(new \App\Mail\Consultation\ConsultationConfirmationMail($customRequestWithImages));
             
             Log::info('Client confirmation email sent', [
                 'request_id' => $customRequest->id,

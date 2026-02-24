@@ -124,7 +124,7 @@ class OrderController extends Controller
         $magicLink = route('order.track', $order->guest_token);
         
         try {
-            // Mail::to($order->contact_email)->send(new PaymentDetailsMail($order, $magicLink));
+            // Mail::to($order->contact_email)->queue(new PaymentDetailsMail($order, $magicLink));
             
             $message = $paymentGateway === 'PAYPAL' 
                 ? 'PayPal invoice sent to ' . $order->contact_email 
@@ -172,7 +172,7 @@ class OrderController extends Controller
             // Kirim email shipping notification
             $magicLink = route('order.track', $order->guest_token);
             try {
-                // Mail::to($order->contact_email)->send(new OrderShippedMail($order, $magicLink));
+                // Mail::to($order->contact_email)->queue(new OrderShippedMail($order, $magicLink));
             } catch (\Exception $e) {
                 Log::error('Failed to send shipping notification email', [
                     'order_id' => $order->id,
@@ -198,7 +198,7 @@ class OrderController extends Controller
             // Kirim email payment rejection
             $magicLink = route('order.track', $order->guest_token);
             try {
-                // Mail::to($order->contact_email)->send(new PaymentRejectedMail($order, $magicLink));
+                // Mail::to($order->contact_email)->queue(new PaymentRejectedMail($order, $magicLink));
             } catch (\Exception $e) {
                 Log::error('Failed to send payment rejection email', [
                     'order_id' => $order->id,
@@ -238,7 +238,7 @@ class OrderController extends Controller
             // Kirim email shipping notification
             $magicLink = route('order.track', $order->guest_token);
             try {
-                // Mail::to($order->contact_email)->send(new OrderShippedMail($order, $magicLink));
+                // Mail::to($order->contact_email)->queue(new OrderShippedMail($order, $magicLink));
             } catch (\Exception $e) {
                 Log::error('Failed to send shipping notification email', [
                     'order_id' => $order->id,
@@ -323,7 +323,7 @@ class OrderController extends Controller
         // Send cancellation email to customer
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->send(new OrderCancelledMail($order, $magicLink));
+            // Mail::to($order->contact_email)->queue(new OrderCancelledMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send order cancellation email', [
                 'order_id' => $order->id,
@@ -353,7 +353,7 @@ class OrderController extends Controller
         // Send complete email to customer (agar diarahkan review)
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->send(new OrderCompletedMail($order, $magicLink));
+            // Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send order completion email', [
                 'order_id' => $order->id,
@@ -396,7 +396,7 @@ class OrderController extends Controller
         // Send refund confirmation email to customer
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->send(new RefundProcessedMail($order, $magicLink));
+            // Mail::to($order->contact_email)->queue(new RefundProcessedMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send refund confirmation email', [
                 'order_id' => $order->id,

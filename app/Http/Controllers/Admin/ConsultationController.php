@@ -88,7 +88,7 @@ class ConsultationController extends Controller
 
         // Send email notification to customer
         if ($request->status === 'CANCELLED') {
-            Mail::to($consultation->user_email)->send(new ConsultationCancelledMail($consultation));
+            Mail::to($consultation->user_email)->queue(new ConsultationCancelledMail($consultation));
         }
 
         $message = $request->status === 'COMPLETED' 
@@ -127,7 +127,7 @@ class ConsultationController extends Controller
         ]);
 
         // TODO: Send email notification to customer about reschedule
-        Mail::to($consultation->user_email)->send(new ConsultationRescheduledMail($consultation));
+        Mail::to($consultation->user_email)->queue(new ConsultationRescheduledMail($consultation));
 
         return redirect()->route('admin.consultation.show', $consultation)->with('success', 'Consultation rescheduled successfully.');
 

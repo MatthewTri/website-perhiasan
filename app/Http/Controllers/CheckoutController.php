@@ -287,7 +287,7 @@ class CheckoutController extends Controller
 
             // Send confirmation email to customer
             try {
-                // Mail::to($order->contact_email)->send(new OrderConfirmationMail($order, $magicLink));
+                // Mail::to($order->contact_email)->queue(new OrderConfirmationMail($order, $magicLink));
                 Log::info('Order confirmation email sent to customer', [
                     'order_id' => $order->id,
                     'customer_email' => $order->contact_email
@@ -301,7 +301,7 @@ class CheckoutController extends Controller
 
             // Send email notification to admin
             try {
-                // Mail::to(config('mail.admin_email'))->send(new NewOrderNotification($order));
+                // Mail::to(config('mail.admin_email'))->queue(new NewOrderNotification($order));
             } catch (\Exception $e) {
                 Log::error('Failed to send new order email to admin', [
                     'order_id' => $order->id,
