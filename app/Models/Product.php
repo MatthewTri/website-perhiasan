@@ -53,6 +53,11 @@ class Product extends Model
         return $this->hasMany(Review::class)->where('is_visible', true)->latest();
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function updateRatingAggregate()
     {
         // HANYA HITUNG REVIEW YANG VISIBLE
@@ -68,6 +73,36 @@ class Product extends Model
             'rating_avg' => round($avgRating, 2),
             'rating_count' => $countRating
         ]);
+    }
+
+    /**
+     * Get formatted price based on global currency
+     */
+    public function getFormattedPriceAttribute()
+    {
+        $currency = session('currency', 'IDR');
+        
+        if ($currency === 'USD') {
+            return '$' . number_format($this->price_usd, 2);
+        }
+        
+        return 'Rp ' . number_format($this->price_idr, 0, ',', '.');
+    }
+
+    /**
+     * Get average rating
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->rating_avg ?? 0;
+    }
+
+    /**
+     * Get reviews count
+     */
+    public function getReviewsCountAttribute()
+    {
+        return $this->rating_count ?? 0;
     }
     
     public function getRouteKeyName() {
