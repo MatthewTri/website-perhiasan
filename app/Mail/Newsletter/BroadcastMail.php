@@ -30,6 +30,11 @@ class BroadcastMail extends Mailable
     public function build()
     {
         return $this->subject($this->emailSubject)
-                    ->view('mail.broadcast');
+                    ->view('mail.broadcast')
+                    ->with([
+                        'emailSubject' => $this->emailSubject,
+                        'emailBody' => $this->emailBody,
+                        'subscriberEmail' => $this->subscriberEmail,
+                    ]);
     }
 }
