@@ -330,9 +330,13 @@
             Subscribe to receive exclusive offers, early access to new collections, and styling inspiration
         </p>
         
-        <form class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+        <form action="{{ route('subscription.subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+            @csrf
             <input type="email" 
+                   name="email"
                    placeholder="Enter your email address" 
+                   value="{{ old('email') }}"
+                   required
                    class="flex-1 px-6 py-4 bg-white/95 text-gray-900 placeholder-gray-500 focus:outline-none text-sm tracking-wide">
             <button type="submit" 
                     class="px-8 py-4 bg-gray-900 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 text-xs font-bold tracking-[0.2em] uppercase whitespace-nowrap">
@@ -369,5 +373,49 @@
         overflow: hidden;
     }
 </style>
+
+<script>
+    @if(session('subscription_success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('subscription_success') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#E8B49E',
+            customClass: {
+                popup: 'rounded-lg',
+                confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'
+            }
+        });
+    @endif
+
+    @if(session('subscription_error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: '{{ session('subscription_error') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#E8B49E',
+            customClass: {
+                popup: 'rounded-lg',
+                confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'
+            }
+        });
+    @endif
+
+    @if($errors->has('email'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: '{{ $errors->first('email') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#E8B49E',
+            customClass: {
+                popup: 'rounded-lg',
+                confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'
+            }
+        });
+    @endif
+</script>
 
 @endsection

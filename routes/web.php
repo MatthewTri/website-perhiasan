@@ -166,3 +166,18 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/calendar-settings/unavailable-dates', [CalendarSettingController::class, 'getUnavailableDates'])->name('calendar.settings.unavailableDates');
     Route::post('/calendar-settings/toggle', [CalendarSettingController::class, 'toggleSlot'])->name('calendar.settings.toggle');
 });
+
+// Newsletter Subscription Routes (Public)
+Route::post('/subscribe', [App\Http\Controllers\SubscriptionController::class, 'subscribe'])->name('subscription.subscribe');
+Route::get('/unsubscribe', [App\Http\Controllers\SubscriptionController::class, 'unsubscribe'])->name('subscription.unsubscribe');
+
+// Admin Newsletter Management
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Subscriber management
+    Route::get('/subscribers', [App\Http\Controllers\Admin\SubscriberController::class, 'index'])->name('subscribers.index');
+    Route::delete('/subscribers/{subscriber}', [App\Http\Controllers\Admin\SubscriberController::class, 'destroy'])->name('subscribers.destroy');
+    
+    // Broadcast management
+    Route::get('/broadcasts/create', [App\Http\Controllers\Admin\BroadcastController::class, 'create'])->name('broadcasts.create');
+    Route::post('/broadcasts/send', [App\Http\Controllers\Admin\BroadcastController::class, 'send'])->name('broadcasts.send');
+});
