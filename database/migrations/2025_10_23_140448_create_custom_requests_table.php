@@ -18,6 +18,9 @@ return new class extends Migration
             // Consultation Type
             $table->enum('consultation_type', ['short', 'design'])->default('short');
             
+            // Meeting Type
+            $table->enum('meeting_type', ['offline', 'online'])->default('offline');
+            
             // Appointment DateTime
             $table->date('appointment_date');
             $table->time('appointment_time');

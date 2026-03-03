@@ -144,6 +144,52 @@
                     </div>
                 </div>
 
+                {{-- Meeting Location/Type --}}
+                <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
+                    <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">
+                        @if($consultation->meeting_type === 'offline')
+                            Meeting Location
+                        @else
+                            Virtual Meeting
+                        @endif
+                    </h2>
+                    
+                    @if($consultation->meeting_type === 'offline')
+                        <div>
+                            <p class="text-lg text-stone-900 font-serif mb-2">Cécile Studio</p>
+                            <p class="text-sm text-stone-600 leading-relaxed">
+                                Jl. Prapen Indah B no. 12<br>
+                                Surabaya 60299, Indonesia
+                            </p>
+                            <div class="mt-4 pt-4 border-t border-stone-100">
+                                <p class="text-xs text-stone-500 italic">
+                                    Client has been instructed to arrive 5-10 minutes early. Parking available on-site.
+                                </p>
+                            </div>
+                        </div>
+                    @else
+                        <div>
+                            <p class="text-base text-stone-900 font-medium mb-2">Zoom / Google Meet</p>
+                            <div class="bg-amber-50 border border-amber-100 rounded-sm p-4">
+                                <p class="text-sm text-amber-900 flex items-start">
+                                    <svg class="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>
+                                        <strong>Reminder:</strong> Send meeting link to client <strong>30 minutes before</strong> the scheduled time via WhatsApp and Email.
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-xs text-stone-500">
+                                    Client Email: <a href="mailto:{{ $consultation->user_email }}" class="text-stone-900 underline">{{ $consultation->user_email }}</a><br>
+                                    Client Phone: <a href="tel:{{ $consultation->user_phone }}" class="text-stone-900 underline">{{ $consultation->user_phone }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
                 {{-- 2. Customer Info --}}
                 <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8">
                     <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Client Profile</h2>

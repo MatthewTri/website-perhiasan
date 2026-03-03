@@ -198,6 +198,7 @@ class CustomRequestController extends Controller
         // Validasi input
         $validated = $request->validate([
             'consultation_type' => 'required|in:short,design',
+            'meeting_type' => 'required|in:offline,online',
             'appointment_date' => 'required|date|after:today',
             'appointment_time' => 'required',
             'first_name' => 'required|string|max:255',

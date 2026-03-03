@@ -83,6 +83,42 @@
                         </td>
                     </tr>
 
+                    {{-- Meeting Location/Type --}}
+                    <tr>
+                        <td class="inner-padding" style="padding: 0 50px 35px 50px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fafaf9; border-radius: 4px;">
+                                <tr>
+                                    <td style="padding: 25px;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #78716c; margin: 0 0 12px 0;">
+                                            @if($customRequest->meeting_type === 'offline')
+                                                Meeting Location
+                                            @else
+                                                Virtual Meeting
+                                            @endif
+                                        </p>
+                                        
+                                        @if($customRequest->meeting_type === 'offline')
+                                            <p style="font-size: 16px; color: #1c1917; font-weight: 600; margin: 0 0 8px 0;">
+                                                Cécile Studio
+                                            </p>
+                                            <p style="font-size: 14px; color: #44403c; margin: 0; line-height: 1.6;">
+                                                Jl. Prapen Indah B no. 12<br>
+                                                Surabaya 60299, Indonesia
+                                            </p>
+                                        @else
+                                            <p style="font-size: 14px; color: #1c1917; font-weight: 600; margin: 0 0 8px 0;">
+                                                Zoom / Google Meet
+                                            </p>
+                                            <p style="font-size: 13px; color: #57534e; margin: 0; line-height: 1.7;">
+                                                The meeting link will be sent to the client <strong style="color: #1c1917;">30 minutes before</strong> the scheduled consultation via WhatsApp and Email.
+                                            </p>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 30px 50px;">
                             <p style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #1c1917; margin-bottom: 20px; border-bottom: 1px solid #f5f5f4; padding-bottom: 10px;">

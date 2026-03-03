@@ -20,14 +20,14 @@
 
         {{-- Contact Info Strip --}}
         <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 text-xs text-stone-500 font-medium tracking-wide uppercase mb-16">
-            <a href="tel:+6139663119" class="flex items-center hover:text-[#E8B49E] transition-colors group">
+            <a href="https://wa.me/6287766999564" class="flex items-center hover:text-[#E8B49E] transition-colors group">
                 <svg class="w-4 h-4 mr-2 text-stone-400 group-hover:text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                +61 3 9663 6119
+                +6287766999564 (Whatsapp)
             </a>
             <span class="hidden md:inline text-stone-300">|</span>
-            <a href="mailto:info@cecileprivate.com" class="flex items-center hover:text-[#E8B49E] transition-colors group">
+            <a href="mailto:cecileprivatecollection@gmail.com" class="flex items-center hover:text-[#E8B49E] transition-colors group">
                 <svg class="w-4 h-4 mr-2 text-stone-400 group-hover:text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                info@cecileprivate.com
+                cecileprivatecollection@gmail.com
             </a>
         </div>
 
@@ -89,7 +89,7 @@
         {{-- Address / Additional Info --}}
         <div class="text-center border-t border-stone-200 pt-10">
             <p class="text-xs text-stone-400 font-light tracking-wide uppercase mb-2">Location</p>
-            <p class="text-stone-600 font-serif">Suite 904, 125 Swanston St, Melbourne VIC 3000</p>
+            <p class="text-stone-600 font-serif">Cécile Studio, Surabaya , Indonesia</p>
         </div>
 
     </div>

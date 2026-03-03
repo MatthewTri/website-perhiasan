@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'bca' => [
+        'account_number' => env('BCA_ACCOUNT_NUMBER', '5120430515'),
+        'account_name' => env('BCA_ACCOUNT_NAME', 'Cecilia Hermanto'),
+    ],
+
 ];

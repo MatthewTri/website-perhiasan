@@ -121,7 +121,7 @@
                                         </a>
                                     </td>
                                     <td style="padding: 0 10px;">
-                                        <a href="mailto:consultation@cecile.com" 
+                                        <a href="mailto:cecileprivatecollection@gmail.com" 
                                            style="background-color: #ffffff; color: #1c1917; border: 1px solid #d6d3d1; padding: 13px 28px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                             Contact Us
                                         </a>
