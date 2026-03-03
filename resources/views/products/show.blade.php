@@ -412,25 +412,45 @@
 
     // Init: Set first thumbnail active
     document.addEventListener('DOMContentLoaded', function() {
+        
+        const mainImg = document.getElementById('mainProductImage');
+        if (mainImg) {
+            mainImg.setAttribute('data-current-image', mainImg.src);
+        } else {
+            console.error('❌ Main image not found!');
+        }
+        
+        // Check if lightbox function is available
+        if (typeof window.openLightbox === 'function') {
+            console.log('✅ openLightbox function available');
+        } else {
+            console.error('❌ openLightbox function not found!');
+        }
+        
         const firstThumbnail = document.querySelector('.thumbnail-image');
         if (firstThumbnail) {
             firstThumbnail.classList.remove('border-transparent');
             firstThumbnail.classList.add('border-gray-900');
         }
-
-        const mainImg = document.getElementById('mainProductImage');
-        if (mainImg) {
-            mainImg.setAttribute('data-current-image', mainImg.src);
-        }
     });
 
     function openMainImageLightbox(img) {
+        console.log('🖼️ Main image clicked!');
+        
+        // Check if function exists
+        if (typeof openLightbox !== 'function') {
+            console.error('❌ openLightbox function not available!');
+            alert('Error: Lightbox not loaded. Please refresh the page.');
+            return;
+        }
+        
         const images = JSON.parse(img.getAttribute('data-lightbox-images'));
         const currentImage = img.getAttribute('data-current-image') || img.src;
         
+        
         // ✅ Cari index gambar yang sedang ditampilkan di main image
         const index = images.findIndex(src => src === currentImage);
-        
+                
         // Buka lightbox di index yang benar
         openLightbox(images, index >= 0 ? index : 0);
     }

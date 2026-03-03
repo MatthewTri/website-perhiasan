@@ -81,18 +81,37 @@
 </style>
 
 <script>
-(function() {
-    'use strict';
+// Wait for all resources including Swiper to be loaded
+window.addEventListener('load', function() {
     
-    let lightboxSwiper = null;
+    (function() {
+        'use strict';
+        
+        let lightboxSwiper = null;
 
-    // --- FUNGSI GLOBAL (Dipanggil dari Luar) ---
+        // --- FUNGSI GLOBAL (Dipanggil dari Luar) ---
 
-    window.openLightbox = function(images, startIndex = 0) {
-        const modal = document.getElementById('productLightboxModal');
-        const wrapper = document.getElementById('lightboxImageWrapper');
-
-        // 1. Tampilkan Modal Dulu (PENTING untuk kalkulasi Swiper)
+        window.openLightbox = function(images, startIndex = 0) {
+            
+            // Check if Swiper is available
+            if (typeof Swiper === 'undefined') {
+                console.error('❌ Swiper not loaded yet! Retrying in 100ms...');
+                // Retry after a short delay
+                setTimeout(() => {
+                    window.openLightbox(images, startIndex);
+                }, 100);
+                return;
+            }
+            
+            const modal = document.getElementById('productLightboxModal');
+            const wrapper = document.getElementById('lightboxImageWrapper');
+            
+            if (!modal || !wrapper) {
+                console.error('❌ Modal elements not found');
+                return;
+            }
+            
+            // 1. Tampilkan Modal Dulu (PENTING untuk kalkulasi Swiper)
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
@@ -185,5 +204,6 @@
         }
     });
 
-})();
+    })(); // End IIFE
+}); // End window.load event listener
 </script>
