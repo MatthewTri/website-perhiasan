@@ -421,10 +421,10 @@
         }
         
         // Check if lightbox function is available
-        if (typeof window.openLightbox === 'function') {
-            console.log('✅ openLightbox function available');
+        if (typeof window.openProductGallery === 'function') {
+            console.log('✅ openProductGallery function available');
         } else {
-            console.error('❌ openLightbox function not found!');
+            console.error('❌ openProductGallery function not found!');
         }
         
         const firstThumbnail = document.querySelector('.thumbnail-image');
@@ -438,8 +438,8 @@
         console.log('🖼️ Main image clicked!');
         
         // Check if function exists
-        if (typeof openLightbox !== 'function') {
-            console.error('❌ openLightbox function not available!');
+        if (typeof openProductGallery !== 'function') {
+            console.error('❌ openProductGallery function not available!');
             alert('Error: Lightbox not loaded. Please refresh the page.');
             return;
         }
@@ -452,7 +452,7 @@
         const index = images.findIndex(src => src === currentImage);
                 
         // Buka lightbox di index yang benar
-        openLightbox(images, index >= 0 ? index : 0);
+        openProductGallery(images, index >= 0 ? index : 0);
     }
 </script>
 

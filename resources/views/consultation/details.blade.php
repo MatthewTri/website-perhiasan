@@ -284,6 +284,9 @@
     </div>
 </div>
 
+{{-- Image Lightbox Component --}}
+<x-image-lightbox modalId="consultation-image-modal" alt="Reference Image Preview" />
+
 {{-- Modal: Cancellation Policy --}}
 <div id="cancellation-policy-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-sm shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
@@ -539,11 +542,11 @@
                 // Tambahkan event openLightbox
                 img.onclick = function() {
                     if (file.aiImageUrl) {
-                        openLightbox(file.aiImageUrl);
+                        openLightbox(file.aiImageUrl, 'consultation-image-modal');
                     } else {
                         // Untuk file upload manual, perlu FileReader untuk dapatkan dataURL
                         const reader = new FileReader();
-                        reader.onload = (e) => openLightbox(e.target.result);
+                        reader.onload = (e) => openLightbox(e.target.result, 'consultation-image-modal');
                         reader.readAsDataURL(file);
                     }
                 };

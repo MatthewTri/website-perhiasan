@@ -34,7 +34,7 @@
         <div class="swiper-pagination !static !w-auto pointer-events-auto"></div>
 
         {{-- Bottom Close Button (Cancel) --}}
-        <button type="button" onclick="closeLightbox()" class="pointer-events-auto bg-white border border-gray-200 shadow-sm rounded-full w-12 h-12 flex items-center justify-center text-gray-900 hover:bg-gray-50 transition-transform hover:scale-105 active:scale-95">
+        <button type="button" onclick="closeProductGallery()" class="pointer-events-auto bg-white border border-gray-200 shadow-sm rounded-full w-12 h-12 flex items-center justify-center text-gray-900 hover:bg-gray-50 transition-transform hover:scale-105 active:scale-95">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -91,14 +91,14 @@ window.addEventListener('load', function() {
 
         // --- FUNGSI GLOBAL (Dipanggil dari Luar) ---
 
-        window.openLightbox = function(images, startIndex = 0) {
+        window.openProductGallery = function(images, startIndex = 0) {
             
             // Check if Swiper is available
             if (typeof Swiper === 'undefined') {
                 console.error('❌ Swiper not loaded yet! Retrying in 100ms...');
                 // Retry after a short delay
                 setTimeout(() => {
-                    window.openLightbox(images, startIndex);
+                    window.openProductGallery(images, startIndex);
                 }, 100);
                 return;
             }
@@ -170,7 +170,7 @@ window.addEventListener('load', function() {
         }
     };
 
-    window.closeLightbox = function() {
+    window.closeProductGallery = function() {
         const modal = document.getElementById('productLightboxModal');
         
         modal.classList.add('opacity-0');
@@ -200,7 +200,7 @@ window.addEventListener('load', function() {
     document.addEventListener('keydown', function(e) {
         const modal = document.getElementById('productLightboxModal');
         if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-            closeLightbox();
+            closeProductGallery();
         }
     });
 
