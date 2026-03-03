@@ -121,20 +121,16 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         {{-- Offline Option --}}
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="meeting_type" value="offline" 
-                                   class="peer sr-only" checked required>
+                            <input type="radio" name="meeting_type" value="offline" class="peer sr-only" checked required>
                             <div class="border-2 border-stone-200 rounded-sm p-6 transition-all duration-300 
                                         peer-checked:border-[#E8B49E] peer-checked:bg-stone-50 
                                         hover:border-stone-300 hover:shadow-sm">
                                 <div class="flex items-start gap-4">
                                     <div class="mt-1 w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center 
-                                                flex-shrink-0 transition-colors duration-300 
-                                                peer-checked:bg-[#E8B49E]/10 group-hover:bg-stone-200">
-                                        <svg class="w-5 h-5 text-stone-600 peer-checked:text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                flex-shrink-0 transition-colors duration-300 meeting-icon-box group-hover:bg-stone-200">
+                                        <svg class="w-5 h-5 text-stone-600 meeting-icon transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
                                     </div>
                                     <div class="flex-1">
@@ -144,9 +140,8 @@
                                         </p>
                                     </div>
                                     <div class="w-5 h-5 border-2 border-stone-300 rounded-full flex items-center justify-center 
-                                                transition-all duration-300 peer-checked:border-[#E8B49E] peer-checked:bg-white">
-                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full scale-0 transition-transform duration-300 
-                                                    peer-checked:scale-100"></div>
+                                                transition-all duration-300 meeting-radio-circle bg-white">
+                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
                                     </div>
                                 </div>
                             </div>
@@ -154,18 +149,15 @@
 
                         {{-- Online Option --}}
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="meeting_type" value="online" 
-                                   class="peer sr-only" required>
+                            <input type="radio" name="meeting_type" value="online" class="peer sr-only" required>
                             <div class="border-2 border-stone-200 rounded-sm p-6 transition-all duration-300 
                                         peer-checked:border-[#E8B49E] peer-checked:bg-stone-50 
                                         hover:border-stone-300 hover:shadow-sm">
                                 <div class="flex items-start gap-4">
                                     <div class="mt-1 w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center 
-                                                flex-shrink-0 transition-colors duration-300 
-                                                peer-checked:bg-[#E8B49E]/10 group-hover:bg-stone-200">
-                                        <svg class="w-5 h-5 text-stone-600 peer-checked:text-[#E8B49E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                                                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                                flex-shrink-0 transition-colors duration-300 meeting-icon-box group-hover:bg-stone-200">
+                                        <svg class="w-5 h-5 text-stone-600 meeting-icon transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
                                     <div class="flex-1">
@@ -175,9 +167,8 @@
                                         </p>
                                     </div>
                                     <div class="w-5 h-5 border-2 border-stone-300 rounded-full flex items-center justify-center 
-                                                transition-all duration-300 peer-checked:border-[#E8B49E] peer-checked:bg-white">
-                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full scale-0 transition-transform duration-300 
-                                                    peer-checked:scale-100"></div>
+                                                transition-all duration-300 meeting-radio-circle bg-white">
+                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
                                     </div>
                                 </div>
                             </div>
@@ -662,26 +653,26 @@
         }
     }
     
-    /* Meeting Type Radio Styles */
-    input[type="radio"][name="meeting_type"]:checked + div {
-        border-color: #E8B49E;
-        background-color: #fafaf9;
-    }
+    /* Meeting Type Radio Styles - Target Inner Elements */
     
-    input[type="radio"][name="meeting_type"]:checked + div .peer-checked\:bg-\[\#E8B49E\]\/10 {
+    /* 1. Icon Box Background (Jadi warna krem saat dipilih) */
+    input[type="radio"][name="meeting_type"]:checked + div .meeting-icon-box {
         background-color: rgba(232, 180, 158, 0.1);
     }
     
-    input[type="radio"][name="meeting_type"]:checked + div .peer-checked\:text-\[\#E8B49E\] {
+    /* 2. Icon Color (Jadi warna Rose Gold) */
+    input[type="radio"][name="meeting_type"]:checked + div .meeting-icon {
         color: #E8B49E;
     }
     
-    input[type="radio"][name="meeting_type"]:checked + div .peer-checked\:border-\[\#E8B49E\] {
+    /* 3. Radio Outer Circle (Ganti border) */
+    input[type="radio"][name="meeting_type"]:checked + div .meeting-radio-circle {
         border-color: #E8B49E;
     }
     
-    input[type="radio"][name="meeting_type"]:checked + div .peer-checked\:scale-100 {
-        transform: scale(1);
+    /* 4. Radio Inner Dot (Memunculkan titik di tengah) */
+    input[type="radio"][name="meeting_type"]:checked + div .meeting-radio-dot {
+        transform: scale(1) !important;
     }
 </style>
 @endsection
