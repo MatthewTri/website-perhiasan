@@ -38,6 +38,9 @@
     {{-- Product Show Detail Component --}}
     <x-product-show-detail />
     
+    {{-- Size Chart Modal Component --}}
+    @include('components.size-chart-modal')
+    
     {{-- Reviews Modal Component --}}
     @include('components.reviews-modal')
 

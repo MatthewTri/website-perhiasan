@@ -110,7 +110,7 @@
                         <p class="text-xs uppercase tracking-widest text-gray-500">
                             Size: <span id="selectedSizeName" class="text-gray-900 font-medium">{{ $product->sizes->first()->size_name }}</span>
                         </p>
-                        <button type="button" class="text-xs text-gray-400 hover:text-gray-900 underline cursor-pointer">Size chart</button>
+                        <button type="button" onclick="openSizeChart()" class="text-xs text-gray-400 hover:text-gray-900 underline cursor-pointer">Size chart</button>
                     </div>
                     
                     <div class="relative">
