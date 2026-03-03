@@ -5,7 +5,7 @@
 {{-- HERO SECTION --}}
 <section class="relative w-full h-[60vh] md:h-[75vh] lg:h-[85vh] overflow-hidden bg-gradient-to-br from-[#F5E6E0] to-[#E8B49E]/20">
     <div class="absolute inset-0">
-        <img src="{{ asset('img/hero-jewelry.jpg') }}" 
+        <img src="" 
              alt="Luxury Jewelry Collection" 
              class="w-full h-full object-cover object-center opacity-90"
              onerror="this.style.display='none'">
@@ -48,7 +48,7 @@
         {{-- Necklaces --}}
         <a href="{{ route('products.index') }}" class="group relative overflow-hidden aspect-square bg-gray-50">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('img/category-necklaces.jpg') }}" 
+            <img src="" 
                  alt="Necklaces" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                  >
@@ -62,7 +62,7 @@
         {{-- Earrings --}}
         <a href="{{ route('products.index') }}" class="group relative overflow-hidden aspect-square bg-gray-50">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('img/category-earrings.jpg') }}" 
+            <img src="" 
                  alt="Earrings" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                  >
@@ -76,7 +76,7 @@
         {{-- Bracelets --}}
         <a href="{{ route('products.index') }}" class="group relative overflow-hidden aspect-square bg-gray-50">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('img/category-bracelets.jpg') }}" 
+            <img src="" 
                  alt="Bracelets" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                  >
@@ -90,7 +90,7 @@
         {{-- Rings --}}
         <a href="{{ route('products.index') }}" class="group relative overflow-hidden aspect-square bg-gray-50">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-            <img src="{{ asset('img/category-rings.jpg') }}" 
+            <img src="" 
                  alt="Rings" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                  >
@@ -307,7 +307,7 @@
         <div class="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4">
             @for($i = 1; $i <= 6; $i++)
             <a href="#" class="group relative aspect-square overflow-hidden bg-gray-200">
-                <img src="{{ asset('img/instagram-' . $i . '.jpg') }}" 
+                <img src="" 
                      alt="Instagram Post {{ $i }}" 
                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                      >

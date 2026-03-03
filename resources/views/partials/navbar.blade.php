@@ -1,4 +1,4 @@
-<div class="bg-[#E8B49E] text-white text-[10px] md:text-xs font-bold text-center py-2 tracking-[0.2em] uppercase">
+<div class="bg-[#E3CFCF] text-white text-[10px] md:text-xs font-bold text-center py-2 tracking-[0.2em] uppercase">
     ✦ Free shipping all across Indonesia ✦
 </div>
 

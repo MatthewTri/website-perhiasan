@@ -452,8 +452,9 @@
 
     // Default colors for jewelry (Gold, Silver, Rose Gold)
     const defaultColors = [
-        { name: 'Gold', hex: '#FFD700' },
-        { name: 'Silver', hex: '#C0C0C0' },
+        { name: 'Yellow Gold', hex: '#D4AF37' },
+        { name: 'Champagne Gold', hex: '#FAEEC8' },
+        { name: 'White Gold', hex: '#C0C0C0' },
         { name: 'Rose Gold', hex: '#E0BFB8' }
     ];
     
@@ -583,7 +584,8 @@
         "Ring 22 (d: 19.7mm, c: 61.9mm)",
         "Ring 23 (d: 20.1mm, c: 63.1mm)",
         "Ring 24 (d: 20.4mm, c: 64.1mm)",
-        "Ring 25 (d: 20.8mm, c: 65.3mm)"
+        "Ring 25 (d: 20.8mm, c: 65.3mm)",
+        "Others",
     ];
 
     function addSizeOptionWithData(sizeName = '', isDefault = false) {

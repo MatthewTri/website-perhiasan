@@ -301,7 +301,7 @@ class CheckoutController extends Controller
 
             // Send email notification to admin
             try {
-                Mail::to(config('mail.admin_email'))->queue(new NewOrderNotification($order));
+                // Mail::to(config('mail.admin_email'))->queue(new NewOrderNotification($order));
             } catch (\Exception $e) {
                 Log::error('Failed to send new order email to admin', [
                     'order_id' => $order->id,

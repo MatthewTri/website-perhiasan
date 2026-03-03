@@ -346,7 +346,7 @@
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Order Review</h4>
-                        <p class="text-xs text-gray-500 leading-relaxed">Our team will review your request within 24 hours to confirm availability.</p>
+                        <p class="text-xs text-gray-500 leading-relaxed">Our team will review your request within 24 hours to confirm your order.</p>
                     </div>
                 </div>
 
@@ -380,6 +380,17 @@
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Payment</h4>
                         <p class="text-xs text-gray-500 leading-relaxed">Once confirmed, you will receive a secure payment link via email.</p>
+                    </div>
+                </div>
+
+                {{-- Step 5 --}}
+                <div class="relative flex items-start group">
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">5</span>
+                    </div>
+                    <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Production Time</h4>
+                        <p class="text-xs text-gray-500 leading-relaxed">Pre-orders take <strong class="text-gray-700">2-8 weeks</strong> to craft. We will notify you once your piece is ready to ship.</p>
                     </div>
                 </div>
             </div>
