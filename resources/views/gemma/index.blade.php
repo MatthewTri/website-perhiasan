@@ -54,7 +54,7 @@
                             Our AI Design Studio is an exclusive feature available to registered members.
                         </p>
                         <p class="text-xs text-gray-500 leading-relaxed">
-                            Create an account or sign in to start visualizing your custom jewelry designs with artificial intelligence.
+                            Create an account or sign in to start visualizing your custom jewellery designs with artificial intelligence.
                         </p>
                     </div>
 
@@ -66,7 +66,7 @@
                                 <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>
-                                <span>AI-powered jewelry design visualization</span>
+                                <span>AI-powered jewellery design visualization</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -245,7 +245,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                         <p class="text-xs text-stone-600 leading-relaxed">
-                                            Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewelry collection.
+                                            Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewellery collection.
                                         </p>
                                     </div>
                                 </div>
@@ -338,7 +338,7 @@
                         class="w-full px-5 py-4 pr-14 bg-transparent border-0 focus:ring-0 focus:outline-none text-stone-800 placeholder-stone-400 text-sm leading-relaxed resize-none"
                         rows="1"
                         maxlength="500"
-                        placeholder="Type your choice or describe your jewelry..."></textarea>
+                        placeholder="Type your choice or describe your jewellery..."></textarea>
                     
                     <button 
                         type="submit" 
@@ -1015,7 +1015,7 @@
             const errorMap = {
                 'Prompt cannot be empty.': 'Please provide a description.',
                 'Your prompt contains inappropriate content.': 'Please use appropriate language.',
-                'Prompt should focus on jewelry.': 'Please describe jewelry items only.',
+                'Prompt should focus on jewelry.': 'Please describe jewellery items only.',
                 'You must be logged in to generate images.': 'Please log in first.',
                 'quota_exceeded': 'Daily quota limit reached.'
             };
@@ -1043,7 +1043,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                                 <p class="text-xs text-stone-600 leading-relaxed">
-                                    Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewelry collection.
+                                    Your quota will automatically reset tomorrow at midnight. In the meantime, feel free to browse your previous designs or explore our jewellery collection.
                                 </p>
                             </div>
                         </div>

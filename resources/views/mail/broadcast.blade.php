@@ -78,7 +78,7 @@
                                 Cecile Private Collection
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0;">
-                                Timeless Elegance • Exquisite Jewelry
+                                Timeless Elegance • Exquisite Jewellery
                             </p>
                             
                             <!-- Social Links -->

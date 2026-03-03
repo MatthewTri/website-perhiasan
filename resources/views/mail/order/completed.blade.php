@@ -49,7 +49,7 @@
                                 Thank You for Your Purchase
                             </h1>
                             <p style="color: #78716c; font-size: 14px; margin: 0; line-height: 1.6;">
-                                We hope you're delighted with your jewelry from our collection
+                                We hope you're delighted with your jewellery from our collection
                             </p>
                         </td>
                     </tr>
@@ -112,9 +112,9 @@
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             <div style="background-color: #fef8f3; padding: 20px; border-left: 2px solid #E8B49E;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Care for Your Jewelry</p>
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Care for Your Jewellery</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0 0 10px 0; line-height: 1.6;">
-                                    To maintain the beauty and longevity of your jewelry:
+                                    To maintain the beauty and longevity of your jewellery:
                                 </p>
                                 <ul style="font-size: 13px; color: #44403c; margin: 0; padding-left: 20px; line-height: 1.8;">
                                     <li>Store in a cool, dry place away from direct sunlight</li>

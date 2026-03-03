@@ -6,7 +6,7 @@
 <section class="relative w-full h-[60vh] md:h-[75vh] lg:h-[85vh] overflow-hidden bg-gradient-to-br from-[#F5E6E0] to-[#E8B49E]/20">
     <div class="absolute inset-0">
         <img src="" 
-             alt="Luxury Jewelry Collection" 
+             alt="Luxury Jewellery Collection" 
              class="w-full h-full object-cover object-center opacity-90"
              onerror="this.style.display='none'">
     </div>
@@ -19,7 +19,7 @@
                 Timeless Elegance
             </h1>
             <p class="text-sm md:text-base text-white/90 font-light tracking-[0.2em] uppercase max-w-2xl mx-auto">
-                Discover exquisite jewelry crafted for life's precious moments
+                Discover exquisite jewellery crafted for life's precious moments
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <a href="{{ route('products.index') }}" 
@@ -112,7 +112,7 @@
             </h2>
             <div class="w-24 h-px bg-[#E8B49E] mx-auto mb-6"></div>
             <p class="text-sm md:text-base text-gray-600 font-light tracking-wide max-w-2xl mx-auto">
-                Our most coveted pieces, cherished by jewelry lovers worldwide
+                Our most coveted pieces, cherished by jewellery lovers worldwide
             </p>
         </div>
         
@@ -269,7 +269,7 @@
                 Lifetime Support
             </h3>
             <p class="text-xs md:text-sm text-gray-600 font-light leading-relaxed max-w-xs">
-                Our expert team provides complimentary cleaning and maintenance for all your jewelry
+                Our expert team provides complimentary cleaning and maintenance for all your jewellery
             </p>
         </div>
         

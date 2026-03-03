@@ -230,7 +230,7 @@
                                 </p>
                                 <p style="font-size: 13px; color: #78716c; margin: 0; line-height: 1.6;">
                                     Thank you for choosing Cecile Private Collection.<br>
-                                    We're honored to be part of your jewelry story.
+                                    We're honored to be part of your jewellery story.
                                 </p>
                             </div>
                         </td>

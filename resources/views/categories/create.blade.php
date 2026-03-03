@@ -11,7 +11,7 @@
             Back to Categories
         </a>
         <h1 class="font-serif text-4xl text-stone-900 tracking-tight">Add New Category</h1>
-        <p class="mt-2 text-stone-500 font-light">Create a new category to organize your jewelry inventory.</p>
+        <p class="mt-2 text-stone-500 font-light">Create a new category to organize your jewellery inventory.</p>
     </div>
 
     <div class="bg-white">

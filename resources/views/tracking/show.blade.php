@@ -397,7 +397,7 @@
                                     Thank you for your payment. Your order is now being prepared by our team.
                                 </p>
                                 <p class="text-sm text-gray-700 leading-relaxed">
-                                    We are carefully packaging your jewelry with the utmost attention to detail. You will receive a shipping notification once your order is dispatched.
+                                    We are carefully packaging your jewellery with the utmost attention to detail. You will receive a shipping notification once your order is dispatched.
                                 </p>
                             </div>
 
@@ -446,7 +446,7 @@
                      
                      <div class="bg-[#FAFAFA] p-8 border border-gray-100 text-center">
                         @if($order->can_review && !$order->is_reviewed)
-                            <h3 class="text-lg font-serif text-gray-900 mb-2">How was your jewelry?</h3>
+                            <h3 class="text-lg font-serif text-gray-900 mb-2">How was your jewellery?</h3>
                             <p class="text-xs text-gray-500 mb-6 uppercase tracking-widest">Share your experience with us</p>
                             <a href="{{ route('order.track.review', $order->guest_token) }}" class="inline-block border-b border-gray-900 pb-1 text-xs uppercase tracking-[0.2em] hover:text-gray-600 transition-colors">
                                 Write a Review

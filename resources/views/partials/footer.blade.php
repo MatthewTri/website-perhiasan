@@ -10,7 +10,7 @@
                     Cecile Private Collection
                 </h3>
                 <div class="text-xs text-gray-500 leading-relaxed font-light space-y-4 max-w-xs">
-                    <p>Timeless elegance crafted for the modern individual. Discover our curated selection of fine jewelry designed to celebrate life's precious moments.</p>
+                    <p>Timeless elegance crafted for the modern individual. Discover our curated selection of fine jewellery designed to celebrate life's precious moments.</p>
                 </div>
                 
                 {{-- Social Icons (Minimalist) --}}

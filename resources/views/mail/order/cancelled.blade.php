@@ -168,7 +168,7 @@
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6; text-align: center; font-style: italic;">
-                                    We're sorry to see this order cancelled. We hope to serve you again in the future with our finest collection of jewelry.
+                                    We're sorry to see this order cancelled. We hope to serve you again in the future with our finest collection of jewellery.
                                 </p>
                             </div>
                         </td>
