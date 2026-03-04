@@ -39,7 +39,7 @@ class OrderController extends Controller
         if ($status) {
             $query->where('status', $status);
         } else {
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
+            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
         }
 
         $allOrders = Order::with(['user', 'orderItems'])->get();
@@ -124,7 +124,7 @@ class OrderController extends Controller
         $magicLink = route('order.track', $order->guest_token);
         
         try {
-            // Mail::to($order->contact_email)->queue(new PaymentDetailsMail($order, $magicLink));
+            Mail::to($order->contact_email)->queue(new PaymentDetailsMail($order, $magicLink));
             
             $message = $paymentGateway === 'PAYPAL' 
                 ? 'PayPal invoice sent to ' . $order->contact_email 
@@ -149,38 +149,14 @@ class OrderController extends Controller
         $action = $request->input('action'); // 'approve' atau 'reject'
 
         if ($action === 'approve') {
-            // Validasi shipping input
-            $validated = $request->validate([
-                'courier_name' => 'required|string|max:100',
-                'tracking_number' => 'required|string|max:100',
-            ]);
-
-            // Update shipment
-            $order->shipment->update([
-                'courier_name' => $validated['courier_name'],
-                'tracking_number' => $validated['tracking_number'],
-                'shipped_at' => now(),
-            ]);
-
-            // UPDATE ORDER STATUS
+            // UPDATE ORDER STATUS ke PRODUCTION
             $order->update([
-                'status' => 'SHIPPED',
+                'status' => 'PRODUCTION',
                 'paid_at' => now(),
                 'rejection_notes' => null,
             ]);
 
-            // Kirim email shipping notification
-            $magicLink = route('order.track', $order->guest_token);
-            try {
-                // Mail::to($order->contact_email)->queue(new OrderShippedMail($order, $magicLink));
-            } catch (\Exception $e) {
-                Log::error('Failed to send shipping notification email', [
-                    'order_id' => $order->id,
-                    'error' => $e->getMessage()
-                ]);
-            }
-
-            return back()->with('success', 'Payment approved! Order marked as SHIPPED. Tracking: ' . $validated['tracking_number']);
+            return back()->with('success', 'Payment approved! Order is now in PRODUCTION. Please fill shipping details when ready.');
         } 
         
         elseif ($action === 'reject') {
@@ -198,7 +174,7 @@ class OrderController extends Controller
             // Kirim email payment rejection
             $magicLink = route('order.track', $order->guest_token);
             try {
-                // Mail::to($order->contact_email)->queue(new PaymentRejectedMail($order, $magicLink));
+                Mail::to($order->contact_email)->queue(new PaymentRejectedMail($order, $magicLink));
             } catch (\Exception $e) {
                 Log::error('Failed to send payment rejection email', [
                     'order_id' => $order->id,
@@ -213,7 +189,24 @@ class OrderController extends Controller
     }
 
     /**
-     * ACTION: Update Resi (Shipping) - Untuk order yang sudah PAID tapi belum shipped
+     * ACTION: Process Order (PAID → PRODUCTION)
+     * For PayPal orders that are already paid, move to production when ready
+     */
+    public function processOrder(Order $order)
+    {
+        if ($order->status !== 'PAID') {
+            return back()->with('error', 'Only PAID orders can be processed to PRODUCTION!');
+        }
+
+        $order->update([
+            'status' => 'PRODUCTION',
+        ]);
+
+        return back()->with('success', 'Order moved to PRODUCTION! You can now fill shipping details when ready.');
+    }
+
+    /**
+     * ACTION: Update Resi (Shipping) - Untuk order yang sudah PRODUCTION
      */
     public function updateShipping(Request $request, Order $order)
     {
@@ -226,11 +219,11 @@ class OrderController extends Controller
         $order->shipment->update([
             'courier_name' => $validated['courier_name'],
             'tracking_number' => $validated['tracking_number'],
-            'shipped_at' => $order->status === 'PAID' ? now() : $order->shipment->shipped_at, // Keep original date if already shipped
+            'shipped_at' => $order->status === 'PRODUCTION' ? now() : $order->shipment->shipped_at,
         ]);
 
-        // UPDATE ORDER STATUS hanya jika masih PAID
-        if ($order->status === 'PAID') {
+        // UPDATE ORDER STATUS jika masih PRODUCTION
+        if ($order->status === 'PRODUCTION') {
             $order->update([
                 'status' => 'SHIPPED',
             ]);
@@ -238,7 +231,7 @@ class OrderController extends Controller
             // Kirim email shipping notification
             $magicLink = route('order.track', $order->guest_token);
             try {
-                // Mail::to($order->contact_email)->queue(new OrderShippedMail($order, $magicLink));
+                Mail::to($order->contact_email)->queue(new OrderShippedMail($order, $magicLink));
             } catch (\Exception $e) {
                 Log::error('Failed to send shipping notification email', [
                     'order_id' => $order->id,
@@ -323,7 +316,7 @@ class OrderController extends Controller
         // Send cancellation email to customer
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->queue(new OrderCancelledMail($order, $magicLink));
+            Mail::to($order->contact_email)->queue(new OrderCancelledMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send order cancellation email', [
                 'order_id' => $order->id,
@@ -353,7 +346,7 @@ class OrderController extends Controller
         // Send complete email to customer (agar diarahkan review)
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
+            Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send order completion email', [
                 'order_id' => $order->id,
@@ -396,7 +389,7 @@ class OrderController extends Controller
         // Send refund confirmation email to customer
         $magicLink = route('order.track', $order->guest_token);
         try {
-            // Mail::to($order->contact_email)->queue(new RefundProcessedMail($order, $magicLink));
+            Mail::to($order->contact_email)->queue(new RefundProcessedMail($order, $magicLink));
         } catch (\Exception $e) {
             Log::error('Failed to send refund confirmation email', [
                 'order_id' => $order->id,

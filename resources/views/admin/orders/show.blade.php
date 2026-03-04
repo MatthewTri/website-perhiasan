@@ -24,6 +24,7 @@
                         'INVOICE_SENT' => 'bg-blue-50 text-blue-800 border-blue-200',
                         'WAITING_VERIFICATION' => 'bg-purple-50 text-purple-800 border-purple-200',
                         'PAID' => 'bg-green-50 text-green-800 border-green-200',
+                        'PRODUCTION' => 'bg-teal-50 text-teal-800 border-teal-200',
                         'SHIPPED' => 'bg-indigo-50 text-indigo-800 border-indigo-200',
                         'COMPLETED' => 'bg-purple-50 text-purple-800 border-purple-200',
                         'CANCELLED' => 'bg-red-50 text-red-800 border-red-200',
@@ -484,59 +485,36 @@
                         </button>
 
                         @elseif($order->status === 'WAITING_VERIFICATION')
-                        <button type="button" onclick="toggleForm('verification-shipping-form', 'reject-form-container')"
-                                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                            Approve Payment
-                        </button>
+                        {{-- Simple Approve (tanpa shipping) --}}
+                        <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST" id="approve-payment-form">
+                            @csrf
+                            <input type="hidden" name="action" value="approve">
+                            
+                            <button type="button" onclick="confirmApprovePayment()"
+                                    class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                Approve Payment → Production
+                            </button>
+                        </form>
 
-                        <button type="button" onclick="toggleForm('reject-form-container', 'verification-shipping-form')"
+                        <button type="button" onclick="toggleForm('reject-form-container', '')"
                                 class="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Reject Payment
                         </button>
 
-                        {{-- Approve Shipping Form --}}
-                        <div id="verification-shipping-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
-                            <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Enter Shipping Details</h3>
-                            
-                            <form action="{{ route('admin.orders.verifyPayment', $order) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="action" value="approve">
-                                
-                                <div class="space-y-4">
-                                    <div class="relative">
-                                        <select name="courier_name" required
-                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
-                                            <option value="">Select Courier</option>
-                                            <option value="JNE">JNE</option>
-                                            <option value="Paxel">Paxel</option>
-                                            <option value="RPX">RPX</option>
-                                        </select>
-                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500">Courier / Shipping Service *</label>
-                                        @error('courier_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div class="relative">
-                                        <input type="text" name="tracking_number" required
-                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
-                                            placeholder="Tracking Number">
-                                        <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 pointer-events-none transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">                                            
-                                            Tracking Number / Resi *
-                                        </label>
-                                        @error('tracking_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div class="bg-gray-100 border border-gray-200 p-3">
-                                        <p class="text-xs text-gray-700">
-                                            Status will change to <span class="font-medium text-gray-900">SHIPPED</span>
-                                        </p>
-                                    </div>
-
-                                    <button type="button" onclick="confirmApproveShip()"
-                                            class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                                        Approve & Ship Order
-                                    </button>
+                        {{-- Info Box --}}
+                        <div class="bg-teal-50 border border-teal-200 p-4">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-xs font-medium text-teal-900 mb-1">Payment Verification</p>
+                                    <p class="text-xs text-teal-800 leading-relaxed">
+                                        After approval, order moves to <span class="font-semibold">PRODUCTION</span> status. 
+                                        You can enter shipping details once the item is ready to ship.
+                                    </p>
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
                         {{-- Reject Form --}}
@@ -572,13 +550,53 @@
                             </form>
                         </div>
 
+                        {{-- CASE: PAID STATUS (PayPal - Ready to Process) --}}
                         @elseif($order->status === 'PAID')
-                        <button type="button" onclick="document.getElementById('paid-shipping-form').classList.toggle('hidden')"
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 mb-4">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-xs font-medium text-emerald-900 mb-1">Payment Confirmed (PayPal)</p>
+                                    <p class="text-xs text-emerald-800 leading-relaxed">
+                                        Customer has paid via PayPal. Click "Process Order" to move to production and prepare the order.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="process-order-form" action="{{ route('admin.orders.processOrder', $order) }}" method="POST">
+                            @csrf
+                            <button type="button" onclick="confirmProcessOrder()"
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
+                                Process Order → Production
+                            </button>
+                        </form>
+
+                        {{-- CASE: PRODUCTION STATUS --}}
+                        @elseif($order->status === 'PRODUCTION')
+                        <button type="button" onclick="document.getElementById('production-shipping-form').classList.toggle('hidden')"
                                 class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Mark as Shipped
                         </button>
 
-                        <div id="paid-shipping-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
+                        {{-- Status Info --}}
+                        <div class="bg-teal-50 border border-teal-200 p-4">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-xs font-medium text-teal-900 mb-1">In Production</p>
+                                    <p class="text-xs text-teal-800 leading-relaxed">
+                                        Payment verified. Order is being prepared. Enter shipping details when ready to ship.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="production-shipping-form" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200">
                             <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Enter Shipping Details</h3>
                             
                             <form action="{{ route('admin.orders.updateShipping', $order) }}" method="POST">
@@ -621,7 +639,7 @@
 
                                     <button type="button" onclick="confirmMarkShipped()"
                                             class="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
-                                        Approve & Ship Order
+                                        Ship Order
                                     </button>
                                 </div>
                             </form>
@@ -1278,6 +1296,44 @@
         });
     }
 
+    // Approve Payment (WAITING_VERIFICATION → PRODUCTION)
+    function confirmApprovePayment() {
+        Swal.fire({
+            title: 'Approve Payment?',
+            html: `Order status will change to <strong class="text-teal-600">PRODUCTION</strong><br><small class="text-gray-500 mt-2 block">You can enter shipping details later when the order is ready.</small>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#111827',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Approve',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('approve-payment-form').submit();
+            }
+        });
+    }
+
+    // Process Order (PAID → PRODUCTION)
+    function confirmProcessOrder() {
+        Swal.fire({
+            title: 'Process Order?',
+            html: `Order status will change to <strong class="text-teal-600">PRODUCTION</strong><br><small class="text-gray-500 mt-2 block">After this, you can enter shipping details when the order is ready.</small>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#10B981',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, Process Order',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('process-order-form').submit();
+            }
+        });
+    }
+
     // Process Refund Confirmation
     function confirmProcessRefund() {
         const form = document.querySelector('#manual-refund-form form');
@@ -1349,9 +1405,9 @@
         });
     }
 
-    // Confirm Mark as Shipped (untuk PAID status)
+    // Confirm Mark as Shipped (untuk PRODUCTION status)
     function confirmMarkShipped() {
-        const form = document.querySelector('#paid-shipping-form form');
+        const form = document.querySelector('#production-shipping-form form');
         const courier = form.querySelector('select[name="courier_name"]').value;
         const tracking = form.querySelector('input[name="tracking_number"]').value.trim();
         

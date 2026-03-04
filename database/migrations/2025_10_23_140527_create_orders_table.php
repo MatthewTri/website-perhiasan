@@ -38,7 +38,8 @@ return new class extends Migration
                 'PENDING_REVIEW',       // Belum bayar
                 'INVOICE_SENT',         // Invoice sudah dikirim ke email
                 'WAITING_VERIFICATION', // Upload bukti bayar manual (khusus manual payment BCA)
-                'PAID',                 // Lunas
+                'PAID',                 // Lunas (khusus PayPal yang langsung paid)
+                'PRODUCTION',           // Pesanan sedang dibuat oleh penjual
                 'SHIPPED',              // Dikirim
                 'COMPLETED',            // Selesai
                 'CANCELLED',            // Batal (Expired/Manual Cancel)

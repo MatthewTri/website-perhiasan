@@ -75,7 +75,7 @@ class OrderTrackingController extends Controller
 
                 // Send email notification to admin
                 try {
-                    // Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'manual'));
+                    Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'manual'));
                 } catch (\Exception $e) {
                     Log::error('Failed to send payment proof notification email to admin', [
                         'order_id' => $order->id,

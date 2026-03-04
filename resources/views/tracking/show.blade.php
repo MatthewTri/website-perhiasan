@@ -38,13 +38,14 @@
                         'INVOICE_SENT' => ['color' => 'bg-gray-900 text-gray-900', 'label' => 'Payment Required'],
                         'WAITING_VERIFICATION' => ['color' => 'bg-purple-500 text-purple-600', 'label' => 'Verifying Payment'],
                         'PAID' => ['color' => 'bg-emerald-600 text-emerald-700', 'label' => 'Paid'],
-                        'SHIPPED' => ['color' => 'bg-blue-600 text-blue-700', 'label' => 'In Transit'],
-                        'COMPLETED' => ['color' => 'bg-gray-400 text-gray-500', 'label' => 'Completed'],
+                        'PRODUCTION' => ['color' => 'bg-teal-500 text-teal-600', 'label' => 'In Production'],
+                        'SHIPPED' => ['color' => 'bg-blue-500 text-blue-600', 'label' => 'Shipped'],
+                        'COMPLETED' => ['color' => 'bg-green-600 text-green-700', 'label' => 'Completed'],
                         'CANCELLED' => ['color' => 'bg-red-500 text-red-600', 'label' => 'Cancelled'],
                         'REFUNDED' => ['color' => 'bg-orange-500 text-orange-600', 'label' => 'Refunded'],
                     ];
-                    $currentStatus = $statusConfig[$order->status] ?? ['color' => 'bg-gray-400 text-gray-500', 'label' => $order->status];
                     
+                    $currentStatus = $statusConfig[$order->status] ?? ['color' => 'bg-gray-400 text-gray-500', 'label' => 'Unknown'];
                     $colorClasses = explode(' ', $currentStatus['color']);
                     $dotColor = $colorClasses[0] ?? 'bg-gray-400';
                     $textColor = $colorClasses[1] ?? 'text-gray-500';
@@ -243,7 +244,7 @@
                 </div>
 
                 {{-- 3. Payment / Action Area --}}
-                @if(in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION', 'PAID', 'SHIPPED']))
+                @if(in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION', 'PAID', 'PRODUCTION', 'SHIPPED']))
                 <div class="pt-8 border-t border-gray-100">
                     <h2 class="text-xs font-bold uppercase tracking-[0.15em] text-gray-900 mb-6">Action Required</h2>
                     
@@ -394,10 +395,10 @@
                             {{-- Message --}}
                             <div class="max-w-md mx-auto space-y-3 mb-8">
                                 <p class="text-sm text-gray-700 leading-relaxed">
-                                    Thank you for your payment. Your order is now being prepared by our team.
+                                    Thank you for your payment via PayPal. Your transaction has been successfully completed.
                                 </p>
                                 <p class="text-sm text-gray-700 leading-relaxed">
-                                    We are carefully packaging your jewellery with the utmost attention to detail. You will receive a shipping notification once your order is dispatched.
+                                    Our team will process your order shortly and begin preparing your jewellery. You will receive a notification once your order is being crafted.
                                 </p>
                             </div>
 
@@ -409,6 +410,56 @@
                                 </div>
                                 <div class="flex justify-between items-center pt-3 border-t border-emerald-100">
                                     <span class="text-[10px] uppercase tracking-widest text-gray-500">Paid On</span>
+                                    <span class="text-xs text-gray-900">{{ $order->paid_at->format('M d, Y') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($order->admin_notes)
+                        <div class="mt-6 p-4 bg-purple-50/50 border border-purple-100 text-center max-w-lg mx-auto">
+                            <p class="text-[10px] font-bold uppercase tracking-wide mb-2 text-purple-900">Note from our Team</p>
+                            <p class="text-xs text-purple-800 whitespace-pre-wrap">{{ $order->admin_notes }}</p>
+                        </div>
+                        @endif
+                    
+                    {{-- CASE 2C: PRODUCTION STATUS (BCA Manual that was approved) --}}
+                    @elseif($order->status === 'PRODUCTION')
+                        <div class="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-100 p-10 text-center max-w-2xl mx-auto">
+                            {{-- Production Icon --}}
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 mb-6">
+                                <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                </svg>
+                            </div>
+
+                            {{-- Heading --}}
+                            <h3 class="text-xl font-serif text-gray-900 mb-3">In Production</h3>
+                            <p class="text-xs uppercase tracking-[0.2em] text-teal-700 mb-6">Payment Verified - Order Being Prepared</p>
+
+                            {{-- Divider --}}
+                            <div class="w-16 h-[1px] bg-teal-200 mx-auto mb-6"></div>
+
+                            {{-- Message --}}
+                            <div class="max-w-md mx-auto space-y-3 mb-8">
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    Thank you for your payment. Your order has been verified and is now in production.
+                                </p>
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    Our artisans are carefully crafting your jewellery with meticulous attention to detail. You will receive a shipping notification once your order is ready and dispatched.
+                                </p>
+                            </div>
+
+                            {{-- Payment Details Card --}}
+                            <div class="bg-white/60 backdrop-blur border border-teal-100 p-6 max-w-sm mx-auto">
+                                @php
+                                    $decimals = $order->currency === 'USD' ? 2 : 0;
+                                @endphp
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-[10px] uppercase tracking-widest text-gray-500">Amount Paid</span>
+                                    <span class="text-lg font-serif text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-3 border-t border-teal-100">
+                                    <span class="text-[10px] uppercase tracking-widest text-gray-500">Verified On</span>
                                     <span class="text-xs text-gray-900">{{ $order->paid_at->format('M d, Y') }}</span>
                                 </div>
                             </div>
@@ -490,8 +541,8 @@
 
                             {{-- Step 2: Payment --}}
                             <div class="relative pl-8">
-                                <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
-                                <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Payment</p>
+                                <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
+                                <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Payment</p>
                                 @if($order->paid_at)
                                     <p class="text-[10px] text-gray-400">{{ $order->paid_at->format('M d, Y') }}</p>
                                 @else
@@ -499,7 +550,18 @@
                                 @endif
                             </div>
 
-                            {{-- Step 3: Shipped --}}
+                            {{-- Step 3: Production --}}
+                            <div class="relative pl-8">
+                                <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
+                                <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Production</p>
+                                @if(in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']))
+                                    <p class="text-[10px] text-teal-600">Being Prepared</p>
+                                @else
+                                    <p class="text-[10px] text-gray-300 italic">Pending</p>
+                                @endif
+                            </div>
+
+                            {{-- Step 4: Shipped --}}
                             <div class="relative pl-8">
                                 <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
                                 <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Shipped</p>
@@ -510,7 +572,7 @@
                                 @endif
                             </div>
 
-                            {{-- Step 4: Completed --}}
+                            {{-- Step 5: Completed --}}
                             <div class="relative pl-8">
                                 <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ $order->status === 'COMPLETED' ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
                                 <p class="text-xs uppercase tracking-widest {{ $order->status === 'COMPLETED' ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Completed</p>

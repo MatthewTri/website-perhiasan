@@ -24,7 +24,7 @@
         @endif
 
         {{-- Statistics Cards (Elegant Grid) --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending</p>
                 <p class="text-2xl font-serif text-amber-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
@@ -43,6 +43,11 @@
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Paid</p>
                 <p class="text-2xl font-serif text-emerald-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Production</p>
+                <p class="text-2xl font-serif text-teal-600">{{ $allOrders->where('status', 'PRODUCTION')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
@@ -70,6 +75,7 @@
                         ['label' => 'Invoice Sent', 'status' => 'INVOICE_SENT', 'color' => 'blue'],
                         ['label' => 'Waiting Verification', 'status' => 'WAITING_VERIFICATION', 'color' => 'orange'],
                         ['label' => 'Paid', 'status' => 'PAID', 'color' => 'emerald'],
+                        ['label' => 'Production', 'status' => 'PRODUCTION', 'color' => 'teal'],
                         ['label' => 'Shipped', 'status' => 'SHIPPED', 'color' => 'indigo'],
                         ['label' => 'Completed', 'status' => 'COMPLETED', 'color' => 'stone'],
                         ['label' => 'Cancelled', 'status' => 'CANCELLED', 'color' => 'rose'],
@@ -144,6 +150,7 @@
                                             'INVOICE_SENT' => 'bg-blue-50 text-blue-700 border-blue-100',
                                             'WAITING_VERIFICATION' => 'bg-orange-50 text-orange-700 border-orange-100',
                                             'PAID' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                            'PRODUCTION' => 'bg-teal-50 text-teal-700 border-teal-100',
                                             'SHIPPED' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
                                             'COMPLETED' => 'bg-stone-100 text-stone-700 border-stone-200',
                                             'CANCELLED' => 'bg-rose-50 text-rose-700 border-rose-100',
@@ -195,6 +202,7 @@
                                 'INVOICE_SENT' => 'text-blue-600 bg-blue-50',
                                 'WAITING_VERIFICATION' => 'text-orange-600 bg-orange-50',
                                 'PAID' => 'text-emerald-600 bg-emerald-50',
+                                'PRODUCTION' => 'text-teal-600 bg-teal-50',
                                 'SHIPPED' => 'text-indigo-600 bg-indigo-50',
                                 'COMPLETED' => 'text-stone-600 bg-stone-100',
                                 'CANCELLED' => 'text-rose-600 bg-rose-50',

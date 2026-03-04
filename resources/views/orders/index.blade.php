@@ -64,10 +64,12 @@
                                         'PENDING_REVIEW' => ['color' => 'text-yellow-600', 'label' => 'Pending Review'],
                                         'INVOICE_SENT' => ['color' => 'text-gray-900', 'label' => 'Payment Required'],
                                         'WAITING_VERIFICATION' => ['color' => 'text-purple-600', 'label' => 'Verifying Payment'],
-                                        'PAID' => ['color' => 'text-emerald-700', 'label' => 'Paid'],
+                                        'PAID' => ['color' => 'text-green-700', 'label' => 'Paid'],
+                                        'PRODUCTION' => ['color' => 'text-green-600', 'label' => 'In Production'],
                                         'SHIPPED' => ['color' => 'text-blue-600', 'label' => 'In Transit'],
                                         'COMPLETED' => ['color' => 'text-gray-900', 'label' => 'Completed'],
                                         'CANCELLED' => ['color' => 'text-red-600', 'label' => 'Cancelled'],
+                                        'REFUNDED' => ['color' => 'text-orange-600', 'label' => 'Refunded'],
                                     ];
                                     $status = $statusConfig[$order->status] ?? ['color' => 'text-gray-500', 'label' => $order->status];
                                 @endphp
