@@ -57,14 +57,14 @@
                     <!-- Refund Amount Section -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 20px 0;">
                                             Refund Amount
                                         </p>
                                         
-                                        <h2 style="font-size: 36px; color: #16a34a; margin: 0; font-weight: 400;">
+                                        <h2 style="font-size: 36px; color: #1c1917; margin: 0; font-weight: 400;">
                                             @if($order->currency === 'USD')
                                                 ${{ number_format($order->refund_amount, 2) }}
                                             @else
@@ -121,9 +121,9 @@
                     <!-- Refund Processing Info -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #f0f9ff; padding: 20px; border-left: 2px solid #0ea5e9;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #0c4a6e; margin: 0 0 8px 0;">Processing Time</p>
-                                <p style="font-size: 13px; color: #0c4a6e; margin: 0; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Processing Time</p>
+                                <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     @if($order->payment_gateway === 'PAYPAL')
                                         Your refund has been processed back to your PayPal account. It may take 5-10 business days for the funds to appear in your account, depending on your PayPal settings.
                                     @else
@@ -196,7 +196,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

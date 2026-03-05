@@ -57,13 +57,13 @@
                     <!-- Order Info Banner -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E8B49E; border-bottom: 2px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E3CFCF; border-bottom: 2px solid #E3CFCF;">
                                 <tr>
-                                    <td align="center" style="padding: 30px 20px; background-color: #fef8f3;">
+                                    <td align="center" style="padding: 30px 20px; background-color: #faf7f7;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 10px 0;">
                                             Order Number
                                         </p>
-                                        <h2 style="font-family: 'Georgia', serif; font-size: 28px; color: #E8B49E; margin: 0 0 15px 0; font-weight: 400; letter-spacing: 0.5px;">
+                                        <h2 style="font-family: 'Georgia', serif; font-size: 28px; color: #78716c; margin: 0 0 15px 0; font-weight: 400; letter-spacing: 0.5px;">
                                             {{ $order->order_number }}
                                         </h2>
                                         <p style="font-size: 12px; color: #78716c; margin: 0;">
@@ -92,7 +92,7 @@
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 15px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Contact Email</span>
-                                        <a href="mailto:{{ $order->contact_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">
+                                        <a href="mailto:{{ $order->contact_email }}" style="font-size: 14px; color: #1c1917; text-decoration: none; border-bottom: 1px dotted #E3CFCF;">
                                             {{ $order->contact_email }}
                                         </a>
                                     </td>
@@ -150,7 +150,7 @@
                                         @endif
                                     </td>
                                     <td width="30%" valign="top" align="right">
-                                        <span style="font-size: 14px; color: #E8B49E; font-weight: 600;">
+                                        <span style="font-size: 14px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
                                                 ${{ number_format($item->price_usd * $item->quantity, 2) }}
                                             @else
@@ -163,13 +163,13 @@
                             @endforeach
 
                             <!-- Subtotal -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E8B49E; padding-top: 15px; margin-top: 10px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #1c1917; padding-top: 15px; margin-top: 10px;">
                                 <tr>
                                     <td style="padding: 5px 0;">
                                         <span style="font-size: 14px; color: #1c1917; font-weight: 600;">Subtotal</span>
                                     </td>
                                     <td align="right" style="padding: 5px 0;">
-                                        <span style="font-family: 'Georgia', serif; font-size: 18px; color: #E8B49E; font-weight: 600;">
+                                        <span style="font-family: 'Georgia', serif; font-size: 18px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
                                                 ${{ number_format($order->subtotal_usd, 2) }}
                                             @else
@@ -186,9 +186,9 @@
                     @if($order->order_notes)
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fffbeb; padding: 20px; border-left: 2px solid #f59e0b;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; margin: 0 0 8px 0;">Customer Notes</p>
-                                <p style="font-size: 14px; color: #78350f; margin: 0; font-style: italic; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Customer Notes</p>
+                                <p style="font-size: 14px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
                                     "{{ $order->order_notes }}"
                                 </p>
                             </div>
@@ -199,7 +199,7 @@
                     <!-- Action Required -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fef8f3; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Next Steps</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     Please review this order and send payment details to the customer within 24 hours. Don't forget to calculate the shipping cost based on the customer's location.
@@ -227,8 +227,11 @@
                             <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">
                                 Admin Panel
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0 0 10px 0;">
                                 Order #{{ $order->order_number }}
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

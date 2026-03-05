@@ -58,7 +58,6 @@
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
                             <div style="background: linear-gradient(135deg, #faf7f5 0%, #f5f1ee 100%); padding: 40px; border-radius: 4px;">
-                                <p style="font-size: 48px; margin: 0 0 15px 0;">💎</p>
                                 <p style="font-family: 'Georgia', serif; font-size: 18px; color: #1c1917; margin: 0; font-style: italic;">
                                     Your order has been completed
                                 </p>
@@ -94,7 +93,7 @@
                                         <span style="font-size: 12px; color: #a8a29e;">Quantity: {{ $item->quantity }}</span>
                                     </td>
                                     <td width="30%" valign="top" align="right">
-                                        <span style="font-size: 14px; color: #E8B49E; font-weight: 600;">
+                                        <span style="font-size: 14px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
                                                 ${{ number_format($item->price_usd * $item->quantity, 2) }}
                                             @else
@@ -111,7 +110,7 @@
                     <!-- Care Instructions -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fef8f3; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Care for Your Jewellery</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0 0 10px 0; line-height: 1.6;">
                                     To maintain the beauty and longevity of your jewellery:
@@ -129,7 +128,7 @@
                     <!-- Review Request Section -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 15px 0;">
@@ -139,7 +138,7 @@
                                             We'd love to hear what you think about your purchase. Your feedback helps us and other customers make informed decisions.
                                         </p>
                                         <a href="{{ $magicLink }}" 
-                                           style="background-color: #E8B49E; color: #ffffff; padding: 14px 28px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.2px; text-decoration: none; border-radius: 2px; display: inline-block;">
+                                           style="background-color: #E3CFCF; color: #ffffff; padding: 14px 28px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.2px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                             Write a Review
                                         </a>
                                     </td>
@@ -151,7 +150,7 @@
                     <!-- Refund Policy Reminder -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #a8a29e;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Refund Policy</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     You have <strong>14 days</strong> from the completion date to request a refund if you're not completely satisfied with your purchase. Please ensure items are in their original condition.
@@ -180,7 +179,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

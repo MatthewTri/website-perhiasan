@@ -57,16 +57,16 @@
                     <!-- Cancellation Notice -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #71717a; border-bottom: 1px solid #71717a;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
-                                    <td align="center" style="padding: 30px 20px; background-color: #fafafa;">
-                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #52525b; margin: 0 0 15px 0;">
+                                    <td align="center" style="padding: 30px 20px; background-color: #faf7f7;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin: 0 0 15px 0;">
                                             Order Status
                                         </p>
-                                        <p style="font-size: 16px; color: #18181b; margin: 0 0 10px 0; font-weight: 600;">
+                                        <p style="font-size: 16px; color: #1c1917; margin: 0 0 10px 0; font-weight: 600;">
                                             This order has been cancelled
                                         </p>
-                                        <p style="font-size: 13px; color: #71717a; margin: 0; line-height: 1.6;">
+                                        <p style="font-size: 13px; color: #78716c; margin: 0; line-height: 1.6;">
                                             Your order was cancelled on {{ now()->format('F j, Y') }}
                                         </p>
                                     </td>
@@ -131,7 +131,7 @@
                                         </span>
                                     </td>
                                 </tr>
-                                <tr style="border-top: 2px solid #E8B49E;">
+                                <tr style="border-top: 2px solid #E3CFCF;">
                                     <td style="padding: 15px 0 0 0;">
                                         <span style="font-size: 14px; color: #1c1917; font-weight: 600;">Total</span>
                                     </td>
@@ -153,9 +153,9 @@
                     @if(in_array($order->status, ['WAITING_VERIFICATION', 'PAID']) && $order->payment_gateway === 'MANUAL')
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #ecfdf5; padding: 20px; border-left: 2px solid #10b981;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #065f46; margin: 0 0 8px 0;">Refund Information</p>
-                                <p style="font-size: 13px; color: #047857; margin: 0; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Refund Information</p>
+                                <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     Since you've already made payment, we will process your refund within 3-5 business days to the same account you used for payment. You will receive a confirmation email once the refund is completed.
                                 </p>
                             </div>
@@ -166,7 +166,7 @@
                     <!-- Message -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6; text-align: center; font-style: italic;">
                                     We're sorry to see this order cancelled. We hope to serve you again in the future with our finest collection of jewellery.
                                 </p>
@@ -194,7 +194,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

@@ -57,7 +57,7 @@
                     <!-- Shipping Details Section -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 20px 0;">
@@ -74,7 +74,7 @@
                                             <tr>
                                                 <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4;">
                                                     <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Tracking Number</span>
-                                                    <span style="font-size: 18px; color: #E8B49E; font-weight: 600; letter-spacing: 1px;">{{ $order->shipment->tracking_number }}</span>
+                                                    <span style="font-size: 18px; color: #1c1917; font-weight: 600; letter-spacing: 1px;">{{ $order->shipment->tracking_number }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -93,7 +93,7 @@
                     <!-- Info Box -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Delivery Information</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     Your precious items are being carefully handled and will arrive soon. You can track your package using the tracking number above on the courier's website.
@@ -122,7 +122,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

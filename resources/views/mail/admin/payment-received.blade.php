@@ -62,16 +62,16 @@
                     <!-- Manual Payment Alert -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #f59e0b; border-bottom: 2px solid #f59e0b;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E3CFCF; border-bottom: 2px solid #E3CFCF;">
                                 <tr>
-                                    <td align="center" style="padding: 30px 20px; background-color: #fffbeb;">
-                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #92400e; margin: 0 0 15px 0;">
-                                            ⚠ Action Required
+                                    <td align="center" style="padding: 30px 20px; background-color: #faf7f7;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin: 0 0 15px 0;">
+                                            Action Required
                                         </p>
-                                        <p style="font-size: 16px; color: #78350f; margin: 0 0 10px 0; font-weight: 600;">
+                                        <p style="font-size: 16px; color: #1c1917; margin: 0 0 10px 0; font-weight: 600;">
                                             Customer has uploaded payment proof
                                         </p>
-                                        <p style="font-size: 13px; color: #a16207; margin: 0; line-height: 1.6;">
+                                        <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                             Please verify the transfer receipt and approve or reject the payment
                                         </p>
                                     </td>
@@ -83,16 +83,16 @@
                     <!-- PayPal Payment Success -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #10b981; border-bottom: 2px solid #10b981;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E3CFCF; border-bottom: 2px solid #E3CFCF;">
                                 <tr>
-                                    <td align="center" style="padding: 30px 20px; background-color: #ecfdf5;">
-                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #065f46; margin: 0 0 15px 0;">
-                                            ✓ Payment Successful
+                                    <td align="center" style="padding: 30px 20px; background-color: #faf7f7;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin: 0 0 15px 0;">
+                                            Payment Successful
                                         </p>
-                                        <p style="font-size: 16px; color: #047857; margin: 0 0 10px 0; font-weight: 600;">
+                                        <p style="font-size: 16px; color: #1c1917; margin: 0 0 10px 0; font-weight: 600;">
                                             PayPal payment completed successfully
                                         </p>
-                                        <p style="font-size: 13px; color: #059669; margin: 0; line-height: 1.6;">
+                                        <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                             You can now prepare and ship this order
                                         </p>
                                     </td>
@@ -131,7 +131,7 @@
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 15px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Amount</span>
-                                        <span style="font-size: 16px; color: #E8B49E; font-weight: 600;">
+                                        <span style="font-size: 16px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
                                                 ${{ number_format($order->total_amount, 2) }}
                                             @else
@@ -156,7 +156,7 @@
                     <!-- Payment Proof -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Payment Proof Attached</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     The customer has uploaded their transfer receipt. Please review it in the admin panel to verify the payment details match the invoice.
@@ -224,8 +224,11 @@
                             <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">
                                 Admin Panel
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0 0 10px 0;">
                                 Order #{{ $order->order_number }}
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

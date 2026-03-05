@@ -57,7 +57,7 @@
                     <!-- Production Details Section -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 20px 0;">
@@ -68,7 +68,7 @@
                                             <tr>
                                                 <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4;">
                                                     <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Status</span>
-                                                    <span style="font-size: 18px; color: #E8B49E; font-weight: 600; letter-spacing: 0.5px;">In Production</span>
+                                                    <span style="font-size: 18px; color: #1c1917; font-weight: 600; letter-spacing: 0.5px;">In Production</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -93,7 +93,7 @@
                     <!-- Info Box -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Handcrafted Excellence</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     Our skilled artisans are now meticulously crafting your jewelry piece. Each item is handmade with exceptional attention to detail, ensuring it meets our highest standards of quality and beauty. We will notify you once your order is ready and shipped.
@@ -106,9 +106,9 @@
                     @if($order->admin_notes)
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 30px 50px;">
-                            <div style="background-color: #fffbeb; padding: 20px; border-left: 2px solid #fbbf24;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; margin: 0 0 8px 0;">Special Note from Admin</p>
-                                <p style="font-size: 13px; color: #78350f; margin: 0; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Special Note from Admin</p>
+                                <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     {{ $order->admin_notes }}
                                 </p>
                             </div>
@@ -136,7 +136,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

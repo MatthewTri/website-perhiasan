@@ -61,7 +61,7 @@
                     <!-- Order Summary Box -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td style="padding: 25px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 20px 0; text-align: center;">
@@ -125,10 +125,10 @@
                                             
                                             <!-- Estimated Total -->
                                             <tr>
-                                                <td colspan="2" style="padding: 15px 0 0 0; border-top: 2px solid #E8B49E;">
+                                                <td colspan="2" style="padding: 15px 0 0 0; border-top: 2px solid #E3CFCF;">
                                                     <span style="font-size: 12px; color: #1c1917; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Estimated Total</span>
                                                 </td>
-                                                <td align="right" style="padding: 15px 0 0 15px; border-top: 2px solid #E8B49E;">
+                                                <td align="right" style="padding: 15px 0 0 15px; border-top: 2px solid #E3CFCF;">
                                                     <span style="font-size: 18px; color: #1c1917; font-weight: 600;">
                                                         @if($order->payment_preference === 'PAYPAL')
                                                             ${{ number_format($order->subtotal_usd, 2) }}+
@@ -149,7 +149,7 @@
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #a8a29e; margin: 0 0 12px 0;">Shipping Address</p>
-                            <div style="background-color: #fafaf9; padding: 18px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 18px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 14px; color: #1c1917; margin: 0 0 6px 0; font-weight: 500;">
                                     {{ $order->shipment->first_name }} {{ $order->shipment->last_name }}
                                 </p>
@@ -167,7 +167,7 @@
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #a8a29e; margin: 0 0 12px 0;">Payment Preference</p>
-                            <div style="background-color: #fef8f3; padding: 18px; border-left: 2px solid #E8B49E; text-align: center;">
+                            <div style="background-color: #faf7f7; padding: 18px; border-left: 2px solid #E3CFCF; text-align: center;">
                                 <span style="font-size: 16px; color: #1c1917; font-weight: 500;">
                                     @if($order->payment_preference === 'PAYPAL')
                                         PayPal
@@ -182,9 +182,9 @@
                     <!-- Next Steps -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #f0f9ff; padding: 20px; border-left: 2px solid #0ea5e9;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #0c4a6e; margin: 0 0 10px 0;">What Happens Next?</p>
-                                <ol style="font-size: 13px; color: #0c4a6e; margin: 0; padding-left: 20px; line-height: 1.8;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 10px 0;">What Happens Next?</p>
+                                <ol style="font-size: 13px; color: #44403c; margin: 0; padding-left: 20px; line-height: 1.8;">
                                     <li>Our team will review your order and calculate shipping costs</li>
                                     <li>You'll receive payment instructions via email within 24 hours</li>
                                     <li>Complete your payment using your preferred method</li>
@@ -198,9 +198,9 @@
                     <!-- Customer Notes -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fffbeb; padding: 18px; border-left: 2px solid #f59e0b;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; margin: 0 0 8px 0;">Your Note</p>
-                                <p style="font-size: 13px; color: #78350f; margin: 0; font-style: italic; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 18px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Your Note</p>
+                                <p style="font-size: 13px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
                                     "{{ $order->order_notes }}"
                                 </p>
                             </div>
@@ -249,7 +249,7 @@
                                 Placed on {{ $order->created_at->format('F d, Y \a\t g:i A') }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

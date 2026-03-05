@@ -57,13 +57,13 @@
                     <!-- Alert Section -->
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #dc2626; border-bottom: 2px solid #dc2626;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #E3CFCF; border-bottom: 2px solid #E3CFCF;">
                                 <tr>
-                                    <td align="center" style="padding: 30px 20px; background-color: #fef2f2;">
-                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #991b1b; margin: 0 0 15px 0;">
-                                            ⚠ Payment Verification Issue
+                                    <td align="center" style="padding: 30px 20px; background-color: #faf7f7;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin: 0 0 15px 0;">
+                                            Payment Verification Issue
                                         </p>
-                                        <p style="font-size: 14px; color: #7f1d1d; margin: 0; line-height: 1.6;">
+                                        <p style="font-size: 14px; color: #1c1917; margin: 0; line-height: 1.6;">
                                             We were unable to verify your payment proof. <br>Please submit a new payment confirmation.
                                         </p>
                                     </td>
@@ -76,9 +76,9 @@
                     @if($order->rejection_notes)
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fffbeb; padding: 20px; border-left: 2px solid #f59e0b;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; margin: 0 0 8px 0;">Reason</p>
-                                <p style="font-size: 14px; color: #78350f; margin: 0; font-style: italic; line-height: 1.6;">
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Reason</p>
+                                <p style="font-size: 14px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
                                     "{{ $order->rejection_notes }}"
                                 </p>
                             </div>
@@ -111,7 +111,7 @@
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 15px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Amount</span>
-                                        <span style="font-size: 16px; color: #E8B49E; font-weight: 600;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                        <span style="font-size: 16px; color: #1c1917; font-weight: 600;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -121,7 +121,7 @@
                     <!-- Instructions -->
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E;">
+                            <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E3CFCF;">
                                 <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Next Steps</p>
                                 <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
                                     Please ensure your payment proof image is clear and shows:
@@ -153,7 +153,7 @@
                                 Order #{{ $order->order_number }}
                             </p>
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
-                                Questions? Contact us at {{ config('mail.from.address') }}
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>
