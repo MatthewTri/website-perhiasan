@@ -11,6 +11,7 @@ use App\Mail\Order\PaymentRejectedMail;
 use App\Mail\Order\OrderCancelledMail;
 use App\Mail\Order\OrderCompletedMail;
 use App\Mail\Order\RefundProcessedMail;
+use App\Mail\Order\OrderInProductionMail;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -156,6 +157,17 @@ class OrderController extends Controller
                 'rejection_notes' => null,
             ]);
 
+            // Send production notification email
+            $magicLink = route('order.track', $order->guest_token);
+            try {
+                Mail::to($order->contact_email)->queue(new OrderInProductionMail($order, $magicLink));
+            } catch (\Exception $e) {
+                Log::error('Failed to send production notification email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
             return back()->with('success', 'Payment approved! Order is now in PRODUCTION. Please fill shipping details when ready.');
         } 
         
@@ -201,6 +213,17 @@ class OrderController extends Controller
         $order->update([
             'status' => 'PRODUCTION',
         ]);
+
+        // Send production notification email
+        $magicLink = route('order.track', $order->guest_token);
+        try {
+            Mail::to($order->contact_email)->queue(new OrderInProductionMail($order, $magicLink));
+        } catch (\Exception $e) {
+            Log::error('Failed to send production notification email', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return back()->with('success', 'Order moved to PRODUCTION! You can now fill shipping details when ready.');
     }

@@ -554,8 +554,10 @@
                             <div class="relative pl-8">
                                 <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
                                 <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Production</p>
-                                @if(in_array($order->status, ['PRODUCTION','SHIPPED','COMPLETED']))
+                                @if($order->status === 'PRODUCTION')
                                     <p class="text-[10px] text-teal-600">Being Prepared</p>
+                                @elseif(in_array($order->status, ['SHIPPED','COMPLETED']))
+                                    <p class="text-[10px] text-gray-400">Done</p>
                                 @else
                                     <p class="text-[10px] text-gray-300 italic">Pending</p>
                                 @endif
