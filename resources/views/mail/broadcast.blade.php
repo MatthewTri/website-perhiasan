@@ -43,7 +43,7 @@
                     <!-- Banner Divider -->
                     <tr>
                         <td style="padding: 0 40px;">
-                            <div style="height: 2px; background: linear-gradient(to right, transparent, #E8B49E, transparent);"></div>
+                            <div style="height: 2px; background: linear-gradient(to right, transparent, #E3CFCF, transparent);"></div>
                         </td>
                     </tr>
 
@@ -64,43 +64,19 @@
                         </td>
                     </tr>
 
-                    <!-- Divider -->
-                    <tr>
-                        <td style="padding: 0 40px;">
-                            <div style="height: 1px; background-color: #f5f5f4;"></div>
-                        </td>
-                    </tr>
-
                     <!-- Footer -->
                     <tr>
-                        <td align="center" style="padding: 30px 50px; background-color: #fafaf9;">
-                            <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin: 0 0 15px 0;">
+                        <td align="center" style="border-top: 1px solid #f5f5f4; padding: 30px; background-color: #ffffff;">
+                            <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
                                 Cecile Private Collection
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0;">
-                                Timeless Elegance • Exquisite Jewellery
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0 0 15px 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
-                            
-                            <!-- Social Links -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="#" style="display: inline-block; margin: 0 8px;">
-                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram" width="20" height="20" style="opacity: 0.5;">
-                                        </a>
-                                        <a href="#" style="display: inline-block; margin: 0 8px;">
-                                            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="20" height="20" style="opacity: 0.5;">
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <!-- Unsubscribe Link -->
                             <p style="color: #d6d3d1; font-size: 10px; margin: 0; line-height: 1.6;">
-                                You're receiving this email because you subscribed to our newsletter.<br>
                                 <a href="{{ url('/unsubscribe?email=' . urlencode($subscriberEmail)) }}" 
-                                   style="color: #E8B49E; text-decoration: underline;">
-                                    Click here to unsubscribe
+                                   style="color: #E3CFCF; text-decoration: underline;">
+                                    Unsubscribe from newsletter
                                 </a>
                             </p>
                         </td>

@@ -58,7 +58,7 @@
                     {{-- Appointment Schedule Box --}}
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 10px 0;">
@@ -150,11 +150,11 @@
                                 <tr>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</span>
-                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</a>
+                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #1c1917; text-decoration: none;">{{ $customRequest->user_email }}</a>
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</span>
-                                        <span style="font-size: 14px; color: #1c1917;">{{ $customRequest->user_phone }}</span>
+                                        <a href="tel:{{ $customRequest->user_phone }}" style="font-size: 14px; color: #1c1917; text-decoration: none;">{{ $customRequest->user_phone }}</a>
                                     </td>
                                 </tr>
                             </table>
@@ -165,7 +165,7 @@
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             @if($customRequest->appointment_notes)
-                                <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E; margin-bottom: 20px;">
+                                <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF; margin-bottom: 20px;">
                                     <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Your Notes</p>
                                     <p style="font-size: 14px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
                                         "{{ $customRequest->appointment_notes }}"
@@ -200,8 +200,8 @@
                                         <table cellpadding="0" cellspacing="0" border="0">
                                             <tr>
                                                 <td valign="top" style="padding-right: 15px; width: 30px;">
-                                                    <div style="width: 24px; height: 24px; background-color: #F6EDE7; border-radius: 50%; text-align: center; line-height: 24px;">
-                                                        <span style="color: #E8B49E; font-weight: bold; font-size: 12px;">1</span>
+                                                    <div style="width: 24px; height: 24px; background-color: #faf7f7; border-radius: 50%; text-align: center; line-height: 24px;">
+                                                        <span style="color: #E3CFCF; font-weight: bold; font-size: 12px;">1</span>
                                                     </div>
                                                 </td>
                                                 <td valign="top">
@@ -218,8 +218,8 @@
                                         <table cellpadding="0" cellspacing="0" border="0">
                                             <tr>
                                                 <td valign="top" style="padding-right: 15px; width: 30px;">
-                                                    <div style="width: 24px; height: 24px; background-color: #F6EDE7; border-radius: 50%; text-align: center; line-height: 24px;">
-                                                        <span style="color: #E8B49E; font-weight: bold; font-size: 12px;">2</span>
+                                                    <div style="width: 24px; height: 24px; background-color: #faf7f7; border-radius: 50%; text-align: center; line-height: 24px;">
+                                                        <span style="color: #E3CFCF; font-weight: bold; font-size: 12px;">2</span>
                                                     </div>
                                                 </td>
                                                 <td valign="top">
@@ -236,8 +236,8 @@
                                         <table cellpadding="0" cellspacing="0" border="0">
                                             <tr>
                                                 <td valign="top" style="padding-right: 15px; width: 30px;">
-                                                    <div style="width: 24px; height: 24px; background-color: #F6EDE7; border-radius: 50%; text-align: center; line-height: 24px;">
-                                                        <span style="color: #E8B49E; font-weight: bold; font-size: 12px;">3</span>
+                                                    <div style="width: 24px; height: 24px; background-color: #faf7f7; border-radius: 50%; text-align: center; line-height: 24px;">
+                                                        <span style="color: #E3CFCF; font-weight: bold; font-size: 12px;">3</span>
                                                     </div>
                                                 </td>
                                                 <td valign="top">
@@ -256,20 +256,20 @@
                     {{-- Important Notice - Cancellation Policy --}}
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #fff8f3; padding: 25px; border-left: 3px solid #E8B49E; border-radius: 0 4px 4px 0;">
-                                <p style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #8B5A3C; margin: 0 0 12px 0;">
+                            <div style="background-color: #faf7f7; padding: 25px; border-left: 3px solid #E3CFCF; border-radius: 0 4px 4px 0;">
+                                <p style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #78716c; margin: 0 0 12px 0;">
                                     Important Notice
                                 </p>
-                                <p style="font-size: 14px; color: #57534e; margin: 0 0 15px 0; line-height: 1.7;">
+                                <p style="font-size: 14px; color: #44403c; margin: 0 0 15px 0; line-height: 1.7;">
                                     To cancel or reschedule your appointment, please notify us at least <strong style="color: #1c1917;">24 hours in advance</strong>. Late cancellations or no-shows may affect future booking privileges.
                                 </p>
                                 <p style="font-size: 13px; color: #78716c; margin: 0 0 6px 0;">
                                     <strong style="color: #1c1917;">Email:</strong> 
-                                    <a href="mailto:cecileprivatecollection@gmail.com" style="color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">cecileprivatecollection@gmail.com</a>
+                                    <a href="mailto:cecileprivatecollection@gmail.com" style="color: #1c1917; text-decoration: none;">cecileprivatecollection@gmail.com</a>
                                 </p>
                                 <p style="font-size: 13px; color: #78716c; margin: 0;">
                                     <strong style="color: #1c1917;">WhatsApp:</strong> 
-                                    <a href="https://wa.me/6287766999564" style="color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">+6287766999564</a>
+                                    <a href="https://wa.me/6287766999564" style="color: #1c1917; text-decoration: none;">+6287766999564</a>
                                 </p>
                             </div>
                         </td>
@@ -291,8 +291,8 @@
                             <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
                                 Cecile Private Collection
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
-                                &copy; {{ date('Y') }} All rights reserved.
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

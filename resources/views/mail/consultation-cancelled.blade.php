@@ -57,10 +57,10 @@
                     {{-- Cancelled Appointment Box (Clean Design) --}}
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 2px solid #a8a29e; border-bottom: 2px solid #a8a29e; background-color: #fafaf9;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
-                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin: 0 0 15px 0;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 15px 0;">
                                             Cancelled Appointment Details
                                         </p>
                                         <h2 style="font-family: 'Georgia', serif; font-size: 24px; color: #44403c; margin: 0 0 5px 0; font-weight: 400;">
@@ -90,8 +90,8 @@
                     @if($customRequest->admin_notes)
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 30px 50px;">
-                            <div style="background-color: #fff8f3; padding: 20px; border-left: 2px solid #E8B49E; margin-bottom: 20px;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #8B5A3C; margin: 0 0 8px 0;">Note from our team</p>
+                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF; margin-bottom: 20px;">
+                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Note from our team</p>
                                 <p style="font-size: 14px; color: #44403c; margin: 0; line-height: 1.6;">
                                     {{ $customRequest->admin_notes }}
                                 </p>
@@ -115,13 +115,13 @@
                             <table cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td style="padding: 0 10px;">
-                                        <a href="{{ url('/custom-request') }}" 
+                                        <a href="{{ route('consultation.index') }}" 
                                            style="background-color: #1c1917; color: #ffffff; padding: 14px 28px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                             Book New Appointment
                                         </a>
                                     </td>
                                     <td style="padding: 0 10px;">
-                                        <a href="mailto:cecileprivatecollection@gmail.com" 
+                                        <a href="mailto:{{ config('mail.from.address') }}" 
                                            style="background-color: #ffffff; color: #1c1917; border: 1px solid #d6d3d1; padding: 13px 28px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                             Contact Us
                                         </a>
@@ -137,8 +137,8 @@
                             <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
                                 Cecile Private Collection
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
-                                &copy; {{ date('Y') }} All rights reserved.
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>

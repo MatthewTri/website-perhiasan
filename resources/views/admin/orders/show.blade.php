@@ -239,7 +239,7 @@
                                 
                             @else
                                 <p class="text-sm font-medium text-gray-900">PayPal</p>
-                                <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->transaction_id }}</p>
+                                <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->capture_id }}</p>
                                 
                                 {{-- PayPal Status tetap sama seperti sebelumnya --}}
                                 @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])

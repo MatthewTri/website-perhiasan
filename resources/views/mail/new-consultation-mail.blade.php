@@ -54,7 +54,7 @@
 
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E8B49E; border-bottom: 1px solid #E8B49E;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #E3CFCF; border-bottom: 1px solid #E3CFCF;">
                                 <tr>
                                     <td align="center" style="padding: 30px 20px;">
                                         <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: #a8a29e; margin: 0 0 10px 0;">
@@ -139,7 +139,7 @@
                                 <tr>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</span>
-                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #E8B49E; text-decoration: none; border-bottom: 1px dotted #E8B49E;">{{ $customRequest->user_email }}</a>
+                                        <a href="mailto:{{ $customRequest->user_email }}" style="font-size: 14px; color: #1c1917; text-decoration: none;">{{ $customRequest->user_email }}</a>
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 20px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</span>
@@ -153,7 +153,7 @@
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 40px 50px;">
                             @if($customRequest->appointment_notes)
-                                <div style="background-color: #fafaf9; padding: 20px; border-left: 2px solid #E8B49E; margin-bottom: 20px;">
+                                <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF; margin-bottom: 20px;">
                                     <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Client Notes</p>
                                     <p style="font-size: 14px; color: #44403c; margin: 0; font-style: italic; line-height: 1.6;">
                                         "{{ $customRequest->appointment_notes }}"
@@ -189,8 +189,11 @@
                             <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
                                 Cecile Private Collection
                             </p>
-                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
-                                &copy; {{ date('Y') }} All rights reserved.
+                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">
+                                Admin Panel
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                Questions? Contact: {{ config('mail.from.address') }} | WhatsApp: +6287766999564
                             </p>
                         </td>
                     </tr>
