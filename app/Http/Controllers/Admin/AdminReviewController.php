@@ -55,6 +55,11 @@ class AdminReviewController extends Controller
 
         $reviews = $query->paginate(10)->onEachSide(1)->withQueryString();
 
+        // Return partial view for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return view('admin.reviews.index', compact('reviews'))->render();
+        }
+
         return view('admin.reviews.index', compact('reviews'));
     }
 

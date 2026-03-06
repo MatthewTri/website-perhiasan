@@ -13,7 +13,7 @@
             </div>
             <div class="hidden md:flex gap-6 text-sm text-stone-500">
                 <div class="flex flex-col items-end">
-                    <span class="font-bold text-stone-900 text-lg">{{ $reviews->total() }}</span>
+                    <span class="font-bold text-stone-900 text-lg" id="totalReviews">{{ $reviews->total() }}</span>
                     <span>Total Reviews</span>
                 </div>
             </div>
@@ -26,13 +26,16 @@
         @endif
 
         <div class="bg-stone-50 rounded-sm border border-stone-100 p-6 mb-8">
-            <form method="GET" action="{{ route('admin.reviews.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
                 <div class="md:col-span-5">
                     <label for="search" class="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Search</label>
                     <div class="relative">
                         <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Product, customer, order ID or comment..."
                                class="w-full bg-white border-b-2 border-stone-200 px-0 py-2 text-stone-800 placeholder-stone-300 focus:outline-none focus:border-stone-800 transition-colors font-serif">
-                        <svg class="w-4 h-4 text-stone-400 absolute right-0 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg id="searchLoading" class="hidden w-4 h-4 text-stone-400 absolute right-0 top-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <svg id="searchIcon" class="w-4 h-4 text-stone-400 absolute right-0 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
 
@@ -58,175 +61,167 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-3 px-4 rounded-sm transition duration-300 text-xs uppercase tracking-widest shadow-md hover:shadow-lg">
-                        Filter
+                    <button type="button" id="clearFilters" class="w-full bg-stone-600 hover:bg-stone-700 text-white font-medium py-3 px-4 rounded-sm transition duration-300 text-xs uppercase tracking-widest shadow-md hover:shadow-lg">
+                        Clear Filters
                     </button>
                 </div>
-            </form>
-        </div>
-
-        @if($reviews->isEmpty())
-        <div class="py-24 text-center border border-dashed border-stone-200 rounded-lg">
-            <svg class="w-16 h-16 mx-auto text-stone-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-            </svg>
-            <h3 class="text-lg font-serif text-stone-900 mb-1">No reviews found</h3>
-            <p class="text-stone-500 text-sm">Try adjusting your filters or search criteria.</p>
-        </div>
-        @else
-
-        {{-- 
-            ===========================================
-            MOBILE VIEW (Cards) - Visible on < md
-            =========================================== 
-        --}}
-        <div class="block md:hidden space-y-6">
-            @foreach($reviews as $review)
-            <div class="bg-white border border-stone-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] rounded-lg overflow-hidden relative">
-                
-                {{-- Card Header: Order Info --}}
-                <div class="p-5 border-b border-stone-50">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <p class="text-xs text-stone-400 uppercase tracking-wider mb-0.5">Order</p>
-                            <p class="text-base font-mono font-bold text-stone-900">#{{ $review->order->order_number }}</p>
-                        </div>
-                        <div class="flex items-center">
-                            @for($i = 1; $i <= 5; $i++)
-                                <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-500' : 'text-stone-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            @endfor
-                        </div>
-                    </div>
-                    <p class="text-xs text-stone-500">{{ $review->product->name }}</p>
-                </div>
-
-                {{-- Card Body: Review Comment (PRIORITAS UTAMA) --}}
-                <div class="p-5 bg-stone-50/50">
-                    <p class="text-xs text-stone-400 uppercase tracking-wider mb-2">Customer Review</p>
-                    @if($review->comment)
-                        <p class="text-stone-900 leading-relaxed text-sm">{{ $review->comment }}</p>
-                    @else
-                        <p class="text-stone-300 italic text-sm">No written comment provided</p>
-                    @endif
-
-                    @if($review->image)
-                        <div class="mt-3">
-                            <img src="{{ asset('storage/' . $review->image) }}" onclick="window.open(this.src, '_blank')" class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition border border-stone-200">
-                            <p class="text-[10px] text-stone-400 mt-1 text-center">Tap to view full image</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Card Footer: Customer & Status Toggle --}}
-                <div class="bg-white px-5 py-4 flex items-center justify-between border-t border-stone-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-stone-200 flex items-center justify-center text-xs font-bold text-stone-600">
-                            {{ substr($review->anonymous ? 'A' : $review->order->shipment->first_name, 0, 1) }}
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-stone-700">
-                                {{ $review->anonymous ? 'Anonymous' : $review->order->shipment->first_name }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('admin.reviews.toggle', $review) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="text-xs font-bold px-4 py-2 rounded-full border-2 transition-all {{ $review->is_visible ? 'border-[#E3CFCF] text-stone-700 bg-[#E3CFCF] hover:bg-[#d4c0c0]' : 'border-[#E3CFCF] text-stone-700 bg-white hover:bg-[#E3CFCF]' }}">
-                            {{ $review->is_visible ? 'HIDE' : 'SHOW' }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- 
-            ===========================================
-            DESKTOP VIEW (Table) - Visible on md+
-            =========================================== 
-        --}}
-        <div class="hidden md:block bg-white rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-stone-100">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-stone-50 border-b border-stone-100">
-                        <tr>
-                            <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] w-[12%]">Order ID</th>
-                            <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] w-[15%]">Customer & Rating</th>
-                            <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] w-[58%]">Review Comment</th>
-                            <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] text-center w-[15%]">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-stone-50">
-                        @foreach($reviews as $review)
-                        <tr class="group hover:bg-stone-50/50 transition-colors">
-                            
-                            {{-- Order ID --}}
-                            <td class="px-6 py-5 align-top">
-                                <div class="space-y-2">
-                                    <p class="text-sm font-mono font-bold text-stone-900">#{{ $review->order->order_number }}</p>
-                                    <p class="text-xs text-stone-500 line-clamp-2">{{ $review->product->name }}</p>
-                                </div>
-                            </td>
-
-                            {{-- Customer & Rating --}}
-                            <td class="px-6 py-5 align-top">
-                                <div class="flex items-start gap-3">
-                                    <div>
-                                        <p class="text-sm font-bold text-stone-800 mb-1.5">
-                                            {{ $review->anonymous ? 'Anonymous' : $review->order->shipment->first_name . ' ' . $review->order->shipment->last_name }}
-                                        </p>
-                                        <div class="flex items-center gap-0.5">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-500' : 'text-stone-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                            @endfor
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
-                            {{-- Review Comment - PRIORITAS UTAMA, DIPERBESAR --}}
-                            <td class="px-6 py-5 align-top">
-                                @if($review->comment)
-                                    <p class="text-sm text-stone-900 leading-relaxed">{{ $review->comment }}</p>
-                                @else
-                                    <p class="text-stone-400 italic text-sm">No written comment provided by customer</p>
-                                @endif
-                                
-                                @if($review->image)
-                                    <div class="mt-3">
-                                        <img src="{{ asset('storage/' . $review->image) }}" 
-                                             class="w-full max-w-md h-40 object-cover rounded-lg border border-stone-200 cursor-pointer hover:opacity-80 transition-all" 
-                                             onclick="window.open(this.src, '_blank')"
-                                             title="Click to view full size">
-                                        <p class="text-[10px] text-stone-400 mt-1.5">Click image to enlarge</p>
-                                    </div>
-                                @endif
-                            </td>
-
-                            {{-- Status dengan Toggle Button --}}
-                            <td class="px-6 py-5 align-middle text-center">
-                                <form action="{{ route('admin.reviews.toggle', $review) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <button type="submit" 
-                                            class="text-xs font-bold px-4 py-2 rounded-full border-2 transition-all {{ $review->is_visible ? 'border-[#E3CFCF] text-stone-700 bg-[#E3CFCF] hover:bg-[#d4c0c0]' : 'border-[#E3CFCF] text-stone-700 bg-white hover:bg-[#E3CFCF]' }}">
-                                        {{ $review->is_visible ? 'HIDE' : 'SHOW' }}
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
         </div>
 
-        <div class="mt-8">
-            {{ $reviews->links('vendor.pagination.custom') }}
+        <div id="reviewsContainer">
+            @include('admin.reviews.partials.reviews-list')
         </div>
-        @endif
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let searchTimeout;
+    const searchInput = document.getElementById('search');
+    const visibilitySelect = document.getElementById('visibility');
+    const ratingSelect = document.getElementById('rating');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const searchLoading = document.getElementById('searchLoading');
+    const searchIcon = document.getElementById('searchIcon');
+    const reviewsContainer = document.getElementById('reviewsContainer');
+    const totalReviews = document.getElementById('totalReviews');
+
+    // Debounced live search function
+    function performSearch() {
+        const search = searchInput.value;
+        const visibility = visibilitySelect.value;
+        const rating = ratingSelect.value;
+
+        // Build query params
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (visibility) params.append('visibility', visibility);
+        if (rating) params.append('rating', rating);
+
+        const queryString = params.toString();
+        const url = `{{ route('admin.reviews.index') }}${queryString ? '?' + queryString : ''}`;
+
+        // Show loading
+        searchLoading.classList.remove('hidden');
+        searchIcon.classList.add('hidden');
+        reviewsContainer.style.opacity = '0.5';
+
+        // Fetch reviews via AJAX
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Parse response and extract partial content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.getElementById('reviewsContainer');
+            const newTotal = doc.getElementById('totalReviews');
+
+            if (newContent) {
+                reviewsContainer.innerHTML = newContent.innerHTML;
+            }
+            if (newTotal && totalReviews) {
+                totalReviews.textContent = newTotal.textContent;
+            }
+
+            // Hide loading
+            searchLoading.classList.add('hidden');
+            searchIcon.classList.remove('hidden');
+            reviewsContainer.style.opacity = '1';
+
+            // Update URL without reload
+            window.history.pushState({}, '', url);
+
+            // Reattach pagination handlers
+            attachPaginationHandlers();
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            searchLoading.classList.add('hidden');
+            searchIcon.classList.remove('hidden');
+            reviewsContainer.style.opacity = '1';
+        });
+    }
+
+    // Debounce for search input
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500);
+    });
+
+    // Immediate trigger for select dropdowns
+    visibilitySelect.addEventListener('change', performSearch);
+    ratingSelect.addEventListener('change', performSearch);
+
+    // Clear filters
+    clearFiltersBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        visibilitySelect.value = '';
+        ratingSelect.value = '';
+        performSearch();
+    });
+
+    // Handle pagination clicks via AJAX
+    function attachPaginationHandlers() {
+        const paginationLinks = reviewsContainer.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.href;
+                
+                searchLoading.classList.remove('hidden');
+                searchIcon.classList.add('hidden');
+                reviewsContainer.style.opacity = '0.5';
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.getElementById('reviewsContainer');
+                    const newTotal = doc.getElementById('totalReviews');
+
+                    if (newContent) {
+                        reviewsContainer.innerHTML = newContent.innerHTML;
+                    }
+                    if (newTotal && totalReviews) {
+                        totalReviews.textContent = newTotal.textContent;
+                    }
+
+                    searchLoading.classList.add('hidden');
+                    searchIcon.classList.remove('hidden');
+                    reviewsContainer.style.opacity = '1';
+                    window.history.pushState({}, '', url);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    attachPaginationHandlers();
+                })
+                .catch(error => {
+                    console.error('Pagination error:', error);
+                    searchLoading.classList.add('hidden');
+                    searchIcon.classList.remove('hidden');
+                    reviewsContainer.style.opacity = '1';
+                });
+            });
+        });
+    }
+
+    // Initial pagination handlers
+    attachPaginationHandlers();
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', function() {
+        location.reload();
+    });
+});
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -239,8 +234,8 @@
                     text: this.getAttribute('data-warning') || "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#1c1917', // stone-900
-                    cancelButtonColor: '#a8a29e',  // stone-400
+                    confirmButtonColor: '#1c1917',
+                    cancelButtonColor: '#a8a29e',
                     confirmButtonText: 'Yes, delete',
                     cancelButtonText: 'Cancel',
                     customClass: {
@@ -256,4 +251,5 @@
         });
     });
 </script>
+
 @endsection
