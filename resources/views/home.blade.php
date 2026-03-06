@@ -375,6 +375,26 @@
 </style>
 
 <script>
+    // Clear guest cart after successful checkout
+    @if(request()->get('clear_cart') == '1')
+        localStorage.removeItem('guest_cart');
+        console.log('✅ Guest cart cleared after checkout');
+    @endif
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Order Placed Successfully!',
+            html: '<p class="text-sm text-gray-600">{{ session('success') }}</p>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#111827',
+            customClass: {
+                popup: 'rounded-none',
+                confirmButton: 'rounded-none px-8 py-3 text-xs uppercase tracking-widest font-bold'
+            }
+        });
+    @endif
+
     @if(session('subscription_success'))
         Swal.fire({
             icon: 'success',

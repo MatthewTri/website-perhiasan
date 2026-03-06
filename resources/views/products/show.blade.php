@@ -371,12 +371,12 @@
                     confirmButtonText: 'VIEW CART',
                     showCancelButton: true,
                     cancelButtonText: 'CONTINUE SHOPPING',
-                    cancelButtonColor: '#ffffff',
+                    cancelButtonColor: '#6B7280',
                     reverseButtons: true,
                     customClass: {
                         popup: 'rounded-none',
                         confirmButton: 'rounded-none px-6 py-3 text-xs uppercase tracking-widest',
-                        cancelButton: 'rounded-none px-6 py-3 text-xs uppercase tracking-widest text-gray-900 border border-gray-200 hover:bg-gray-50',
+                        cancelButton: 'rounded-none px-6 py-3 text-xs uppercase tracking-widest hover:bg-gray-600',
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {

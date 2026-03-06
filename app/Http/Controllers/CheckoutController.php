@@ -309,7 +309,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            $successMessage = 'Order placed successfully! Order Number: ' . $orderNumber . '. Please check your email for order confirmation and next steps.';
+            $successMessage = 'Order placed successfully! Please check your email for order confirmation and next steps.';
             
             if ($isGuest) {
                 return redirect()->route('home', ['clear_cart' => '1'])
