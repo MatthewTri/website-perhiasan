@@ -105,7 +105,7 @@ class PaymentController extends Controller
 
                 // ✅ KIRIM EMAIL KE ADMIN (PRIMARY TRIGGER)
                 try {
-                    Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'paypal'));
+                    // Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'paypal'));
                     Log::info('✅ PayPal payment notification email sent to admin', [
                         'order_id' => $order->id,
                         'admin_email' => config('mail.admin_email')
@@ -330,9 +330,18 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        // Idempotency check
+        // Idempotency check - TAPI TETAP KIRIM EMAIL!
         if ($order->status === 'PAID') {
-            Log::info('PayPal Webhook: Order already paid', ['order_id' => $order->id]);
+            Log::info('PayPal Webhook: Order already paid, sending email only', ['order_id' => $order->id]);
+            
+            // ✅ KIRIM EMAIL MESKIPUN SUDAH PAID
+            try {
+                Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'paypal'));
+                Log::info('✅ Payment notification sent for already-paid order');
+            } catch (\Exception $e) {
+                Log::error('Failed to send payment notification', ['error' => $e->getMessage()]);
+            }
+            
             return response()->json(['status' => 'already_processed'], 200);
         }
 
@@ -350,15 +359,6 @@ class PaymentController extends Controller
             'amount' => $event['resource']['amount']['value'] ?? 'unknown'
         ]);
 
-        // Send email notification to admin
-        try {
-            Mail::to(config('mail.admin_email'))->queue(new PaymentReceivedNotification($order, 'paypal'));
-        } catch (\Exception $e) {
-            Log::error('Failed to send PayPal payment notification email to admin', [
-                'order_id' => $order->id,
-                'error' => $e->getMessage()
-            ]);
-        }
 
         return response()->json(['status' => 'success'], 200);
     }
