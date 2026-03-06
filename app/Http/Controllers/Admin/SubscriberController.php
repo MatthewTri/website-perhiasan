@@ -20,7 +20,7 @@ class SubscriberController extends Controller
             $query->where('email', 'like', '%' . $search . '%');
         }
         
-        $subscribers = $query->latest()->paginate(10)->appends(['search' => $search]);
+        $subscribers = $query->latest()->paginate(10)->onEachSide(1)->appends(['search' => $search]);
         $totalSubscribers = Subscriber::count();
         
         return view('admin.subscribers.index', compact('subscribers', 'totalSubscribers'));

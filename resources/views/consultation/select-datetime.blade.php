@@ -78,7 +78,7 @@
                                     {{ $type === 'design' ? 'Bespoke Design Consultation' : 'General Inquiry' }}
                                 </p>
                                 <p class="text-xs text-stone-400 mt-1">
-                                    {{ $type === 'design' ? '1 Hour • Private Suite' : '30 Mins • Virtual / In-store' }}
+                                    {{ $type === 'design' ? '1 Hour • Virtual / In-store' : '30 Mins • Virtual / In-store' }}
                                 </p>
                             </div>
                         </div>

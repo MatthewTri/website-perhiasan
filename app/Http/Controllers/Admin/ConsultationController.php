@@ -45,7 +45,7 @@ class ConsultationController extends Controller
         
         $consultations = $query->orderBy('appointment_date', 'asc')
                              ->orderBy('appointment_time', 'asc')
-                             ->paginate(10)->withQueryString();
+                             ->paginate(10)->onEachSide(1)->withQueryString();
         
         $stats = [
             'total' => CustomRequest::count(),

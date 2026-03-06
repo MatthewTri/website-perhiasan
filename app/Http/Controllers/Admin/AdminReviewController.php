@@ -14,11 +14,11 @@ class AdminReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Review::with(['user', 'product', 'order'])
+        $query = Review::with(['user', 'product', 'order.shipment'])
             ->latest();
 
         // Filter by visibility
-        if ($request->has('visibility')) {
+        if ($request->filled('visibility')) {
             if ($request->visibility === 'visible') {
                 $query->where('is_visible', true);
             } elseif ($request->visibility === 'hidden') {
@@ -27,7 +27,7 @@ class AdminReviewController extends Controller
         }
 
         // Filter by rating
-        if ($request->has('rating') && $request->rating !== '') {
+        if ($request->filled('rating')) {
             $query->where('rating', $request->rating);
         }
 
@@ -35,17 +35,25 @@ class AdminReviewController extends Controller
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
+                // Search in product name
                 $q->whereHas('product', function($pq) use ($search) {
                     $pq->where('name', 'like', "%{$search}%");
                 })
+                // Search in order number
                 ->orWhereHas('order', function($oq) use ($search) {
-                    $oq->where('shipping_name', 'like', "%{$search}%")
-                       ->orWhere('order_number', 'like', "%{$search}%");
-                });
+                    $oq->where('order_number', 'like', "%{$search}%");
+                })
+                // Search in customer name (via order.shipment)
+                ->orWhereHas('order.shipment', function($sq) use ($search) {
+                    $sq->where('first_name', 'like', "%{$search}%")
+                       ->orWhere('last_name', 'like', "%{$search}%");
+                })
+                // Search in review comment
+                ->orWhere('comment', 'like', "%{$search}%");
             });
         }
 
-        $reviews = $query->paginate(1)->withQueryString();
+        $reviews = $query->paginate(10)->onEachSide(1)->withQueryString();
 
         return view('admin.reviews.index', compact('reviews'));
     }
