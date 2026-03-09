@@ -97,28 +97,21 @@
                     </div>
                 </div>
 
-                {{-- Filter Button --}}
+                {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-stone-900 text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-all rounded-sm shadow-md">
-                        Filter
+                    <button type="button" id="clearFiltersBtn" class="w-full bg-rose-500 text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-rose-600 transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Clear Filters
                     </button>
                 </div>
             </form>
-
-            @if(request()->hasAny(['search', 'status', 'type']))
-                <div class="mt-4 flex justify-end">
-                    <a href="{{ route('admin.consultation.index') }}" class="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center transition-colors">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        Clear Filters
-                    </a>
-                </div>
-            @endif
         </div>
 
         {{-- Consultations Table --}}
         <div class="bg-white rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100 overflow-hidden">
+            <div id="consultationsTableContainer">
             @if($consultations->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto" id="consultationsTable">
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-stone-50 border-b border-stone-100">
                             <tr>
@@ -126,7 +119,6 @@
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Service Type</th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Schedule (WIB)</th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Status</th>
-                                <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] text-center">Ref.</th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] text-right">Action</th>
                             </tr>
                         </thead>
@@ -137,9 +129,6 @@
                                     {{-- Customer --}}
                                     <td class="px-6 py-5">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-stone-100 rounded-full flex items-center justify-center border border-stone-200 text-stone-500 font-serif font-bold text-sm">
-                                                {{ substr($consultation->first_name, 0, 1) }}{{ substr($consultation->last_name, 0, 1) }}
-                                            </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-bold text-stone-900 group-hover:text-stone-600 transition-colors">{{ $consultation->full_name }}</div>
                                                 <div class="text-xs text-stone-400 mt-0.5">{{ $consultation->user_email }}</div>
@@ -209,16 +198,6 @@
                                         </span>
                                     </td>
 
-                                    {{-- Images --}}
-                                    <td class="px-6 py-5 text-center">
-                                        @if($consultation->images->count() > 0)
-                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-stone-100 text-[10px] font-bold text-stone-600 border border-stone-200" title="{{ $consultation->images->count() }} Images attached">
-                                                {{ $consultation->images->count() }}
-                                            </span>
-                                        @else
-                                            <span class="text-stone-300 text-xs">-</span>
-                                        @endif
-                                    </td>
 
                                     {{-- Actions --}}
                                     <td class="px-6 py-5 text-right">
@@ -234,7 +213,7 @@
                 </div>
 
                 {{-- Pagination --}}
-                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30">
+                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30" id="consultationsPagination">
                     {{ $consultations->links('vendor.pagination.custom') }}
                 </div>
             @else
@@ -248,10 +227,114 @@
                     <a href="{{ route('admin.consultation.index') }}" class="inline-block mt-4 text-xs font-bold text-stone-900 uppercase tracking-widest border-b border-stone-900 pb-0.5 hover:opacity-70 transition-opacity">Clear Filters</a>
                 </div>
             @endif
+            </div>
         </div>
 
     </div>
 </div>
+
+<script>
+// AJAX Filter untuk Consultation
+let filterTimeout;
+
+function applyFilters(url = null) {
+    const formData = {
+        search: document.querySelector('input[name="search"]').value,
+        status: document.querySelector('select[name="status"]').value,
+        type: document.querySelector('select[name="type"]').value,
+    };
+
+    // Show loading state
+    const container = document.getElementById('consultationsTableContainer');
+    container.style.opacity = '0.5';
+    container.style.pointerEvents = 'none';
+
+    // Use provided URL (for pagination) or default route
+    const ajaxUrl = url || '{{ route("admin.consultation.index") }}';
+
+    fetch(ajaxUrl + '?' + new URLSearchParams(formData), {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update table content
+        document.getElementById('consultationsTableContainer').innerHTML = data.html;
+        
+        // Update pagination if exists
+        if (data.pagination) {
+            const paginationContainer = document.getElementById('consultationsPagination');
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+        }
+
+        // Remove loading state
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+
+        // Update URL without page reload
+        const newUrl = new URL(window.location);
+        Object.keys(formData).forEach(key => {
+            if (formData[key]) {
+                newUrl.searchParams.set(key, formData[key]);
+            } else {
+                newUrl.searchParams.delete(key);
+            }
+        });
+        window.history.pushState({}, '', newUrl);
+
+        // Re-attach pagination click handlers
+        attachPaginationHandlers();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+    });
+}
+
+function attachPaginationHandlers() {
+    document.querySelectorAll('#consultationsPagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+            if (url) {
+                applyFilters(url);
+            }
+        });
+    });
+}
+
+// Real-time search
+document.querySelector('input[name="search"]').addEventListener('input', function() {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+        applyFilters();
+    }, 500); // Debounce 500ms
+});
+
+// Real-time filter changes
+document.querySelectorAll('select[name="status"], select[name="type"]').forEach(select => {
+    select.addEventListener('change', function() {
+        applyFilters();
+    });
+});
+
+// Clear filters button
+document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+    document.querySelector('input[name="search"]').value = '';
+    document.querySelector('select[name="status"]').value = '';
+    document.querySelector('select[name="type"]').value = '';
+    applyFilters();
+});
+
+// Initialize pagination handlers
+attachPaginationHandlers();
+</script>
 
 <style>
     /* Smooth fade in animation */

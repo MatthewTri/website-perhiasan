@@ -60,6 +60,17 @@ class ConsultationController extends Controller
             ])->count(),
         ];
         
+        // Handle AJAX requests
+        if ($request->ajax()) {
+            $html = view('admin.consultation.partials.table', compact('consultations'))->render();
+            $paginationHtml = view('admin.consultation.partials.pagination', compact('consultations'))->render();
+            
+            return response()->json([
+                'html' => $html,
+                'pagination' => $paginationHtml
+            ]);
+        }
+        
         return view('admin.consultation.index', compact('consultations', 'stats'));
     }
 
