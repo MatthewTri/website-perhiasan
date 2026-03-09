@@ -3,140 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Reset Your Password</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .email-container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff;
-            padding: 30px;
-            text-align: center;
-        }
-        .email-header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .email-body {
-            padding: 40px 30px;
-        }
-        .email-body p {
-            margin: 0 0 20px;
-            color: #555;
-        }
-        .reset-button {
-            display: inline-block;
-            padding: 14px 30px;
-            background: #667eea;
-            color: #ffffff !important;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .reset-button:hover {
-            background: #5568d3;
-        }
-        .alternative-link {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            word-break: break-all;
-            font-size: 12px;
-            color: #666;
-            margin: 20px 0;
-        }
-        .email-footer {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            border-top: 1px solid #e9ecef;
-        }
-        .security-notice {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .security-notice p {
-            margin: 0;
-            color: #856404;
-            font-size: 14px;
+        /* Base Reset */
+        body { margin: 0; padding: 0; width: 100% !important; background-color: #f9fafb; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Mobile Responsive */
+        @media only screen and (max-width: 600px) {
+            .main-container { width: 100% !important; max-width: 100% !important; }
+            .inner-padding { padding: 30px 20px !important; }
         }
     </style>
 </head>
-<body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="email-header">
-            <h1>🔐 Password Reset Request</h1>
-        </div>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
 
-        <!-- Body -->
-        <div class="email-body">
-            <p>Hello,</p>
-            
-            <p>We received a request to reset the password for your account associated with <strong>{{ $email }}</strong>.</p>
-            
-            <p>Click the button below to reset your password:</p>
-            
-            <div style="text-align: center;">
-                <a href="{{ $resetLink }}" class="reset-button">Reset My Password</a>
-            </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f9fafb">
+        <tr>
+            <td align="center" valign="top" style="padding-top: 40px; padding-bottom: 40px;">
+                
+                <table class="main-container" width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="max-width: 600px; width: 100%; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    
+                    <!-- Header: Brand Name -->
+                    <tr>
+                        <td align="center" style="padding: 40px 0 10px 0;">
+                            <span style="font-family: 'Georgia', serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #1c1917; font-weight: bold;">
+                                Cecile Private Collection
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-bottom: 40px;">
+                            <span style="font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 1px;">Security Notification</span>
+                        </td>
+                    </tr>
 
-            <p style="font-size: 14px; color: #666; margin-top: 30px;">
-                If the button doesn't work, copy and paste this link into your browser:
-            </p>
-            <div class="alternative-link">
-                {{ $resetLink }}
-            </div>
+                    <!-- Main Title -->
+                    <tr>
+                        <td class="inner-padding" align="center" style="padding: 0 50px 40px 50px;">
+                            <h1 style="font-family: 'Georgia', serif; color: #1c1917; font-size: 28px; font-weight: 400; margin: 0 0 15px 0; line-height: 1.3;">
+                                Reset Your Password
+                            </h1>
+                            <p style="color: #78716c; font-size: 14px; margin: 0; line-height: 1.6;">
+                                We received a request to reset the password for your account associated with <strong style="color: #1c1917;">{{ $email }}</strong>.
+                            </p>
+                        </td>
+                    </tr>
 
-            <!-- Security Notice -->
-            <div class="security-notice">
-                <p><strong>⚠️ Security Notice:</strong></p>
-                <p style="margin-top: 8px;">
-                    • This link will expire in <strong>60 minutes</strong><br>
-                    • If you didn't request this reset, please ignore this email<br>
-                    • Your password will remain unchanged if you don't click the link
-                </p>
-            </div>
+                    <!-- Call to Action Button -->
+                    <tr>
+                        <td align="center" style="padding: 0 50px 40px 50px;">
+                            <a href="{{ $resetLink }}" 
+                               style="background-color: #1c1917; color: #ffffff; padding: 16px 32px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
+                                Reset My Password
+                            </a>
+                        </td>
+                    </tr>
 
-            <p style="margin-top: 30px; font-size: 14px; color: #666;">
-                If you're having trouble resetting your password, please contact our support team.
-            </p>
+                    <!-- Security Notice Box -->
+                    <tr>
+                        <td class="inner-padding" style="padding: 0 50px 40px 50px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #faf7f7; border-left: 2px solid #E3CFCF; border-radius: 4px;">
+                                <tr>
+                                    <td style="padding: 25px;">
+                                        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #78716c; margin: 0 0 12px 0;">
+                                            Security Notice
+                                        </p>
+                                        <p style="font-size: 14px; color: #44403c; margin: 0 0 10px 0; line-height: 1.6;">
+                                            • This link will expire in <strong style="color: #1c1917;">60 minutes</strong>
+                                        </p>
+                                        <p style="font-size: 14px; color: #44403c; margin: 0 0 10px 0; line-height: 1.6;">
+                                            • If you didn't request this reset, please ignore this email
+                                        </p>
+                                        <p style="font-size: 14px; color: #44403c; margin: 0; line-height: 1.6;">
+                                            • Your password will remain unchanged if you don't click the link
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-            <p style="margin-top: 30px;">
-                Best regards,<br>
-                <strong>{{ config('app.name') }} Team</strong>
-            </p>
-        </div>
 
-        <!-- Footer -->
-        <div class="email-footer">
-            <p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-            <p style="margin-top: 10px;">
-                This is an automated message, please do not reply to this email.
-            </p>
-        </div>
-    </div>
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="border-top: 1px solid #f5f5f4; padding: 30px; background-color: #ffffff;">
+                            <p style="font-family: 'Georgia', serif; color: #a8a29e; font-size: 12px; font-style: italic; margin-bottom: 10px;">
+                                Cecile Private Collection
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">
+                                Luxury Jewelry Atelier
+                            </p>
+                            <p style="color: #d6d3d1; font-size: 10px; margin: 0;">
+                                © {{ date('Y') }} All rights reserved. | This is an automated message, please do not reply.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                
+                <!-- Bottom Spacing -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td height="40">&nbsp;</td></tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>
