@@ -61,51 +61,68 @@
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Void</p>
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Cancelled/Ref</p>
                 <p class="text-2xl font-serif text-rose-500">{{ $allOrders->whereIn('status', ['CANCELLED', 'REFUNDED'])->count() }}</p>
             </div>
         </div>
 
-        <div class="mb-8 border-b border-stone-200 overflow-x-auto custom-scrollbar">
-            <nav class="flex space-x-6 min-w-max pb-px">
-                @php
-                    $tabs = [
-                        ['label' => 'All Orders', 'status' => null, 'color' => 'stone'],
-                        ['label' => 'Pending Review', 'status' => 'PENDING_REVIEW', 'color' => 'amber'],
-                        ['label' => 'Invoice Sent', 'status' => 'INVOICE_SENT', 'color' => 'blue'],
-                        ['label' => 'Waiting Verification', 'status' => 'WAITING_VERIFICATION', 'color' => 'orange'],
-                        ['label' => 'Paid', 'status' => 'PAID', 'color' => 'emerald'],
-                        ['label' => 'Production', 'status' => 'PRODUCTION', 'color' => 'teal'],
-                        ['label' => 'Shipped', 'status' => 'SHIPPED', 'color' => 'indigo'],
-                        ['label' => 'Completed', 'status' => 'COMPLETED', 'color' => 'stone'],
-                        ['label' => 'Cancelled', 'status' => 'CANCELLED', 'color' => 'rose'],
-                        ['label' => 'Refunded', 'status' => 'REFUNDED', 'color' => 'rose'],
-                    ];
-                @endphp
+        {{-- Filters & Search Bar --}}
+        <div class="bg-white rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 mb-8">
+            <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+                
+                {{-- Search --}}
+                <div class="md:col-span-4">
+                    <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Search Order</label>
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Order #, customer name, or email..." 
+                               class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors">
+                        <svg class="w-4 h-4 text-stone-400 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
 
-                @foreach($tabs as $tab)
-                    @php
-                        $isActive = request('status') === $tab['status'];
-                        $count = $tab['status'] ? $allOrders->where('status', $tab['status'])->count() : $allOrders->count();
-                        $baseColor = $tab['color'];
-                    @endphp
-                    <a href="{{ route('admin.orders.index', ['status' => $tab['status']]) }}" 
-                       class="group relative py-4 px-1 text-sm font-medium transition-colors duration-200 
-                       {{ $isActive ? 'text-stone-900' : 'text-stone-400 hover:text-stone-600' }}">
-                        
-                        <span class="relative z-10">{{ $tab['label'] }}</span>
-                        @if($count > 0 && $tab['status'])
-                            <span class="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500 group-hover:bg-stone-200 transition-colors">{{ $count }}</span>
-                        @endif
+                {{-- Status Filter --}}
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Order Status</label>
+                    <div class="relative">
+                        <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                            <option value="">All Status</option>
+                            <option value="PENDING_REVIEW" {{ request('status') == 'PENDING_REVIEW' ? 'selected' : '' }}>Pending Review</option>
+                            <option value="INVOICE_SENT" {{ request('status') == 'INVOICE_SENT' ? 'selected' : '' }}>Invoice Sent</option>
+                            <option value="WAITING_VERIFICATION" {{ request('status') == 'WAITING_VERIFICATION' ? 'selected' : '' }}>Waiting Verification</option>
+                            <option value="PAID" {{ request('status') == 'PAID' ? 'selected' : '' }}>Paid</option>
+                            <option value="PRODUCTION" {{ request('status') == 'PRODUCTION' ? 'selected' : '' }}>Production</option>
+                            <option value="SHIPPED" {{ request('status') == 'SHIPPED' ? 'selected' : '' }}>Shipped</option>
+                            <option value="COMPLETED" {{ request('status') == 'COMPLETED' ? 'selected' : '' }}>Completed</option>
+                            <option value="CANCELLED" {{ request('status') == 'CANCELLED' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="REFUNDED" {{ request('status') == 'REFUNDED' ? 'selected' : '' }}>Refunded</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                </div>
 
-                        @if($isActive)
-                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-stone-900"></span>
-                        @endif
-                    </a>
-                @endforeach
-            </nav>
+                {{-- Payment Gateway Filter --}}
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Payment Method</label>
+                    <div class="relative">
+                        <select name="payment_gateway" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                            <option value="">All Methods</option>
+                            <option value="MANUAL" {{ request('payment_gateway') == 'MANUAL' ? 'selected' : '' }}>Bank Transfer (BCA)</option>
+                            <option value="PAYPAL" {{ request('payment_gateway') == 'PAYPAL' ? 'selected' : '' }}>PayPal</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                </div>
+
+                {{-- Clear Filter Button --}}
+                <div class="md:col-span-2">
+                    <button type="button" id="clearFiltersBtn" class="w-full bg-rose-500 text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-rose-600 transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        Clear Filters
+                    </button>
+                </div>
+            </form>
         </div>
 
+        <div id="ordersTableContainer">
         @if($orders->count() > 0)
         
             {{-- DESKTOP TABLE VIEW (Visible on md+) --}}
@@ -181,7 +198,7 @@
                 </div>
                 
                 {{-- Pagination --}}
-                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30">
+                <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30" id="ordersPagination">
                     {{ $orders->links('vendor.pagination.custom') }}
                 </div>
             </div>
@@ -233,7 +250,7 @@
                 @endforeach
                 
                 {{-- Mobile Pagination --}}
-                <div class="mt-6">
+                <div class="mt-6" id="ordersPaginationMobile">
                     {{ $orders->links('vendor.pagination.custom') }}
                 </div>
             </div>
@@ -244,11 +261,108 @@
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
                 <h3 class="text-lg font-serif text-stone-900 mb-1">No orders found</h3>
-                <p class="text-sm text-stone-500">There are no orders with this status currently.</p>
+                <p class="text-sm text-stone-500">Try adjusting your filters to find what you're looking for.</p>
+                <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="inline-block mt-4 text-xs font-bold text-stone-900 uppercase tracking-widest border-b border-stone-900 pb-0.5 hover:opacity-70 transition-opacity cursor-pointer">Clear Filters</button>
             </div>
         @endif
+        </div>
     </div>
 </div>
+
+<script>
+// AJAX Filter untuk Orders
+let filterTimeout;
+
+function applyFilters(url = null) {
+    const formData = {
+        search: document.querySelector('input[name="search"]').value,
+        status: document.querySelector('select[name="status"]').value,
+        payment_gateway: document.querySelector('select[name="payment_gateway"]').value,
+    };
+
+    // Show loading state
+    const container = document.getElementById('ordersTableContainer');
+    container.style.opacity = '0.5';
+    container.style.pointerEvents = 'none';
+
+    // Use provided URL (for pagination) or default route
+    const ajaxUrl = url || '{{ route("admin.orders.index") }}';
+
+    fetch(ajaxUrl + '?' + new URLSearchParams(formData), {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update table content
+        document.getElementById('ordersTableContainer').innerHTML = data.html;
+        
+        // Remove loading state
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+
+        // Update URL without page reload
+        const newUrl = new URL(window.location);
+        Object.keys(formData).forEach(key => {
+            if (formData[key]) {
+                newUrl.searchParams.set(key, formData[key]);
+            } else {
+                newUrl.searchParams.delete(key);
+            }
+        });
+        window.history.pushState({}, '', newUrl);
+
+        // Re-attach pagination click handlers
+        attachPaginationHandlers();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+    });
+}
+
+function attachPaginationHandlers() {
+    document.querySelectorAll('#ordersPagination a, #ordersPaginationMobile a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+            if (url) {
+                applyFilters(url);
+            }
+        });
+    });
+}
+
+// Real-time search
+document.querySelector('input[name="search"]').addEventListener('input', function() {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+        applyFilters();
+    }, 500); // Debounce 500ms
+});
+
+// Real-time filter changes
+document.querySelectorAll('select[name="status"], select[name="payment_gateway"]').forEach(select => {
+    select.addEventListener('change', function() {
+        applyFilters();
+    });
+});
+
+// Clear filters button
+document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+    document.querySelector('input[name="search"]').value = '';
+    document.querySelector('select[name="status"]').value = '';
+    document.querySelector('select[name="payment_gateway"]').value = '';
+    applyFilters();
+});
+
+// Initialize pagination handlers
+attachPaginationHandlers();
+</script>
 
 <style>
     /* Custom Scrollbar for horizontal scrolling areas */

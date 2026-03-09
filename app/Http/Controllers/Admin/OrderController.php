@@ -34,18 +34,52 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->query('status');
         $query = Order::with(['user', 'orderItems', 'shipment']);
-
-        if ($status) {
-            $query->where('status', $status);
-        } else {
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED')");
+        
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
         }
-
+        
+        // Filter by payment gateway
+        if ($request->has('payment_gateway') && $request->payment_gateway != '') {
+            $query->where('payment_gateway', $request->payment_gateway);
+        }
+        
+        // Search by order number, customer name, or email
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('order_number', 'like', '%' . $search . '%')
+                  ->orWhere('contact_email', 'like', '%' . $search . '%')
+                  ->orWhereHas('shipment', function($sq) use ($search) {
+                      $sq->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        // Get all orders for statistics
         $allOrders = Order::with(['user', 'orderItems'])->get();
-
-        $orders = $query->latest()->paginate(1)->onEachSide(1)->withQueryString();
+        
+        // Order by priority if no specific status filter
+        if (!$request->has('status') || $request->status == '') {
+            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')");
+        }
+        
+        $orders = $query->latest()->paginate(10)->onEachSide(1)->withQueryString();
+        
+        // Handle AJAX requests
+        if ($request->ajax()) {
+            $html = view('admin.orders.partials.table', compact('orders'))->render();
+            $paginationHtml = view('admin.orders.partials.pagination', compact('orders'))->render();
+            
+            return response()->json([
+                'html' => $html,
+                'pagination' => $paginationHtml
+            ]);
+        }
+        
         return view('admin.orders.index', compact('orders', 'allOrders'));
     }
 
