@@ -1,168 +1,118 @@
-@extends('layout.main')
+@extends('layout.account')
+
+@section('title', 'Login')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-500">
-                <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-                </svg>
-            </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+<div class="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-10">
+        
+        {{-- Logo --}}
+        <div class="flex justify-center">
+            <a href="/" class="block">
+                <img src="{{ asset('img/logo.png') }}" alt="Cecile Private Collection" class="h-16 w-auto hover:opacity-80 transition-opacity">
+            </a>
+        </div>
+        
+        {{-- Header --}}
+        <div class="text-center">
+            <h1 class="text-3xl font-serif text-gray-900 mb-3">Welcome Back</h1>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-medium">
                 Sign in to your account
-            </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Welcome back! Please sign in to continue
             </p>
         </div>
 
+        {{-- Success Alert --}}
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ session('success') }}
-                </div>
+            <div class="bg-[#E3CFCF]/10 border border-[#E3CFCF]/30 px-4 py-3 text-center">
+                <p class="text-xs text-gray-700">{{ session('success') }}</p>
             </div>
         @endif
 
+        {{-- Error Alert --}}
         @if(session('loginError'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ session('loginError') }}
-                </div>
+            <div class="bg-red-50 border border-red-200 px-4 py-3 text-center">
+                <p class="text-xs text-red-700">{{ session('loginError') }}</p>
             </div>
         @endif
 
-        <form class="mt-8 space-y-6" action="{{ route('login.authenticate') }}" method="POST">
+        {{-- Login Form --}}
+        <form class="space-y-6" action="{{ route('login.authenticate') }}" method="POST">
             @csrf
             
-            <div class="space-y-4">
-                <!-- Email Field -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                            </svg>
-                        </div>
-                        <input id="email" 
-                               name="email" 
-                               type="email" 
-                               value="{{ old('email') }}"
-                               required 
-                               class="appearance-none relative block w-full pl-10 pr-3 py-3 border {{ $errors->has('email') ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:z-10 sm:text-sm"
-                               placeholder="Enter your email address"
-                               autofocus>
-                    </div>
-                    @error('email')
-                        <p class="text-red-500 text-xs mt-1 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
-
-                <!-- Password Field -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Password *
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </div>
-                        <input id="password" 
-                               name="password" 
-                               type="password" 
-                               required 
-                               class="appearance-none relative block w-full pl-10 pr-10 py-3 border {{ $errors->has('password') ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:z-10 sm:text-sm"
-                               placeholder="Enter your password">
-                        
-                        <!-- Toggle Password Visibility -->
-                        <button type="button" 
-                                onclick="togglePassword('password')"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <svg id="password-eye" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    @error('password')
-                        <p class="text-red-500 text-xs mt-1 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
+            {{-- Email Field --}}
+            <div>
+                <label for="email" class="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-3">
+                    Email Address
+                </label>
+                <input id="email" 
+                       name="email" 
+                       type="email" 
+                       value="{{ old('email') }}"
+                       required 
+                       class="appearance-none block w-full px-4 py-3 border {{ $errors->has('email') ? 'border-red-300' : 'border-gray-200' }} text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#E3CFCF] focus:ring-1 focus:ring-[#E3CFCF] transition-colors"
+                       placeholder="your.email@example.com">
+                @error('email')
+                    <p class="text-[10px] text-red-600 mt-2 tracking-wide">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Remember Me & Forgot Password -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
+            {{-- Password Field --}}
+            <div>
+                <label for="password" class="block text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium mb-3">
+                    Password
+                </label>
+                <div class="relative">
+                    <input id="password" 
+                           name="password" 
+                           type="password" 
+                           required 
+                           class="appearance-none block w-full px-4 py-3 pr-12 border {{ $errors->has('password') ? 'border-red-300' : 'border-gray-200' }} text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#E3CFCF] focus:ring-1 focus:ring-[#E3CFCF] transition-colors"
+                           placeholder="Enter your password">
+                    <button type="button" 
+                            onclick="togglePassword('password')"
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600">
+                        <svg id="password-eye" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+                @error('password')
+                    <p class="text-[10px] text-red-600 mt-2 tracking-wide">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Remember Me & Forgot Password --}}
+            <div class="flex items-center justify-between pt-2">
+                <label class="flex items-center cursor-pointer">
                     <input id="remember" 
                            name="remember" 
                            type="checkbox" 
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="remember" class="ml-2 block text-sm text-gray-700">
-                        Remember me
-                    </label>
-                </div>
+                           class="h-4 w-4 text-[#E3CFCF] focus:ring-[#E3CFCF] border-gray-300 cursor-pointer">
+                    <span class="ml-2 text-xs text-gray-600">Remember me</span>
+                </label>
 
-                <div class="text-sm">
-                    <a href="{{ route('password.request') }}" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
-                        Forgot your password?
-                    </a>
-                </div>
+                <a href="{{ route('password.request') }}" class="text-xs text-gray-500 hover:text-[#E3CFCF] transition-colors">
+                    Forgot password?
+                </a>
             </div>
 
-            <!-- Submit Button -->
-            <div>
-                <button type="submit" 
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <svg class="h-5 w-5 text-blue-500 group-hover:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                        </svg>
-                    </span>
-                    Sign In
-                </button>
-            </div>
+            {{-- Submit Button --}}
+            <button type="submit" 
+                    class="w-full bg-[#E3CFCF] text-gray-900 py-3 px-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#d4b8b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E3CFCF] transition-all duration-200">
+                Sign In
+            </button>
 
-            <!-- Register Link -->
-            <div class="text-center">
-                <p class="text-sm text-gray-600">
+            {{-- Register Link --}}
+            <div class="text-center pt-4">
+                <p class="text-xs text-gray-500">
                     Don't have an account?
-                    <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                    <a href="{{ route('register') }}" class="text-[#E3CFCF] hover:text-[#d4b8b8] font-medium transition-colors ml-1">
                         Create one here
                     </a>
                 </p>
             </div>
         </form>
-
-        <!-- Demo Credentials (Optional - remove in production) -->
-        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h4>
-            <div class="text-xs text-gray-600 space-y-1">
-                <p><strong>Email:</strong> admin@example.com</p>
-                <p><strong>Password:</strong> password123</p>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -186,9 +136,9 @@
         }
     }
 
-    // Auto-hide messages
+    // Auto-hide alerts
     document.addEventListener('DOMContentLoaded', function() {
-        const alerts = document.querySelectorAll('.bg-green-100, .bg-red-100');
+        const alerts = document.querySelectorAll('.bg-\\[\\#E3CFCF\\]\\/10, .bg-red-50');
         alerts.forEach(alert => {
             setTimeout(() => {
                 alert.style.transition = 'opacity 0.5s ease';
@@ -196,33 +146,6 @@
                 setTimeout(() => alert.remove(), 500);
             }, 5000);
         });
-    });
-
-    // Form submission with loading state
-    const form = document.querySelector('form');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    form.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Signing In...
-        `;
-    });
-
-    // Auto-focus on email field if empty, password if email has value
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailField = document.getElementById('email');
-        const passwordField = document.getElementById('password');
-        
-        if (emailField.value) {
-            passwordField.focus();
-        } else {
-            emailField.focus();
-        }
     });
 </script>
 @endsection
