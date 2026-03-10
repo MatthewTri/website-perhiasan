@@ -41,6 +41,9 @@
     {{-- Size Chart Modal Component --}}
     @include('components.size-chart-modal')
     
+    {{-- Contact Us Modal Component --}}
+    @include('components.contact-modal')
+    
     {{-- Reviews Modal Component --}}
     @include('components.reviews-modal')
 

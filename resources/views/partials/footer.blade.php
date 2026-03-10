@@ -48,10 +48,10 @@
             <div class="flex flex-col space-y-6">
                 <h3 class="text-xs font-bold text-gray-900 uppercase tracking-[0.15em]">Support</h3>
                 <ul class="space-y-4 text-xs text-gray-500 font-light tracking-wide">
-                    <li><a href="{{ route('consultation.create') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Book Consultation</a></li>
-                    <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Size Guide</a></li>
+                    <li><a href="{{ route('consultation.index') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Book Consultation</a></li>
+                    <li><button type="button" onclick="openSizeChart()" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all text-left">Size Guide</button></li>
                     <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Shipping & Returns</a></li>
-                    <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Contact Us</a></li>
+                    <li><button type="button" onclick="openContactModal()" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all text-left">Contact Us</button></li>
                 </ul>
             </div>
 
