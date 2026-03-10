@@ -9,6 +9,7 @@ use App\Http\Controllers\WebhookController;
 Route::post('/webhook/xendit', [WebhookController::class, 'handleXendit']);
 
 Route::get('/reviews', [ReviewController::class, 'index']);
+Route::get('/products/{product}/reviews', [ReviewController::class, 'productReviews']);
 
 Route::get('/product/{product}/images', function (App\Models\Product $product) {
     // ✅ Debug: cek apakah ada images

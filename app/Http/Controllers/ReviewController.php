@@ -26,6 +26,26 @@ class ReviewController extends Controller
 
         return response()->json($reviews);
     }
+
+    /**
+     * Get reviews for a specific product
+     */
+    public function productReviews(Request $request, $productId)
+    {
+        $reviews = Review::with([
+            'user', 
+            'product:id,name,slug',
+            'order:id',
+            'order.shipment:id,order_id,first_name,last_name',
+            'images'
+        ])
+        ->where('is_visible', true)
+        ->where('product_id', $productId)
+        ->latest()
+        ->paginate(5)->onEachSide(1);
+
+        return response()->json($reviews);
+    }
     /**
      * Halaman Review via Magic Link (Support Guest & Member)
      * URL: /order/track/{token}/review

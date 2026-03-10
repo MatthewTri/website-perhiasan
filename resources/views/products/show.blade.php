@@ -168,7 +168,7 @@
                 </div>
 
                 {{-- 6. STOCK / PICKUP INFO (Persis Gambar) --}}
-                <div class="space-y-3 pb-8 border-b border-gray-100 mb-8">
+                {{-- <div class="space-y-3 pb-8 border-b border-gray-100 mb-8">
                     <div class="flex items-start space-x-3">
                         <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
                         <div class="text-sm">
@@ -177,7 +177,7 @@
                             <a href="#" class="text-xs text-gray-900 underline mt-1 inline-block hover:no-underline">Check availability at other stores</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 {{-- 7. DESCRIPTION (Text Only Style) --}}
                 @if($product->description)
@@ -217,15 +217,25 @@
                         </div>
                     </details>
                     
-                    <details class="group py-4 border-b border-gray-100 cursor-pointer">
+                    <details id="reviews-dropdown" class="group py-4 border-b border-gray-100 cursor-pointer" ontoggle="handleReviewsToggle(this)">
                         <summary class="flex justify-between items-center list-none text-xs font-bold uppercase tracking-[0.15em] text-gray-900">
-                            <span>Reviews ({{ $product->rating_count }})</span>
+                            <span>Reviews (<span id="dropdown-review-count">{{ $product->rating_count }}</span>)</span>
                             <span class="transition-transform group-open:rotate-180">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/></svg>
                             </span>
                         </summary>
-                        <div class="text-sm text-gray-600 mt-4 font-light">
-                            <p class="italic">No reviews yet.</p>
+                        <div class="mt-6">
+                            {{-- Reviews List --}}
+                            <div id="dropdown-reviews-list" class="space-y-6 md:space-y-8 mb-6">
+                                {{-- Loading Spinner --}}
+                                <div class="flex items-center justify-center py-8">
+                                    <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-100 border-t-gray-900"></div>
+                                </div>
+                            </div>
+                            
+                            {{-- Pagination --}}
+                            <div id="dropdown-reviews-pagination" class="hidden mt-6 pt-4 border-t border-gray-100">
+                            </div>
                         </div>
                     </details>
                 </div>
@@ -453,6 +463,153 @@
                 
         // Buka lightbox di index yang benar
         openProductGallery(images, index >= 0 ? index : 0);
+    }
+
+    // --- HANDLE REVIEWS TOGGLE ---
+    let reviewsLoaded = false;
+
+    function handleReviewsToggle(detailsElement) {
+        if (detailsElement.open && !reviewsLoaded) {
+            loadDropdownReviews(1);
+            reviewsLoaded = true;
+        }
+    }
+
+    // --- LOAD DROPDOWN REVIEWS ---
+    async function loadDropdownReviews(page = 1) {
+        const reviewsList = document.getElementById('dropdown-reviews-list');
+        const pagination = document.getElementById('dropdown-reviews-pagination');
+        const productId = {{ $product->id }};
+        
+        // Skeleton Loading
+        reviewsList.innerHTML = `
+            <div class="space-y-4 animate-pulse">
+                ${[1,2,3].map(() => `
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0"></div>
+                        <div class="flex-1 space-y-2">
+                            <div class="h-2 bg-gray-100 rounded w-1/4"></div>
+                            <div class="h-2 bg-gray-100 rounded w-3/4"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/api/products/${productId}/reviews?page=${page}`);
+            const data = await response.json();
+            
+            document.getElementById('dropdown-review-count').textContent = data.total;
+            
+            if (data.data.length > 0) {
+                reviewsList.innerHTML = data.data.map((review, index) => renderDropdownReview(review, index)).join('');            
+                if (data.last_page > 1) {
+                    pagination.innerHTML = renderDropdownPagination(data);
+                    pagination.classList.remove('hidden');
+                } else {
+                    pagination.classList.add('hidden');
+                }
+            } else {
+                reviewsList.innerHTML = `
+                    <div class="text-center py-6">
+                        <p class="text-xs text-gray-400 italic">No reviews yet. Be the first to review this product!</p>
+                    </div>
+                `;
+                pagination.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+            reviewsList.innerHTML = '<p class="text-center text-red-500 py-4 text-xs">Unable to load reviews.</p>';
+        }
+    }
+
+    // --- RENDER DROPDOWN REVIEW ---
+    function renderDropdownReview(review, index) {
+        const stars = Array(5).fill(0).map((_, i) => {
+            const filled = i < review.rating;
+            return `<svg class="w-3 h-3 md:w-3.5 md:h-3.5 ${filled ? 'text-[#E8B49E]' : 'text-gray-200'} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+        }).join('');
+        
+        let userName = 'Anonymous';
+        let initials = 'A';
+        if (!review.anonymous && review.order && review.order.shipment) {
+            userName = `${review.order.shipment.first_name} ${review.order.shipment.last_name}`;
+            initials = review.order.shipment.first_name.charAt(0).toUpperCase();
+        }
+        
+        const verifiedBadge = review.order_id 
+            ? '<svg class="w-3 h-3 text-emerald-500 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span class="ml-1 text-[9px] md:text-[10px] uppercase tracking-wider text-gray-400 font-medium">Verified</span>' 
+            : '';
+        
+        // Multiple images support
+        let imagesHtml = '';
+        if (review.images && review.images.length > 0) {
+            const imageElements = review.images.map(img => 
+                `<img src="/storage/${img.image}" alt="Review photo" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity border border-gray-100" onclick="openLightbox('/storage/${img.image}')">`
+            ).join('');
+            imagesHtml = `<div class="mt-3 md:mt-4 flex gap-2">${imageElements}</div>`;
+        }
+        
+        return `
+            <div class="flex items-start gap-3 md:gap-5">
+                <div class="flex-shrink-0">
+                    <div class="w-9 h-9 md:w-11 md:h-11 bg-stone-50 border border-stone-100 rounded-full flex items-center justify-center text-stone-800 font-serif text-sm md:text-lg">
+                        ${initials}
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-1.5 gap-1 md:gap-0">
+                        <div class="flex items-center">
+                            <h4 class="text-xs md:text-sm font-bold text-gray-900 uppercase tracking-wider truncate max-w-[150px] md:max-w-none">${userName}</h4>
+                            ${verifiedBadge}
+                        </div>
+                        <div class="flex space-x-0.5">${stars}</div>
+                    </div>
+                    
+                    ${review.comment ? `<p class="text-xs md:text-sm text-gray-600 leading-relaxed font-light mt-2">${review.comment}</p>` : ''}
+                    ${imagesHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- RENDER DROPDOWN PAGINATION ---
+    function renderDropdownPagination(data) {
+        const pages = [];
+        const btnClass = "w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors focus:outline-none";
+        const activeBtnClass = "w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold text-gray-900 border-b-2 border-gray-900 focus:outline-none";
+        const textBtnClass = "w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-light text-gray-500 hover:text-gray-900 transition-colors focus:outline-none";
+
+        const leftArrow = `<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/></svg>`;
+        const rightArrow = `<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>`;
+        const doubleLeftArrow = `<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 19l-7-7 7-7M18 19l-7-7 7-7"/></svg>`;
+        const doubleRightArrow = `<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>`;
+
+        if (data.current_page > 1) {
+            pages.push(`<button onclick="loadDropdownReviews(1)" class="${btnClass}">${doubleLeftArrow}</button>`);
+            pages.push(`<button onclick="loadDropdownReviews(${data.current_page - 1})" class="${btnClass}">${leftArrow}</button>`);
+        }
+        
+        const maxVisible = 4;
+        let startPage = Math.max(1, data.current_page - Math.floor(maxVisible / 2));
+        let endPage = Math.min(data.last_page, startPage + maxVisible - 1);
+        if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === data.current_page) {
+                pages.push(`<button class="${activeBtnClass}">${i}</button>`);
+            } else {
+                pages.push(`<button onclick="loadDropdownReviews(${i})" class="${textBtnClass}">${i}</button>`);
+            }
+        }
+        
+        if (data.current_page < data.last_page) {
+            pages.push(`<button onclick="loadDropdownReviews(${data.current_page + 1})" class="${btnClass}">${rightArrow}</button>`);
+            pages.push(`<button onclick="loadDropdownReviews(${data.last_page})" class="${btnClass}">${doubleRightArrow}</button>`);
+        }
+        
+        return `<div class="flex items-center justify-center space-x-1 md:space-x-2">${pages.join('')}</div>`;
     }
 </script>
 
