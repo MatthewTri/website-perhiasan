@@ -225,52 +225,59 @@
                             </span>
                         </summary>
                         <div class="mt-6">
-                            {{-- Rating Summary --}}
-                            <div class="mb-6 pb-6 border-b border-gray-100">
-                                <div class="flex items-center justify-center gap-3">
-                                    <div class="text-center">
-                                        <div class="text-3xl font-light text-gray-900 mb-1">
-                                            <span id="dropdown-rating-avg">{{ number_format($product->rating_avg, 1) }}</span>
-                                            <span class="text-lg text-gray-400">/5</span>
+                            @if($product->rating_count > 0)
+                                {{-- Rating Summary --}}
+                                <div class="mb-6 pb-6 border-b border-gray-100">
+                                    <div class="flex items-center justify-center gap-3">
+                                        <div class="text-center">
+                                            <div class="text-3xl font-light text-gray-900 mb-1">
+                                                <span id="dropdown-rating-avg">{{ number_format($product->rating_avg, 1) }}</span>
+                                                <span class="text-lg text-gray-400">/5</span>
+                                            </div>
+                                            <div id="dropdown-stars" class="flex justify-center text-[#E8B49E] space-x-0.5 mb-2">
+                                                {{-- Stars rendered based on initial rating --}}
+                                                @php
+                                                    $rating = $product->rating_avg;
+                                                    $fullStars = floor($rating);
+                                                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                                @endphp
+                                                @for($i = 0; $i < 5; $i++)
+                                                    @if($i < $fullStars)
+                                                        {{-- Full star --}}
+                                                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    @elseif($i == $fullStars && $hasHalfStar)
+                                                        {{-- Half star --}}
+                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarGrad"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarGrad)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    @else
+                                                        {{-- Empty star --}}
+                                                        <svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-widest">
+                                                Based on <span id="dropdown-rating-count">{{ $product->rating_count }}</span> reviews
+                                            </p>
                                         </div>
-                                        <div id="dropdown-stars" class="flex justify-center text-[#E8B49E] space-x-0.5 mb-2">
-                                            {{-- Stars rendered based on initial rating --}}
-                                            @php
-                                                $rating = $product->rating_avg;
-                                                $fullStars = floor($rating);
-                                                $hasHalfStar = ($rating - $fullStars) >= 0.5;
-                                            @endphp
-                                            @for($i = 0; $i < 5; $i++)
-                                                @if($i < $fullStars)
-                                                    {{-- Full star --}}
-                                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                @elseif($i == $fullStars && $hasHalfStar)
-                                                    {{-- Half star --}}
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarGrad"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarGrad)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                @else
-                                                    {{-- Empty star --}}
-                                                    <svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">
-                                            Based on <span id="dropdown-rating-count">{{ $product->rating_count }}</span> reviews
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            {{-- Reviews List --}}
-                            <div id="dropdown-reviews-list" class="space-y-6 md:space-y-8 mb-6">
-                                {{-- Loading Spinner --}}
-                                <div class="flex items-center justify-center py-8">
-                                    <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-100 border-t-gray-900"></div>
+                                
+                                {{-- Reviews List --}}
+                                <div id="dropdown-reviews-list" class="space-y-6 md:space-y-8 mb-6">
+                                    {{-- Loading Spinner --}}
+                                    <div class="flex items-center justify-center py-8">
+                                        <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-100 border-t-gray-900"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            {{-- Pagination --}}
-                            <div id="dropdown-reviews-pagination" class="hidden mt-6 pt-4 border-t border-gray-100">
-                            </div>
+                                
+                                {{-- Pagination --}}
+                                <div id="dropdown-reviews-pagination" class="hidden mt-6 pt-4 border-t border-gray-100">
+                                </div>
+                            @else
+                                {{-- No Reviews Message --}}
+                                <div class="text-center py-8">
+                                    <p class="text-xs text-gray-400 italic">No reviews yet. Be the first to review this product!</p>
+                                </div>
+                            @endif
                         </div>
                     </details>
                 </div>
@@ -608,7 +615,8 @@
     let reviewsLoaded = false;
 
     function handleReviewsToggle(detailsElement) {
-        if (detailsElement.open && !reviewsLoaded) {
+        const reviewCount = {{ $product->rating_count }};
+        if (detailsElement.open && !reviewsLoaded && reviewCount > 0) {
             loadDropdownReviews(1);
             reviewsLoaded = true;
         }
