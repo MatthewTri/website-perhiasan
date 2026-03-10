@@ -156,12 +156,12 @@
                                     </div>
                                 @elseif($order->payment_gateway === 'MANUAL')
                                     <a href="{{ route('order.track', $order->guest_token) }}" 
-                                       class="w-full text-center border border-[#E8B49E] text-[#E8B49E] hover:bg-[#E8B49E] hover:text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                       class="w-full text-center border border-[#E3CFCF] text-[#E3CFCF] hover:bg-[#E3CFCF] hover:text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
                                         Confirm Payment
                                     </a>
                                 @elseif($order->payment_gateway === 'PAYPAL')
                                     <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
-                                       class="w-full text-center bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                       class="w-full text-center bg-[#E3CFCF] hover:bg-[#dcc5c5] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
                                         Pay with PayPal
                                     </a>
                                 @endif
@@ -170,7 +170,7 @@
                                     @csrf
                                     <button type="button" 
                                             onclick="confirmCompletion('{{ $order->id }}')"
-                                            class="w-full text-center bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
+                                            class="w-full text-center bg-[#E3CFCF] hover:bg-[#dcc5c5] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
                                         Confirm Receipt
                                     </button>
                                 </form>
@@ -185,6 +185,11 @@
                     </div>
                 </div>
                 @endforeach
+            </div>
+
+            {{-- Pagination --}}
+            <div class="mt-16 pt-8 border-t border-gray-100">
+                {{ $orders->links('vendor.pagination.custom') }}
             </div>
         @endif
 
