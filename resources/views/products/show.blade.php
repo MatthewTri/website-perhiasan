@@ -225,6 +225,41 @@
                             </span>
                         </summary>
                         <div class="mt-6">
+                            {{-- Rating Summary --}}
+                            <div class="mb-6 pb-6 border-b border-gray-100">
+                                <div class="flex items-center justify-center gap-3">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-light text-gray-900 mb-1">
+                                            <span id="dropdown-rating-avg">{{ number_format($product->rating_avg, 1) }}</span>
+                                            <span class="text-lg text-gray-400">/5</span>
+                                        </div>
+                                        <div id="dropdown-stars" class="flex justify-center text-[#E8B49E] space-x-0.5 mb-2">
+                                            {{-- Stars rendered based on initial rating --}}
+                                            @php
+                                                $rating = $product->rating_avg;
+                                                $fullStars = floor($rating);
+                                                $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                            @endphp
+                                            @for($i = 0; $i < 5; $i++)
+                                                @if($i < $fullStars)
+                                                    {{-- Full star --}}
+                                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                @elseif($i == $fullStars && $hasHalfStar)
+                                                    {{-- Half star --}}
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarGrad"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarGrad)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                @else
+                                                    {{-- Empty star --}}
+                                                    <svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">
+                                            Based on <span id="dropdown-rating-count">{{ $product->rating_count }}</span> reviews
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             {{-- Reviews List --}}
                             <div id="dropdown-reviews-list" class="space-y-6 md:space-y-8 mb-6">
                                 {{-- Loading Spinner --}}
@@ -475,6 +510,28 @@
         }
     }
 
+    // --- RENDER STARS FOR SUMMARY ---
+    function renderSummaryStars(rating) {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        
+        for (let i = 0; i < 5; i++) {
+            if (i < fullStars) {
+                // Full star
+                stars.push(`<svg class="w-3.5 h-3.5 text-[#E8B49E] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
+            } else if (i === fullStars && hasHalfStar) {
+                // Half star
+                stars.push(`<svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarSummary"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarSummary)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
+            } else {
+                // Empty star
+                stars.push(`<svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
+            }
+        }
+        
+        return stars.join('');
+    }
+
     // --- LOAD DROPDOWN REVIEWS ---
     async function loadDropdownReviews(page = 1) {
         const reviewsList = document.getElementById('dropdown-reviews-list');
@@ -500,7 +557,19 @@
             const response = await fetch(`/api/products/${productId}/reviews?page=${page}`);
             const data = await response.json();
             
+            // Update counts
             document.getElementById('dropdown-review-count').textContent = data.total;
+            document.getElementById('dropdown-rating-count').textContent = data.total;
+            
+            // Update average rating if available
+            if (data.rating_avg !== undefined) {
+                const rating = parseFloat(data.rating_avg);
+                document.getElementById('dropdown-rating-avg').textContent = rating.toFixed(1);
+                
+                // Update stars
+                const starsContainer = document.getElementById('dropdown-stars');
+                starsContainer.innerHTML = renderSummaryStars(rating);
+            }
             
             if (data.data.length > 0) {
                 reviewsList.innerHTML = data.data.map((review, index) => renderDropdownReview(review, index)).join('');            

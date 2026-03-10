@@ -32,6 +32,8 @@ class ReviewController extends Controller
      */
     public function productReviews(Request $request, $productId)
     {
+        $product = \App\Models\Product::findOrFail($productId);
+        
         $reviews = Review::with([
             'user', 
             'product:id,name,slug',
@@ -44,7 +46,11 @@ class ReviewController extends Controller
         ->latest()
         ->paginate(5)->onEachSide(1);
 
-        return response()->json($reviews);
+        // Add product rating average to response
+        $response = $reviews->toArray();
+        $response['rating_avg'] = $product->rating_avg;
+
+        return response()->json($response);
     }
     /**
      * Halaman Review via Magic Link (Support Guest & Member)
