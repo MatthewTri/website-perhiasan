@@ -32,5 +32,18 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('123123'),
             'is_admin' => false,
         ]);
+
+        // Create Parent Categories
+        $categories = [
+            ['name' => 'Rings', 'slug' => 'rings', 'parent_id' => null],
+            ['name' => 'Necklaces', 'slug' => 'necklaces', 'parent_id' => null],
+            ['name' => 'Bracelets', 'slug' => 'bracelets', 'parent_id' => null],
+            ['name' => 'Earrings', 'slug' => 'earrings', 'parent_id' => null],
+            ['name' => 'Stones', 'slug' => 'stones', 'parent_id' => null],
+        ];
+
+        foreach ($categories as $category) {
+            \App\Models\Category::create($category);
+        }
     }
 }
