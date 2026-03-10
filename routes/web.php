@@ -37,13 +37,13 @@ Route::resource('categories', CategoryController::class);
 Route::get('/products/checkSlug', [ProductController::class, 'checkSlug']);
 Route::resource('products', ProductController::class);
 
-// Register
-Route::get('/register', [RegisterController::class, 'index'])->name('register');
-Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+// Register (Guest only - redirect to home if already logged in)
+Route::get('/register', [RegisterController::class, 'index'])->middleware('guest')->name('register');
+Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.store');
 
-// Login
-Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
+// Login (Guest only - redirect to home if already logged in)
+Route::get('/login', [LoginController::class, 'index'])->middleware('guest')->name('login');
+Route::post('/login', [LoginController::class, 'authenticate'])->middleware('guest')->name('login.authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Forgot Password & Password Reset
