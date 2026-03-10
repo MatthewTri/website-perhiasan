@@ -167,7 +167,35 @@ class ProductController extends Controller
         'category'
     ]);
     
-    return view('products.show', compact('product'));
+    // Get related products (max 4) - prioritize same category
+    $relatedProducts = Product::where('id', '!=', $product->id)
+        ->where('category_id', $product->category_id)
+        ->with([
+            'featuredImage',
+            'colors:id,product_id,name,hex_code,sort_order'
+        ])
+        ->inRandomOrder()
+        ->limit(4)
+        ->get();
+    
+    // If less than 4, fill with other random products
+    if ($relatedProducts->count() < 4) {
+        $remaining = 4 - $relatedProducts->count();
+        $excludeIds = $relatedProducts->pluck('id')->push($product->id)->toArray();
+        
+        $otherProducts = Product::whereNotIn('id', $excludeIds)
+            ->with([
+                'featuredImage',
+                'colors:id,product_id,name,hex_code,sort_order'
+            ])
+            ->inRandomOrder()
+            ->limit($remaining)
+            ->get();
+        
+        $relatedProducts = $relatedProducts->merge($otherProducts);
+    }
+    
+    return view('products.show', compact('product', 'relatedProducts'));
 }
 
     /**

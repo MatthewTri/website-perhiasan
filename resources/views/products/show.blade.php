@@ -280,12 +280,116 @@
     </div>
 
     {{-- YOU MAY ALSO LIKE (Clean Grid) --}}
-    <div class="border-t border-gray-100 py-16 md:py-24">
+    @if($relatedProducts->count() > 0)
+    <div class="border-t border-gray-100 md:pt-24">
         <div class="max-w-screen-2xl mx-auto px-4 lg:px-6">
             <h2 class="text-center text-xl font-normal uppercase tracking-[0.2em] mb-12 text-gray-900">You May Also Like</h2>
-            {{-- Insert your grid component here --}}
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
+                @foreach($relatedProducts as $relatedProduct)
+                    <div class="group relative flex flex-col">
+                        
+                        {{-- A. IMAGE CONTAINER --}}
+                        <div class="relative w-full aspect-square bg-[#F9F9F9] overflow-hidden group/image">
+                            <a href="{{ route('products.show', $relatedProduct) }}" class="block w-full h-full">
+                                @if($relatedProduct->featuredImage)
+                                    <img src="{{ asset('storage/' . $relatedProduct->featuredImage->image) }}" 
+                                         alt="{{ $relatedProduct->name }}" 
+                                         class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/image:scale-105">
+                                @else
+                                    <img src="{{ asset('img/no-image.jpg') }}" 
+                                         alt="No Image" 
+                                         class="w-full h-full object-cover opacity-30">
+                                @endif
+                            </a>
+
+                            {{-- QUICK VIEW BUTTON (+) --}}
+                            <button type="button"
+                                class="quick-view-btn absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-0 group-hover/image:opacity-100 translate-y-2 group-hover/image:translate-y-0 cursor-pointer z-20 shadow-sm"
+                                data-product-id="{{ $relatedProduct->id }}"
+                                data-product-name="{{ $relatedProduct->name }}"
+                                data-product-slug="{{ $relatedProduct->slug }}"
+                                data-price-idr="{{ $relatedProduct->price_idr }}"
+                                data-price-usd="{{ $relatedProduct->price_usd }}"
+                                data-product-url="{{ route('products.show', $relatedProduct) }}"
+                                data-rating-avg="{{ $relatedProduct->rating_avg ?? 0 }}"
+                                data-rating-count="{{ $relatedProduct->rating_count ?? 0 }}"
+                                data-featured-image="{{ $relatedProduct->featuredImage ? asset('storage/' . $relatedProduct->featuredImage->image) : '' }}"
+                                data-colors='@json($relatedProduct->colors ? $relatedProduct->colors->map(fn($c) => ["name" => $c->name, "hex_code" => $c->hex_code])->values()->toArray() : [])'
+                                data-sizes='@json($relatedProduct->sizes ? $relatedProduct->sizes->pluck("size_name")->toArray() : [])'>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {{-- B. PRODUCT INFO (Minimalist Text) --}}
+                        <div class="mt-4 text-center">
+                            <h3 class="text-[10px] md:text-[11px] font-bold text-gray-900 uppercase tracking-[0.15em] mb-1 leading-relaxed">
+                                <a href="{{ route('products.show', $relatedProduct) }}" class="hover:text-gray-600 transition-colors">
+                                    {{ $relatedProduct->name }}
+                                </a>
+                            </h3>
+
+                            <p class="text-[11px] md:text-xs text-gray-500 tracking-widest font-medium mb-3">
+                                Rp {{ number_format($relatedProduct->price_idr, 0, ',', '.') }}
+                            </p>
+
+                            @if($relatedProduct->colors && $relatedProduct->colors->count() > 0)
+                            <div class="flex justify-center items-center space-x-2 mb-2">
+                                @foreach($relatedProduct->colors->take(4) as $color)
+                                <div class="w-3 h-3 md:w-4 md:h-4 rounded-full border border-gray-200" 
+                                     style="background-color: {{ $color->hex_code }};" 
+                                     title="{{ $color->name }}"></div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            {{-- Rating Stars (Dynamic with Partial Fill) --}}
+                            @if($relatedProduct->rating_count > 0)
+                            <div class="flex justify-center items-center space-x-0.5">
+                                @php
+                                    $rating = $relatedProduct->rating_avg ?? 0;
+                                    $fullStars = floor($rating);
+                                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                                @endphp
+
+                                {{-- Full Stars --}}
+                                @for($i = 0; $i < $fullStars; $i++)
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E8B49E] fill-current" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                @endfor
+
+                                {{-- Half Star --}}
+                                @if($hasHalfStar)
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E8B49E]" viewBox="0 0 20 20">
+                                    <defs>
+                                        <linearGradient id="half-{{ $relatedProduct->id }}">
+                                            <stop offset="50%" stop-color="currentColor"/>
+                                            <stop offset="50%" stop-color="#E5E7EB" stop-opacity="1"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path fill="url(#half-{{ $relatedProduct->id }})" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                @endif
+
+                                {{-- Empty Stars --}}
+                                @for($i = 0; $i < $emptyStars; $i++)
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                @endfor
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
+    @endif
 </div>
 
 {{-- SweetAlert2 & Scripts --}}
