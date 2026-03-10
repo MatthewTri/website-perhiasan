@@ -16,10 +16,6 @@
                     <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Calendar Settings
                 </a>
-                <a href="{{ route('home') }}" class="group inline-flex items-center text-xs font-bold tracking-[0.15em] text-stone-400 uppercase hover:text-stone-900 transition-colors">
-                    <svg class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Site
-                </a>
             </div>
         </div>
 
@@ -99,7 +95,7 @@
 
                 {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
-                    <button type="button" id="clearFiltersBtn" class="w-full bg-rose-500 text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-rose-600 transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="button" id="clearFiltersBtn" class="w-full bg-[#E8B49E] text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#D4A38C] cursor-pointer transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                         Clear Filters
                     </button>
                 </div>

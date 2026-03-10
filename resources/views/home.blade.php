@@ -3,7 +3,7 @@
 @section('content')
 
 {{-- HERO SECTION --}}
-<section class="relative w-full h-[60vh] md:h-[75vh] lg:h-[85vh] overflow-hidden bg-gradient-to-br from-[#F5E6E0] to-[#E8B49E]/20">
+<section class="relative w-full h-[60vh] md:h-[75vh] lg:h-[85vh] overflow-hidden bg-gradient-to-br from-[#F5E6E0] to-[#E3CFCF]/20">
     <div class="absolute inset-0">
         <img src="" 
              alt="Luxury Jewellery Collection" 
@@ -23,7 +23,7 @@
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <a href="{{ route('products.index') }}" 
-                   class="group relative inline-flex items-center justify-center px-8 md:px-12 py-3 md:py-4 bg-white text-gray-900 overflow-hidden transition-all duration-300 hover:bg-[#E8B49E] hover:text-white border-2 border-white">
+                   class="group relative inline-flex items-center justify-center px-8 md:px-12 py-3 md:py-4 bg-white text-gray-900 overflow-hidden transition-all duration-300 hover:bg-[#E3CFCF] hover:text-white border-2 border-white">
                     <span class="relative text-xs md:text-sm font-bold tracking-[0.2em] uppercase">Shop Collection</span>
                 </a>
                 <a href="{{ route('consultation.index') }}" 
@@ -41,7 +41,7 @@
         <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 tracking-[0.3em] uppercase mb-4">
             Shop by Category
         </h2>
-        <div class="w-24 h-px bg-[#E8B49E] mx-auto"></div>
+        <div class="w-24 h-px bg-[#E3CFCF] mx-auto"></div>
     </div>
     
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -233,7 +233,7 @@
         
         <div class="text-center mt-12">
             <a href="{{ route('products.index') }}" 
-               class="inline-flex items-center justify-center px-10 py-4 bg-gray-900 text-white hover:bg-[#E8B49E] transition-all duration-300 border-2 border-gray-900 hover:border-[#E8B49E]">
+               class="inline-flex items-center justify-center px-10 py-4 bg-gray-900 text-white hover:bg-[#E3CFCF] transition-all duration-300 border-2 border-gray-900 hover:border-[#E3CFCF]">
                 <span class="text-xs md:text-sm font-bold tracking-[0.2em] uppercase">View All Products</span>
             </a>
         </div>
@@ -245,8 +245,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
         {{-- Feature 1 --}}
         <div class="flex flex-col items-center text-center space-y-4 group">
-            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E8B49E] transition-colors duration-300">
-                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E8B49E] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E3CFCF] transition-colors duration-300">
+                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E3CFCF] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
@@ -260,8 +260,8 @@
         
         {{-- Feature 2 --}}
         <div class="flex flex-col items-center text-center space-y-4 group">
-            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E8B49E] transition-colors duration-300">
-                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E8B49E] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E3CFCF] transition-colors duration-300">
+                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E3CFCF] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
@@ -275,8 +275,8 @@
         
         {{-- Feature 3 --}}
         <div class="flex flex-col items-center text-center space-y-4 group">
-            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E8B49E] transition-colors duration-300">
-                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E8B49E] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-[#F5E6E0] group-hover:bg-[#E3CFCF] transition-colors duration-300">
+                <svg class="w-8 h-8 md:w-10 md:h-10 text-[#E3CFCF] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
             </div>
@@ -297,8 +297,8 @@
             <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 tracking-[0.3em] uppercase mb-4">
                 Follow Us
             </h2>
-            <div class="w-24 h-px bg-[#E8B49E] mx-auto mb-6"></div>
-            <a target="_blank" href="https://www.instagram.com/cecileprivatecollection" class="inline-flex items-center space-x-2 text-sm text-gray-700 hover:text-[#E8B49E] transition-colors tracking-widest">
+            <div class="w-24 h-px bg-[#E3CFCF] mx-auto mb-6"></div>
+            <a target="_blank" href="https://www.instagram.com/cecileprivatecollection" class="inline-flex items-center space-x-2 text-sm text-gray-700 hover:text-[#E3CFCF] transition-colors tracking-widest">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 <span class="font-semibold uppercase">@cecileprivatecollection</span>
             </a>
@@ -311,7 +311,7 @@
                      alt="Instagram Post {{ $i }}" 
                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                      >
-                <div class="absolute inset-0 bg-[#E8B49E]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div class="absolute inset-0 bg-[#E3CFCF]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 </div>
             </a>
@@ -321,7 +321,7 @@
 </section>
 
 {{-- NEWSLETTER SECTION --}}
-<section class="bg-gradient-to-br from-[#E8B49E] to-[#dcaea1] py-16 md:py-20">
+<section class="bg-gradient-to-br from-[#E3CFCF] to-[#e3c5c5] py-16 md:py-20">
     <div class="max-w-4xl mx-auto px-4 text-center">
         <h2 class="text-2xl md:text-3xl font-light text-white tracking-[0.3em] uppercase mb-4">
             Join Our Collection
@@ -339,7 +339,7 @@
                    required
                    class="flex-1 px-6 py-4 bg-white/95 text-gray-900 placeholder-gray-500 focus:outline-none text-sm tracking-wide">
             <button type="submit" 
-                    class="px-8 py-4 bg-gray-900 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 text-xs font-bold tracking-[0.2em] uppercase whitespace-nowrap">
+                    class="cursor-pointer px-8 py-4 bg-gray-900 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 text-xs font-bold tracking-[0.2em] uppercase whitespace-nowrap">
                 Subscribe
             </button>
         </form>
@@ -401,7 +401,7 @@
             title: 'Success!',
             text: '{{ session('subscription_success') }}',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#E8B49E',
+            confirmButtonColor: '#E3CFCF',
             customClass: {
                 popup: 'rounded-lg',
                 confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'
@@ -415,7 +415,7 @@
             title: 'Oops...',
             text: '{{ session('subscription_error') }}',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#E8B49E',
+            confirmButtonColor: '#E3CFCF',
             customClass: {
                 popup: 'rounded-lg',
                 confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'
@@ -429,7 +429,7 @@
             title: 'Validation Error',
             text: '{{ $errors->first('email') }}',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#E8B49E',
+            confirmButtonColor: '#E3CFCF',
             customClass: {
                 popup: 'rounded-lg',
                 confirmButton: 'rounded-sm px-8 py-3 text-xs uppercase tracking-widest font-bold'

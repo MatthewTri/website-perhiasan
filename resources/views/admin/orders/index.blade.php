@@ -115,7 +115,7 @@
 
                 {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
-                    <button type="button" id="clearFiltersBtn" class="w-full bg-rose-500 text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-rose-600 transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="button" id="clearFiltersBtn" class="w-full bg-[#E8B49E] text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#D4A38C] cursor-pointer transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                         Clear Filters
                     </button>
                 </div>
