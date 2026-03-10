@@ -17,7 +17,8 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (!Gate::allows('admin')) {
-            abort(403, 'Unauthorized access. Admin only.');
+            // Use abort without message to trigger custom 403 error page
+            abort(403);
         }
 
         return $next($request);
