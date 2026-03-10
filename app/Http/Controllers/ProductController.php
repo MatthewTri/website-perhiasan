@@ -20,15 +20,21 @@ use \Cviebrock\EloquentSluggable\Services\SlugService;
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (Best Sellers Only)
      */
     public function index()
     {
+        // Ambil Best Sellers berdasarkan total penjualan (top 16)
+        // Opsional: Tambahkan parameter minRating jika ingin filter rating minimal
+        // Contoh: ->bestSellers(4.0, 16) untuk rating minimal 4.0
         $products = Product::with([
             'category', 
             'featuredImage', 
-            'colors:id,product_id,name,hex_code,sort_order'  // ✅ Select only needed columns
-        ])->latest()->get();
+            'colors:id,product_id,name,hex_code,sort_order'
+        ])
+        ->bestSellers(null, 16) // null = tidak ada filter rating, 16 = jumlah produk
+        ->get();
+        
         return view('products.index', compact('products'));
     }
 

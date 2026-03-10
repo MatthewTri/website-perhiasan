@@ -58,6 +58,30 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    /**
+     * Scope untuk Best Sellers - produk dengan penjualan terbanyak
+     * Bisa dikombinasi dengan filter rating minimal
+     */
+    public function scopeBestSellers($query, $minRating = null, $limit = 16)
+    {
+        $query->withCount(['orderItems as total_sold' => function($q) {
+                // Hitung total quantity yang terjual dari orders yang sukses/completed
+                $q->selectRaw('COALESCE(SUM(quantity), 0)')
+                  ->whereHas('order', function($orderQuery) {
+                      $orderQuery->whereIn('status', ['completed', 'delivered', 'shipped']);
+                  });
+            }])
+            ->having('total_sold', '>', 0); // Hanya produk yang ada penjualannya
+        
+        // Opsional: Filter rating minimal (misal: minimal 4.0)
+        if ($minRating) {
+            $query->where('rating_avg', '>=', $minRating);
+        }
+        
+        return $query->orderByDesc('total_sold')
+                     ->limit($limit);
+    }
+
     public function updateRatingAggregate()
     {
         // HANYA HITUNG REVIEW YANG VISIBLE

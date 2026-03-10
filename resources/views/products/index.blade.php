@@ -5,7 +5,7 @@
     <div class="max-w-screen-2xl mx-auto px-4 lg:px-6">
         <div class="flex flex-col md:flex-row justify-between items-center py-6 md:py-8">
             <h1 class="text-xl md:text-2xl font-serif text-gray-900 tracking-widest uppercase mb-4 md:mb-0 text-center md:text-left">
-                All Products
+                Best Sellers
             </h1>
             
             <a href="{{ route('products.create') }}" class="group relative inline-flex items-center justify-start overflow-hidden px-6 py-2 bg-gray-900 font-medium transition-all hover:bg-white border border-gray-900">
