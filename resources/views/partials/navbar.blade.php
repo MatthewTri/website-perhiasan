@@ -94,11 +94,11 @@
         <div class="hidden lg:flex justify-center items-center mt-8 pt-4">
             <ul class="flex space-x-8 text-[11px] xl:text-xs font-medium text-gray-900 tracking-[0.15em] uppercase">
                 <li><a href="{{ route('products.index') }}" class="hover:text-[#E8B49E] transition-colors">Best Sellers</a></li>
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Rings</a></li>
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li>
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
-                <li><a href="#" class="hover:text-[#E8B49E] transition-colors">Stones</a></li>
+                <li><a href="{{ route('categories.show', 'rings') }}" class="hover:text-[#E8B49E] transition-colors">Rings</a></li>
+                <li><a href="{{ route('categories.show', 'earrings') }}" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li>
+                <li><a href="{{ route('categories.show', 'bracelets') }}" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
+                <li><a href="{{ route('categories.show', 'necklaces') }}" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
+                <li><a href="{{ route('categories.show', 'stones') }}" class="hover:text-[#E8B49E] transition-colors">Stones</a></li>
                 
                 @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
                 <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>
@@ -124,19 +124,19 @@
 
     <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
         <li>
-            <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Collections</a>
+            <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
         </li>
         <li>
-            <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
+            <a href="{{ route('categories.show', 'rings') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Rings</a>
         </li>
         <li>
-            <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Earrings</a>
+            <a href="{{ route('categories.show', 'earrings') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Earrings</a>
         </li>
         <li>
-            <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Bracelets</a>
+            <a href="{{ route('categories.show', 'bracelets') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Bracelets</a>
         </li>
         <li>
-            <a href="#" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Necklaces</a>
+            <a href="{{ route('categories.show', 'necklaces') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Necklaces</a>
         </li>
         @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
         <li>

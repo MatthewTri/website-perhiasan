@@ -51,7 +51,33 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
+        // Get products from this category AND all its sub-categories
+        $categoryIds = [$category->id];
         
+        // If category has children, include their IDs
+        if ($category->children()->count() > 0) {
+            $categoryIds = array_merge(
+                $categoryIds, 
+                $category->children()->pluck('id')->toArray()
+            );
+        }
+        
+        // Get products from all these categories
+        $products = \App\Models\Product::with([
+            'category', 
+            'featuredImage', 
+            'colors:id,product_id,name,hex_code,sort_order'
+        ])
+        ->whereIn('category_id', $categoryIds)
+        ->latest()
+        ->get();
+        
+        $pageTitle = $category->name;
+        $pageSubtitle = $category->isParent() 
+            ? 'Explore our curated collection' 
+            : 'Discover timeless pieces';
+        
+        return view('products.index', compact('products', 'category', 'pageTitle', 'pageSubtitle'));
     }
 
     /**

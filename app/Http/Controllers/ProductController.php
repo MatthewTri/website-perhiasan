@@ -35,7 +35,10 @@ class ProductController extends Controller
         ->bestSellers(null, 16) // null = tidak ada filter rating, 16 = jumlah produk
         ->get();
         
-        return view('products.index', compact('products'));
+        $pageTitle = 'Best Sellers';
+        $pageSubtitle = 'Our most loved pieces';
+        
+        return view('products.index', compact('products', 'pageTitle', 'pageSubtitle'));
     }
 
     /**
