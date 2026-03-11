@@ -62,5 +62,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', function ($user) {
             return $user->is_admin === true || $user->is_admin === 1;
         });
+
+        // Share categories with navbar
+        View::composer('partials.navbar', function ($view) {
+            $categories = \App\Models\Category::whereNull('parent_id')
+                ->with('children')
+                ->orderBy('name')
+                ->get();
+            $view->with('navCategories', $categories);
+        });
     }
 }

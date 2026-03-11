@@ -180,7 +180,9 @@
         @empty
             <div class="col-span-full py-20 text-center">
                 <p class="text-xs uppercase tracking-widest text-gray-400">No products found in this collection.</p>
-                <a href="{{ route('products.create') }}" class="mt-4 inline-block border-b border-gray-900 text-xs uppercase tracking-widest pb-1 hover:text-gray-600">Create Product</a>
+                @can('admin')
+                    <a href="{{ route('products.create') }}" class="mt-4 inline-block border-b border-gray-900 text-xs uppercase tracking-widest pb-1 hover:text-gray-600">Create Product</a>
+                @endcan
             </div>
         @endforelse
     </div>

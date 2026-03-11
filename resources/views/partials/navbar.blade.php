@@ -94,11 +94,27 @@
         <div class="hidden lg:flex justify-center items-center mt-8 pt-4">
             <ul class="flex space-x-8 text-[11px] xl:text-xs font-medium text-gray-900 tracking-[0.15em] uppercase">
                 <li><a href="{{ route('products.index') }}" class="hover:text-[#E8B49E] transition-colors">Best Sellers</a></li>
-                <li><a href="{{ route('categories.show', 'rings') }}" class="hover:text-[#E8B49E] transition-colors">Rings</a></li>
-                <li><a href="{{ route('categories.show', 'earrings') }}" class="hover:text-[#E8B49E] transition-colors">Earrings</a></li>
-                <li><a href="{{ route('categories.show', 'bracelets') }}" class="hover:text-[#E8B49E] transition-colors">Bracelets</a></li>
-                <li><a href="{{ route('categories.show', 'necklaces') }}" class="hover:text-[#E8B49E] transition-colors">Necklaces</a></li>
-                <li><a href="{{ route('categories.show', 'stones') }}" class="hover:text-[#E8B49E] transition-colors">Stones</a></li>
+                
+                @foreach($navCategories as $category)
+                <li class="relative group">
+                    <a href="{{ route('categories.show', $category->slug) }}" class="hover:text-[#E8B49E] transition-colors">
+                        {{ $category->name }}
+                    </a>
+                    
+                    @if($category->children->count() > 0)
+                    {{-- Dropdown Menu --}}
+                    <div class="absolute left-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div class="bg-white border border-gray-100 shadow-lg min-w-[200px]">
+                            @foreach($category->children as $child)
+                            <a href="{{ route('categories.show', $child->slug) }}" class="block px-6 py-3 text-[10px] tracking-[0.15em] uppercase hover:bg-gray-50 hover:text-[#E8B49E] transition-colors border-b border-gray-50 last:border-b-0">
+                                {{ $child->name }}
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                </li>
+                @endforeach
                 
                 @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
                 <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>
@@ -111,70 +127,132 @@
     </div>
 </nav>
 
-<div id="mobile-menu-drawer" class="fixed top-0 left-0 z-50 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-70 shadow-2xl" tabindex="-1">
+<div id="mobile-menu-drawer" class="fixed top-0 left-0 z-50 h-screen overflow-hidden transition-transform -translate-x-full bg-white w-70 shadow-2xl" tabindex="-1">
     
-    <button type="button" data-drawer-hide="mobile-menu-drawer" aria-controls="mobile-menu-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center">
+    <button type="button" data-drawer-hide="mobile-menu-drawer" aria-controls="mobile-menu-drawer" class="text-gray-400 bg-transparent hover:bg-gray-200 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center z-10">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
         <span class="sr-only">Close menu</span>
     </button>
 
-    <div class="mb-6 mt-2">
-        <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
-    </div>
+    {{-- Main Menu (Level 1) --}}
+    <div id="main-menu" class="h-full overflow-y-auto p-4 transition-transform duration-300 ease-in-out">
+        <div class="mb-6 mt-2">
+            <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
+        </div>
 
-    <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
-        <li>
-            <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.show', 'rings') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Rings</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.show', 'earrings') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Earrings</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.show', 'bracelets') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Bracelets</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.show', 'necklaces') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Necklaces</a>
-        </li>
-        @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
-        <li>
-            <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-[#E8B49E]">Chat With AI</a>
-        </li>
-        @endif
-        <li>
-            <a href="{{ route('consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Book Consultation</a>
-        </li>
-
-        @can('admin')
-        <li class="mt-4 pt-4">
-            <span class="text-xs text-gray-400 font-bold mb-2 block">ADMINISTRATION</span>
-            <a href="{{ route('products.index') }}" class="block py-2 text-gray-600">Manage Products</a>
-            <a href="{{ route('admin.orders.index') }}" class="block py-2 text-gray-600">Orders</a>
-        </li>
-        @endcan
-    </ul>
-
-    <div class="absolute bottom-0 left-0 w-full p-4 border-t border-gray-100 bg-gray-50">
-        @auth
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                <span class="ml-3">My Account</span>
-            </a>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="flex w-full items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
-                   <span class="ml-8">Sign Out</span>
+        <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
+            <li>
+                <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
+            </li>
+            
+            @foreach($navCategories as $category)
+            <li>
+                @if($category->children->count() > 0)
+                {{-- Category with Subcategories - Show Arrow --}}
+                <button type="button" 
+                        onclick="openSubmenu('{{ $category->slug }}', '{{ $category->name }}')"
+                        class="flex items-center justify-between w-full py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                    <span>{{ $category->name }}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
                 </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}" class="block w-full text-center py-2 bg-gray-900 text-white uppercase text-xs tracking-widest hover:bg-gray-700">Login</a>
-        @endauth
+                @else
+                {{-- Category without Subcategories - Direct Link --}}
+                <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                    {{ $category->name }}
+                </a>
+                @endif
+            </li>
+            @endforeach
+            
+            @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
+            <li>
+                <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-[#E8B49E]">Chat With AI</a>
+            </li>
+            @endif
+            <li>
+                <a href="{{ route('consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Book Consultation</a>
+            </li>
+
+            @can('admin')
+            <li class="mt-4 pt-4">
+                <span class="text-xs text-gray-400 font-bold mb-2 block">ADMINISTRATION</span>
+                <a href="{{ route('products.index') }}" class="block py-2 text-gray-600">Manage Products</a>
+                <a href="{{ route('admin.orders.index') }}" class="block py-2 text-gray-600">Orders</a>
+            </li>
+            @endcan
+        </ul>
+
+        <div class="mt-auto pt-8 border-t border-gray-100">
+            @auth
+                <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="ml-3">My Account</span>
+                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="flex w-full items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                       <span class="ml-8">Sign Out</span>
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="block w-full text-center py-2 bg-gray-900 text-white uppercase text-xs tracking-widest hover:bg-gray-700">Login</a>
+            @endauth
+        </div>
     </div>
+
+    {{-- Submenu Panels (Level 2) - One for each parent category --}}
+    @foreach($navCategories as $category)
+        @if($category->children->count() > 0)
+        <div id="submenu-{{ $category->slug }}" class="absolute top-0 left-0 w-full h-full bg-white p-4 overflow-y-auto transform translate-x-full transition-transform duration-300 ease-in-out">
+            <button type="button" 
+                    onclick="closeSubmenu('{{ $category->slug }}')"
+                    class="flex items-center mb-6 mt-2 text-gray-900 hover:text-[#E8B49E]">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="text-sm font-medium uppercase tracking-wide">{{ $category->name }}</span>
+            </button>
+
+            <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
+                @foreach($category->children as $child)
+                <li>
+                    <a href="{{ route('categories.show', $child->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                        {{ $child->name }}
+                    </a>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+    @endforeach
 </div>
 
 <script>
+  // Mobile Submenu Navigation
+  function openSubmenu(categorySlug, categoryName) {
+      const mainMenu = document.getElementById('main-menu');
+      const submenu = document.getElementById('submenu-' + categorySlug);
+      
+      // Slide main menu to left (hide)
+      mainMenu.style.transform = 'translateX(-100%)';
+      
+      // Slide submenu to center (show)
+      submenu.style.transform = 'translateX(0)';
+  }
+
+  function closeSubmenu(categorySlug) {
+      const mainMenu = document.getElementById('main-menu');
+      const submenu = document.getElementById('submenu-' + categorySlug);
+      
+      // Slide submenu to right (hide)
+      submenu.style.transform = 'translateX(100%)';
+      
+      // Slide main menu back to center (show)
+      mainMenu.style.transform = 'translateX(0)';
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
         let lastScrollTop = 0;
         const navbar = document.getElementById('main-navbar');
