@@ -40,7 +40,7 @@
 
     <div class="border-t border-gray-100">
         <div class="max-w-screen-2xl mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-[1fr_200px_100px] divide-x divide-gray-100">
+            <div class="grid grid-cols-3 md:grid-cols-[120px_1fr_160px] divide-x divide-gray-100">
                 <button class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors md:justify-start md:px-6">
                     <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     Filter
@@ -65,13 +65,48 @@
                     </div>
                 </div>
 
-                <div class="hidden md:flex items-center justify-center space-x-2">
-                    <div class="w-4 h-4 bg-gray-400"></div>
-                    <div class="grid grid-cols-2 gap-0.5 w-4 h-4">
-                        <div class="bg-gray-900 w-full h-full"></div>
-                        <div class="bg-gray-900 w-full h-full"></div>
-                        <div class="bg-gray-900 w-full h-full"></div>
-                        <div class="bg-gray-900 w-full h-full"></div>
+                <div class="flex items-center justify-center">
+                    {{-- Mobile Grid Toggle (< md) --}}
+                    <div class="flex md:hidden items-center justify-center space-x-1 px-3">
+                        <button class="mobile-grid-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-mobile-level="m1" title="Single Column">
+                            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                <rect x="1" y="1" width="14" height="14"/>
+                            </svg>
+                        </button>
+                        <button class="mobile-grid-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-mobile-level="m2" title="Two Columns">
+                            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                <rect x="1" y="1" width="6" height="6"/>
+                                <rect x="9" y="1" width="6" height="6"/>
+                                <rect x="1" y="9" width="6" height="6"/>
+                                <rect x="9" y="9" width="6" height="6"/>
+                            </svg>
+                        </button>
+                    </div>
+                    {{-- Desktop Grid Toggle (>= md) --}}
+                    <div class="hidden md:flex items-center justify-center space-x-1">
+                    <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="1" title="Large Grid">
+                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                            <rect x="1" y="1" width="6" height="6"/>
+                            <rect x="9" y="1" width="6" height="6"/>
+                            <rect x="1" y="9" width="6" height="6"/>
+                            <rect x="9" y="9" width="6" height="6"/>
+                        </svg>
+                    </button>
+                    <button class="grid-view-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-level="2" title="Medium Grid">
+                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                            <rect x="1" y="1" width="4" height="4"/><rect x="6" y="1" width="4" height="4"/><rect x="11" y="1" width="4" height="4"/>
+                            <rect x="1" y="6" width="4" height="4"/><rect x="6" y="6" width="4" height="4"/><rect x="11" y="6" width="4" height="4"/>
+                            <rect x="1" y="11" width="4" height="4"/><rect x="6" y="11" width="4" height="4"/><rect x="11" y="11" width="4" height="4"/>
+                        </svg>
+                    </button>
+                    <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="3" title="Dense Grid">
+                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                            <rect x="1" y="1" width="3" height="3"/><rect x="5" y="1" width="3" height="3"/><rect x="9" y="1" width="3" height="3"/><rect x="13" y="1" width="3" height="3"/>
+                            <rect x="1" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/><rect x="9" y="5" width="3" height="3"/><rect x="13" y="5" width="3" height="3"/>
+                            <rect x="1" y="9" width="3" height="3"/><rect x="5" y="9" width="3" height="3"/><rect x="9" y="9" width="3" height="3"/><rect x="13" y="9" width="3" height="3"/>
+                            <rect x="1" y="13" width="3" height="3"/><rect x="5" y="13" width="3" height="3"/><rect x="9" y="13" width="3" height="3"/><rect x="13" y="13" width="3" height="3"/>
+                        </svg>
+                    </button>
                     </div>
                 </div>
             </div>
@@ -95,7 +130,7 @@
        Desktop: grid-cols-4
        Gap: gap-x-4 gap-y-10 (Jarak vertikal lebih jauh untuk kesan elegan)
     --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
+    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
         @forelse($products as $product)
             <div class="group relative flex flex-col">
                 
@@ -150,7 +185,7 @@
                 </div>
 
                 {{-- B. PRODUCT INFO (Minimalist Text) --}}
-                <div class="mt-4 text-center">
+                <div class="mt-4 text-center product-info">
                     <h3 class="text-[10px] md:text-[11px] font-bold text-gray-900 uppercase tracking-[0.15em] mb-1 leading-relaxed">
                         <a href="{{ route('products.show', $product) }}">
                             {{ $product->name }}
@@ -380,5 +415,82 @@
     //         });
     //     });
     // }
+</script>
+
+<script>
+    (function () {
+        var grid        = document.getElementById('productGrid');
+        var btns        = document.querySelectorAll('.grid-view-btn');
+        var mobileBtns  = document.querySelectorAll('.mobile-grid-btn');
+
+        var configs = {
+            '1':  { tablet: 2, desktop: 3, mobile: null, imageOnly: false },
+            '2':  { tablet: 3, desktop: 4, mobile: null, imageOnly: false },
+            '3':  { tablet: 4, desktop: 6, mobile: null, imageOnly: true  },
+            'm1': { tablet: null, desktop: null, mobile: 1, imageOnly: false },
+            'm2': { tablet: null, desktop: null, mobile: 2, imageOnly: false },
+        };
+
+        var currentDesktopLevel = '2';
+        var currentMobileLevel  = 'm2';
+
+        function isDesktop()    { return window.innerWidth >= 1024; }
+        function isTabletPlus() { return window.innerWidth >= 768;  }
+        function isMobileLevel(l) { return l === 'm1' || l === 'm2'; }
+
+        function applyGrid(level) {
+            var cfg = configs[level];
+            if (!cfg) return;
+
+            if (isTabletPlus()) {
+                var cols = isDesktop() ? cfg.desktop : cfg.tablet;
+                grid.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
+                grid.style.columnGap = cfg.imageOnly ? '0.5rem' : '2rem';
+                grid.style.rowGap    = cfg.imageOnly ? '0.5rem' : '4rem';
+            } else {
+                var mcols = cfg.mobile || 2;
+                grid.style.gridTemplateColumns = 'repeat(' + mcols + ', minmax(0, 1fr))';
+                grid.style.columnGap = mcols === 1 ? '0' : '1rem';
+                grid.style.rowGap    = mcols === 1 ? '1.5rem' : '2.5rem';
+            }
+
+            document.querySelectorAll('.product-info').forEach(function (el) {
+                el.style.display = cfg.imageOnly ? 'none' : '';
+            });
+
+            btns.forEach(function (btn) {
+                var active = btn.dataset.level === level;
+                btn.classList.toggle('text-gray-900', active);
+                btn.classList.toggle('text-gray-400', !active);
+            });
+
+            mobileBtns.forEach(function (btn) {
+                var active = btn.dataset.mobileLevel === level;
+                btn.classList.toggle('text-gray-900', active);
+                btn.classList.toggle('text-gray-400', !active);
+            });
+
+            if (isMobileLevel(level)) { currentMobileLevel = level; }
+            else                      { currentDesktopLevel = level; }
+        }
+
+        btns.forEach(function (btn) {
+            btn.addEventListener('click', function () { applyGrid(this.dataset.level); });
+        });
+        mobileBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () { applyGrid(this.dataset.mobileLevel); });
+        });
+
+        // Initial apply
+        applyGrid(isTabletPlus() ? currentDesktopLevel : currentMobileLevel);
+
+        var resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                applyGrid(isTabletPlus() ? currentDesktopLevel : currentMobileLevel);
+            }, 100);
+        });
+    })();
 </script>
 @endsection

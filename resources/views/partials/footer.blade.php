@@ -1,4 +1,4 @@
-<footer class="bg-white border-t border-gray-100 mt-20 pt-16 pb-12">
+<footer class="bg-white border-t border-gray-100 pt-16 pb-12">
     <div class="max-w-screen-2xl mx-auto px-6 lg:px-12">
         
         {{-- TOP SECTION: Links & Brand --}}
