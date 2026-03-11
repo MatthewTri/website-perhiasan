@@ -117,7 +117,7 @@
                 @endforeach
                 
                 @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
-                <li><a href="{{ route('gemma.index') }}" class="text-[#E8B49E] hover:text-gray-900 transition-colors">Chat With AI</a></li>
+                <li><a href="{{ route('gemma.index') }}" class="text-gray-900 hover:text-[#E8B49E] transition-colors">Chat With AI</a></li>
                 @endif
                 
                 <li><a href="{{ route('consultation.index') }}" class="hover:text-[#E8B49E] transition-colors">Book Consultation</a></li>
@@ -168,7 +168,7 @@
             
             @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
             <li>
-                <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-[#E8B49E]">Chat With AI</a>
+                <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E8B49E]">Chat With AI</a>
             </li>
             @endif
             <li>
@@ -177,23 +177,34 @@
 
             @can('admin')
             <li class="mt-4 pt-4">
-                <span class="text-xs text-gray-400 font-bold mb-2 block">Administration</span>
-                <a href="{{ route('products.index') }}" class="block py-2 text-gray-600">Manage Products</a>
-                <a href="{{ route('admin.orders.index') }}" class="block py-2 text-gray-600">Orders</a>
+                <button type="button" onclick="toggleAdminMenu()" class="flex items-center justify-between w-full py-3 text-xs text-gray-400 font-bold tracking-wider hover:text-gray-600 transition-colors">
+                    <span>Administration</span>
+                    <svg id="admin-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <ul id="admin-submenu" class="hidden space-y-0 font-medium text-sm tracking-wide text-gray-900">
+                    <li><a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Products</a></li>
+                    <li><a href="{{ route('categories.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Categories</a></li>
+                    <li><a href="{{ route('admin.reviews.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Reviews</a></li>
+                    <li><a href="{{ route('admin.orders.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Customer Orders</a></li>
+                    <li><a href="{{ route('admin.consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Customer Consultations</a></li>
+                    <li><a href="{{ route('settings.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Admin Settings</a></li>
+                    <li><a href="{{ route('admin.subscribers.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Subscribers</a></li>
+                </ul>
             </li>
             @endcan
         </ul>
 
-        <div class="mt-auto pt-8 border-t border-gray-100">
+        <div class="mt-auto pt-4 border-t border-gray-100">
             @auth
-                <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span class="ml-3">My Account</span>
+                <a href="#" class="block py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
+                    My Account
                 </a>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="flex w-full items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
-                       <span class="ml-8">Sign Out</span>
+                    <button type="submit" class="block w-full text-left py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
+                        Sign Out
                     </button>
                 </form>
             @else
@@ -211,7 +222,7 @@
             </div>
             <button type="button" 
                     onclick="closeSubmenu('{{ $category->slug }}')"
-                    class="flex items-center mb-6 text-gray-900 hover:text-[#E8B49E]">
+                    class="flex items-center mb-6 py-4 text-gray-900 hover:text-[#E8B49E]">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
@@ -219,6 +230,11 @@
             </button>
 
             <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
+                <li>
+                    <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E8B49E]">
+                        All {{ $category->name }}
+                    </a>
+                </li>
                 @foreach($category->children as $child)
                 <li>
                     <a href="{{ route('categories.show', $child->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
@@ -254,6 +270,13 @@
       
       // Slide main menu back to center (show)
       mainMenu.classList.remove('-translate-x-full');
+  }
+
+  function toggleAdminMenu() {
+      const menu = document.getElementById('admin-submenu');
+      const chevron = document.getElementById('admin-chevron');
+      menu.classList.toggle('hidden');
+      chevron.classList.toggle('rotate-180');
   }
 
   document.addEventListener('DOMContentLoaded', function () {
