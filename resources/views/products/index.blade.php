@@ -1,6 +1,20 @@
 @extends('layout.main')
 
 @section('content')
+@php
+    $sortOptions = [
+        'featured'     => 'Featured',
+        'best_selling' => 'Best Selling',
+        'alpha_asc'    => 'Alphabetically, A-Z',
+        'alpha_desc'   => 'Alphabetically, Z-A',
+        'price_asc'    => 'Price, Low to High',
+        'price_desc'   => 'Price, High to Low',
+        'date_asc'     => 'Date, Old to New',
+        'date_desc'    => 'Date, New to Old',
+    ];
+    $currentSort = $currentSort ?? 'featured';
+    $currentSortLabel = $sortOptions[$currentSort] ?? 'Featured';
+@endphp
 <div class="w-full bg-white border-b border-gray-100 sticky top-[top-navbar-height] z-20">
     <div class="max-w-screen-2xl mx-auto px-4 lg:px-6">
         <div class="flex flex-col md:flex-row justify-between items-center py-6 md:py-8">
@@ -32,9 +46,24 @@
                     Filter
                 </button>
                 
-                <button class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors">
-                    Sort By <svg class="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
+                <div class="relative flex" id="sortByContainer">
+                    <button id="sortByBtn" class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors w-full cursor-pointer">
+                        <span>Sort By</span>
+                        <svg id="sortChevron" class="w-3 h-3 ml-2 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    {{-- Desktop Dropdown --}}
+                    <div id="sortDropdown" class="hidden absolute top-full left-0 bg-white border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.12)] min-w-[220px] z-50 py-1">
+                        @foreach($sortOptions as $value => $label)
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                           class="flex items-center justify-between px-6 py-3 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-bold border-l-2 border-gray-900 pl-5' : 'text-gray-500' }}">
+                            <span>{{ $label }}</span>
+                            @if($currentSort === $value)
+                            <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            @endif
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
 
                 <div class="hidden md:flex items-center justify-center space-x-2">
                     <div class="w-4 h-4 bg-gray-400"></div>
@@ -187,6 +216,86 @@
         @endforelse
     </div>
 </div>
+
+{{-- Mobile Sort Bottom Sheet --}}
+<div id="sortOverlay" class="fixed inset-0 bg-black/40 z-40 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+<div id="sortBottomSheet" class="fixed bottom-0 left-0 right-0 bg-white z-50 translate-y-full transition-transform duration-300 ease-in-out md:hidden shadow-2xl rounded-t-xl">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-900">Sort By</h3>
+        <button id="closeSortSheet" class="p-1 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+    <div class="py-2">
+        @foreach($sortOptions as $value => $label)
+        <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+           class="flex items-center justify-between px-6 py-4 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-semibold' : 'text-gray-500' }}">
+            <span>{{ $label }}</span>
+            @if($currentSort === $value)
+            <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            @endif
+        </a>
+        @endforeach
+    </div>
+</div>
+
+<script>
+(function () {
+    const sortByBtn     = document.getElementById('sortByBtn');
+    const sortDropdown  = document.getElementById('sortDropdown');
+    const sortChevron   = document.getElementById('sortChevron');
+    const sortOverlay   = document.getElementById('sortOverlay');
+    const sortSheet     = document.getElementById('sortBottomSheet');
+    const closeSheetBtn = document.getElementById('closeSortSheet');
+    const container     = document.getElementById('sortByContainer');
+
+    function isMobile() { return window.innerWidth < 768; }
+
+    function openSheet() {
+        sortOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        sortSheet.classList.remove('translate-y-full');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSheet() {
+        sortOverlay.classList.add('opacity-0', 'pointer-events-none');
+        sortSheet.classList.add('translate-y-full');
+        document.body.style.overflow = '';
+    }
+
+    function openDropdown() {
+        sortDropdown.classList.remove('hidden');
+        sortChevron.classList.add('rotate-180');
+    }
+
+    function closeDropdown() {
+        sortDropdown.classList.add('hidden');
+        sortChevron.classList.remove('rotate-180');
+    }
+
+    sortByBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (isMobile()) {
+            openSheet();
+        } else {
+            sortDropdown.classList.contains('hidden') ? openDropdown() : closeDropdown();
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (container && !container.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+
+    closeSheetBtn.addEventListener('click', closeSheet);
+    sortOverlay.addEventListener('click', closeSheet);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeDropdown(); closeSheet(); }
+    });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

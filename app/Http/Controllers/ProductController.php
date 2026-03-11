@@ -22,23 +22,26 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource (Best Sellers Only)
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil Best Sellers berdasarkan total penjualan (top 16)
-        // Opsional: Tambahkan parameter minRating jika ingin filter rating minimal
-        // Contoh: ->bestSellers(4.0, 16) untuk rating minimal 4.0
-        $products = Product::with([
-            'category', 
-            'featuredImage', 
+        $currentSort = $request->get('sort', 'featured');
+
+        $query = Product::with([
+            'category',
+            'featuredImage',
             'colors:id,product_id,name,hex_code,sort_order'
-        ])
-        ->bestSellers(null, 16) // null = tidak ada filter rating, 16 = jumlah produk
-        ->get();
-        
+        ]);
+
+        if ($currentSort === 'featured') {
+            $products = $query->bestSellers(null, 16)->get(); // null = tidak ada filter rating , 16 = jumlah produk yang ditampilkan
+        } else {
+            $products = $this->applySortQuery($query, $currentSort)->get();
+        }
+
         $pageTitle = 'Best Sellers';
         $pageSubtitle = 'Our most loved pieces';
-        
-        return view('products.index', compact('products', 'pageTitle', 'pageSubtitle'));
+
+        return view('products.index', compact('products', 'pageTitle', 'pageSubtitle', 'currentSort'));
     }
 
     /**
@@ -411,12 +414,37 @@ class ProductController extends Controller
     private function reorderProductImages(Product $product)
     {
         $images = $product->images()->orderBy('sort_order')->get();
-        
+
         foreach ($images as $index => $image) {
             $image->update([
                 'sort_order' => $index,
-                'is_featured' => $index === 0 // First image is featured
+                'is_featured' => $index === 0
             ]);
+        }
+    }
+
+    private function applySortQuery($query, string $sort)
+    {
+        switch ($sort) {
+            case 'best_selling':
+                return $query->withCount(['orderItems as total_sold' => function ($q) {
+                    $q->selectRaw('COALESCE(SUM(quantity), 0)')
+                      ->whereHas('order', function ($o) {
+                          $o->whereIn('status', ['COMPLETED', 'SHIPPED', 'PAID', 'PRODUCTION', 'completed', 'shipped']);
+                      });
+                }])->orderByDesc('total_sold');
+            case 'alpha_asc':
+                return $query->orderBy('name', 'asc');
+            case 'alpha_desc':
+                return $query->orderBy('name', 'desc');
+            case 'price_asc':
+                return $query->orderBy('price_idr', 'asc');
+            case 'price_desc':
+                return $query->orderBy('price_idr', 'desc');
+            case 'date_asc':
+                return $query->orderBy('created_at', 'asc');
+            default: // date_desc
+                return $query->orderBy('created_at', 'desc');
         }
     }
 }

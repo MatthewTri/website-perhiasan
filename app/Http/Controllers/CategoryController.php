@@ -62,22 +62,50 @@ class CategoryController extends Controller
             );
         }
         
-        // Get products from all these categories
-        $products = \App\Models\Product::with([
-            'category', 
-            'featuredImage', 
+        $currentSort = request()->get('sort', 'featured');
+
+        $query = \App\Models\Product::with([
+            'category',
+            'featuredImage',
             'colors:id,product_id,name,hex_code,sort_order'
-        ])
-        ->whereIn('category_id', $categoryIds)
-        ->latest()
-        ->get();
-        
+        ])->whereIn('category_id', $categoryIds);
+
+        switch ($currentSort) {
+            case 'best_selling':
+                $query->withCount(['orderItems as total_sold' => function ($q) {
+                    $q->selectRaw('COALESCE(SUM(quantity), 0)')
+                      ->whereHas('order', function ($o) {
+                          $o->whereIn('status', ['COMPLETED', 'SHIPPED', 'PAID', 'PRODUCTION', 'completed', 'shipped']);
+                      });
+                }])->orderByDesc('total_sold');
+                break;
+            case 'alpha_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'alpha_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'price_asc':
+                $query->orderBy('price_idr', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price_idr', 'desc');
+                break;
+            case 'date_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            default: // featured / date_desc
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->get();
+
         $pageTitle = $category->name;
-        $pageSubtitle = $category->isParent() 
-            ? 'Explore our curated collection' 
+        $pageSubtitle = $category->isParent()
+            ? 'Explore our curated collection'
             : 'Discover timeless pieces';
-        
-        return view('products.index', compact('products', 'category', 'pageTitle', 'pageSubtitle'));
+
+        return view('products.index', compact('products', 'category', 'pageTitle', 'pageSubtitle', 'currentSort'));
     }
 
     /**
