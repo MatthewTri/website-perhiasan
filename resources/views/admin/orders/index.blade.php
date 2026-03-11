@@ -4,7 +4,7 @@
 <div class="bg-stone-50/50 min-h-screen py-10">
     <div class="container mx-auto px-4 max-w-7xl">
         
-        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+        <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
             <div>
                 <h6 class="text-xs font-bold tracking-[0.2em] text-stone-500 uppercase mb-2">Commerce Dashboard</h6>
                 <h1 class="text-3xl md:text-4xl font-serif text-stone-900 tracking-tight">Order Management</h1>
