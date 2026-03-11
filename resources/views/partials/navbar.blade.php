@@ -140,7 +140,7 @@
             <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
         </div>
 
-        <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
+        <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
             <li>
                 <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
             </li>
@@ -177,7 +177,7 @@
 
             @can('admin')
             <li class="mt-4 pt-4">
-                <span class="text-xs text-gray-400 font-bold mb-2 block">ADMINISTRATION</span>
+                <span class="text-xs text-gray-400 font-bold mb-2 block">Administration</span>
                 <a href="{{ route('products.index') }}" class="block py-2 text-gray-600">Manage Products</a>
                 <a href="{{ route('admin.orders.index') }}" class="block py-2 text-gray-600">Orders</a>
             </li>
@@ -206,16 +206,19 @@
     @foreach($navCategories as $category)
         @if($category->children->count() > 0)
         <div id="submenu-{{ $category->slug }}" class="absolute top-0 left-0 w-full h-full bg-white p-4 overflow-y-auto transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="mb-6 mt-2">
+                <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
+            </div>
             <button type="button" 
                     onclick="closeSubmenu('{{ $category->slug }}')"
-                    class="flex items-center mb-6 mt-2 text-gray-900 hover:text-[#E8B49E]">
+                    class="flex items-center mb-6 text-gray-900 hover:text-[#E8B49E]">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                <span class="text-sm font-medium uppercase tracking-wide">{{ $category->name }}</span>
+                <span class="text-sm font-medium tracking-wide">{{ $category->name }}</span>
             </button>
 
-            <ul class="space-y-0 font-medium text-sm tracking-wide uppercase text-gray-900">
+            <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
                 @foreach($category->children as $child)
                 <li>
                     <a href="{{ route('categories.show', $child->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
@@ -236,10 +239,10 @@
       const submenu = document.getElementById('submenu-' + categorySlug);
       
       // Slide main menu to left (hide)
-      mainMenu.style.transform = 'translateX(-100%)';
+      mainMenu.classList.add('-translate-x-full');
       
       // Slide submenu to center (show)
-      submenu.style.transform = 'translateX(0)';
+      submenu.classList.remove('translate-x-full');
   }
 
   function closeSubmenu(categorySlug) {
@@ -247,10 +250,10 @@
       const submenu = document.getElementById('submenu-' + categorySlug);
       
       // Slide submenu to right (hide)
-      submenu.style.transform = 'translateX(100%)';
+      submenu.classList.add('translate-x-full');
       
       // Slide main menu back to center (show)
-      mainMenu.style.transform = 'translateX(0)';
+      mainMenu.classList.remove('-translate-x-full');
   }
 
   document.addEventListener('DOMContentLoaded', function () {
