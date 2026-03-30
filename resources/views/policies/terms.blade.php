@@ -8,7 +8,6 @@
                 <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900">Terms & Conditions</h1>
                 <p class="mt-2 text-sm text-gray-500">Last updated: {{ now()->format('F j, Y') }}</p>
             </div>
-            <a href="{{ route('checkout.index') }}" class="shrink-0 text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Back to Checkout</a>
         </div>
 
         <div class="mt-8 p-5 sm:p-6 bg-[#FAFAFA] border border-gray-200">
@@ -20,10 +19,10 @@
                 For convenience, we summarize key points below. This summary is not a substitute for the full Terms.
             </p>
             <ul class="mt-4 text-sm text-gray-700 list-disc pl-5 space-y-2">
-                <li><span class="font-medium">Custom/bespoke production</span> typically takes <span class="font-medium">2–8 weeks</span> (estimate).</li>
-                <li><span class="font-medium">No-refund policy</span> applies to <span class="font-medium">bespoke/custom-made</span> items, except where required by law.</li>
+                <li><span class="font-medium">All items are pre-order / custom-made</span> and typically take <span class="font-medium">2–8 weeks</span> to produce (estimate).</li>
+                <li><span class="font-medium">Strict no-refund policy</span> applies because items are made-to-order, except where required by law or for verified defects/damage (see Refund Policy).</li>
                 <li><span class="font-medium">International shipping</span> may be subject to duties/taxes and customs delays.</li>
-                <li><span class="font-medium">PayPal</span> payments are processed under PayPal’s terms; disputes/chargebacks can affect fulfillment.</li>
+                <li><span class="font-medium">Payments</span> can be made via <span class="font-medium">Bank Transfer (BCA)</span> or <span class="font-medium">PayPal</span>; disputes/chargebacks can affect fulfillment.</li>
             </ul>
         </div>
 
@@ -31,8 +30,9 @@
             <section>
                 <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">1. Definitions</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p><span class="font-medium">"Ready-to-Ship Item"</span> means an item that is already produced and available for dispatch.</p>
-                    <p><span class="font-medium">"Custom" / "Bespoke" / "Made-to-Order"</span> means an item produced specifically for you (including custom sizing, engraving, special materials, unique design requests, or any item marked as pre-order/made-to-order).</p>
+                    <p><span class="font-medium">"Pre-Order"</span> means an item that is not held as ready stock and is produced after you place an order.</p>
+                    <p><span class="font-medium">"Custom" / "Bespoke" / "Made-to-Order"</span> means an item produced specifically for you (including custom sizing, engraving, special materials, unique design requests, or any item in our catalog produced on a pre-order basis).</p>
+                    <p><span class="font-medium">"Consultation"</span> means a discussion with our seller/team to confirm custom design requirements (such as size, materials, stones, references, and feasibility) prior to or during production.</p>
                     <p><span class="font-medium">"Order"</span> means your purchase request submitted through the Site.</p>
                 </div>
             </section>
@@ -50,6 +50,7 @@
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>We strive to display product descriptions, pricing, and photos accurately. However, due to device display differences and the nature of handcrafted products, colors, textures, and finishes may vary slightly.</p>
                     <p>Measurements, weights, and specifications are approximate unless explicitly stated otherwise.</p>
+                    <p><span class="font-medium">Pre-order model:</span> Items shown in our catalog are generally produced on a pre-order / made-to-order basis and are not guaranteed to be available for immediate dispatch.</p>
                 </div>
             </section>
 
@@ -62,7 +63,16 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">5. Pricing, Currency & Taxes</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">5. Pre-Order & Custom Design Process</h2>
+                <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
+                    <p>Our products are produced on a pre-order/custom basis. You may place a pre-order directly from the catalog, and for custom design requests you may be asked to complete a consultation with our seller/team to confirm specifications.</p>
+                    <p>You are responsible for confirming all details you provide (including size, spelling for engraving, materials, stones, references, and shipping address). Once production begins, changes may be limited or may result in additional costs and/or timeline extensions.</p>
+                    <p>We may require written confirmation (chat/email) of your final specifications before starting production to avoid misunderstandings.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">6. Pricing, Currency & Taxes</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>Prices are displayed in available currencies on the Site. For PayPal transactions, your charge may be processed in <span class="font-medium">USD</span> and your bank/PayPal may apply exchange rates and fees.</p>
                     <p>Depending on your location, taxes, customs duties, import VAT/GST, brokerage fees, and other charges may apply and are typically collected by the carrier or local authorities. Unless otherwise stated, these charges are <span class="font-medium">your responsibility</span>.</p>
@@ -70,35 +80,32 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">6. Custom / Bespoke Items (Production Time: 2–8 Weeks)</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">7. Production Time (All Items: 2–8 Weeks Estimate)</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>Custom/bespoke items require production. Estimated production time is typically <span class="font-medium">2–8 weeks</span> from Order confirmation (or from final approval of design/specifications, whichever is later). This is an estimate and may vary due to materials availability, artisan workload, quality checks, and holidays.</p>
-                    <p>For custom orders, you are responsible for confirming all details (such as size, spelling for engraving, materials, and shipping address). Once production begins, changes may be limited or may result in additional costs and/or timeline extensions.</p>
-                    <p>If you require delivery by a specific date, contact us <span class="font-medium">before</span> placing your Order. We cannot guarantee delivery dates for custom items.</p>
+                    <p>All items sold on our Site are produced on a pre-order/custom basis. Estimated production time is typically <span class="font-medium">2–8 weeks</span> from Order confirmation (or from final approval of design/specifications, whichever is later). This is an estimate and may vary due to materials availability, artisan workload, quality checks, and holidays.</p>
+                    <p>If you require delivery by a specific date, contact us <span class="font-medium">before</span> placing your Order. We cannot guarantee delivery dates for pre-order/custom items.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">7. Strict No-Refund Policy for Bespoke / Custom-Made Items</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">8. Strict No-Refund Policy (Made-to-Order / Pre-Order)</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>Due to the personalized nature of bespoke/custom-made items, all sales of such items are <span class="font-medium">final</span>. We do <span class="font-medium">not</span> offer returns, refunds, or exchanges for bespoke/custom items, <span class="font-medium">except where required by applicable law</span>.</p>
-                    <p>This includes (without limitation): custom sizing, engraving, special material requests, made-to-order pieces, design modifications, and items produced or sourced specifically for you.</p>
-                    <p>If your bespoke item arrives with a verified manufacturing defect or damage in transit, please contact us promptly so we can assess a repair, remake, or replacement where appropriate (subject to verification and availability).</p>
+                    <p>Because our products are produced on a pre-order/custom basis, all sales are generally <span class="font-medium">final</span>. We do <span class="font-medium">not</span> offer returns, refunds, or exchanges for change-of-mind, wrong size provided, or preference changes after production has started, <span class="font-medium">except where required by applicable law</span>.</p>
+                    <p>If your item arrives with a <span class="font-medium">verified manufacturing defect</span> or <span class="font-medium">damage in transit</span>, please contact us promptly so we can assess an appropriate resolution (repair, remake, replacement, or refund where applicable), subject to verification.</p>
+                    <p class="text-xs text-gray-500">For full details, see our <a href="{{ route('policies.refund') }}" class="text-gray-900 border-b border-gray-300 hover:border-gray-900 transition-colors">Refund Policy</a>.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">8. Returns (Non-Bespoke Items)</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">9. Refunds, Returns & Defects</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>For Ready-to-Ship items (non-bespoke), we may accept return requests within <span class="font-medium">14 days</span> of delivery, subject to eligibility criteria and verification.</p>
-                    <p>To be eligible, items must be unworn, unused, in original condition, and returned with any original packaging and included materials. We may refuse returns that show signs of wear, alteration, damage, or tampering.</p>
-                    <p>Shipping fees are generally non-refundable. You are responsible for return shipping costs unless the return is due to our error or a verified defect.</p>
-                    <p>To request a return, contact us with your Order details and the reason for return before sending any items back.</p>
+                    <p>Because items are made-to-order, we do not generally accept returns or offer refunds for change-of-mind. If an item is defective or arrives damaged, we will work with you on a fair resolution after verification.</p>
+                    <p class="text-xs text-gray-500">For the complete process (evidence, inspection, international shipping considerations, and PayPal-related disputes), see our <a href="{{ route('policies.refund') }}" class="text-gray-900 border-b border-gray-300 hover:border-gray-900 transition-colors">Refund Policy</a>.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">9. Shipping & Delivery (Including International Shipping)</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">10. Shipping & Delivery (Including International Shipping)</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>Delivery timeframes are estimates and not guaranteed. Risk of loss typically passes to you upon delivery to the address provided (subject to applicable law and carrier terms).</p>
                     <p><span class="font-medium">International shipping:</span> Your shipment may be inspected by customs and may incur additional charges (duties/taxes/fees). Customs processing may cause delays beyond our control. You are responsible for complying with local import regulations and for providing any required information/documentation.</p>
@@ -107,7 +114,7 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">10. Delivery Issues, Lost/Damaged Packages & Refusals</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">11. Delivery Issues, Lost/Damaged Packages & Refusals</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>Please inspect your package upon delivery. If your order arrives damaged, incomplete, or incorrect, contact us promptly with photos of the packaging and items so we can investigate and support a claim with the carrier where applicable.</p>
                     <p>If a package is marked as delivered by the carrier but you cannot locate it, you agree to cooperate with any carrier investigation. Outcomes depend on carrier confirmation and evidence available.</p>
@@ -116,27 +123,27 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">11. Cancellations & Changes</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">12. Cancellations & Changes</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>We may be able to cancel or adjust an order <span class="font-medium">before</span> it enters processing/production. Once a custom/bespoke item enters production, cancellation and changes are typically not possible.</p>
-                    <p>For Ready-to-Ship items, cancellation requests are handled on a best-effort basis prior to dispatch. If your order has shipped, cancellation is not possible and you may need to follow the return process (if eligible).</p>
+                    <p>If your order has shipped, cancellation is not possible. Because items are made-to-order, returns are generally not available except for verified defects/damage (see Refund Policy).</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">12. PayPal Payment Terms</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">13. Payment Methods (BCA Bank Transfer & PayPal)</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>If you choose PayPal, your payment is processed by PayPal and is subject to PayPal’s user agreement, privacy policy, and applicable policies. We do not control PayPal’s systems or decisions.</p>
-                    <p><span class="font-medium">Authorization and capture:</span> We may authorize and then capture your payment. Orders may not be considered fully confirmed until payment is successfully captured and verified.</p>
+                    <p><span class="font-medium">Bank Transfer (BCA):</span> If you pay via BCA bank transfer, you are responsible for ensuring the transfer is completed correctly and for providing any proof of payment if requested. Orders may be confirmed after our team verifies the payment.</p>
+                    <p><span class="font-medium">PayPal:</span> If you choose PayPal, your payment is processed by PayPal and is subject to PayPal’s user agreement, privacy policy, and applicable policies. We do not control PayPal’s systems or decisions.</p>
+                    <p><span class="font-medium">Authorization and capture:</span> We may authorize and then capture your PayPal payment. Orders may not be considered fully confirmed until payment is successfully captured and verified.</p>
                     <p><span class="font-medium">Currency:</span> PayPal may process charges in USD and apply currency conversion. Your bank/PayPal may charge fees. You are responsible for these fees.</p>
-                    <p><span class="font-medium">Shipping & address verification:</span> For fraud prevention and PayPal seller protection, we may ship only to the address shown as confirmed/eligible within the PayPal transaction where applicable.</p>
-                    <p><span class="font-medium">Disputes and chargebacks:</span> If you open a PayPal dispute/claim/chargeback, we may pause production (for custom items) and/or shipment until the issue is resolved. You agree to cooperate and provide information promptly if requested.</p>
-                    <p><span class="font-medium">PayPal policies:</span> Your rights and obligations under PayPal (including any purchase protection) are governed by PayPal’s policies, which may change from time to time.</p>
+                    <p><span class="font-medium">Disputes and chargebacks:</span> If you open a PayPal dispute/claim/chargeback, we may pause production and/or shipment until the issue is resolved. You agree to cooperate and provide information promptly if requested.</p>
+                    <p><span class="font-medium">Refund method:</span> If a refund is approved, it will be issued to the original payment method where possible. PayPal refunds are processed back via PayPal. For BCA transfers, refunds (if approved) are typically processed by our admin/seller via transfer to your BCA bank account after verification.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">13. Fraud Prevention & Order Security</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">14. Fraud Prevention & Order Security</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>We reserve the right to request additional verification, cancel orders, and/or refuse service in cases of suspected fraud, abuse, or policy violations.</p>
                     <p>We may void or cancel transactions that appear unauthorized or high-risk, including orders with mismatched billing/shipping information.</p>
@@ -144,7 +151,7 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">14. Intellectual Property</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">15. Intellectual Property</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>All Site content, including text, images, designs, logos, and product presentations, are owned by us or our licensors and are protected by applicable intellectual property laws.</p>
                     <p>You may not reproduce, distribute, or exploit any part of the Site without our prior written consent.</p>
@@ -152,7 +159,7 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">15. Limitation of Liability</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">16. Limitation of Liability</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>To the maximum extent permitted by law, we are not liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenue, data, or goodwill.</p>
                     <p>Where liability cannot be excluded, our liability is limited to the amount paid for the relevant Order (unless applicable law requires otherwise).</p>
@@ -160,14 +167,14 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">16. Changes to These Terms</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">17. Changes to These Terms</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>We may update these Terms from time to time. The updated version will be posted on this page with a revised “Last updated” date. Continued use of the Site after changes constitutes acceptance of the updated Terms.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">17. Contact</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">18. Contact</h2>
                 <div class="mt-4 space-y-5 text-sm text-gray-700 leading-relaxed">
                     <p>If you have questions about these Terms, returns, shipping, or your order, contact us through the options below.</p>
 
@@ -215,12 +222,12 @@
                         Our team typically responds within 24 hours during business hours. For urgent inquiries, please reach us via WhatsApp.
                     </p>
 
-                    <p class="text-xs text-gray-500">Site: <span class="text-gray-700">{{ url('/') }}</span></p>
                 </div>
             </section>
         </div>
 
         <div class="mt-12 pt-6 border-t border-gray-200 flex items-center justify-between gap-4">
+            <a href="{{ route('policies.refund') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Refund Policy</a>
             <a href="{{ route('policies.privacy') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Privacy Policy</a>
             <a href="{{ route('home') }}" class="text-xs uppercase tracking-widest text-[#E8B49E] border-b border-[#E8B49E] hover:text-gray-900 hover:border-gray-900 transition-colors">Home</a>
         </div>

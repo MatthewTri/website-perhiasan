@@ -24,6 +24,9 @@
     {{-- Minimal Navbar (bisa customize lebih simple) --}}
     @include('partials.navbar-checkout')
 
+    {{-- Contact Us Modal Component --}}
+    @include('components.contact-modal')
+
     {{-- Main Content --}}
     <main>
         @yield('content')

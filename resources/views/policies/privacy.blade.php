@@ -8,7 +8,6 @@
                 <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900">Privacy Policy</h1>
                 <p class="mt-2 text-sm text-gray-500">Last updated: {{ now()->format('F j, Y') }}</p>
             </div>
-            <a href="{{ route('checkout.index') }}" class="shrink-0 text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Back to Checkout</a>
         </div>
 
         <div class="mt-8 p-5 sm:p-6 bg-[#FAFAFA] border border-gray-200">
@@ -17,7 +16,7 @@
                 By using the Site, you consent to the practices described in this Privacy Policy.
             </p>
             <p class="mt-3 text-xs text-gray-500 leading-relaxed">
-                If you are using PayPal to pay, PayPal processes your payment data under its own privacy policy. We generally do not store full payment card details on our servers.
+                If you are using PayPal to pay, PayPal processes your payment data under its own privacy policy. If you pay by bank transfer (e.g., BCA), we may process payment confirmation details you provide. We generally do not store full payment card details on our servers.
             </p>
         </div>
 
@@ -31,6 +30,7 @@
                             <li>Contact details (e.g., name, email address, phone number).</li>
                             <li>Shipping information (e.g., address, city, province/state, postal code, country).</li>
                             <li>Order information (e.g., items purchased, quantities, custom notes, special instructions).</li>
+                            <li>Payment confirmation details you provide (e.g., bank transfer proof/receipt).</li>
                             <li>Customer support communications (e.g., messages, emails, attachments you send us).</li>
                         </ul>
                     </div>
@@ -48,6 +48,7 @@
                         <p class="font-medium text-gray-900">Payment information</p>
                         <p class="mt-2">
                             When you pay via PayPal, PayPal collects and processes your payment details (such as funding source and transaction identifiers). We may receive limited information such as your PayPal transaction ID, payment status, and payer details that PayPal shares with merchants.
+                            When you pay via bank transfer (e.g., BCA), we may receive or record limited confirmation details (such as transfer reference, amount, date/time, and proof of payment) for verification and bookkeeping.
                         </p>
                     </div>
                 </div>
@@ -200,13 +201,13 @@
                         Our team typically responds within 24 hours during business hours. For urgent inquiries, please reach us via WhatsApp.
                     </p>
 
-                    <p class="text-xs text-gray-500">Site: <span class="text-gray-700">{{ url('/') }}</span></p>
                 </div>
             </section>
         </div>
 
         <div class="mt-12 pt-6 border-t border-gray-200 flex items-center justify-between gap-4">
             <a href="{{ route('policies.terms') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Terms & Conditions</a>
+            <a href="{{ route('policies.refund') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Refund Policy</a>
             <a href="{{ route('home') }}" class="text-xs uppercase tracking-widest text-[#E8B49E] border-b border-[#E8B49E] hover:text-gray-900 hover:border-gray-900 transition-colors">Home</a>
         </div>
     </div>
