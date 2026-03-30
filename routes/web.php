@@ -29,6 +29,10 @@ Route::get('/', function () {
 // Currency Switcher (Public Access)
 Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('currency.switch');
 
+// Legal pages
+Route::view('/terms', 'policies.terms')->name('policies.terms');
+Route::view('/privacy-policy', 'policies.privacy')->name('policies.privacy');
+
 // Categories
 Route::get('/categories/checkSlug', [CategoryController::class, 'checkSlug']);
 Route::resource('categories', CategoryController::class);
