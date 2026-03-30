@@ -40,40 +40,51 @@
 
     <div class="border-t border-gray-100">
         <div class="max-w-screen-2xl mx-auto">
-            <div class="grid grid-cols-3 md:grid-cols-[120px_1fr_160px] divide-x divide-gray-100">
-                <button class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors md:justify-start md:px-6">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    Filter
-                </button>
-                
-                <div class="relative flex" id="sortByContainer">
-                    <button id="sortByBtn" class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors w-full cursor-pointer">
-                        <span>Sort By</span>
-                        <svg id="sortChevron" class="w-3 h-3 ml-2 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    {{-- Desktop Dropdown --}}
-                    <div id="sortDropdown" class="hidden absolute top-full left-0 bg-white border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.12)] min-w-[220px] z-50 py-1">
-                        @foreach($sortOptions as $value => $label)
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
-                           class="flex items-center justify-between px-6 py-3 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-bold border-l-2 border-gray-900 pl-5' : 'text-gray-500' }}">
-                            <span>{{ $label }}</span>
-                            @if($currentSort === $value)
-                            <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            @endif
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
+            <div class="flex items-stretch">
+                {{-- Left area intentionally empty --}}
+                <div class="flex-1"></div>
 
-                <div class="flex items-center justify-center">
-                    {{-- Mobile Grid Toggle (< md) --}}
-                    <div class="flex md:hidden items-center justify-center space-x-1 px-3">
-                        <button class="mobile-grid-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-mobile-level="m1" title="Single Column">
-                            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                                <rect x="1" y="1" width="14" height="14"/>
-                            </svg>
+                {{-- Right controls: Sort By + Grid toggle --}}
+                <div class="flex items-stretch divide-x divide-gray-100">
+                    <div class="relative flex" id="sortByContainer">
+                        <button id="sortByBtn" class="flex items-center justify-center py-3 md:py-4 text-xs font-bold tracking-[0.15em] uppercase text-gray-500 hover:text-gray-900 transition-colors cursor-pointer px-6">
+                            <span>Sort By</span>
+                            <svg id="sortChevron" class="w-3 h-3 ml-2 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <button class="mobile-grid-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-mobile-level="m2" title="Two Columns">
+                        {{-- Desktop Dropdown --}}
+                        <div id="sortDropdown" class="hidden absolute top-full right-0 bg-white border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.12)] min-w-[220px] z-50 py-1">
+                            @foreach($sortOptions as $value => $label)
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                               class="flex items-center justify-between px-6 py-3 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-bold border-l-2 border-gray-900 pl-5' : 'text-gray-500' }}">
+                                <span>{{ $label }}</span>
+                                @if($currentSort === $value)
+                                <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                @endif
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center px-4">
+                        {{-- Mobile Grid Toggle (< md) --}}
+                        <div class="flex md:hidden items-center justify-center space-x-1">
+                            <button class="mobile-grid-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-mobile-level="m1" title="Single Column">
+                                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                    <rect x="1" y="1" width="14" height="14"/>
+                                </svg>
+                            </button>
+                            <button class="mobile-grid-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-mobile-level="m2" title="Two Columns">
+                                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                    <rect x="1" y="1" width="6" height="6"/>
+                                    <rect x="9" y="1" width="6" height="6"/>
+                                    <rect x="1" y="9" width="6" height="6"/>
+                                    <rect x="9" y="9" width="6" height="6"/>
+                                </svg>
+                            </button>
+                        </div>
+                        {{-- Desktop Grid Toggle (>= md) --}}
+                        <div class="hidden md:flex items-center justify-center space-x-1">
+                        <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="1" title="Large Grid">
                             <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
                                 <rect x="1" y="1" width="6" height="6"/>
                                 <rect x="9" y="1" width="6" height="6"/>
@@ -81,32 +92,22 @@
                                 <rect x="9" y="9" width="6" height="6"/>
                             </svg>
                         </button>
-                    </div>
-                    {{-- Desktop Grid Toggle (>= md) --}}
-                    <div class="hidden md:flex items-center justify-center space-x-1">
-                    <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="1" title="Large Grid">
-                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                            <rect x="1" y="1" width="6" height="6"/>
-                            <rect x="9" y="1" width="6" height="6"/>
-                            <rect x="1" y="9" width="6" height="6"/>
-                            <rect x="9" y="9" width="6" height="6"/>
-                        </svg>
-                    </button>
-                    <button class="grid-view-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-level="2" title="Medium Grid">
-                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                            <rect x="1" y="1" width="4" height="4"/><rect x="6" y="1" width="4" height="4"/><rect x="11" y="1" width="4" height="4"/>
-                            <rect x="1" y="6" width="4" height="4"/><rect x="6" y="6" width="4" height="4"/><rect x="11" y="6" width="4" height="4"/>
-                            <rect x="1" y="11" width="4" height="4"/><rect x="6" y="11" width="4" height="4"/><rect x="11" y="11" width="4" height="4"/>
-                        </svg>
-                    </button>
-                    <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="3" title="Dense Grid">
-                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                            <rect x="1" y="1" width="3" height="3"/><rect x="5" y="1" width="3" height="3"/><rect x="9" y="1" width="3" height="3"/><rect x="13" y="1" width="3" height="3"/>
-                            <rect x="1" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/><rect x="9" y="5" width="3" height="3"/><rect x="13" y="5" width="3" height="3"/>
-                            <rect x="1" y="9" width="3" height="3"/><rect x="5" y="9" width="3" height="3"/><rect x="9" y="9" width="3" height="3"/><rect x="13" y="9" width="3" height="3"/>
-                            <rect x="1" y="13" width="3" height="3"/><rect x="5" y="13" width="3" height="3"/><rect x="9" y="13" width="3" height="3"/><rect x="13" y="13" width="3" height="3"/>
-                        </svg>
-                    </button>
+                        <button class="grid-view-btn p-1.5 text-gray-900 transition-colors cursor-pointer" data-level="2" title="Medium Grid">
+                            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                <rect x="1" y="1" width="4" height="4"/><rect x="6" y="1" width="4" height="4"/><rect x="11" y="1" width="4" height="4"/>
+                                <rect x="1" y="6" width="4" height="4"/><rect x="6" y="6" width="4" height="4"/><rect x="11" y="6" width="4" height="4"/>
+                                <rect x="1" y="11" width="4" height="4"/><rect x="6" y="11" width="4" height="4"/><rect x="11" y="11" width="4" height="4"/>
+                            </svg>
+                        </button>
+                        <button class="grid-view-btn p-1.5 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" data-level="3" title="Dense Grid">
+                            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                                <rect x="1" y="1" width="3" height="3"/><rect x="5" y="1" width="3" height="3"/><rect x="9" y="1" width="3" height="3"/><rect x="13" y="1" width="3" height="3"/>
+                                <rect x="1" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/><rect x="9" y="5" width="3" height="3"/><rect x="13" y="5" width="3" height="3"/>
+                                <rect x="1" y="9" width="3" height="3"/><rect x="5" y="9" width="3" height="3"/><rect x="9" y="9" width="3" height="3"/><rect x="13" y="9" width="3" height="3"/>
+                                <rect x="1" y="13" width="3" height="3"/><rect x="5" y="13" width="3" height="3"/><rect x="9" y="13" width="3" height="3"/><rect x="13" y="13" width="3" height="3"/>
+                            </svg>
+                        </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,7 +166,7 @@
 
                     {{-- TOMBOL PLUS (+) - Kanan Bawah (Hanya muncul saat hover image) --}}
                     <button type="button"
-                        class="quick-view-btn absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-100 translate-y-0 lg:opacity-0 lg:group-hover/image:opacity-100 lg:translate-y-2 lg:group-hover/image:translate-y-0 cursor-pointer z-20 shadow-sm"
+                        class="quick-view-btn absolute bottom-2 right-2 bg-white text-gray-900 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 opacity-100 translate-y-0 lg:opacity-0 lg:group-hover/image:opacity-100 lg:translate-y-2 lg:group-hover/image:translate-y-0 cursor-pointer z-10 shadow-sm"
                         data-product-id="{{ $product->id }}"
                         data-product-name="{{ $product->name }}"
                         data-product-slug="{{ $product->slug }}"
