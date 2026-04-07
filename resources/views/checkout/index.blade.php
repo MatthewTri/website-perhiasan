@@ -93,7 +93,7 @@
                             <div id="address-details" class="hidden md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {{-- Province --}}
                                 <div class="relative">
-                                    <select name="shipping_province" id="shipping_province" class="block w-full border border-gray-300 rounded-none px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 focus:ring-0 bg-transparent transition-colors appearance-none">
+                                    <select name="shipping_province" id="shipping_province" disabled class="block w-full border border-gray-300 rounded-none px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 focus:ring-0 bg-transparent transition-colors transition-opacity appearance-none disabled:opacity-60 disabled:cursor-default">
                                         <option value="">Province</option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -683,6 +683,36 @@
         const provinceSelect = document.getElementById('shipping_province');
         const addressDetails = document.getElementById('address-details');
 
+        // Cache provinces per country (session-scoped) to avoid refetching
+        const PROVINCE_CACHE_KEY = 'checkout_provinces_cache_v1';
+        let provinceCache = {};
+        try {
+            provinceCache = JSON.parse(sessionStorage.getItem(PROVINCE_CACHE_KEY) || '{}') || {};
+        } catch (_) {
+            provinceCache = {};
+        }
+
+        let inFlightProvinceController = null;
+
+        const setProvinceLoading = (label) => {
+            provinceSelect.disabled = true;
+            provinceSelect.setAttribute('aria-busy', 'true');
+            provinceSelect.innerHTML = `<option value="">${label}</option>`;
+        };
+
+        const setProvinceOptions = (states, selectedValue) => {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            states.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                if (selectedValue && name === selectedValue) opt.selected = true;
+                provinceSelect.appendChild(opt);
+            });
+            provinceSelect.disabled = false;
+            provinceSelect.removeAttribute('aria-busy');
+        };
+
         if(countrySelect) {
             fetch('https://countriesnow.space/api/v0.1/countries/positions')
                 .then(res => res.json())
@@ -705,28 +735,71 @@
             countrySelect.addEventListener('change', function() {
                 if(this.value) {
                     addressDetails.classList.remove('hidden');
+
+                    const selectedCountry = this.value;
+                    const oldProvince = '{{ old("shipping_province") }}';
+
+                    // Abort previous request if user changes country quickly
+                    if (inFlightProvinceController) {
+                        inFlightProvinceController.abort();
+                        inFlightProvinceController = null;
+                    }
+
+                    // Serve from cache if available
+                    if (provinceCache[selectedCountry] && Array.isArray(provinceCache[selectedCountry]) && provinceCache[selectedCountry].length > 0) {
+                        setProvinceOptions(provinceCache[selectedCountry], oldProvince);
+                        return;
+                    }
+
+                    setProvinceLoading('Loading provinces...');
+
+                    inFlightProvinceController = new AbortController();
                     
                     fetch('https://countriesnow.space/api/v0.1/countries/states', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ country: this.value })
+                        body: JSON.stringify({ country: selectedCountry }),
+                        signal: inFlightProvinceController.signal,
                     }).then(res => res.json()).then(data => {
-                        provinceSelect.innerHTML = '<option value="">Select Province</option>';
                         if(!data.error && data.data.states && data.data.states.length > 0) {
-                            data.data.states.forEach(s => {
-                                const opt = document.createElement('option');
-                                opt.value = s.name;
-                                opt.textContent = s.name;
-                                if(s.name === '{{ old("shipping_province") }}') opt.selected = true;
-                                provinceSelect.appendChild(opt);
-                            });
+                            const states = data.data.states
+                                .map(s => s && s.name)
+                                .filter(Boolean);
+
+                            // Update cache
+                            provinceCache[selectedCountry] = states;
+                            try {
+                                sessionStorage.setItem(PROVINCE_CACHE_KEY, JSON.stringify(provinceCache));
+                            } catch (_) {
+                                // ignore storage quota / private mode
+                            }
+
+                            setProvinceOptions(states, oldProvince);
                         } else {
                             provinceSelect.innerHTML = '<option value="">N/A</option>';
                             provinceSelect.removeAttribute('required');
+                            provinceSelect.disabled = true;
+                            provinceSelect.removeAttribute('aria-busy');
                         }
+                    }).catch((err) => {
+                        if (err && err.name === 'AbortError') return;
+                        provinceSelect.innerHTML = '<option value="">Failed to load</option>';
+                        provinceSelect.disabled = true;
+                        provinceSelect.removeAttribute('aria-busy');
+                    }).finally(() => {
+                        inFlightProvinceController = null;
                     });
                 } else {
                     addressDetails.classList.add('hidden');
+
+                    if (inFlightProvinceController) {
+                        inFlightProvinceController.abort();
+                        inFlightProvinceController = null;
+                    }
+
+                    provinceSelect.innerHTML = '<option value="">Province</option>';
+                    provinceSelect.disabled = true;
+                    provinceSelect.removeAttribute('aria-busy');
                 }
             });
         }
