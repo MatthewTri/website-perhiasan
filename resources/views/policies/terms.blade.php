@@ -227,9 +227,9 @@
         </div>
 
         <div class="mt-12 pt-6 border-t border-gray-200 flex items-center justify-between gap-4">
-            <a href="{{ route('policies.refund') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Refund Policy</a>
             <a href="{{ route('policies.privacy') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Privacy Policy</a>
-            <a href="{{ route('home') }}" class="text-xs uppercase tracking-widest text-[#E8B49E] border-b border-[#E8B49E] hover:text-gray-900 hover:border-gray-900 transition-colors">Home</a>
+            <a href="{{ route('policies.refund') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Refund Policy</a>
+            <a href="{{ route('policies.shipping') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Shipping Policy</a>
         </div>
     </div>
 </div>

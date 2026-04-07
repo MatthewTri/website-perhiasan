@@ -33,6 +33,7 @@ Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('cu
 Route::view('/terms', 'policies.terms')->name('policies.terms');
 Route::view('/privacy-policy', 'policies.privacy')->name('policies.privacy');
 Route::view('/refund-policy', 'policies.refund')->name('policies.refund');
+Route::view('/shipping-policy', 'policies.shipping')->name('policies.shipping');
 
 // Categories
 Route::get('/categories/checkSlug', [CategoryController::class, 'checkSlug']);

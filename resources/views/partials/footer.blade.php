@@ -50,7 +50,7 @@
                 <ul class="space-y-4 text-xs text-gray-500 font-light tracking-wide">
                     <li><a href="{{ route('consultation.index') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Book Consultation</a></li>
                     <li><button type="button" onclick="openSizeChart()" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all text-left">Size Guide</button></li>
-                    <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Shipping & Returns</a></li>
+                    <li><a href="{{ route('policies.shipping') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Shipping Policy</a></li>
                     <li><button type="button" onclick="openContactModal()" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all text-left">Contact Us</button></li>
                 </ul>
             </div>

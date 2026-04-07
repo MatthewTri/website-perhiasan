@@ -192,7 +192,7 @@
                         
                         <div class="mt-4 flex items-center justify-center gap-6 text-[10px] text-gray-400 tracking-wide">
                             <a href="{{ route('policies.refund') }}" class="underline underline-offset-2 hover:text-gray-700 transition-colors">Refund policy</a>
-                            {{-- Shipping (nanti) --}}
+                            <a href="{{ route('policies.shipping') }}" class="underline underline-offset-2 hover:text-gray-700 transition-colors">Shipping policy</a>
                             <a href="{{ route('policies.privacy') }}" class="underline underline-offset-2 hover:text-gray-700 transition-colors">Privacy policy</a>
                             <a href="{{ route('policies.terms') }}" class="underline underline-offset-2 hover:text-gray-700 transition-colors">Terms of service</a>
                             <button type="button" onclick="openContactModal()" class="underline underline-offset-2 hover:text-gray-700 transition-colors">Contact</button>
