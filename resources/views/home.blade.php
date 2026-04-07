@@ -306,7 +306,7 @@
         
         <div class="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4">
             @for($i = 1; $i <= 6; $i++)
-            <a href="" class="group relative aspect-square overflow-hidden bg-gray-200">
+            <a href="https://www.instagram.com/cecileprivatecollection/" class="group relative aspect-square overflow-hidden bg-gray-200" target="_blank">
                 <img src="" 
                      alt="Instagram Post {{ $i }}" 
                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
