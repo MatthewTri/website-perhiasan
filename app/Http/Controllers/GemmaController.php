@@ -94,9 +94,15 @@ class GemmaController extends Controller
         }
 
         try {
+            $aiUrl = config('services.ai.url', env('AI_SERVICE_URL'));
+            $apiKey = env('INTERNAL_AI_KEY');
             // Call ke Node.js API di port 3001
-            $response = Http::timeout(60)->post('http://localhost:3001/generate-image', [
-                'prompt' => $request->prompt
+            $response = Http::withHeaders([
+                'x-api-key' => $apiKey // Mengirim kunci rahasia
+            ])
+            ->timeout(120)
+            ->post($aiUrl . '/generate-image', [
+                'prompt' => $request->prompt,
             ]);
 
             if ($response->successful()) {
