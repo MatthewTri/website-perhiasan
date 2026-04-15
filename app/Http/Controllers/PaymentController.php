@@ -30,32 +30,60 @@ class PaymentController extends Controller
         $paypalToken = $request->query('token'); // PayPal Order ID
 
         Log::info('=== PayPal Success Callback START ===', [
-            'order_id' => $orderId,
-            'paypal_token' => $paypalToken,
-            'full_query' => $request->all()
+            'order_param' => $orderId,
+            'paypal_token_suffix' => $paypalToken ? substr($paypalToken, -6) : null,
         ]);
 
-        if (!$orderId || !$paypalToken) {
-            Log::error('Missing parameters', [
-                'order_id' => $orderId,
-                'paypal_token' => $paypalToken
-            ]);
+        if (!$paypalToken) {
+            Log::error('Missing PayPal token in success callback');
             return redirect()->route('home')->with('error', 'Invalid payment callback');
         }
 
-        $order = Order::find($orderId);
+        // ✅ SECURITY: Always bind the callback to the order by PayPal Order ID (token)
+        // Never trust the `order` query param as the source of truth.
+        $order = Order::where('transaction_id', $paypalToken)->latest('id')->first();
 
         if (!$order) {
-            Log::error('Order not found', ['order_id' => $orderId]);
-            return redirect()->route('home')->with('error', 'Order not found');
+            Log::error('PayPal success callback: token not mapped to any order', [
+                'order_param' => $orderId,
+                'paypal_token_suffix' => substr($paypalToken, -6),
+            ]);
+            return redirect()->route('home')->with('error', 'Payment session not recognized. Please contact support.');
         }
 
-        Log::info('Order found', [
+        if ($orderId && (string) $order->id !== (string) $orderId) {
+            Log::warning('PayPal success callback: order param mismatch (possible tampering)', [
+                'order_param' => $orderId,
+                'resolved_order_id' => $order->id,
+                'paypal_token_suffix' => substr($paypalToken, -6),
+            ]);
+        }
+
+        Log::info('Order resolved from PayPal token', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'current_status' => $order->status,
-            'transaction_id' => $order->transaction_id
+            'transaction_id_suffix' => $order->transaction_id ? substr($order->transaction_id, -6) : null,
         ]);
+
+        // Basic sanity checks
+        if ($order->payment_gateway !== 'PAYPAL') {
+            Log::warning('PayPal success callback: order gateway is not PAYPAL', [
+                'order_id' => $order->id,
+                'payment_gateway' => $order->payment_gateway,
+            ]);
+            return redirect()->route('order.track', $order->guest_token)
+                        ->with('error', 'This order is not configured for PayPal payment.');
+        }
+
+        if (strtoupper((string) $order->currency) !== 'USD') {
+            Log::warning('PayPal success callback: non-USD order currency', [
+                'order_id' => $order->id,
+                'currency' => $order->currency,
+            ]);
+            return redirect()->route('order.track', $order->guest_token)
+                        ->with('error', 'Invalid order currency for PayPal payment.');
+        }
 
         // Jika sudah PAID, skip
         if ($order->status === 'PAID') {
@@ -77,7 +105,8 @@ class PaymentController extends Controller
         // ⬅️ CAPTURE PAYMENT DI SINI (INI YANG TRIGGER WEBHOOK!)
         try {
             Log::info('Attempting to CAPTURE PayPal payment', [
-                'paypal_order_id' => $paypalToken
+                'paypal_token_suffix' => substr($paypalToken, -6),
+                'order_id' => $order->id,
             ]);
 
             $captureResult = $this->paymentService->capturePaypalPayment($paypalToken);
@@ -86,7 +115,42 @@ class PaymentController extends Controller
                 'result' => $captureResult
             ]);
 
-            if ($captureResult['success']) {
+            if (!empty($captureResult['success'])) {
+                // ✅ Verify transaction binding
+                if (!empty($captureResult['transaction_id']) && $captureResult['transaction_id'] !== $paypalToken) {
+                    Log::error('PayPal capture: transaction id mismatch', [
+                        'order_id' => $order->id,
+                        'expected_token_suffix' => substr($paypalToken, -6),
+                        'returned_transaction_id_suffix' => substr((string) $captureResult['transaction_id'], -6),
+                    ]);
+                    return redirect()->route('order.track', $order->guest_token)
+                                ->with('error', '❌ Payment verification failed (session mismatch).');
+                }
+
+                // ✅ Verify currency and amount
+                $capturedCurrency = strtoupper((string) ($captureResult['currency'] ?? ''));
+                $capturedAmount = (string) ($captureResult['amount'] ?? '0');
+                $expectedAmount = $this->calculateExpectedPaypalTotalUsd($order);
+
+                if ($capturedCurrency !== 'USD') {
+                    Log::error('PayPal capture: currency mismatch', [
+                        'order_id' => $order->id,
+                        'captured_currency' => $capturedCurrency,
+                    ]);
+                    return redirect()->route('order.track', $order->guest_token)
+                                ->with('error', '❌ Payment verification failed (currency mismatch).');
+                }
+
+                if (!$this->amountEquals($capturedAmount, $expectedAmount)) {
+                    Log::error('PayPal capture: amount mismatch', [
+                        'order_id' => $order->id,
+                        'captured_amount' => $this->normalizeMoney($capturedAmount),
+                        'expected_amount' => $expectedAmount,
+                    ]);
+                    return redirect()->route('order.track', $order->guest_token)
+                                ->with('error', '❌ Payment verification failed (amount mismatch). Please contact support.');
+                }
+
                 // ✅ UPDATE ORDER (ini backup, webhook juga akan update)
                 $order->update([
                     'status' => 'PAID',
@@ -139,6 +203,30 @@ class PaymentController extends Controller
         }
     }
 
+    private function calculateExpectedPaypalTotalUsd(Order $order): string
+    {
+        $order->loadMissing('orderItems');
+
+        $itemsTotal = $order->orderItems->sum(function ($item) {
+            return (float) $item->price_usd * (int) $item->quantity;
+        });
+
+        $shipping = (float) $order->shipping_cost;
+        $tax = (float) ($order->tax_amount ?? 0);
+
+        return number_format($itemsTotal + $shipping + $tax, 2, '.', '');
+    }
+
+    private function normalizeMoney($value): string
+    {
+        return number_format((float) $value, 2, '.', '');
+    }
+
+    private function amountEquals($a, $b): bool
+    {
+        return $this->normalizeMoney($a) === $this->normalizeMoney($b);
+    }
+
     /**
      * PayPal Cancel Callback
      */
@@ -167,21 +255,15 @@ class PaymentController extends Controller
             $body = $request->getContent();
             $event = json_decode($body, true);
 
-            // --- TAMBAHKAN LOG DEBUGGING INI ---
-            Log::info('--- DEBUG WEBHOOK START ---');
-            
-            // 1. Cek ID apa yang dibaca Laravel dari .env
-            $configId = config('paypal.webhook_id');
-            Log::info('Webhook ID di Config Laravel:', ['id' => $configId]);
+            if (!is_array($event) || empty($event['event_type'])) {
+                Log::warning('PayPal Webhook: invalid JSON payload');
+                return response()->json(['error' => 'Invalid payload'], 400);
+            }
 
-            // 2. Cek apakah Header PayPal masuk atau hilang?
-            $headers = $request->headers->all();
-            Log::info('Headers yang diterima:', [
-                'paypal-transmission-id' => $headers['paypal-transmission-id'][0] ?? 'MISSING',
-                'paypal-transmission-sig' => $headers['paypal-transmission-sig'][0] ?? 'MISSING',
-                'paypal-algo' => $headers['paypal-auth-algo'][0] ?? 'MISSING',
+            Log::info('PayPal Webhook received', [
+                'event_id' => $event['id'] ?? null,
+                'event_type' => $event['event_type'],
             ]);
-            // ------------------------------------
 
             // Cek Verifikasi
             $isValid = $this->verifyPayPalWebhook($request, $event);
@@ -228,10 +310,15 @@ class PaymentController extends Controller
     {
         $webhookId = config('paypal.webhook_id');
         
-        // Skip verification untuk development
+        // Skip verification hanya untuk local/testing (jangan pernah di production)
         if (empty($webhookId)) {
-            Log::warning('PayPal Webhook: webhook_id not configured, skipping verification');
-            return true;
+            if (app()->environment(['local', 'testing'])) {
+                Log::warning('PayPal Webhook: webhook_id not configured, skipping verification (local/testing only)');
+                return true;
+            }
+
+            Log::critical('PayPal Webhook: webhook_id not configured in non-local environment');
+            return false;
         }
 
         try {
@@ -266,8 +353,6 @@ class PaymentController extends Controller
      */
     private function handlePaymentCompleted(array $event)
     {
-        Log::info('PayPal Webhook: Full event received', ['event' => $event]);
-
         // Extract IDs
         $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
         $invoiceId = $event['resource']['invoice_id'] ?? null;
@@ -282,27 +367,12 @@ class PaymentController extends Controller
 
 
 
-        // ⬅️ TAMBAHKAN LOG DATABASE DEBUG
-        try {
-            $totalOrders = Order::count();
-            $allOrders = Order::all(['id', 'order_number', 'transaction_id', 'status']);
-            $invoiceSentOrders = Order::where('status', 'INVOICE_SENT')->get(['id', 'order_number', 'transaction_id']);
-            
-            Log::info('PayPal Webhook: Database Status', [
-                'total_orders' => $totalOrders,
-                'all_orders' => $allOrders->toArray(),
-                'invoice_sent_orders' => $invoiceSentOrders->toArray()
-            ]);
-        } catch (\Exception $e) {
-            Log::error('PayPal Webhook: Database query error', ['error' => $e->getMessage()]);
-        }
-
         // Search order
         $order = null;
         
         // 1. By transaction_id
         if ($paypalOrderId) {
-            $order = Order::where('transaction_id', $paypalOrderId)->first();
+            $order = Order::where('transaction_id', $paypalOrderId)->latest('id')->first();
             if ($order) {
                 Log::info('✅ Order found by transaction_id', ['order_id' => $order->id]);
             }
@@ -310,7 +380,8 @@ class PaymentController extends Controller
         
         // 2. By order_number (invoice_id)
         if (!$order && $invoiceId) {
-            $order = Order::where('order_number', $invoiceId)->first();
+            $baseInvoiceId = $this->extractBaseInvoiceId($invoiceId);
+            $order = Order::where('order_number', $baseInvoiceId)->first();
             if ($order) {
                 Log::info('✅ Order found by order_number', ['order_id' => $order->id]);
                 
@@ -327,7 +398,8 @@ class PaymentController extends Controller
                 'searched_transaction_id' => $paypalOrderId,
                 'searched_order_number' => $invoiceId,
             ]);
-            return response()->json(['error' => 'Order not found'], 404);
+            // Return 200 to prevent repeated retries; investigate via logs.
+            return response()->json(['status' => 'ignored', 'reason' => 'order_not_found'], 200);
         }
 
         // Idempotency check - TAPI TETAP KIRIM EMAIL!
@@ -343,6 +415,28 @@ class PaymentController extends Controller
             }
             
             return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        // Validate amount & currency (USD only)
+        $resourceAmount = $event['resource']['amount']['value'] ?? null;
+        $resourceCurrency = strtoupper((string) ($event['resource']['amount']['currency_code'] ?? ''));
+
+        if ($resourceCurrency !== 'USD') {
+            Log::error('PayPal Webhook: currency mismatch', [
+                'order_id' => $order->id,
+                'currency' => $resourceCurrency,
+            ]);
+            return response()->json(['status' => 'ignored', 'reason' => 'currency_mismatch'], 200);
+        }
+
+        $expectedAmount = $this->calculateExpectedPaypalTotalUsd($order);
+        if ($resourceAmount === null || !$this->amountEquals($resourceAmount, $expectedAmount)) {
+            Log::error('PayPal Webhook: amount mismatch', [
+                'order_id' => $order->id,
+                'captured_amount' => $resourceAmount,
+                'expected_amount' => $expectedAmount,
+            ]);
+            return response()->json(['status' => 'ignored', 'reason' => 'amount_mismatch'], 200);
         }
 
         // Update order
@@ -363,13 +457,20 @@ class PaymentController extends Controller
         return response()->json(['status' => 'success'], 200);
     }
 
+    private function extractBaseInvoiceId(string $invoiceId): string
+    {
+        // PaymentService currently uses: order_number . '-' . time()
+        // So invoice_id might be: INV-2025-00001-1712345678
+        return preg_replace('/-\d+$/', '', $invoiceId) ?? $invoiceId;
+    }
+
     /**
      * Handle: Payment Denied
      */
     private function handlePaymentDenied(array $event)
     {
         $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
-        $order = Order::where('transaction_id', $paypalOrderId)->first();
+        $order = Order::where('transaction_id', $paypalOrderId)->latest('id')->first();
         
         if ($order && $order->status !== 'CANCELLED') {
             $order->update(['status' => 'CANCELLED']);
@@ -418,6 +519,7 @@ class PaymentController extends Controller
         
         // 3. Dari invoice_id (backup)
         $invoiceId = $event['resource']['invoice_id'] ?? null;
+        $baseInvoiceId = $invoiceId ? $this->extractBaseInvoiceId($invoiceId) : null;
         
         Log::info('PayPal Webhook: Extracted refund data', [
             'capture_id' => $captureId,
@@ -425,6 +527,7 @@ class PaymentController extends Controller
             'refund_amount' => $refundAmount,
             'currency' => $refundCurrency,
             'invoice_id' => $invoiceId,
+            'base_invoice_id' => $baseInvoiceId,
             'raw_resource' => $event['resource'] // ⬅️ Untuk debugging
         ]);
 
@@ -438,8 +541,8 @@ class PaymentController extends Controller
             }
         }
         
-        if (!$order && $invoiceId) {
-            $order = Order::where('order_number', $invoiceId)->first();
+        if (!$order && $baseInvoiceId) {
+            $order = Order::where('order_number', $baseInvoiceId)->first();
             if ($order) {
                 Log::info('✅ Order found by invoice_id', ['order_id' => $order->id]);
             }
@@ -449,9 +552,10 @@ class PaymentController extends Controller
             Log::error('❌ PayPal Webhook: Order not found for refund', [
                 'capture_id' => $captureId,
                 'invoice_id' => $invoiceId,
+                'base_invoice_id' => $baseInvoiceId,
                 'refund_id' => $refundId
             ]);
-            return response()->json(['error' => 'Order not found'], 404);
+            return response()->json(['status' => 'ignored', 'reason' => 'order_not_found'], 200);
         }
 
         // Idempotency check

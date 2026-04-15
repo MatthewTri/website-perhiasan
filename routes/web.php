@@ -159,14 +159,20 @@ Route::post('/order/track/{token}/complete', [OrderTrackingController::class, 'c
 Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccess'])->name('payment.paypal.success');
 Route::get('/payment/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('payment.paypal.cancel');
 
-Route::post('/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('webhook.paypal');
-Route::get('/webhook/paypal', function () {
-    return response()->json([
-        'status' => 'ok',
-        'message' => 'PayPal webhook endpoint is ready',
-        'timestamp' => now()
-    ]);
-})->name('webhook.paypal.test');
+Route::post('/webhook/paypal', [PaymentController::class, 'paypalWebhook'])
+    ->middleware('throttle:300,1')
+    ->name('webhook.paypal');
+
+// Optional: local-only health check endpoint (avoid exposing publicly in production)
+if (app()->environment('local')) {
+    Route::get('/webhook/paypal', function () {
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'PayPal webhook endpoint is ready',
+            'timestamp' => now()
+        ]);
+    })->name('webhook.paypal.test');
+}
 
 // Revew Routes via magic link
 Route::get('/order/track/{token}/review', [ReviewController::class, 'create'])->name('order.track.review');

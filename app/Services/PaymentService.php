@@ -20,8 +20,11 @@ class PaymentService
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
 
+        $mode = (string) (config('paypal.mode') ?? '');
+        $cacheKey = 'paypal_access_token:' . ($mode ?: 'default');
+
         // ⬅️ CACHE TOKEN SELAMA 55 MENIT (Token PayPal berlaku 60 menit)
-        $token = Cache::remember('paypal_access_token', 55 * 60, function () use ($provider) {
+        $token = Cache::remember($cacheKey, 55 * 60, function () use ($provider) {
             try {
                 return $provider->getAccessToken();
             } catch (\Exception $e) {
@@ -63,7 +66,8 @@ class PaymentService
                     // ⬅️ CLEAR CACHE TOKEN JIKA ERROR (BIAR REFRESH)
                     if (str_contains($e->getMessage(), 'Authentication') || 
                         str_contains($e->getMessage(), 'Unauthorized')) {
-                        Cache::forget('paypal_access_token');
+                            $mode = (string) (config('paypal.mode') ?? '');
+                            Cache::forget('paypal_access_token:' . ($mode ?: 'default'));
                     }
 
                     // Exponential backoff: 1s, 2s, 4s
@@ -202,6 +206,7 @@ class PaymentService
                 if (isset($response['status']) && $response['status'] == 'COMPLETED') {
 
                     $captureId = $response['purchase_units'][0]['payments']['captures'][0]['id'] ?? null;
+                    $currency = $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'] ?? null;
 
                     return [
                         'success' => true,
@@ -209,7 +214,8 @@ class PaymentService
                         'capture_id' => $captureId, // Refund id
                         'status' => 'PAID',
                         'payer_email' => $response['payer']['email_address'] ?? null,
-                        'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'] ?? 0
+                        'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'] ?? 0,
+                        'currency' => $currency,
                     ];
                 }
 

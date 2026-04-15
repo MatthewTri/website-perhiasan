@@ -111,6 +111,54 @@ class OrderTrackingController extends Controller
                            ->with('error', 'This order is set for BCA bank transfer.');
         }
 
+        if (strtoupper((string) $order->currency) !== 'USD') {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'This order is not in USD.');
+        }
+
+        // ✅ Idempotency: if we already created a PayPal order, reuse the same approval URL.
+        // This prevents losing webhook mapping by overwriting transaction_id.
+        if (!empty($order->transaction_id) && !empty($order->payment_url)) {
+            try {
+                $paypalStatus = $this->paymentService->getPaypalOrderStatus($order->transaction_id);
+
+                if (!empty($paypalStatus['success'])) {
+                    $status = strtoupper((string) ($paypalStatus['status'] ?? ''));
+
+                    // Still payable → reuse
+                    if (in_array($status, ['CREATED', 'APPROVED', 'PAYER_ACTION_REQUIRED'], true)) {
+                        return redirect()->away($order->payment_url);
+                    }
+
+                    // Already completed → don't recreate, just inform user
+                    if ($status === 'COMPLETED') {
+                        return redirect()->route('order.track', $guestToken)
+                                       ->with('success', 'Payment already completed. Please wait a moment while we process your order.');
+                    }
+
+                    // Voided/expired → safe to recreate because webhook will not complete
+                    if ($status === 'VOIDED') {
+                        $order->update([
+                            'transaction_id' => null,
+                            'payment_url' => null,
+                        ]);
+                    } else {
+                        // Unknown status: safest is to reuse and avoid overwriting mapping
+                        return redirect()->away($order->payment_url);
+                    }
+                } else {
+                    // If status check fails, reuse to avoid overwriting mapping.
+                    return redirect()->away($order->payment_url);
+                }
+            } catch (\Exception $e) {
+                Log::warning('PayPal status check failed, reusing existing payment_url', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+                return redirect()->away($order->payment_url);
+            }
+        }
+
         // ⬅️ CREATE PAYPAL ORDER DENGAN RETRY
         try {
             $paypalResult = $this->paymentService->createPaypalOrder($order);
@@ -118,6 +166,21 @@ class OrderTrackingController extends Controller
             if (!$paypalResult['success']) {
                 return redirect()->route('order.track', $guestToken)
                                ->with('error', 'PayPal checkout failed: ' . $paypalResult['message'] . '. Please try again or contact support.');
+            }
+
+            // Safety: PayPal Order IDs should be unique
+            $tokenAlreadyUsed = Order::where('transaction_id', $paypalResult['transaction_id'])
+                ->where('id', '!=', $order->id)
+                ->exists();
+
+            if ($tokenAlreadyUsed) {
+                Log::error('PayPal checkout: transaction_id already used by another order', [
+                    'order_id' => $order->id,
+                    'transaction_id_suffix' => substr((string) $paypalResult['transaction_id'], -6),
+                ]);
+
+                return redirect()->route('order.track', $guestToken)
+                               ->with('error', 'PayPal session error. Please contact support.');
             }
 
             // Update order dengan PayPal data
