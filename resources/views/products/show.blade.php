@@ -211,9 +211,51 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/></svg>
                             </span>
                         </summary>
-                        <div class="text-sm text-gray-600 mt-4 leading-relaxed space-y-2 font-light">
-                            <p>Free shipping all across Indonesia.</p>
-                            <p>Returns accepted within 14 days of delivery.</p>
+                        <div class="text-sm text-gray-600 mt-4 leading-relaxed space-y-4 font-light">
+                            <div class="space-y-2">
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Crafting & Dispatch</p>
+                                <p>
+                                    Each piece is <span class="font-medium text-gray-900">Pre-Order / Custom-Made</span> and produced after you place an order.
+                                    Please allow <span class="font-medium text-gray-900">2–8 weeks</span> for crafting before dispatch (timelines may vary by design complexity and quality checks).
+                                </p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Shipping</p>
+                                <p>
+                                    Domestic (Indonesia): shipped via <span class="font-medium text-gray-900">JNE</span> or <span class="font-medium text-gray-900">Paxel</span>.
+                                    International: shipped via <span class="font-medium text-gray-900">RPX</span>.
+                                    Shipping fees and service levels may vary by destination.
+                                </p>
+                                <p>
+                                    Once shipped, tracking details will be provided when available.
+                                    Scanning events and delivery updates are managed by the courier.
+                                </p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Security</p>
+                                <p>
+                                    Shipments are insured in transit, and <span class="font-medium text-gray-900">direct signature is required</span> upon delivery.
+                                    For security reasons, packages cannot be left unattended.
+                                </p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Returns & Refunds</p>
+                                <p>
+                                    Because items are made-to-order, purchases are generally <span class="font-medium text-gray-900">final sale</span> and not eligible for returns/exchanges/refunds for change-of-mind.
+                                    If your item arrives <span class="font-medium text-gray-900">damaged, defective, or incorrect</span>, please contact us promptly with photos/videos of the packaging and item for verification.
+                                </p>
+                                <p>
+                                    International orders may be subject to customs duties/taxes and fees which are the buyer’s responsibility.
+                                </p>
+                            </div>
+
+                            <div class="pt-2 flex flex-wrap gap-x-6 gap-y-2">
+                                <a href="{{ route('policies.shipping') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Shipping Policy</a>
+                                <a href="{{ route('policies.refund') }}" class="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-300 hover:text-gray-900 hover:border-gray-900 transition-colors">Refund Policy</a>
+                            </div>
                         </div>
                     </details>
                     
