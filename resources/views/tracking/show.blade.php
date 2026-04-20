@@ -299,7 +299,7 @@
                                                    required 
                                                    accept="image/jpeg,image/png,image/jpg"
                                                    onchange="previewImage(event)" 
-                                                   class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-[#E8B49E] file:text-white hover:file:bg-[#dcaea1] cursor-pointer bg-gray-50 border border-gray-200 p-2">
+                                                   class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-[#E3CFCF] file:text-white hover:file:bg-[#dcaea1] cursor-pointer bg-gray-50 border border-gray-200 p-2">
                                         </div>
                                         
                                         <div id="image-preview" class="hidden mb-4">
@@ -362,7 +362,7 @@
                             <p class="text-3xl font-serif text-gray-900 mb-8">${{ number_format($order->total_amount, 2) }}</p>
                             
                             <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
-                               class="inline-block w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-xs uppercase tracking-[0.2em] py-4 px-8 transition-all">
+                               class="inline-block w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white text-xs uppercase tracking-[0.2em] py-4 px-8 transition-all">
                                 Pay with PayPal
                             </a>
                             <p class="text-[10px] text-gray-400 mt-4 italic">Secure redirected to PayPal Checkout</p>

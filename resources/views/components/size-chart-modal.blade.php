@@ -35,7 +35,7 @@
                     and we want to ensure you get the right fit. Follow these simple steps to determine your ring size accurately.
                 </p>
 
-                <div class="bg-gray-50 p-5 border-l-4 border-[#E8B49E]">
+                <div class="bg-gray-50 p-5 border-l-4 border-[#E3CFCF]">
                     <p class="font-medium text-gray-900 mb-2">Method 1: Use a Ring You Already Own</p>
                     <p class="text-xs">
                         Measure the inner diameter of a ring that fits you well. Compare the measurement with our size chart above 
@@ -43,7 +43,7 @@
                     </p>
                 </div>
 
-                <div class="bg-gray-50 p-5 border-l-4 border-[#E8B49E]">
+                <div class="bg-gray-50 p-5 border-l-4 border-[#E3CFCF]">
                     <p class="font-medium text-gray-900 mb-2">Method 2: Measure Your Finger</p>
                     <p class="text-xs">
                         Wrap a string or strip of paper around the base of your finger. Mark where the ends meet, 
