@@ -123,7 +123,7 @@
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="meeting_type" value="offline" class="peer sr-only" checked required>
                             <div class="border-2 border-stone-200 rounded-sm p-6 transition-all duration-300 
-                                        peer-checked:border-[#E8B49E] peer-checked:bg-stone-50 
+                                        peer-checked:border-[#454545] peer-checked:bg-stone-50 
                                         hover:border-stone-300 hover:shadow-sm">
                                 <div class="flex items-start gap-4">
                                     <div class="mt-1 w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center 
@@ -141,7 +141,7 @@
                                     </div>
                                     <div class="w-5 h-5 border-2 border-stone-300 rounded-full flex items-center justify-center 
                                                 transition-all duration-300 meeting-radio-circle bg-white">
-                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
+                                        <div class="w-2.5 h-2.5 bg-[#454545] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="meeting_type" value="online" class="peer sr-only" required>
                             <div class="border-2 border-stone-200 rounded-sm p-6 transition-all duration-300 
-                                        peer-checked:border-[#E8B49E] peer-checked:bg-stone-50 
+                                        peer-checked:border-[#454545] peer-checked:bg-stone-50 
                                         hover:border-stone-300 hover:shadow-sm">
                                 <div class="flex items-start gap-4">
                                     <div class="mt-1 w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center 
@@ -168,7 +168,7 @@
                                     </div>
                                     <div class="w-5 h-5 border-2 border-stone-300 rounded-full flex items-center justify-center 
                                                 transition-all duration-300 meeting-radio-circle bg-white">
-                                        <div class="w-2.5 h-2.5 bg-[#E8B49E] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
+                                        <div class="w-2.5 h-2.5 bg-[#454545] rounded-full transition-transform duration-300 meeting-radio-dot" style="transform: scale(0);"></div>
                                     </div>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@
 {{-- Modal: Cancellation Policy --}}
 <div id="cancellation-policy-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-sm shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
-        <div class="bg-gradient-to-r from-[#E8B49E] to-[#d6a88b] p-6">
+        <div class="bg-[#E3CFCF] p-6">
             <h3 class="text-xl text-center text-white font-semibold">Cancellation / Reschedule Policy</h3>
         </div>
         <div class="p-8">
@@ -300,19 +300,19 @@
                 </p>
                 <ul class="space-y-2 ml-4">
                     <li class="flex items-start">
-                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-[#E3CFCF] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
                         <span>Cancellations or rescheduling requests must be made at least <strong>24 hours</strong> before your appointment.</span>
                     </li>
                     <li class="flex items-start">
-                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-[#E3CFCF] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
                         <span>Late cancellations (less than 24 hours) may result in appointment forfeiture.</span>
                     </li>
                     <li class="flex items-start">
-                        <svg class="w-4 h-4 text-[#E8B49E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-[#E3CFCF] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
                         <span>No-shows will be recorded and may affect future booking privileges.</span>
@@ -325,7 +325,7 @@
         </div>
         <div class="bg-stone-50 px-8 py-4 flex justify-end border-t border-stone-100">
             <button type="button" onclick="closeCancellationPolicy()" 
-                    class="px-6 cursor-pointer py-2 bg-[#E8B49E] text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-[#d6a88b] transition-all shadow-md">
+                    class="px-6 cursor-pointer py-2 bg-[#E3CFCF] text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-[#d6a88b] transition-all shadow-md">
                 Close
             </button>
         </div>
@@ -663,15 +663,6 @@
         background-color: rgba(232, 180, 158, 0.1);
     }
     
-    /* 2. Icon Color (Jadi warna Rose Gold) */
-    input[type="radio"][name="meeting_type"]:checked + div .meeting-icon {
-        color: #E8B49E;
-    }
-    
-    /* 3. Radio Outer Circle (Ganti border) */
-    input[type="radio"][name="meeting_type"]:checked + div .meeting-radio-circle {
-        border-color: #E8B49E;
-    }
     
     /* 4. Radio Inner Dot (Memunculkan titik di tengah) */
     input[type="radio"][name="meeting_type"]:checked + div .meeting-radio-dot {

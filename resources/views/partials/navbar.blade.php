@@ -93,11 +93,11 @@
 
         <div class="hidden lg:flex justify-center items-center mt-8 pt-4">
             <ul class="flex space-x-8 text-[11px] xl:text-xs font-medium text-gray-900 tracking-[0.15em] uppercase">
-                <li><a href="{{ route('products.index') }}" class="hover:text-[#E8B49E] transition-colors">Best Sellers</a></li>
+                <li><a href="{{ route('products.index') }}" class="hover:text-[#E3CFCF] transition-colors">Best Sellers</a></li>
                 
                 @foreach($navCategories as $category)
                 <li class="relative group">
-                    <a href="{{ route('categories.show', $category->slug) }}" class="hover:text-[#E8B49E] transition-colors">
+                    <a href="{{ route('categories.show', $category->slug) }}" class="hover:text-[#E3CFCF] transition-colors">
                         {{ $category->name }}
                     </a>
                     
@@ -106,7 +106,7 @@
                     <div class="absolute left-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div class="bg-white border border-gray-100 shadow-lg min-w-[200px]">
                             @foreach($category->children as $child)
-                            <a href="{{ route('categories.show', $child->slug) }}" class="block px-6 py-3 text-[10px] tracking-[0.15em] uppercase hover:bg-gray-50 hover:text-[#E8B49E] transition-colors border-b border-gray-50 last:border-b-0">
+                            <a href="{{ route('categories.show', $child->slug) }}" class="block px-6 py-3 text-[10px] tracking-[0.15em] uppercase hover:bg-gray-50 hover:text-[#E3CFCF] transition-colors border-b border-gray-50 last:border-b-0">
                                 {{ $child->name }}
                             </a>
                             @endforeach
@@ -117,10 +117,10 @@
                 @endforeach
                 
                 @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
-                <li><a href="{{ route('gemma.index') }}" class="text-gray-900 hover:text-[#E8B49E] transition-colors">Chat With AI</a></li>
+                <li><a href="{{ route('gemma.index') }}" class="text-gray-900 hover:text-[#E3CFCF] transition-colors">Chat With AI</a></li>
                 @endif
                 
-                <li><a href="{{ route('consultation.index') }}" class="hover:text-[#E8B49E] transition-colors">Book Consultation</a></li>
+                <li><a href="{{ route('consultation.index') }}" class="hover:text-[#E3CFCF] transition-colors">Book Consultation</a></li>
             </ul>
         </div>
 
@@ -142,7 +142,7 @@
 
         <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
             <li>
-                <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Best Sellers</a>
+                <a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Best Sellers</a>
             </li>
             
             @foreach($navCategories as $category)
@@ -151,7 +151,7 @@
                 {{-- Category with Subcategories - Show Arrow --}}
                 <button type="button" 
                         onclick="openSubmenu('{{ $category->slug }}', '{{ $category->name }}')"
-                        class="flex items-center justify-between w-full py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                        class="flex items-center justify-between w-full py-4 border-b border-gray-100 hover:text-[#E3CFCF]">
                     <span>{{ $category->name }}</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -159,7 +159,7 @@
                 </button>
                 @else
                 {{-- Category without Subcategories - Direct Link --}}
-                <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">
                     {{ $category->name }}
                 </a>
                 @endif
@@ -168,11 +168,11 @@
             
             @if(\App\Models\Setting::getBoolValue('ai_enabled', false))
             <li>
-                <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E8B49E]">Chat With AI</a>
+                <a href="{{ route('gemma.index') }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E3CFCF]">Chat With AI</a>
             </li>
             @endif
             <li>
-                <a href="{{ route('consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Book Consultation</a>
+                <a href="{{ route('consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Book Consultation</a>
             </li>
 
             @can('admin')
@@ -184,13 +184,13 @@
                     </svg>
                 </button>
                 <ul id="admin-submenu" class="hidden space-y-0 font-medium text-sm tracking-wide text-gray-900">
-                    <li><a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Products</a></li>
-                    <li><a href="{{ route('categories.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Categories</a></li>
-                    <li><a href="{{ route('admin.reviews.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Manage Reviews</a></li>
-                    <li><a href="{{ route('admin.orders.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Customer Orders</a></li>
-                    <li><a href="{{ route('admin.consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Customer Consultations</a></li>
-                    <li><a href="{{ route('settings.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Admin Settings</a></li>
-                    <li><a href="{{ route('admin.subscribers.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">Subscribers</a></li>
+                    <li><a href="{{ route('products.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Manage Products</a></li>
+                    <li><a href="{{ route('categories.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Manage Categories</a></li>
+                    <li><a href="{{ route('admin.reviews.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Manage Reviews</a></li>
+                    <li><a href="{{ route('admin.orders.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Customer Orders</a></li>
+                    <li><a href="{{ route('admin.consultation.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Customer Consultations</a></li>
+                    <li><a href="{{ route('settings.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Admin Settings</a></li>
+                    <li><a href="{{ route('admin.subscribers.index') }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">Subscribers</a></li>
                 </ul>
             </li>
             @endcan
@@ -198,12 +198,12 @@
 
         <div class="mt-auto pt-4 border-t border-gray-100">
             @auth
-                {{-- <a href="#" class="block py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
+                {{-- <a href="#" class="block py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E3CFCF]">
                     My Account
                 </a> --}}
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="block w-full text-left py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
+                    <button type="submit" class="block w-full text-left py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E3CFCF]">
                         Sign Out
                     </button>
                 </form>
@@ -222,7 +222,7 @@
             </div>
             <button type="button" 
                     onclick="closeSubmenu('{{ $category->slug }}')"
-                    class="flex items-center mb-6 py-4 text-gray-900 hover:text-[#E8B49E]">
+                    class="flex items-center mb-6 py-4 text-gray-900 hover:text-[#E3CFCF]">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
@@ -231,13 +231,13 @@
 
             <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
                 <li>
-                    <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E8B49E]">
+                    <a href="{{ route('categories.show', $category->slug) }}" class="block py-4 border-b border-gray-100 text-gray-900 hover:text-[#E3CFCF]">
                         All {{ $category->name }}
                     </a>
                 </li>
                 @foreach($category->children as $child)
                 <li>
-                    <a href="{{ route('categories.show', $child->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E8B49E]">
+                    <a href="{{ route('categories.show', $child->slug) }}" class="block py-4 border-b border-gray-100 hover:text-[#E3CFCF]">
                         {{ $child->name }}
                     </a>
                 </li>

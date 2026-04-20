@@ -18,7 +18,7 @@
                 </button>
                 
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-gradient-to-br from-[#E8B49E] to-[#D4A088] rounded-full flex items-center justify-center shadow-sm">
+                    <div class="w-9 h-9 bg-gradient-to-br from-[#E3CFCF] to-[#D4A088] rounded-full flex items-center justify-center shadow-sm">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                         </svg>
@@ -39,7 +39,7 @@
             <div class="bg-white border border-stone-200 shadow-xl relative overflow-hidden">
                 
                 {{-- Decorative gradient --}}
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#E8B49E] via-[#D4A088] to-[#E8B49E]"></div>
+                <div class="absolute top-0 left-0 right-0 h-1 bg-[#E3CFCF]"></div>
                 
                 {{-- Content --}}
                 <div class="p-8 sm:p-12 text-center">
@@ -63,13 +63,13 @@
                         <p class="text-[10px] uppercase tracking-[0.15em] text-gray-500 font-medium mb-3">Members Benefits</p>
                         <ul class="space-y-2 text-xs text-gray-600">
                             <li class="flex items-start gap-2">
-                                <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 text-[#E3CFCF] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>
                                 <span>AI-powered jewellery design visualization</span>
                             </li>
                             <li class="flex items-start gap-2">
-                                <svg class="w-4 h-4 text-[#E8B49E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 text-[#E3CFCF] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>
                                 <span>Save and manage your design history</span>
@@ -80,7 +80,7 @@
                     {{-- Action Buttons --}}
                     <div class="space-y-3">
                         <a href="{{ route('login') }}" 
-                           class="block w-full px-8 py-4 bg-[#E8B49E] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#D4A088] transition-all duration-200 shadow-sm hover:shadow-md">
+                           class="block w-full px-8 py-4 bg-[#E3CFCF] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#D4A088] transition-all duration-200 shadow-sm hover:shadow-md">
                             Sign In to Continue
                         </a>
                         <a href="{{ route('register') }}" 
@@ -209,7 +209,7 @@
                                 {{-- Consultation Button --}}
                                 <div class="px-4 pb-4 pt-2">
                                     <a href="{{ route('consultation.index') }}" 
-                                       class="block w-full bg-gradient-to-r from-[#E8B49E] to-[#D4A088] hover:from-[#D4A088] hover:to-[#E8B49E] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
+                                       class="block w-full bg-[#E3CFCF] hover:bg-[#E3CFCF] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
                                         <div class="flex items-center justify-center gap-2">
                                             <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -267,23 +267,23 @@
                             {{-- Category Buttons --}}
                             <div class="grid grid-cols-2 gap-2 mt-4">
                                 <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                     Ring
                                 </button>
                                 <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                     Necklace / Pendant
                                 </button>
                                 <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                     Earrings
                                 </button>
                                 <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                     Bracelet
                                 </button>
                             </div>
@@ -511,22 +511,22 @@
                         </p>
                         <div class="grid grid-cols-1 gap-2 mt-4">
                             <button onclick="window.aiChat.selectOption('material', '18k Yellow Gold')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">18k Yellow Gold</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Classic, Luxurious</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('material', '18k White Gold / Platinum')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">18k White Gold / Platinum</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Modern, Clean</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('material', '18k Rose Gold')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">18k Rose Gold</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Romantic, Feminine</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('material', 'Mixed Metals')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Mixed Metals</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Unique, Combination</span>
                             </button>
@@ -565,23 +565,23 @@
                         </p>
                         <div class="grid grid-cols-2 gap-2 mt-4">
                             <button onclick="window.aiChat.selectOption('gemstone', 'Classic Diamond')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
                                 Classic Diamond
                             </button>
                             <button onclick="window.aiChat.selectOption('gemstone', 'Blue Sapphire')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
                                 Blue Sapphire
                             </button>
                             <button onclick="window.aiChat.selectOption('gemstone', 'Ruby')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
                                 Ruby
                             </button>
                             <button onclick="window.aiChat.selectOption('gemstone', 'Emerald')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
                                 Emerald
                             </button>
                             <button onclick="window.aiChat.selectOption('gemstone', 'No Gemstone / Plain Metal')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm transition-all duration-200 col-span-2">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200 col-span-2">
                                 No Gemstone / Plain Metal
                             </button>
                         </div>
@@ -619,27 +619,27 @@
                         </p>
                         <div class="grid grid-cols-1 gap-2 mt-4">
                             <button onclick="window.aiChat.selectOption('cut', 'Round Brilliant')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Round Brilliant</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Most Popular Cut</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('cut', 'Oval Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Oval Cut</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Elegant & Elongated</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('cut', 'Emerald Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Emerald Cut</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Rectangular, Vintage Style</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('cut', 'Pear Shape')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Pear Shape</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Teardrop, Unique</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('cut', 'Princess Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Princess Cut</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Square, Sharp & Modern</span>
                             </button>
@@ -678,22 +678,22 @@
                         </p>
                         <div class="grid grid-cols-1 gap-2 mt-4">
                             <button onclick="window.aiChat.selectOption('style', 'Minimalist & Modern')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Minimalist & Modern</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Simple, Clean, Sleek</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('style', 'Art Deco / Vintage')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Art Deco / Vintage</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Intricate Details, 1920s Style</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('style', 'Nature Inspired')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Nature Inspired</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Floral, Leaves, Organic</span>
                             </button>
                             <button onclick="window.aiChat.selectOption('style', 'Royal & Luxurious')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-left text-stone-700 text-sm transition-all duration-200">
+                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
                                 <span class="font-medium">Royal & Luxurious</span>
                                 <span class="block text-xs text-stone-500 mt-0.5">Halo Setting, Ornate, Regal</span>
                             </button>
@@ -752,7 +752,7 @@
                             <span class="text-stone-500 text-xs block mt-1">(e.g., "add small diamonds on the band", "make it look like a flower")</span>
                         </p>
                         <button id="generateButton-${Date.now()}" onclick="window.aiChat.generateFromSummary(this)" 
-                                class="w-full px-6 py-3 bg-[#E8B49E] text-white text-sm font-medium uppercase tracking-wider hover:bg-[#D4A088] transition-all duration-200 shadow-sm">
+                                class="w-full px-6 py-3 bg-[#E3CFCF] text-white text-sm font-medium uppercase tracking-wider hover:bg-[#D4A088] transition-all duration-200 shadow-sm">
                             Generate Design
                         </button>
                         <div class="flex gap-2 mt-3">
@@ -965,23 +965,23 @@
                                 </p>
                                 <div class="grid grid-cols-2 gap-2 mt-4">
                                     <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                         Ring
                                     </button>
                                     <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                         Necklace / Pendant
                                     </button>
                                     <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                         Earrings
                                     </button>
                                     <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E8B49E] hover:bg-[#E8B49E]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E8B49E]"></span>
+                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
+                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
                                         Bracelet
                                     </button>
                                 </div>
@@ -1144,7 +1144,7 @@
                         <!-- Consultation Button -->
                         <div class="px-4 pb-4 pt-2">
                             <a href="{{ route('consultation.index') }}" 
-                               class="block w-full bg-gradient-to-r from-[#E8B49E] to-[#D4A088] hover:from-[#D4A088] hover:to-[#E8B49E] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
+                               class="block w-full bg-[#E3CFCF] hover:bg-[#E3CFCF] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
                                 <div class="flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>

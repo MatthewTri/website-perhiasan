@@ -301,24 +301,24 @@
                                     <input type="radio" name="payment_gateway_override" value="MANUAL" 
                                         {{ $order->payment_preference === 'MANUAL' ? 'checked' : '' }}
                                         class="peer sr-only payment-radio">
-                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400"></div>
+                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400"></div>
                                     <div class="flex-1">
                                         <span class="block text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</span>
                                         <span class="block text-xs text-gray-500 mt-0.5">Manual transfer in IDR</span>
                                     </div>
-                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none"></div>
+                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none"></div>
                                 </label>
                                 
                                 <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all group">
                                     <input type="radio" name="payment_gateway_override" value="PAYPAL"
                                         {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
                                         class="peer sr-only payment-radio">
-                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400"></div>
+                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400"></div>
                                     <div class="flex-1">
                                         <span class="block text-sm font-medium text-gray-900">PayPal (International)</span>
                                         <span class="block text-xs text-gray-500 mt-0.5">International payment in USD</span>
                                     </div>
-                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none"></div>
+                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none"></div>
                                 </label>
                             </div>
 
@@ -391,7 +391,7 @@
                                         <span class="text-[9px]">NO IMG</span>
                                     </div>
                                 @endif
-                                <span class="absolute -top-2 -right-2 bg-[#E8B49E] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center">
+                                <span class="absolute -top-2 -right-2 bg-[#E3CFCF] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center">
                                     {{ $item->quantity }}
                                 </span>
                             </div>

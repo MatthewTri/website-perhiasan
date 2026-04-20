@@ -41,7 +41,7 @@
     @endif
 
     {{-- Stats Card --}}
-    <div class="bg-gradient-to-br from-[#E8B49E] to-[#dcaea1] rounded-lg p-6 mb-8 text-white">
+    <div class="bg-[#E3CFCF] rounded-lg p-6 mb-8 text-gray-800">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-xs font-bold uppercase tracking-[0.15em] mb-1 opacity-90">Recipients</p>
@@ -71,7 +71,7 @@
                        name="subject" 
                        value="{{ old('subject') }}"
                        placeholder="e.g., Exclusive New Collection Just Dropped!" 
-                       class="w-full px-4 py-3 border border-stone-300 rounded-sm text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8B49E] focus:border-transparent transition-all @error('subject') border-red-500 @enderror"
+                       class="w-full px-4 py-3 border border-stone-300 rounded-sm text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#E3CFCF] focus:border-transparent transition-all @error('subject') border-red-500 @enderror"
                        required>
                 @error('subject')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -88,7 +88,7 @@
                           name="body" 
                           rows="12" 
                           placeholder="Write your message here..."
-                          class="w-full px-4 py-3 border border-stone-300 rounded-sm text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8B49E] focus:border-transparent transition-all @error('body') border-red-500 @enderror"
+                          class="w-full px-4 py-3 border border-stone-300 rounded-sm text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#E3CFCF] focus:border-transparent transition-all @error('body') border-red-500 @enderror"
                           required>{{ old('body') }}</textarea>
                 @error('body')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -105,8 +105,8 @@
             </a>
             <button type="button" 
                     id="sendBroadcastBtn"
-                    class="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium text-white bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-[#E8B49E] hover:shadow-lg">
-                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-[#E8B49E] rounded-full group-hover:w-56 group-hover:h-56"></span>
+                    class="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium text-white bg-stone-900 rounded-sm hover:shadow-lg">
+                <span class="absolute w-0 h-0 rounded-full group-hover:w-56 group-hover:h-56"></span>
                 <span class="relative flex items-center gap-2 text-xs cursor-pointer uppercase tracking-widest">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
@@ -129,7 +129,7 @@
             html: `You are about to send this broadcast to<br><strong>${totalSubscribers} subscribers</strong><br><br>This action cannot be undone.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#E8B49E',
+            confirmButtonColor: '#E3CFCF',
             cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Send Now',
             cancelButtonText: 'Cancel',
