@@ -35,7 +35,7 @@
                     return '
                     <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">'.$label.'</p>
-                        <p class="text-2xl font-serif '.$colorClass.'">'.$value.'</p>
+                        <p class="text-2xl font-semibold '.$colorClass.'">'.$value.'</p>
                     </div>';
                 }
             @endphp
@@ -60,7 +60,7 @@
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Search Client</label>
                     <div class="relative">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, email or phone..." 
-                               class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors">
+                               class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-0 transition-colors">
                         <svg class="w-4 h-4 text-stone-400 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Status</label>
                     <div class="relative">
-                        <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                        <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
                             <option value="">All Status</option>
                             <option value="SCHEDULED" {{ request('status') == 'SCHEDULED' ? 'selected' : '' }}>Upcoming</option>
                             <option value="COMPLETED" {{ request('status') == 'COMPLETED' ? 'selected' : '' }}>Completed</option>
@@ -84,7 +84,7 @@
                 <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Service Type</label>
                     <div class="relative">
-                        <select name="type" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                        <select name="type" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
                             <option value="">All Services</option>
                             <option value="short" {{ request('type') == 'short' ? 'selected' : '' }}>Short Consultation (30m)</option>
                             <option value="design" {{ request('type') == 'design' ? 'selected' : '' }}>Custom Design (60m)</option>
@@ -95,8 +95,9 @@
 
                 {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
-                    <button type="button" id="clearFiltersBtn" class="w-full bg-[#E8B49E] text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#D4A38C] cursor-pointer transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                        Clear Filters
+                    <button type="button" id="clearFiltersBtn" class="group relative inline-flex w-full items-center justify-center px-6 py-3.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
+                        <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
                     </button>
                 </div>
             </form>

@@ -27,42 +27,42 @@
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending</p>
-                <p class="text-2xl font-serif text-amber-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
+                <p class="text-2xl font-semibold text-amber-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Invoiced</p>
-                <p class="text-2xl font-serif text-blue-600">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</p>
+                <p class="text-2xl font-semibold text-blue-600">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Verifying</p>
-                <p class="text-2xl font-serif text-orange-500">{{ $allOrders->where('status', 'WAITING_VERIFICATION')->count() }}</p>
+                <p class="text-2xl font-semibold text-orange-500">{{ $allOrders->where('status', 'WAITING_VERIFICATION')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Paid</p>
-                <p class="text-2xl font-serif text-emerald-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
+                <p class="text-2xl font-semibold text-emerald-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Production</p>
-                <p class="text-2xl font-serif text-teal-600">{{ $allOrders->where('status', 'PRODUCTION')->count() }}</p>
+                <p class="text-2xl font-semibold text-teal-600">{{ $allOrders->where('status', 'PRODUCTION')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Shipped</p>
-                <p class="text-2xl font-serif text-indigo-600">{{ $allOrders->where('status', 'SHIPPED')->count() }}</p>
+                <p class="text-2xl font-semibold text-indigo-600">{{ $allOrders->where('status', 'SHIPPED')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Completed</p>
-                <p class="text-2xl font-serif text-stone-800">{{ $allOrders->where('status', 'COMPLETED')->count() }}</p>
+                <p class="text-2xl font-semibold text-stone-800">{{ $allOrders->where('status', 'COMPLETED')->count() }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Cancelled/Ref</p>
-                <p class="text-2xl font-serif text-rose-500">{{ $allOrders->whereIn('status', ['CANCELLED', 'REFUNDED'])->count() }}</p>
+                <p class="text-2xl font-semibold text-rose-500">{{ $allOrders->whereIn('status', ['CANCELLED', 'REFUNDED'])->count() }}</p>
             </div>
         </div>
 
@@ -75,7 +75,7 @@
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Search Order</label>
                     <div class="relative">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Order #, customer name, or email..." 
-                               class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors">
+                               class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-0 transition-colors">
                         <svg class="w-4 h-4 text-stone-400 absolute right-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                 <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Order Status</label>
                     <div class="relative">
-                        <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                        <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
                             <option value="">All Status</option>
                             <option value="PENDING_REVIEW" {{ request('status') == 'PENDING_REVIEW' ? 'selected' : '' }}>Pending Review</option>
                             <option value="INVOICE_SENT" {{ request('status') == 'INVOICE_SENT' ? 'selected' : '' }}>Invoice Sent</option>
@@ -104,7 +104,7 @@
                 <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Payment Method</label>
                     <div class="relative">
-                        <select name="payment_gateway" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:border-stone-900 transition-colors appearance-none cursor-pointer">
+                        <select name="payment_gateway" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
                             <option value="">All Methods</option>
                             <option value="MANUAL" {{ request('payment_gateway') == 'MANUAL' ? 'selected' : '' }}>Bank Transfer (BCA)</option>
                             <option value="PAYPAL" {{ request('payment_gateway') == 'PAYPAL' ? 'selected' : '' }}>PayPal</option>
@@ -115,8 +115,9 @@
 
                 {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
-                    <button type="button" id="clearFiltersBtn" class="w-full bg-[#E8B49E] text-white py-3.5 px-6 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#D4A38C] cursor-pointer transition-all rounded-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                        Clear Filters
+                    <button type="button" id="clearFiltersBtn" class="group relative inline-flex w-full items-center justify-center px-6 py-3.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
+                        <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
                     </button>
                 </div>
             </form>
@@ -262,7 +263,10 @@
                 </div>
                 <h3 class="text-lg font-serif text-stone-900 mb-1">No orders found</h3>
                 <p class="text-sm text-stone-500">Try adjusting your filters to find what you're looking for.</p>
-                <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="inline-block mt-4 text-xs font-bold text-stone-900 uppercase tracking-widest border-b border-stone-900 pb-0.5 hover:opacity-70 transition-opacity cursor-pointer">Clear Filters</button>
+                <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg cursor-pointer mt-4">
+                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
+                    <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
+                </button>
             </div>
         @endif
         </div>

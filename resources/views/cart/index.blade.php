@@ -162,7 +162,7 @@
 
                             {{-- Checkout Button --}}
                             <a href="{{ route('checkout.index') }}" 
-                               class="block w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-center py-4 px-6 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 shadow-sm hover:shadow-md mb-4">
+                               class="block w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white text-center py-4 px-6 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 shadow-sm hover:shadow-md mb-4">
                                 Proceed to Checkout
                             </a>
                             
@@ -418,7 +418,7 @@
                         </div>
 
                         <a href="${checkoutUrl}" 
-                        class="block w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white text-center py-4 px-6 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 shadow-sm hover:shadow-md mb-4">
+                        class="block w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white text-center py-4 px-6 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 shadow-sm hover:shadow-md mb-4">
                             Proceed to Checkout
                         </a>
                         

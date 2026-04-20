@@ -31,7 +31,7 @@
                     <label for="search" class="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Search</label>
                     <div class="relative">
                         <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Product, customer, order ID or comment..."
-                               class="w-full bg-white border-b-2 border-stone-200 px-3 py-2 text-stone-800 placeholder-stone-300 focus:outline-none focus:border-stone-800 transition-colors font-serif">
+                               class="w-full focus:outline-none focus:ring-0 bg-white border-b-2 border-stone-300 px-3 py-2 text-stone-800 placeholder-stone-300 transition-colors">
                         <svg id="searchLoading" class="hidden w-4 h-4 text-stone-400 absolute right-3 top-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
@@ -41,7 +41,7 @@
 
                 <div class="md:col-span-3">
                     <label for="visibility" class="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Status</label>
-                    <select id="visibility" name="visibility" class="w-full bg-white border-b-2 border-stone-200 px-3 py-2 text-stone-800 focus:outline-none focus:border-stone-800 cursor-pointer font-serif">
+                    <select id="visibility" name="visibility" class="w-full focus:outline-none focus:ring-0 bg-white border-b-2 border-stone-300 px-3 py-2 text-stone-800 cursor-pointer">
                         <option value="">All Status</option>
                         <option value="visible" {{ request('visibility') === 'visible' ? 'selected' : '' }}>Visible</option>
                         <option value="hidden" {{ request('visibility') === 'hidden' ? 'selected' : '' }}>Hidden</option>
@@ -50,7 +50,7 @@
 
                 <div class="md:col-span-2">
                     <label for="rating" class="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Rating</label>
-                    <select id="rating" name="rating" class="w-full bg-white border-b-2 border-stone-200 px-3 py-2 text-stone-800 focus:outline-none focus:border-stone-800 cursor-pointer font-serif">
+                    <select id="rating" name="rating" class="w-full focus:outline-none focus:ring-0 bg-white border-b-2 border-stone-300 px-3 py-2 text-stone-800 cursor-pointer">
                         <option value="">All Stars</option>
                         <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>5 Stars</option>
                         <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>4 Stars</option>
@@ -61,8 +61,9 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <button type="button" id="clearFilters" class="w-full bg-stone-600 hover:bg-stone-700 text-white font-medium py-3 px-4 rounded-sm transition duration-300 text-xs uppercase tracking-widest shadow-md hover:shadow-lg">
-                        Clear Filters
+                    <button type="button" id="clearFilters" class="group relative inline-flex w-full items-center justify-center px-6 py-3.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg">
+                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
+                        <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
                     </button>
                 </div>
             </div>

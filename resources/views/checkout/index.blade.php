@@ -29,7 +29,7 @@
                             <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">Contact</h2>
                             @guest
                                 <div class="text-xs text-gray-500">
-                                    Already have an account? <a href="{{ route('login') }}" class="text-[#E8B49E] hover:text-[#dcaea1] underline">Log in</a>
+                                    Already have an account? <a href="{{ route('login') }}" class="text-[#E3CFCF] hover:text-[#dcaea1] underline">Log in</a>
                                 </div>
                             @endguest
                         </div>
@@ -149,26 +149,26 @@
                             {{-- BCA --}}
                             <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all duration-200 payment-option group">
                                 <input type="radio" name="payment_gateway" value="manual" required class="peer sr-only" {{ old('payment_gateway') == 'manual' ? 'checked' : '' }}>
-                                <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400 transition-colors"></div>
+                                <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400 transition-colors"></div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-medium text-gray-900">Bank Transfer (BCA)</span>
                                     <span class="block text-xs text-gray-500">Manual transfer in IDR</span>
                                 </div>
                                 <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-6 opacity-60 grayscale group-hover:grayscale-0 transition-all">
                                 {{-- Active State Border --}}
-                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none transition-colors"></div>
+                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none transition-colors"></div>
                             </label>
 
                             {{-- PayPal --}}
                             <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all duration-200 payment-option group">
                                 <input type="radio" name="payment_gateway" value="paypal" required class="peer sr-only" {{ old('payment_gateway') == 'paypal' ? 'checked' : '' }}>
-                                <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#E8B49E] peer-checked:bg-[#E8B49E] group-hover:border-gray-400 transition-colors"></div>
+                                <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400 transition-colors"></div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-medium text-gray-900">PayPal</span>
                                     <span class="block text-xs text-gray-500">International payment in USD</span>
                                 </div>
                                 <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-6 opacity-60 grayscale group-hover:grayscale-0 transition-all">
-                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#E8B49E] pointer-events-none transition-colors"></div>
+                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none transition-colors"></div>
                             </label>
                         </div>
                         @error('payment_gateway') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
@@ -186,7 +186,7 @@
                     {{-- Submit Button --}}
                     <div class="pt-6">
                         <button type="button" onclick="openPreOrderModal()"
-                                class="w-full cursor-pointer bg-[#E8B49E] hover:bg-[#dcaea1] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
+                                class="w-full cursor-pointer bg-[#E3CFCF] hover:bg-[#dcaea1] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
                             Pre Order Now
                         </button>
                         
@@ -241,7 +241,7 @@
                                     @else
                                         <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50"><span class="text-[9px]">NO IMG</span></div>
                                     @endif
-                                    <span class="absolute -top-2 -right-2 bg-[#E8B49E] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                                    <span class="absolute -top-2 -right-2 bg-[#E3CFCF] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                                         {{ $item->quantity }}
                                     </span>
                                 </div>
@@ -305,13 +305,13 @@
 
 {{-- Loader Overlay (Jika perlu) --}}
 <div id="checkout-loading" class="hidden fixed inset-0 bg-white/80 z-50 flex flex-col items-center justify-center">
-    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E8B49E]"></div>
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E3CFCF]"></div>
     <p class="mt-4 text-xs uppercase tracking-widest text-gray-500">Processing...</p>
 </div>
 
 <div id="checkout-empty" class="hidden min-h-screen flex flex-col items-center justify-center">
     <p class="text-gray-500 text-sm uppercase tracking-widest mb-4">Your cart is empty</p>
-    <a href="{{ route('products.index') }}" class="text-[#E8B49E] border-b border-[#E8B49E] text-xs uppercase tracking-widest pb-1 hover:text-black hover:border-black transition-colors">Return to Shop</a>
+    <a href="{{ route('products.index') }}" class="text-[#E3CFCF] border-b border-[#E3CFCF] text-xs uppercase tracking-widest pb-1 hover:text-black hover:border-black transition-colors">Return to Shop</a>
 </div>
 
 
@@ -344,8 +344,8 @@
 
                 {{-- Step 1 --}}
                 <div class="relative flex items-start group">
-                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
-                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">1</span>
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E3CFCF] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E3CFCF]">1</span>
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Order Review</h4>
@@ -355,8 +355,8 @@
 
                 {{-- Step 2 --}}
                 <div class="relative flex items-start group">
-                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
-                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">2</span>
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E3CFCF] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E3CFCF]">2</span>
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Confirmation</h4>
@@ -366,8 +366,8 @@
 
                 {{-- Step 3 --}}
                 <div class="relative flex items-start group">
-                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
-                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">3</span>
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E3CFCF] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E3CFCF]">3</span>
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Your Response Required</h4>
@@ -377,8 +377,8 @@
 
                 {{-- Step 4 --}}
                 <div class="relative flex items-start group">
-                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
-                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">4</span>
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E3CFCF] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E3CFCF]">4</span>
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Payment</h4>
@@ -388,8 +388,8 @@
 
                 {{-- Step 5 --}}
                 <div class="relative flex items-start group">
-                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E8B49E] transition-colors flex items-center justify-center z-10">
-                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E8B49E]">5</span>
+                    <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200 bg-white group-hover:border-[#E3CFCF] transition-colors flex items-center justify-center z-10">
+                        <span class="text-xs sm:text-sm font-serif text-gray-500 group-hover:text-[#E3CFCF]">5</span>
                     </div>
                     <div class="ml-4 sm:ml-6 mt-1 sm:mt-2">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 mb-1">Production Time</h4>
@@ -528,7 +528,7 @@
             <div class="flex items-center space-x-4">
                 <div class="relative w-16 h-16 bg-white border border-gray-100 rounded-none flex-shrink-0">
                     <img src="${imageSrc}" alt="${item.product.name}" class="w-full h-full object-cover p-1">
-                    <span class="absolute -top-2 -right-2 bg-[#E8B49E] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                    <span class="absolute -top-2 -right-2 bg-[#E3CFCF] text-black text-[10px] font-medium rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                         ${qty}
                     </span>
                 </div>

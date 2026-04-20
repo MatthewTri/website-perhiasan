@@ -337,14 +337,14 @@
                    placeholder="Enter your email address" 
                    value="{{ old('email') }}"
                    required
-                   class="flex-1 px-6 py-4 bg-white/95 text-gray-900 placeholder-gray-500 focus:outline-none text-sm tracking-wide">
+                   class="flex-1 px-6 py-4 bg-white/95 text-gray-900 placeholder-gray-500 border-b border-gray-300 focus:outline-none focus:ring-0 focus:border-black text-sm tracking-wide">
             <button type="submit" 
                     class="cursor-pointer px-8 py-4 bg-gray-900 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 text-xs font-bold tracking-[0.2em] uppercase whitespace-nowrap">
                 Subscribe
             </button>
         </form>
         
-        <p class="text-xs text-white/70 mt-4 font-light">
+        <p class="text-xs font-bold text-white/70 mt-4">
             By subscribing, you agree to our Privacy Policy and consent to receive updates
         </p>
     </div>

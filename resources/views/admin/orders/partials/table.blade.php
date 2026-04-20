@@ -137,6 +137,9 @@
         </div>
         <h3 class="text-lg font-serif text-stone-900 mb-1">No orders found</h3>
         <p class="text-sm text-stone-500">Try adjusting your filters to find what you're looking for.</p>
-        <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="inline-block mt-4 text-xs font-bold text-stone-900 uppercase tracking-widest border-b border-stone-900 pb-0.5 hover:opacity-70 transition-opacity cursor-pointer">Clear Filters</button>
+        <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg cursor-pointer mt-4">
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
+            <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
+        </button>
     </div>
 @endif

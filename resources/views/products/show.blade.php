@@ -162,7 +162,7 @@
 
                     {{-- Add to Cart Button (Full Width) --}}
                     <button onclick="addToCart({{ $product->id }})" 
-                            class="w-full bg-[#E8B49E] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 hover:shadow-md">
+                            class="w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 hover:shadow-md">
                         Add to Cart
                     </button>
                 </div>
@@ -234,7 +234,7 @@
                                                 <span id="dropdown-rating-avg">{{ number_format($product->rating_avg, 1) }}</span>
                                                 <span class="text-lg text-gray-400">/5</span>
                                             </div>
-                                            <div id="dropdown-stars" class="flex justify-center text-[#E8B49E] space-x-0.5 mb-2">
+                                            <div id="dropdown-stars" class="flex justify-center text-[#E3CFCF] space-x-0.5 mb-2">
                                                 {{-- Stars rendered based on initial rating --}}
                                                 @php
                                                     $rating = $product->rating_avg;
@@ -247,7 +247,7 @@
                                                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                                     @elseif($i == $fullStars && $hasHalfStar)
                                                         {{-- Half star --}}
-                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarGrad"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarGrad)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarGrad"><stop offset="50%" stop-color="#E3CFCF"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarGrad)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                                     @else
                                                         {{-- Empty star --}}
                                                         <svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -288,7 +288,7 @@
 
     {{-- YOU MAY ALSO LIKE (Clean Grid) --}}
     @if($relatedProducts->count() > 0)
-    <div class="border-t border-gray-100 md:pt-24">
+    <div class="border-t border-gray-100 md:py-16">
         <div class="max-w-screen-2xl mx-auto px-4 lg:px-6">
             <h2 class="text-center text-xl font-normal uppercase tracking-[0.2em] mb-12 text-gray-900">You May Also Like</h2>
             
@@ -364,14 +364,14 @@
 
                                 {{-- Full Stars --}}
                                 @for($i = 0; $i < $fullStars; $i++)
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E8B49E] fill-current" viewBox="0 0 20 20">
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E3CFCF] fill-current" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
                                 @endfor
 
                                 {{-- Half Star --}}
                                 @if($hasHalfStar)
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E8B49E]" viewBox="0 0 20 20">
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#E3CFCF]" viewBox="0 0 20 20">
                                     <defs>
                                         <linearGradient id="half-{{ $relatedProduct->id }}">
                                             <stop offset="50%" stop-color="currentColor"/>
@@ -631,10 +631,10 @@
         for (let i = 0; i < 5; i++) {
             if (i < fullStars) {
                 // Full star
-                stars.push(`<svg class="w-3.5 h-3.5 text-[#E8B49E] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
+                stars.push(`<svg class="w-3.5 h-3.5 text-[#E3CFCF] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
             } else if (i === fullStars && hasHalfStar) {
                 // Half star
-                stars.push(`<svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarSummary"><stop offset="50%" stop-color="#E8B49E"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarSummary)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
+                stars.push(`<svg class="w-3.5 h-3.5" viewBox="0 0 20 20"><defs><linearGradient id="halfStarSummary"><stop offset="50%" stop-color="#E3CFCF"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#halfStarSummary)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
             } else {
                 // Empty star
                 stars.push(`<svg class="w-3.5 h-3.5 text-gray-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`);
@@ -709,7 +709,7 @@
     function renderDropdownReview(review, index) {
         const stars = Array(5).fill(0).map((_, i) => {
             const filled = i < review.rating;
-            return `<svg class="w-3 h-3 md:w-3.5 md:h-3.5 ${filled ? 'text-[#E8B49E]' : 'text-gray-200'} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+            return `<svg class="w-3 h-3 md:w-3.5 md:h-3.5 ${filled ? 'text-[#E3CFCF]' : 'text-gray-200'} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
         }).join('');
         
         let userName = 'Anonymous';

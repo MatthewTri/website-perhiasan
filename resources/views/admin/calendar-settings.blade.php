@@ -52,7 +52,7 @@
                         <p class="text-[10px] text-stone-400 uppercase tracking-widest">Timezone: WIB (GMT+7)</p>
                         <div class="flex gap-3 text-xs">
                             <span class="flex items-center gap-1.5">
-                                <span class="w-3 h-3 bg-[#E8B49E] border border-[#d6a88b] rounded-sm"></span>
+                                <span class="w-3 h-3 bg-[#E3CFCF] border border-[#d6a88b] rounded-sm"></span>
                                 <span class="text-stone-500">Disabled</span>
                             </span>
                             <span class="flex items-center gap-1.5">
@@ -260,12 +260,12 @@ function renderCalendar(date) {
         dayCell.type = 'button';
         dayCell.textContent = day;
         
-        // ✅ UPDATED: Rose → #E8B49E
+        // ✅ UPDATED: Rose → #E3CFCF
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPast 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isUnavailable
-                    ? 'bg-[#E8B49E] text-white font-bold shadow-md cursor-pointer hover:bg-[#d6a88b]'
+                    ? 'bg-[#E3CFCF] text-white font-bold shadow-md cursor-pointer hover:bg-[#d6a88b]'
                     : isSelected
                         ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
@@ -342,11 +342,11 @@ function renderTimeSlots() {
     if (isFullDayDisabled) {
         timeSlots.innerHTML = `<div class="text-center py-8 text-[#8B5A3C] font-bold text-sm">All time slots disabled for this day.</div>`;
         // Ganti class tombol enable full day:
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E8B49E] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
         fullDayBtnText.textContent = 'Enable Full Day';
         return;
     } else {
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E8B49E] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
         fullDayBtnText.textContent = 'Disable Full Day';
     }
     
@@ -367,7 +367,7 @@ function renderTimeSlots() {
     // Weekend info
     if (isWeekendDay) {
         const infoDiv = document.createElement('div');
-        infoDiv.className = 'mt-4 p-3 bg-[#F6EDE7] border border-[#E8B49E] rounded-sm';
+        infoDiv.className = 'mt-4 p-3 bg-[#F6EDE7] border border-[#E3CFCF] rounded-sm';
         infoDiv.innerHTML = `
             <p class="text-xs text-[#8B5A3C] text-center font-medium">
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -407,7 +407,7 @@ function createTimeSection(title, slots) {
                 const isBooked = state.bookedSlots.includes(slot.time24);
                 const isDisabled = state.disabledSlots.includes(slot.time24);
                 
-                // ✅ UPDATED: Rose → #E8B49E
+                // ✅ UPDATED: Rose → #E3CFCF
                 return `
                     <button type="button" 
                             onclick="${isBooked ? '' : `toggleSlot('${slot.time24}')`}"
@@ -416,7 +416,7 @@ function createTimeSection(title, slots) {
                                 isBooked 
                                     ? 'bg-amber-50 text-amber-600 border-amber-200 cursor-not-allowed' 
                                     : isDisabled
-                                        ? 'bg-[#E8B49E] text-white border-[#d6a88b] hover:bg-[#d6a88b] cursor-pointer font-medium shadow-sm'
+                                        ? 'bg-[#E3CFCF] text-white border-[#d6a88b] hover:bg-[#d6a88b] cursor-pointer font-medium shadow-sm'
                                         : 'border-stone-200 text-stone-600 hover:bg-stone-100 cursor-pointer'
                             }">
                         ${slot.time12}
