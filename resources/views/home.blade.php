@@ -110,7 +110,7 @@
             <h2 class="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 tracking-[0.3em] uppercase mb-4">
                 Best Sellers
             </h2>
-            <div class="w-24 h-px bg-[#E8B49E] mx-auto mb-6"></div>
+            <div class="w-24 h-px bg-[#E3CFCF] mx-auto mb-6"></div>
             <p class="text-sm md:text-base text-gray-600 font-light tracking-wide max-w-2xl mx-auto">
                 Our most coveted pieces, cherished by jewellery lovers worldwide
             </p>

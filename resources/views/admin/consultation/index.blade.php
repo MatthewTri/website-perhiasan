@@ -100,6 +100,24 @@
                         <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
                     </button>
                 </div>
+
+                {{-- Rows per page --}}
+                <div class="md:col-span-12 flex justify-end">
+                    <div class="flex items-center gap-3">
+                        <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Rows</label>
+                        <div class="relative">
+                            <select name="per_page" class="bg-stone-50 border-b-2 border-stone-200 pr-8 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
+                                @php
+                                    $selectedPerPage = (int) (request('per_page') ?? ($perPage ?? 10));
+                                @endphp
+                                <option value="5" {{ $selectedPerPage === 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ $selectedPerPage === 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ $selectedPerPage === 20 ? 'selected' : '' }}>20</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
 
@@ -238,6 +256,7 @@ function applyFilters(url = null) {
         search: document.querySelector('input[name="search"]').value,
         status: document.querySelector('select[name="status"]').value,
         type: document.querySelector('select[name="type"]').value,
+        per_page: document.querySelector('select[name="per_page"]')?.value,
     };
 
     // Show loading state
@@ -325,6 +344,14 @@ document.querySelectorAll('select[name="status"], select[name="type"]').forEach(
         applyFilters();
     });
 });
+
+// Rows per page changes
+const perPageSelect = document.querySelector('select[name="per_page"]');
+if (perPageSelect) {
+    perPageSelect.addEventListener('change', function() {
+        applyFilters();
+    });
+}
 
 // Clear filters button
 document.getElementById('clearFiltersBtn').addEventListener('click', function() {

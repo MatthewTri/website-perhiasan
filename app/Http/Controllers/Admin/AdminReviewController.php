@@ -14,6 +14,13 @@ class AdminReviewController extends Controller
      */
     public function index(Request $request)
     {
+        $allowedPerPage = [5, 10, 20];
+        $perPage = (int) $request->input('per_page', session('admin.reviews.per_page', 10));
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 10;
+        }
+        session(['admin.reviews.per_page' => $perPage]);
+
         $query = Review::with(['user', 'product', 'order.shipment'])
             ->latest();
 
@@ -53,14 +60,14 @@ class AdminReviewController extends Controller
             });
         }
 
-        $reviews = $query->paginate(10)->onEachSide(1)->withQueryString();
+        $reviews = $query->paginate($perPage)->onEachSide(1)->withQueryString();
 
         // Return partial view for AJAX requests
         if ($request->ajax() || $request->wantsJson()) {
-            return view('admin.reviews.index', compact('reviews'))->render();
+            return view('admin.reviews.index', compact('reviews', 'perPage'))->render();
         }
 
-        return view('admin.reviews.index', compact('reviews'));
+        return view('admin.reviews.index', compact('reviews', 'perPage'));
     }
 
     /**

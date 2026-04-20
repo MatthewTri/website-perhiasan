@@ -34,6 +34,13 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        $allowedPerPage = [5, 10, 20];
+        $perPage = (int) $request->input('per_page', session('admin.orders.per_page', 10));
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 10;
+        }
+        session(['admin.orders.per_page' => $perPage]);
+
         $query = Order::with(['user', 'orderItems', 'shipment']);
         
         // Filter by status
@@ -67,7 +74,7 @@ class OrderController extends Controller
             $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')");
         }
         
-        $orders = $query->latest()->paginate(10)->onEachSide(1)->withQueryString();
+        $orders = $query->latest()->paginate($perPage)->onEachSide(1)->withQueryString();
         
         // Handle AJAX requests
         if ($request->ajax()) {
@@ -80,7 +87,7 @@ class OrderController extends Controller
             ]);
         }
         
-        return view('admin.orders.index', compact('orders', 'allOrders'));
+        return view('admin.orders.index', compact('orders', 'allOrders', 'perPage'));
     }
 
     /**

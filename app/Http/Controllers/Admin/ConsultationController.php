@@ -16,6 +16,13 @@ class ConsultationController extends Controller
 {
     public function index(Request $request)
     {
+        $allowedPerPage = [5, 10, 20];
+        $perPage = (int) $request->input('per_page', session('admin.consultations.per_page', 10));
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 10;
+        }
+        session(['admin.consultations.per_page' => $perPage]);
+
         $query = CustomRequest::with(['user', 'images']);
         
         if ($request->has('status') && $request->status != '') {
@@ -45,7 +52,7 @@ class ConsultationController extends Controller
         
         $consultations = $query->orderBy('appointment_date', 'asc')
                              ->orderBy('appointment_time', 'asc')
-                             ->paginate(10)->onEachSide(1)->withQueryString();
+                             ->paginate($perPage)->onEachSide(1)->withQueryString();
         
         $stats = [
             'total' => CustomRequest::count(),
@@ -71,7 +78,7 @@ class ConsultationController extends Controller
             ]);
         }
         
-        return view('admin.consultation.index', compact('consultations', 'stats'));
+        return view('admin.consultation.index', compact('consultations', 'stats', 'perPage'));
     }
 
     public function show(CustomRequest $consultation)

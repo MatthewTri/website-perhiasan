@@ -66,6 +66,22 @@
                         <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
                     </button>
                 </div>
+
+                <div class="md:col-span-12 flex justify-end">
+                    <div class="flex items-center gap-3">
+                        <label for="perPage" class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Rows</label>
+                        <div class="relative">
+                            @php
+                                $selectedPerPage = (int) (request('per_page') ?? ($perPage ?? 10));
+                            @endphp
+                            <select id="perPage" name="per_page" class="bg-white border-b-2 border-stone-300 pr-8 py-2 text-stone-800 cursor-pointer focus:outline-none focus:ring-0">
+                                <option value="5" {{ $selectedPerPage === 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ $selectedPerPage === 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ $selectedPerPage === 20 ? 'selected' : '' }}>20</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -81,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search');
     const visibilitySelect = document.getElementById('visibility');
     const ratingSelect = document.getElementById('rating');
+    const perPageSelect = document.getElementById('perPage');
     const clearFiltersBtn = document.getElementById('clearFilters');
     const searchLoading = document.getElementById('searchLoading');
     const searchIcon = document.getElementById('searchIcon');
@@ -92,12 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const search = searchInput.value;
         const visibility = visibilitySelect.value;
         const rating = ratingSelect.value;
+        const perPage = perPageSelect ? perPageSelect.value : '';
 
         // Build query params
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (visibility) params.append('visibility', visibility);
         if (rating) params.append('rating', rating);
+        if (perPage) params.append('per_page', perPage);
 
         const queryString = params.toString();
         const url = `{{ route('admin.reviews.index') }}${queryString ? '?' + queryString : ''}`;
@@ -156,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Immediate trigger for select dropdowns
     visibilitySelect.addEventListener('change', performSearch);
     ratingSelect.addEventListener('change', performSearch);
+    if (perPageSelect) perPageSelect.addEventListener('change', performSearch);
 
     // Clear filters
     clearFiltersBtn.addEventListener('click', function() {
@@ -167,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle pagination clicks via AJAX
     function attachPaginationHandlers() {
-        const paginationLinks = reviewsContainer.querySelectorAll('.pagination a');
+        const paginationLinks = reviewsContainer.querySelectorAll('nav[aria-label="Pagination Navigation"] a');
         paginationLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
