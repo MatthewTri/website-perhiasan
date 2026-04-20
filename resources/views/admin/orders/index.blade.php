@@ -287,8 +287,22 @@ function applyFilters(url = null) {
 
     // Use provided URL (for pagination) or default route
     const ajaxUrl = url || '{{ route("admin.orders.index") }}';
+    const requestUrl = new URL(ajaxUrl, window.location.origin);
 
-    fetch(ajaxUrl + '?' + new URLSearchParams(formData), {
+    // Reset to first page when filters change (not when clicking pagination)
+    if (!url) {
+        requestUrl.searchParams.delete('page');
+    }
+
+    Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+            requestUrl.searchParams.set(key, formData[key]);
+        } else {
+            requestUrl.searchParams.delete(key);
+        }
+    });
+
+    fetch(requestUrl.toString(), {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -305,15 +319,7 @@ function applyFilters(url = null) {
         container.style.pointerEvents = 'auto';
 
         // Update URL without page reload
-        const newUrl = new URL(window.location);
-        Object.keys(formData).forEach(key => {
-            if (formData[key]) {
-                newUrl.searchParams.set(key, formData[key]);
-            } else {
-                newUrl.searchParams.delete(key);
-            }
-        });
-        window.history.pushState({}, '', newUrl);
+        window.history.pushState({}, '', requestUrl);
 
         // Re-attach pagination click handlers
         attachPaginationHandlers();

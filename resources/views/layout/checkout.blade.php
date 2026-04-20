@@ -18,7 +18,7 @@
     {{-- SweetAlert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <title>Checkout - Cecile Private Collection</title>
+    <title>Cecile Private Collection</title>
 </head>
 <body class="bg-gray-50">
     {{-- Minimal Navbar (bisa customize lebih simple) --}}
