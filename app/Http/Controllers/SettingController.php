@@ -14,7 +14,7 @@ class SettingController extends Controller
         $settings = [
             // AI Settings
             'ai_enabled' => Setting::getBoolValue('ai_enabled', false),
-            'ai_quota_limit' => Setting::getNumericValue('ai_quota_limit', 20),
+            'ai_quota_limit' => Setting::getNumericValue('ai_quota_limit', 3),
 
             // Live Chat (Tawk.to)
             'tawk_enabled' => Setting::getBoolValue('tawk_enabled', true),
