@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

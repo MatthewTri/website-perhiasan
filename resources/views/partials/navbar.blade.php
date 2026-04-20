@@ -58,7 +58,7 @@
                     </button>
                     <div id="userDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-44 border border-gray-100">
                         <ul class="py-2 text-sm text-gray-700">
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-50">My Account</a></li>
+                            {{-- <li><a href="#" class="block px-4 py-2 hover:bg-gray-50">My Account</a></li> --}}
                             <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li>
                         </ul>
                         <div class="py-1">
@@ -198,9 +198,9 @@
 
         <div class="mt-auto pt-4 border-t border-gray-100">
             @auth
-                <a href="#" class="block py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
+                {{-- <a href="#" class="block py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">
                     My Account
-                </a>
+                </a> --}}
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="block w-full text-left py-4 border-b border-gray-100 font-medium text-sm tracking-wide text-gray-900 hover:text-[#E8B49E]">

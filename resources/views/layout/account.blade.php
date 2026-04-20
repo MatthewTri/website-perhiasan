@@ -1,3 +1,4 @@
+{{-- Ini yang dipakai untuk halaman account, seperti login, register, forgot password, dll. Karena halaman-halaman tersebut biasanya tidak memerlukan navbar dan footer, maka dibuat layout khusus untuk halaman account. --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

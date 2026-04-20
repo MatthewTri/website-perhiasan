@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
 <div class="min-h-screen bg-stone-100 py-10 px-4 sm:px-6 lg:px-8">

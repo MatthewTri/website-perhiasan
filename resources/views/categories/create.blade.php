@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
 <div class="container mx-auto px-4 py-16 max-w-2xl">

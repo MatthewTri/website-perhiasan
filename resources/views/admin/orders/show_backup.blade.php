@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layout.checkout')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen py-8">
