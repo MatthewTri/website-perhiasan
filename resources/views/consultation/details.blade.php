@@ -412,7 +412,7 @@
                     icon: 'error',
                     title: 'Invalid Files',
                     text: 'Please upload only image files (PNG, JPG, GIF)',
-                    confirmButtonColor: '#292524'
+                    confirmButtonColor: '#E3CFCF'
                 });
                 return;
             }
@@ -423,7 +423,7 @@
                         icon: 'error',
                         title: 'File Too Large',
                         text: `${file.name} exceeds 5MB limit`,
-                        confirmButtonColor: '#292524'
+                        confirmButtonColor: '#E3CFCF'
                     });
                     continue;
                 }
@@ -439,7 +439,7 @@
                     icon: 'warning',
                     title: 'Maximum Images Reached',
                     text: 'You can only upload up to 6 images',
-                    confirmButtonColor: '#292524'
+                    confirmButtonColor: '#E3CFCF'
                 });
                 selectedFiles = selectedFiles.slice(0, 6);
             }
@@ -456,7 +456,7 @@
                     icon: 'warning',
                     title: 'Maximum Images Reached',
                     text: 'You can only select up to 6 images',
-                    confirmButtonColor: '#292524'
+                    confirmButtonColor: '#E3CFCF'
                 });
                 return;
             }
@@ -481,7 +481,7 @@
                 icon: 'error',
                 title: 'Failed to Add Image',
                 text: 'Could not fetch the AI-generated image',
-                confirmButtonColor: '#292524'
+                confirmButtonColor: '#E3CFCF'
             });
         }
     }
@@ -503,7 +503,7 @@
                     icon: 'error',
                     title: 'File Too Large',
                     text: `${newFile.name} exceeds 5MB limit`,
-                    confirmButtonColor: '#292524'
+                    confirmButtonColor: '#E3CFCF'
                 });
                 continue;
             }
@@ -517,7 +517,7 @@
                 icon: 'warning',
                 title: 'Maximum Images Reached',
                 text: 'You can only upload up to 6 images',
-                confirmButtonColor: '#292524'
+                confirmButtonColor: '#E3CFCF'
             });
             selectedFiles = selectedFiles.slice(0, 6);
         }

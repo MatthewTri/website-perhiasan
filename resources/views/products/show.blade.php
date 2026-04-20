@@ -565,11 +565,11 @@
                     html: `<p class="text-sm text-gray-600">${quantity} item(s) added to your cart</p>`,
                     icon: 'success',
                     color: '#111827',
-                    confirmButtonColor: '#111827',
+                    confirmButtonColor: '#E3CFCF',
                     confirmButtonText: 'VIEW CART',
                     showCancelButton: true,
                     cancelButtonText: 'CONTINUE SHOPPING',
-                    cancelButtonColor: '#6B7280',
+                    cancelButtonColor: '#71717a',
                     reverseButtons: true,
                     customClass: {
                         popup: 'rounded-none',
@@ -589,7 +589,7 @@
                     title: 'Error',
                     text: data.error || 'Something went wrong',
                     icon: 'error',
-                    confirmButtonColor: '#EF4444'
+                    confirmButtonColor: '#E3CFCF'
                 });
             }
         })
@@ -599,7 +599,7 @@
                 title: 'Error',
                 text: 'Failed to add item to cart',
                 icon: 'error',
-                confirmButtonColor: '#EF4444'
+                confirmButtonColor: '#E3CFCF'
             });
         })
         .finally(() => {

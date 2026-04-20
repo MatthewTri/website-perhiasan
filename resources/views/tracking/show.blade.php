@@ -763,8 +763,8 @@
             text: "This will mark your order as completed. You'll be able to write a review within 30 days.",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#9CA3AF',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, I received it',
             cancelButtonText: 'Cancel'
         }).then((result) => {

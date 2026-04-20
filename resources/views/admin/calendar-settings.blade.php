@@ -491,6 +491,8 @@ async function toggleFullDay() {
         text: `All time slots on ${state.selectedDate.toLocaleDateString('en-US')} will be ${isCurrentlyDisabled ? 'enabled' : 'disabled'}.`,
         icon: 'question',
         showCancelButton: true,
+        confirmButtonColor: '#E3CFCF',
+        cancelButtonColor: '#71717a',
         confirmButtonText: `Yes, ${isCurrentlyDisabled ? 'Enable' : 'Disable'}`,
         cancelButtonText: 'Cancel'
     });

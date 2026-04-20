@@ -301,8 +301,8 @@
             html: '<p class="text-sm text-gray-600">This will mark the consultation as completed and cannot be undone.</p>',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#292524',
-            cancelButtonColor: '#d1d5db',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Complete',
             cancelButtonText: 'Cancel',
             customClass: {
@@ -324,8 +324,8 @@
             html: '<p class="text-sm text-gray-600">Are you sure you want to reschedule this consultation to the selected date and time?</p>',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#292524',
-            cancelButtonColor: '#d1d5db',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Reschedule',
             cancelButtonText: 'Cancel',
             customClass: {
@@ -362,7 +362,7 @@
             icon: 'success',
             title: 'Success!',
             html: '<p class="text-sm text-gray-600">{{ session("success") }}</p>',
-            confirmButtonColor: '#292524',
+            confirmButtonColor: '#E3CFCF',
             confirmButtonText: 'OK',
             customClass: {
                 popup: 'rounded-sm',
@@ -377,7 +377,7 @@
             icon: 'error',
             title: 'Error',
             html: '<p class="text-sm text-gray-600">{{ session("error") }}</p>',
-            confirmButtonColor: '#292524',
+            confirmButtonColor: '#E3CFCF',
             confirmButtonText: 'OK',
             customClass: {
                 popup: 'rounded-sm',

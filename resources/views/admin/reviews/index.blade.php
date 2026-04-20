@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     text: this.getAttribute('data-warning') || "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#1c1917',
-                    cancelButtonColor: '#a8a29e',
+                    confirmButtonColor: '#E3CFCF',
+                    cancelButtonColor: '#71717a',
                     confirmButtonText: 'Yes, delete',
                     cancelButtonText: 'Cancel',
                     customClass: {

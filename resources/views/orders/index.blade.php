@@ -204,8 +204,8 @@
             html: "This will complete your order.<br><small class='text-gray-500'>You'll be able to write a review within 30 days.</small>",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#9CA3AF',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, I Received It',
             cancelButtonText: 'Cancel',
             reverseButtons: true

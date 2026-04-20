@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         title: 'Appointment Confirmed!',
         html: '<p class="text-sm text-gray-600">{{ session("success") }}</p>',
         confirmButtonText: 'OK',
-        confirmButtonColor: '#292524',
+        confirmButtonColor: '#E3CFCF',
         customClass: {
             popup: 'rounded-sm',
             title: 'text-stone-900',

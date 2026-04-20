@@ -172,9 +172,8 @@
                     text: warningText,
                     icon: 'warning',
                     showCancelButton: true,
-                    // Styling Custom agar sesuai tema Stone/Jewelry
-                    confirmButtonColor: '#1c1917', // stone-900
-                    cancelButtonColor: '#a8a29e',  // stone-400
+                    confirmButtonColor: '#E3CFCF',
+                    cancelButtonColor: '#71717a',
                     confirmButtonText: 'Yes, delete it',
                     cancelButtonText: 'Cancel',
                     customClass: {

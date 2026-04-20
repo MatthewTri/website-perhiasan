@@ -1180,8 +1180,8 @@
             text: 'Are you sure you want to cancel this order?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Cancel Order',
             cancelButtonText: 'No, Keep Order',
             reverseButtons: true
@@ -1211,8 +1211,8 @@
             text: 'Are you sure the customer has received this order?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Mark Complete',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1243,7 +1243,7 @@
                 title: 'No File Selected',
                 text: 'Please select a payment proof image first.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1253,8 +1253,8 @@
             html: 'This will change order status to <strong>WAITING_VERIFICATION</strong>',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Upload',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1274,7 +1274,7 @@
                 title: 'Rejection Reason Required',
                 text: 'Please provide a reason for rejecting this payment proof.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1284,8 +1284,8 @@
             html: `Order will return to <strong>INVOICE_SENT</strong> status.<br><small class="text-gray-500">Customer will be notified to re-upload proof.</small>`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#DC2626',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Reject',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1303,8 +1303,8 @@
             html: `Order status will change to <strong class="text-teal-600">PRODUCTION</strong><br><small class="text-gray-500 mt-2 block">You can enter shipping details later when the order is ready.</small>`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Approve',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1322,8 +1322,8 @@
             html: `Order status will change to <strong class="text-teal-600">PRODUCTION</strong><br><small class="text-gray-500 mt-2 block">After this, you can enter shipping details when the order is ready.</small>`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#10B981',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Process Order',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1345,8 +1345,8 @@
             html: `Refund amount: <strong>${currency} ${parseFloat(refundAmount).toLocaleString()}</strong><br><small class="text-gray-500">This action cannot be undone.</small>`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#DC2626',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Process Refund',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1369,7 +1369,7 @@
                 title: 'Courier Required',
                 text: 'Please select a courier/shipping service.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1379,7 +1379,7 @@
                 title: 'Tracking Number Required',
                 text: 'Please enter tracking number/resi.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1393,8 +1393,8 @@
             </div>`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Approve & Ship',
             cancelButtonText: 'Cancel',
             reverseButtons: true
@@ -1417,7 +1417,7 @@
                 title: 'Courier Required',
                 text: 'Please select a courier/shipping service.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1427,7 +1427,7 @@
                 title: 'Tracking Number Required',
                 text: 'Please enter tracking number/resi.',
                 icon: 'warning',
-                confirmButtonColor: '#111827',
+                confirmButtonColor: '#E3CFCF',
             });
             return false;
         }
@@ -1441,8 +1441,8 @@
             </div>`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#111827',
-            cancelButtonColor: '#6B7280',
+            confirmButtonColor: '#E3CFCF',
+            cancelButtonColor: '#71717a',
             confirmButtonText: 'Yes, Mark as Shipped',
             cancelButtonText: 'Cancel',
             reverseButtons: true
