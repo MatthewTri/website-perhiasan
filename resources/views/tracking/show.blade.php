@@ -299,7 +299,7 @@
                                                    required 
                                                    accept="image/jpeg,image/png,image/jpg"
                                                    onchange="previewImage(event)" 
-                                                   class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-[#E3CFCF] file:text-white hover:file:bg-[#dcaea1] cursor-pointer bg-gray-50 border border-gray-200 p-2">
+                                                   class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-[#E3CFCF] file:text-white hover:file:bg-[#ddc8c8] cursor-pointer bg-gray-50 border border-gray-200 p-2">
                                         </div>
                                         
                                         <div id="image-preview" class="hidden mb-4">
@@ -362,7 +362,7 @@
                             <p class="text-3xl font-serif text-gray-900 mb-8">${{ number_format($order->total_amount, 2) }}</p>
                             
                             <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
-                               class="inline-block w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white text-xs uppercase tracking-[0.2em] py-4 px-8 transition-all">
+                               class="inline-block w-full bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white text-xs uppercase tracking-[0.2em] py-4 px-8 transition-all">
                                 Pay with PayPal
                             </a>
                             <p class="text-[10px] text-gray-400 mt-4 italic">Secure redirected to PayPal Checkout</p>
@@ -601,8 +601,8 @@
         {{-- Modal Header --}}
         <div class="border-b border-gray-100 p-6 pb-4">
             <div class="flex items-center justify-center mb-3">
-                <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-full bg-[#E3CFCF] flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>

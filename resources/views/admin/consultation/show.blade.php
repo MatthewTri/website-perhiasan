@@ -243,7 +243,7 @@
                             </button>
                             
                             {{-- Cancel Button --}}
-                            <button type="button" onclick="openCancelModal()" class="flex-1 w-full py-3 px-4 bg-[#E3CFCF] hover:bg-[#d6a88b] text-white text-xs font-bold uppercase tracking-widest rounded-sm transition-all border border-[#E3CFCF] shadow-md cursor-pointer">
+                            <button type="button" onclick="openCancelModal()" class="flex-1 w-full py-3 px-4 bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white text-xs font-bold uppercase tracking-widest rounded-sm transition-all border border-[#E3CFCF] shadow-md cursor-pointer">
                                 Cancel Consultation
                             </button>
                         </div>
@@ -282,7 +282,7 @@
                     <button type="button" onclick="closeCancelModal()" class="flex-1 py-3 text-xs cursor-pointer font-bold text-stone-500 uppercase tracking-widest hover:text-stone-800 transition-colors">
                         Nevermind
                     </button>
-                    <button type="submit" class="flex-1 py-3 bg-[#E3CFCF] hover:bg-[#d6a88b] text-white text-xs font-bold uppercase tracking-widest rounded-sm cursor-pointer shadow-md border border-[#E3CFCF] transition-colors">
+                    <button type="submit" class="flex-1 py-3 bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white text-xs font-bold uppercase tracking-widest rounded-sm cursor-pointer shadow-md border border-[#E3CFCF] transition-colors">
                         Confirm Cancel
                     </button>
                 </div>
@@ -573,7 +573,7 @@
                 isPastOrToday || isUnavailable
                     ? 'text-stone-300 cursor-not-allowed bg-transparent line-through' 
                     : isCurrentAppointment
-                        ? 'bg-[#E3CFCF] text-white border-[#E3CFCF] font-bold shadow-md hover:bg-[#d6a88b] hover:border-[#d6a88b] cursor-pointer'
+                        ? 'bg-[#E3CFCF] text-white border-[#E3CFCF] font-bold shadow-md hover:bg-[#ddc8c8] hover:border-[#ddc8c8] cursor-pointer'
                         : isSelected
                             ? 'bg-stone-900 text-white shadow-md scale-105 cursor-pointer'
                             : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'

@@ -162,7 +162,7 @@
 
                     {{-- Add to Cart Button (Full Width) --}}
                     <button onclick="addToCart({{ $product->id }})" 
-                            class="w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 hover:shadow-md">
+                            class="w-full bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 hover:shadow-md">
                         Add to Cart
                     </button>
                 </div>

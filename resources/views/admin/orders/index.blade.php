@@ -12,7 +12,7 @@
             
             <div class="bg-white px-6 py-3 border border-stone-200 shadow-[0_2px_10px_rgb(0,0,0,0.03)] rounded-sm flex items-center gap-4">
                 <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Total Orders</span>
-                <span class="text-2xl font-serif text-stone-900">{{ $allOrders->count() }}</span>
+                <span class="text-2xl font-semibold text-stone-900">{{ $allOrders->count() }}</span>
             </div>
         </div>
 

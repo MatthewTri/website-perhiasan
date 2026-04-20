@@ -165,7 +165,8 @@ class OrderController extends Controller
                 ? 'PayPal invoice sent to ' . $order->contact_email 
                 : 'BCA payment details sent to ' . $order->contact_email;
             
-            return back()->with('success', $message . ' | Magic Link: ' . $magicLink);
+            return back()->with('success', $message);
+            // return back()->with('success', $message . ' | Magic Link: ' . $magicLink);
             
         } catch (\Exception $e) {
             return back()->with('error', 'Order updated but email failed: ' . $e->getMessage());

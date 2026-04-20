@@ -52,7 +52,7 @@
                         <p class="text-[10px] text-stone-400 uppercase tracking-widest">Timezone: WIB (GMT+7)</p>
                         <div class="flex gap-3 text-xs">
                             <span class="flex items-center gap-1.5">
-                                <span class="w-3 h-3 bg-[#E3CFCF] border border-[#d6a88b] rounded-sm"></span>
+                                <span class="w-3 h-3 bg-[#E3CFCF] border border-[#ddc8c8] rounded-sm"></span>
                                 <span class="text-stone-500">Disabled</span>
                             </span>
                             <span class="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ function renderCalendar(date) {
             isPast 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
                 : isUnavailable
-                    ? 'bg-[#E3CFCF] text-white font-bold shadow-md cursor-pointer hover:bg-[#d6a88b]'
+                    ? 'bg-[#E3CFCF] text-white font-bold shadow-md cursor-pointer hover:bg-[#ddc8c8]'
                     : isSelected
                         ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
@@ -342,11 +342,11 @@ function renderTimeSlots() {
     if (isFullDayDisabled) {
         timeSlots.innerHTML = `<div class="text-center py-8 text-[#8B5A3C] font-bold text-sm">All time slots disabled for this day.</div>`;
         // Ganti class tombol enable full day:
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#ddc8c8] transition-all shadow-md';
         fullDayBtnText.textContent = 'Enable Full Day';
         return;
     } else {
-        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#d6a88b] transition-all shadow-md';
+        fullDayBtn.className = 'w-full py-3 mt-4 bg-[#E3CFCF] text-white cursor-pointer rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-[#ddc8c8] transition-all shadow-md';
         fullDayBtnText.textContent = 'Disable Full Day';
     }
     
@@ -416,7 +416,7 @@ function createTimeSection(title, slots) {
                                 isBooked 
                                     ? 'bg-amber-50 text-amber-600 border-amber-200 cursor-not-allowed' 
                                     : isDisabled
-                                        ? 'bg-[#E3CFCF] text-white border-[#d6a88b] hover:bg-[#d6a88b] cursor-pointer font-medium shadow-sm'
+                                        ? 'bg-[#E3CFCF] text-white border-[#ddc8c8] hover:bg-[#ddc8c8] cursor-pointer font-medium shadow-sm'
                                         : 'border-stone-200 text-stone-600 hover:bg-stone-100 cursor-pointer'
                             }">
                         ${slot.time12}

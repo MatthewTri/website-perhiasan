@@ -53,7 +53,7 @@
                     
                     <div class="relative">
                         <select id="modalSizeSelect" 
-                                class="w-full px-4 py-3 border border-gray-200 text-sm text-gray-900 focus:outline-none appearance-none bg-white cursor-pointer">
+                                class="w-full px-4 py-3 border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-0 focus:border-black appearance-none bg-white cursor-pointer">
                             <option value="">Select size</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
@@ -83,7 +83,7 @@
 
                 {{-- Add to Cart Button --}}
                 <button type="button" id="modalAddToCartBtn"
-                        class="w-full bg-[#E3CFCF] hover:bg-[#dcaea1] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 cursor-pointer mb-4">
+                        class="w-full bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white py-4 px-8 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-300 cursor-pointer mb-4">
                     ADD TO CART
                 </button>
 

@@ -387,7 +387,7 @@
             title: 'Order Placed Successfully!',
             html: '<p class="text-sm text-gray-600">{{ session('success') }}</p>',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#111827',
+            confirmButtonColor: '#E3CFCF',
             customClass: {
                 popup: 'rounded-none',
                 confirmButton: 'rounded-none px-8 py-3 text-xs uppercase tracking-widest font-bold'

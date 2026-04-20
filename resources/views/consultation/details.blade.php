@@ -325,7 +325,7 @@
         </div>
         <div class="bg-stone-50 px-8 py-4 flex justify-end border-t border-stone-100">
             <button type="button" onclick="closeCancellationPolicy()" 
-                    class="px-6 cursor-pointer py-2 bg-[#E3CFCF] text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-[#d6a88b] transition-all shadow-md">
+                    class="px-6 cursor-pointer py-2 bg-[#E3CFCF] text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-[#ddc8c8] transition-all shadow-md">
                 Close
             </button>
         </div>

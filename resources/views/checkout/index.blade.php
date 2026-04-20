@@ -11,7 +11,7 @@
             
             {{-- Header (Mobile Only) --}}
             <div class="lg:hidden mb-8 text-center">
-                <h1 class="text-2xl font-serif text-gray-900 tracking-widest uppercase">Pre-Order Checkout</h1>
+                <h1 class="text-xl sm:text-2xl font-serif text-gray-900 tracking-[0.2em] sm:tracking-widest uppercase">Pre-Order Checkout</h1>
             </div>
 
             <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form" class="{{ isset($isGuest) && $isGuest ? 'hidden' : '' }} max-w-2xl mx-auto lg:mx-0 lg:ml-auto">
@@ -29,7 +29,7 @@
                             <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">Contact</h2>
                             @guest
                                 <div class="text-xs text-gray-500">
-                                    Already have an account? <a href="{{ route('login') }}" class="text-[#E3CFCF] hover:text-[#dcaea1] underline">Log in</a>
+                                    Already have an account? <a href="{{ route('login') }}" class="text-[#E3CFCF] hover:text-[#ddc8c8] underline">Log in</a>
                                 </div>
                             @endguest
                         </div>
@@ -186,7 +186,7 @@
                     {{-- Submit Button --}}
                     <div class="pt-6">
                         <button type="button" onclick="openPreOrderModal()"
-                                class="w-full cursor-pointer bg-[#E3CFCF] hover:bg-[#dcaea1] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
+                                class="w-full cursor-pointer bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white font-bold text-xs uppercase tracking-[0.2em] py-4 px-6 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center">
                             Pre Order Now
                         </button>
                         

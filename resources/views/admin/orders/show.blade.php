@@ -438,7 +438,7 @@
                                 <span class="text-xs text-gray-600" id="shipping-currency-label">{{ $order->currency }}</span>
                                 <input type="number" name="shipping_cost" id="shipping_cost_input" form="invoice-form"
                                     value="{{ old('shipping_cost', $order->shipping_cost) }}" step="0.01" min="0" required
-                                    class="w-24 px-2 py-1 border border-gray-300 text-sm text-right focus:outline-none focus:border-gray-900">
+                                    class="w-24 px-2 py-1 border border-gray-300 text-sm text-right focus:outline-none focus:ring-0 focus:border-black">
                             </div>
                             @else
                             <span class="text-sm font-medium text-gray-900">
@@ -605,7 +605,7 @@
                                 <div class="space-y-4">
                                     <div class="relative">
                                         <select name="courier_name" required
-                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
+                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-0 focus:border-black bg-white appearance-none">
                                             <option value="">Select Courier</option>
                                             <option value="JNE">JNE</option>
                                             <option value="Paxel">Paxel</option>
@@ -620,7 +620,7 @@
                                             id="tracking_number_field" 
                                             name="tracking_number" 
                                             required
-                                            class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white"
+                                            class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-0 focus:border-black bg-white"
                                             placeholder="Tracking Number">
                                         
                                         <label for="tracking_number_field" 
@@ -691,7 +691,7 @@
                                 <div class="space-y-4">
                                     <div class="relative">
                                         <select name="courier_name" required
-                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-900 bg-white appearance-none">
+                                                class="block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-0 focus:border-black bg-white appearance-none">
                                             <option value="">Select Courier</option>
                                             <option value="JNE" {{ $order->shipment->courier_name === 'JNE' ? 'selected' : '' }}>JNE</option>
                                             <option value="Paxel" {{ $order->shipment->courier_name === 'Paxel' ? 'selected' : '' }}>Paxel</option>
@@ -704,7 +704,7 @@
                                     <div class="relative">
                                         <input type="text" name="tracking_number" required
                                             value="{{ $order->shipment->tracking_number }}"
-                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
+                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:ring-0 focus:border-black bg-white"
                                             placeholder="Tracking">
                                         <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 pointer-events-none transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
                                             Tracking Number / Resi *
@@ -746,7 +746,7 @@
                                 <div class="space-y-4">
                                     <div class="relative">
                                         <input type="number" name="refund_amount" required step="0.01" min="0.01" max="{{ $order->total_amount }}" value="{{ $order->total_amount }}"
-                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:border-gray-900 bg-white"
+                                            class="peer block w-full border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-transparent focus:outline-none focus:ring-0 focus:border-black bg-white"
                                             placeholder="Amount">
                                         <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
                                             Refund Amount ({{ $order->currency }}) *
