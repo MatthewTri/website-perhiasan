@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('order_id')->unique()->constrained('orders')->onDelete('cascade');
             
             // Recipient Information (Penerima)
-            $table->string('first_name'); // Nama depan
-            $table->string('last_name');  // Nama belakang
+            $table->string('first_name')->index(); // Nama depan
+            $table->string('last_name')->index();  // Nama belakang
             $table->string('phone');
             
             // Address Details

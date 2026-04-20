@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
 
             // 2. Isi Review
-            $table->unsignedTinyInteger('rating'); // Angka 1 sampai 5
+            $table->unsignedTinyInteger('rating')->index(); // Angka 1 sampai 5
             $table->text('comment')->nullable();   // Komentar teks (Boleh kosong kalau cuma kasih bintang)
             // REMOVED: $table->string('image')->nullable(); - Moved to review_images table
             $table->boolean('anonymous')->default(false); // Pilihan tampilkan nama atau tidak
@@ -33,6 +33,8 @@ return new class extends Migration
             // 3. Status Moderasi
             // Default true. Admin bisa ubah jadi false jika review mengandung kata kasar/spam.
             $table->boolean('is_visible')->default(true);
+            $table->index(['is_visible', 'rating']);
+            $table->index('created_at');
 
             $table->timestamps();
 

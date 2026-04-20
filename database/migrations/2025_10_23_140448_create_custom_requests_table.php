@@ -16,19 +16,19 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             
             // Consultation Type
-            $table->enum('consultation_type', ['short', 'design'])->default('short');
+            $table->enum('consultation_type', ['short', 'design'])->default('short')->index();
             
             // Meeting Type
             $table->enum('meeting_type', ['offline', 'online'])->default('offline');
             
             // Appointment DateTime
-            $table->date('appointment_date');
+            $table->date('appointment_date')->index();
             $table->time('appointment_time');
             
             // User Information
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('user_email');
+            $table->string('first_name')->index();
+            $table->string('last_name')->index();
+            $table->string('user_email')->index();
             $table->string('user_phone');
             
             // Appointment Notes
@@ -38,8 +38,10 @@ return new class extends Migration
             $table->text('admin_notes')->nullable();
             
             // Status
-            $table->string('status')->default('SCHEDULED'); // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
-            
+            $table->string('status')->default('SCHEDULED')->index(); // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
+            $table->index(['appointment_date', 'appointment_time'], 'idx_appointment'); // ← tambah
+            $table->index(['status', 'appointment_date'], 'idx_status_date');   
+
             $table->timestamps();
         });
     }

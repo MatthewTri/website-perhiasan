@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
@@ -53,19 +52,34 @@ class ConsultationController extends Controller
         $consultations = $query->orderBy('appointment_date', 'asc')
                              ->orderBy('appointment_time', 'asc')
                              ->paginate($perPage)->onEachSide(1)->withQueryString();
-        
-        $stats = [
-            'total' => CustomRequest::count(),
-            'scheduled' => CustomRequest::where('status', 'SCHEDULED')->count(),
-            'completed' => CustomRequest::where('status', 'COMPLETED')->count(),
-            'cancelled' => CustomRequest::where('status', 'CANCELLED')->count(),
-            'rescheduled' => CustomRequest::where('status', 'RESCHEDULED')->count(),
-            'upcoming_today' => CustomRequest::whereDate('appointment_date', Carbon::today())->count(),
-            'upcoming_week' => CustomRequest::whereBetween('appointment_date', [
-                Carbon::now()->startOfWeek(),
-                Carbon::now()->endOfWeek()
-            ])->count(),
-        ];
+
+        // Stats only needed for full page render (AJAX only updates the table)
+        $stats = null;
+        if (!$request->ajax()) {
+            $today = Carbon::today()->toDateString();
+            $weekStart = Carbon::now()->startOfWeek()->toDateString();
+            $weekEnd = Carbon::now()->endOfWeek()->toDateString();
+
+            $statsRow = CustomRequest::query()
+                ->selectRaw('COUNT(*) as total')
+                ->selectRaw("SUM(CASE WHEN status = 'SCHEDULED' THEN 1 ELSE 0 END) as scheduled")
+                ->selectRaw("SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed")
+                ->selectRaw("SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled")
+                ->selectRaw("SUM(CASE WHEN status = 'RESCHEDULED' THEN 1 ELSE 0 END) as rescheduled")
+                ->selectRaw('SUM(CASE WHEN DATE(appointment_date) = ? THEN 1 ELSE 0 END) as upcoming_today', [$today])
+                ->selectRaw('SUM(CASE WHEN DATE(appointment_date) BETWEEN ? AND ? THEN 1 ELSE 0 END) as upcoming_week', [$weekStart, $weekEnd])
+                ->first();
+
+            $stats = [
+                'total' => (int) ($statsRow->total ?? 0),
+                'scheduled' => (int) ($statsRow->scheduled ?? 0),
+                'completed' => (int) ($statsRow->completed ?? 0),
+                'cancelled' => (int) ($statsRow->cancelled ?? 0),
+                'rescheduled' => (int) ($statsRow->rescheduled ?? 0),
+                'upcoming_today' => (int) ($statsRow->upcoming_today ?? 0),
+                'upcoming_week' => (int) ($statsRow->upcoming_week ?? 0),
+            ];
+        }
         
         // Handle AJAX requests
         if ($request->ajax()) {

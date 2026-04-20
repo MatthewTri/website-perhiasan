@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Order;
-use App\Models\Shipment;
 use Illuminate\Http\Request;
 use App\Mail\Order\PaymentDetailsMail;
 use App\Mail\Order\OrderShippedMail;
@@ -41,7 +40,9 @@ class OrderController extends Controller
         }
         session(['admin.orders.per_page' => $perPage]);
 
-        $query = Order::with(['user', 'orderItems', 'shipment']);
+        $query = Order::query()
+            ->with(['user', 'shipment'])
+            ->withSum('orderItems as items_quantity', 'quantity');
         
         // Filter by status
         if ($request->has('status') && $request->status != '') {
@@ -65,9 +66,22 @@ class OrderController extends Controller
                   });
             });
         }
-        
-        // Get all orders for statistics
-        $allOrders = Order::with(['user', 'orderItems'])->get();
+
+        // Stats only needed for full page render (AJAX only updates the table)
+        $stats = null;
+        if (!$request->ajax()) {
+            $stats = Order::query()
+                ->selectRaw('COUNT(*) as total')
+                ->selectRaw("SUM(CASE WHEN status = 'PENDING_REVIEW' THEN 1 ELSE 0 END) as pending")
+                ->selectRaw("SUM(CASE WHEN status = 'INVOICE_SENT' THEN 1 ELSE 0 END) as invoiced")
+                ->selectRaw("SUM(CASE WHEN status = 'WAITING_VERIFICATION' THEN 1 ELSE 0 END) as verifying")
+                ->selectRaw("SUM(CASE WHEN status = 'PAID' THEN 1 ELSE 0 END) as paid")
+                ->selectRaw("SUM(CASE WHEN status = 'PRODUCTION' THEN 1 ELSE 0 END) as production")
+                ->selectRaw("SUM(CASE WHEN status = 'SHIPPED' THEN 1 ELSE 0 END) as shipped")
+                ->selectRaw("SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed")
+                ->selectRaw("SUM(CASE WHEN status IN ('CANCELLED', 'REFUNDED') THEN 1 ELSE 0 END) as cancelled_or_ref")
+                ->first();
+        }
         
         // Order by priority if no specific status filter
         if (!$request->has('status') || $request->status == '') {
@@ -86,8 +100,8 @@ class OrderController extends Controller
                 'pagination' => $paginationHtml
             ]);
         }
-        
-        return view('admin.orders.index', compact('orders', 'allOrders', 'perPage'));
+
+        return view('admin.orders.index', compact('orders', 'stats', 'perPage'));
     }
 
     /**

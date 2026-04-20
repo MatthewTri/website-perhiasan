@@ -32,7 +32,7 @@
                         <td class="px-6 py-5">
                             <div class="flex flex-col">
                                 <span class="text-sm font-serif font-medium text-stone-900">{{ $order->currency }} {{ number_format($order->total_amount, 0, ',', '.') }}</span>
-                                <span class="text-xs text-stone-400 font-light">{{ $order->orderItems->sum('quantity') }} items</span>
+                                <span class="text-xs text-stone-400 font-light">{{ (int) ($order->items_quantity ?? 0) }} items</span>
                             </div>
                         </td>
                         <td class="px-6 py-5">

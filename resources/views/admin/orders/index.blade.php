@@ -12,7 +12,7 @@
             
             <div class="bg-white px-6 py-3 border border-stone-200 shadow-[0_2px_10px_rgb(0,0,0,0.03)] rounded-sm flex items-center gap-4">
                 <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Total Orders</span>
-                <span class="text-2xl font-semibold text-stone-900">{{ $allOrders->count() }}</span>
+                <span class="text-2xl font-semibold text-stone-900">{{ $stats->total ?? 0 }}</span>
             </div>
         </div>
 
@@ -27,42 +27,42 @@
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending</p>
-                <p class="text-2xl font-semibold text-amber-600">{{ $allOrders->where('status', 'PENDING_REVIEW')->count() }}</p>
+                <p class="text-2xl font-semibold text-amber-600">{{ $stats->pending ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Invoiced</p>
-                <p class="text-2xl font-semibold text-blue-600">{{ $allOrders->where('status', 'INVOICE_SENT')->count() }}</p>
+                <p class="text-2xl font-semibold text-blue-600">{{ $stats->invoiced ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Verifying</p>
-                <p class="text-2xl font-semibold text-orange-500">{{ $allOrders->where('status', 'WAITING_VERIFICATION')->count() }}</p>
+                <p class="text-2xl font-semibold text-orange-500">{{ $stats->verifying ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Paid</p>
-                <p class="text-2xl font-semibold text-emerald-600">{{ $allOrders->where('status', 'PAID')->count() }}</p>
+                <p class="text-2xl font-semibold text-emerald-600">{{ $stats->paid ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Production</p>
-                <p class="text-2xl font-semibold text-teal-600">{{ $allOrders->where('status', 'PRODUCTION')->count() }}</p>
+                <p class="text-2xl font-semibold text-teal-600">{{ $stats->production ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Shipped</p>
-                <p class="text-2xl font-semibold text-indigo-600">{{ $allOrders->where('status', 'SHIPPED')->count() }}</p>
+                <p class="text-2xl font-semibold text-indigo-600">{{ $stats->shipped ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Completed</p>
-                <p class="text-2xl font-semibold text-stone-800">{{ $allOrders->where('status', 'COMPLETED')->count() }}</p>
+                <p class="text-2xl font-semibold text-stone-800">{{ $stats->completed ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Cancelled/Ref</p>
-                <p class="text-2xl font-semibold text-rose-500">{{ $allOrders->whereIn('status', ['CANCELLED', 'REFUNDED'])->count() }}</p>
+                <p class="text-2xl font-semibold text-rose-500">{{ $stats->cancelled_or_ref ?? 0 }}</p>
             </div>
         </div>
 
@@ -176,7 +176,7 @@
                                 <td class="px-6 py-5">
                                     <div class="flex flex-col">
                                         <span class="text-sm font-serif font-medium text-stone-900">{{ $order->currency }} {{ number_format($order->total_amount, 0, ',', '.') }}</span>
-                                        <span class="text-xs text-stone-400 font-light">{{ $order->orderItems->sum('quantity') }} items</span>
+                                        <span class="text-xs text-stone-400 font-light">{{ (int) ($order->items_quantity ?? 0) }} items</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">

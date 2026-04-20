@@ -56,7 +56,7 @@ return new class extends Migration
 
             // 5. Data Pembayaran (Untuk keperluan Refund nanti)
             $table->string('payment_preference')->default('MANUAL'); // MANUAL atau PAYPAL
-            $table->string('payment_gateway')->nullable(); // 'MANUAL' atau 'PAYPAL'
+            $table->string('payment_gateway')->nullable()->index();; // 'MANUAL' atau 'PAYPAL'
             $table->string('payment_method')->nullable(); // 'BCA' , 'PAYPAL'
             $table->string('transaction_id')->nullable()->index(); // Transaction ID dari PayPal
             $table->string('capture_id')->nullable()->index(); // Capture ID dari PayPal
@@ -81,6 +81,7 @@ return new class extends Migration
             // 9. Refund
             $table->decimal('refund_amount', 15, 2)->nullable(); // Jumlah yang direfund
 
+            $table->index(['status', 'created_at'], 'idx_status_created');
             $table->timestamps();
         });
     }
