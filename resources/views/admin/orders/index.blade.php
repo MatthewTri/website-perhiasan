@@ -1,7 +1,7 @@
 @extends('layout.checkout')
 
 @section('content')
-<div class="bg-stone-50/50 min-h-screen py-10">
+<div class="bg-stone-100 min-h-screen py-10">
     <div class="container mx-auto px-4 max-w-7xl">
         
         <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
@@ -81,7 +81,7 @@
                 </div>
 
                 {{-- Status Filter --}}
-                <div class="md:col-span-3">
+                <div class="md:col-span-2">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Order Status</label>
                     <div class="relative">
                         <select name="status" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
@@ -101,7 +101,7 @@
                 </div>
 
                 {{-- Payment Gateway Filter --}}
-                <div class="md:col-span-3">
+                <div class="md:col-span-2">
                     <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Payment Method</label>
                     <div class="relative">
                         <select name="payment_gateway" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
@@ -113,30 +113,28 @@
                     </div>
                 </div>
 
+                {{-- Rows per page --}}
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Rows</label>
+                    <div class="relative">
+                        <select name="per_page" class="w-full bg-stone-50 border-b-2 border-stone-200 pr-8 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
+                            @php
+                                $selectedPerPage = (int) (request('per_page') ?? ($perPage ?? 10));
+                            @endphp
+                            <option value="5" {{ $selectedPerPage === 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ $selectedPerPage === 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ $selectedPerPage === 20 ? 'selected' : '' }}>20</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                </div>
+
                 {{-- Clear Filter Button --}}
                 <div class="md:col-span-2">
                     <button type="button" id="clearFiltersBtn" class="group relative inline-flex w-full items-center justify-center px-6 py-3.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
-                        <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
+                        <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear</span>
                     </button>
-                </div>
-
-                {{-- Rows per page --}}
-                <div class="md:col-span-12 flex justify-end">
-                    <div class="flex items-center gap-3">
-                        <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Rows</label>
-                        <div class="relative">
-                            <select name="per_page" class="bg-stone-50 border-b-2 border-stone-200 pr-8 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
-                                @php
-                                    $selectedPerPage = (int) (request('per_page') ?? ($perPage ?? 10));
-                                @endphp
-                                <option value="5" {{ $selectedPerPage === 5 ? 'selected' : '' }}>5</option>
-                                <option value="10" {{ $selectedPerPage === 10 ? 'selected' : '' }}>10</option>
-                                <option value="20" {{ $selectedPerPage === 20 ? 'selected' : '' }}>20</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>
@@ -283,7 +281,7 @@
                 <p class="text-sm text-stone-500">Try adjusting your filters to find what you're looking for.</p>
                 <button type="button" onclick="document.getElementById('clearFiltersBtn').click()" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden bg-stone-900 rounded-sm transition duration-300 ease-out hover:bg-stone-800 hover:shadow-lg cursor-pointer mt-4">
                     <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-stone-700 rounded-full group-hover:w-56 group-hover:h-56"></span>
-                    <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear Filters</span>
+                    <span class="relative text-xs font-bold uppercase tracking-[0.2em] text-white">Clear</span>
                 </button>
             </div>
         @endif

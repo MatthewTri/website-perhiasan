@@ -70,8 +70,12 @@
     @endforeach
 </div>
 
+<div class="block md:hidden mt-8">
+    {{ $reviews->links('vendor.pagination.custom') }}
+</div>
+
 {{-- DESKTOP VIEW (Table) - Visible on md+ --}}
-<div class="hidden md:block bg-white rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-stone-100">
+<div class="hidden md:block bg-white rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead class="bg-stone-50 border-b border-stone-100">
@@ -144,9 +148,9 @@
             </tbody>
         </table>
     </div>
-</div>
 
-<div class="mt-8">
-    {{ $reviews->links('vendor.pagination.custom') }}
+    <div class="px-6 py-6 border-t border-stone-100 bg-stone-50/30">
+        {{ $reviews->links('vendor.pagination.custom') }}
+    </div>
 </div>
 @endif

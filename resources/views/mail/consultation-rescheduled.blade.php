@@ -212,7 +212,7 @@
                     {{-- CTA Button --}}
                     <tr>
                         <td align="center" style="padding-bottom: 50px;">
-                            <a href="mailto:cecileprivatecollection@gmail.com" 
+                            <a href="mailto:{{ config('mail.from.address') }}" 
                                style="background-color: #1c1917; color: #ffffff; padding: 16px 32px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                 Contact Us
                             </a>

@@ -198,7 +198,7 @@
                             </div>
                         </a>
 
-                        <a href="mailto:cecileprivatecollection@gmail.com"
+                                <a href="mailto:{{ config('mail.from.address') }}"
                            class="group flex items-start gap-4 p-5 bg-[#FAFAFA] hover:bg-gray-100 transition-all duration-300 border border-gray-200 hover:border-gray-300">
                             <div class="flex-shrink-0 w-11 h-11 bg-white rounded-full flex items-center justify-center text-gray-700 group-hover:text-gray-900 transition-colors shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -207,7 +207,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs font-bold uppercase tracking-[0.15em] text-gray-900 mb-1">Email</p>
-                                <p class="text-sm text-gray-600 break-all font-mono">cecileprivatecollection@gmail.com</p>
+                                <p class="text-sm text-gray-600 break-all font-mono">{{ config('mail.from.address') }}</p>
                                 <p class="text-xs text-gray-500 mt-2 font-light">Send us an email inquiry</p>
                             </div>
                             <div class="flex-shrink-0 text-gray-300 group-hover:text-gray-600 transition-colors">

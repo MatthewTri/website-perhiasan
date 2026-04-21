@@ -265,7 +265,7 @@
                                 </p>
                                 <p style="font-size: 13px; color: #78716c; margin: 0 0 6px 0;">
                                     <strong style="color: #1c1917;">Email:</strong> 
-                                    <a href="mailto:cecileprivatecollection@gmail.com" style="color: #1c1917; text-decoration: none;">cecileprivatecollection@gmail.com</a>
+                                    <a href="mailto:{{ config('mail.from.address') }}" style="color: #1c1917; text-decoration: none;">{{ config('mail.from.address') }}</a>
                                 </p>
                                 <p style="font-size: 13px; color: #78716c; margin: 0;">
                                     <strong style="color: #1c1917;">WhatsApp:</strong> 
@@ -278,7 +278,7 @@
                     {{-- CTA Button --}}
                     <tr>
                         <td align="center" style="padding-bottom: 50px;">
-                            <a href="mailto:cecileprivatecollection@gmail.com" 
+                            <a href="mailto:{{ config('mail.from.address') }}" 
                                style="background-color: #1c1917; color: #ffffff; padding: 16px 32px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; border-radius: 2px; display: inline-block;">
                                 Contact Support
                             </a>
