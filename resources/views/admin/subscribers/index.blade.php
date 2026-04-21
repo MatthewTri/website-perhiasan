@@ -49,35 +49,53 @@
         
         {{-- Search Box --}}
         <div class="bg-white rounded-lg border border-stone-200 p-6">
-            <form action="{{ route('admin.subscribers.index') }}" method="GET" class="space-y-3">
-                <label for="search" class="block text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Search Email</label>
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-stone-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                            </svg>
+            <form action="{{ route('admin.subscribers.index') }}" method="GET" class="space-y-3" id="subscriberSearchForm">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    {{-- Search --}}
+                    <div class="md:col-span-9">
+                        <label for="search" class="block text-xs font-bold text-stone-400 uppercase tracking-[0.15em] mb-2">Search Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-stone-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                            </div>
+                            <input type="text" 
+                                   name="search" 
+                                   id="search"
+                                   value="{{ request('search') }}"
+                                   placeholder="Search by email address..." 
+                                   class="w-full h-11 pl-10 pr-10 border border-stone-300 rounded-sm text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#E3CFCF] focus:border-transparent transition-all">
+
+                            {{-- Clear button (shows only when input has value) --}}
+                            <button type="button"
+                                    id="clearSearchBtn"
+                                    class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-700 transition-colors"
+                                    title="Clear search">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
-                        <input type="text" 
-                               name="search" 
-                               id="search"
-                               value="{{ request('search') }}"
-                               placeholder="Search by email address..." 
-                               class="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-sm text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#E3CFCF] focus:border-transparent transition-all">
                     </div>
-                    <button type="submit" 
-                            class="px-6 py-2.5 bg-stone-900 text-white hover:bg-[#E3CFCF] transition-all duration-300 rounded-sm">
-                        <span class="text-xs font-bold uppercase tracking-wider">Search</span>
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ route('admin.subscribers.index') }}" 
-                           class="px-4 py-2.5 bg-stone-200 text-stone-700 hover:bg-stone-300 transition-all duration-300 rounded-sm flex items-center justify-center"
-                           title="Clear search">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                        </a>
-                    @endif
+
+                    {{-- Rows per page --}}
+                    <div class="md:col-span-3">
+                        <label for="per_page" class="block text-xs font-bold text-stone-400 uppercase tracking-[0.15em] mb-2">Rows</label>
+                        <div class="relative">
+                            @php
+                                $selectedPerPage = (int) (request('per_page') ?? ($perPage ?? 10));
+                            @endphp
+                            <select name="per_page" id="per_page" class="w-full h-11 pl-4 pr-10 border border-stone-300 rounded-sm text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#E3CFCF] focus:border-transparent transition-all appearance-none cursor-pointer bg-white">
+                                <option value="5" {{ $selectedPerPage === 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ $selectedPerPage === 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ $selectedPerPage === 20 ? 'selected' : '' }}>20</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -85,103 +103,173 @@
 
     {{-- Table --}}
     <div class="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.14)] border border-stone-400 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-stone-100">
-                        <th class="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Email Address</th>
-                        <th class="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em] text-right">Deactivate</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-stone-50">
-                    @forelse($subscribers as $subscriber)
-                        <tr class="group hover:bg-stone-50/50 transition-colors duration-200">
-                            <td class="px-8 py-5">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-full bg-[#454545] flex items-center justify-center mr-4 transition-colors duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#E3CFCF] group-hover:text-white">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                                        </svg>                                     
-                                    </div>
-                                    <span class="text-sm text-stone-800 group-hover:text-stone-900 font-medium">
-                                        {{ $subscriber->email }}
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="px-8 py-5 text-right">
-                                <div class="flex justify-end items-center opacity-60 group-hover:opacity-100 transition-opacity">
-                                    {{-- Deactivate --}}
-                                    <form action="{{ route('admin.subscribers.destroy', $subscriber) }}" 
-                                          method="POST" 
-                                          class="inline deactivate-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" 
-                                                class="deactivate-btn p-2 text-stone-400 hover:text-red-600 transition-colors" 
-                                                title="Deactivate Subscriber"
-                                                data-email="{{ $subscriber->email }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="px-8 py-12 text-center text-stone-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-12 h-12 mx-auto mb-4 opacity-30">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                                </svg>
-                                <p class="text-sm uppercase tracking-widest">No subscribers yet</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div id="subscribersTableContainer">
+            @include('admin.subscribers.partials.table', ['subscribers' => $subscribers])
         </div>
-
-        {{-- Pagination --}}
-        @if($subscribers->hasPages())
-        <div class="px-8 py-6 border-t border-stone-100">
-            {{ $subscribers->links('vendor.pagination.custom') }}
-        </div>
-        @endif
     </div>
 </div>
 
 <script>
-    // SweetAlert Deactivate Confirmation
-    document.querySelectorAll('.deactivate-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const email = this.getAttribute('data-email');
-            const form = this.closest('form');
-            
-            Swal.fire({
-                title: 'Deactivate Subscriber?',
-                html: `Are you sure you want to deactivate<br><strong>${email}</strong>?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#E3CFCF',
-                cancelButtonColor: '#71717a',
-                confirmButtonText: 'Yes, Deactivate',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'rounded-lg',
-                    confirmButton: 'rounded-sm px-6 py-3 text-xs uppercase tracking-widest font-bold',
-                    cancelButton: 'rounded-sm px-6 py-3 text-xs uppercase tracking-widest font-bold'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
+    let subscriberSearchTimeout;
+
+    function updateClearButtonVisibility() {
+        const searchInput = document.querySelector('input[name="search"]');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        if (!searchInput || !clearBtn) return;
+
+        if ((searchInput.value || '').trim() !== '') {
+            clearBtn.classList.remove('hidden');
+        } else {
+            clearBtn.classList.add('hidden');
+        }
+    }
+
+    function attachDeactivateHandlers() {
+        document.querySelectorAll('.deactivate-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const email = this.getAttribute('data-email');
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Deactivate Subscriber?',
+                    html: `Are you sure you want to deactivate<br><strong>${email}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#E3CFCF',
+                    cancelButtonColor: '#71717a',
+                    confirmButtonText: 'Yes, Deactivate',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-lg',
+                        confirmButton: 'rounded-sm px-6 py-3 text-xs uppercase tracking-widest font-bold',
+                        cancelButton: 'rounded-sm px-6 py-3 text-xs uppercase tracking-widest font-bold'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    }
+
+    function attachPaginationHandlers() {
+        document.querySelectorAll('#subscribersPagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('href');
+                if (url) {
+                    applySubscriberSearch(url);
                 }
             });
         });
-    });
+    }
+
+    function applySubscriberSearch(url = null) {
+        const searchValue = document.querySelector('input[name="search"]').value;
+        const perPageValue = document.querySelector('select[name="per_page"]')?.value;
+        const container = document.getElementById('subscribersTableContainer');
+        container.style.opacity = '0.5';
+        container.style.pointerEvents = 'none';
+
+        const ajaxUrl = url || '{{ route("admin.subscribers.index") }}';
+        const requestUrl = new URL(ajaxUrl, window.location.origin);
+
+        if (!url) {
+            requestUrl.searchParams.delete('page');
+        }
+
+        if (searchValue) {
+            requestUrl.searchParams.set('search', searchValue);
+        } else {
+            requestUrl.searchParams.delete('search');
+        }
+
+        if (perPageValue) {
+            requestUrl.searchParams.set('per_page', perPageValue);
+        } else {
+            requestUrl.searchParams.delete('per_page');
+        }
+
+        fetch(requestUrl.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('subscribersTableContainer').innerHTML = data.html;
+
+            const paginationContainer = document.getElementById('subscribersPagination');
+            if (paginationContainer && data.pagination) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+
+            window.history.pushState({}, '', requestUrl);
+
+            attachPaginationHandlers();
+            attachDeactivateHandlers();
+            updateClearButtonVisibility();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+        });
+    }
+
+    // Live search (debounced)
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            updateClearButtonVisibility();
+            clearTimeout(subscriberSearchTimeout);
+            subscriberSearchTimeout = setTimeout(() => {
+                applySubscriberSearch();
+            }, 500);
+        });
+    }
+
+    // Clear button
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    if (clearSearchBtn && searchInput) {
+        clearSearchBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            updateClearButtonVisibility();
+            applySubscriberSearch();
+            searchInput.focus();
+        });
+    }
+
+    // Rows per page changes
+    const perPageSelect = document.querySelector('select[name="per_page"]');
+    if (perPageSelect) {
+        perPageSelect.addEventListener('change', function() {
+            applySubscriberSearch();
+        });
+    }
+
+    // Prevent full page reload on submit
+    const searchForm = document.getElementById('subscriberSearchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            applySubscriberSearch();
+        });
+    }
+
+    // Init handlers
+    attachPaginationHandlers();
+    attachDeactivateHandlers();
+    updateClearButtonVisibility();
 </script>
 
 @endsection
