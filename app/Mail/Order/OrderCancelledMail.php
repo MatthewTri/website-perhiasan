@@ -13,11 +13,13 @@ class OrderCancelledMail extends Mailable
 
     public $order;
     public $magicLink;
+    public $cancelReason;
 
-    public function __construct(Order $order, string $magicLink)
+    public function __construct(Order $order, string $magicLink, ?string $cancelReason = null)
     {
         $this->order = $order;
         $this->magicLink = $magicLink;
+        $this->cancelReason = $cancelReason;
     }
 
     public function build()

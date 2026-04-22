@@ -69,6 +69,11 @@
                                         <p style="font-size: 13px; color: #78716c; margin: 0; line-height: 1.6;">
                                             Your order was cancelled on {{ now()->format('F j, Y') }}
                                         </p>
+                                        @if(!empty($cancelReason) && $cancelReason === 'expired_unpaid')
+                                            <p style="font-size: 13px; color: #78716c; margin: 10px 0 0 0; line-height: 1.6;">
+                                                This order was cancelled because payment was not completed within <strong>3 days</strong>.
+                                            </p>
+                                        @endif
                                     </td>
                                 </tr>
                             </table>
@@ -148,20 +153,6 @@
                             </table>
                         </td>
                     </tr>
-
-                    <!-- Refund Information -->
-                    @if(in_array($order->status, ['WAITING_VERIFICATION', 'PAID']) && $order->payment_gateway === 'MANUAL')
-                    <tr>
-                        <td class="inner-padding" style="padding: 0 50px 40px 50px;">
-                            <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
-                                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c; margin: 0 0 8px 0;">Refund Information</p>
-                                <p style="font-size: 13px; color: #44403c; margin: 0; line-height: 1.6;">
-                                    Since you've already made payment, we will process your refund within 3-5 business days to the same account you used for payment. You will receive a confirmation email once the refund is completed.
-                                </p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endif
 
                     <!-- Message -->
                     <tr>

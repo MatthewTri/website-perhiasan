@@ -129,6 +129,12 @@
                                 <ul style="font-size: 13px; color: #44403c; margin: 10px 0 0 0; padding-left: 20px; line-height: 1.8;">
                                     <li>Transfer amount matching your order total</li>
                                 </ul>
+                                <p style="font-size: 13px; color: #44403c; margin: 12px 0 0 0; line-height: 1.6;">
+                                    You have <strong>3 days</strong> to resubmit your payment proof.
+                                    @if(!empty($order->payment_due_at))
+                                        Payment deadline: {{ $order->payment_due_at->format('d M Y H:i') }}.
+                                    @endif
+                                </p>
                             </div>
                         </td>
                     </tr>

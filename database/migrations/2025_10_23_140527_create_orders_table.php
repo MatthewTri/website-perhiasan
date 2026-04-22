@@ -61,6 +61,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable()->index(); // Transaction ID dari PayPal
             $table->string('capture_id')->nullable()->index(); // Capture ID dari PayPal
             $table->string('payment_url')->nullable(); // Link paypal bayar yang dikirim ke email
+            $table->timestamp('payment_due_at')->nullable(); // Deadline pembayaran (CancelUnpaidOrders.php)
             $table->timestamp('paid_at')->nullable(); // Waktu pembayaran berhasil
             $table->timestamp('completed_at')->nullable(); // Waktu order selesai
             $table->timestamp('cancelled_at')->nullable(); // Waktu pembatalan order
@@ -82,6 +83,7 @@ return new class extends Migration
             $table->decimal('refund_amount', 15, 2)->nullable(); // Jumlah yang direfund
 
             $table->index(['status', 'created_at'], 'idx_status_created');
+            $table->index(['status', 'payment_due_at'], 'idx_status_payment_due');
             $table->timestamps();
         });
     }

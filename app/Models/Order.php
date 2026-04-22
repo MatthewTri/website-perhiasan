@@ -10,13 +10,14 @@ use Carbon\Carbon;
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
-    use Sluggable;
+    use HasFactory, Sluggable;
 
     protected $guarded = [
         'id'
     ];
 
      protected $casts = [
+          'payment_due_at' => 'datetime',
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'completed_at' => 'datetime',

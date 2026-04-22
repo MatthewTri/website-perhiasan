@@ -175,6 +175,7 @@ class OrderController extends Controller
             'total_amount' => $newTotalAmount, 
             
             'status' => 'INVOICE_SENT',
+            'payment_due_at' => now()->addHours(72),
         ]);
 
         $magicLink = route('order.track', $order->guest_token);
@@ -235,6 +236,7 @@ class OrderController extends Controller
             // Update status kembali jadi invoice sent
             $order->update([
                 'status' => 'INVOICE_SENT',
+                'payment_due_at' => now()->addHours(72),
                 'rejection_notes' => $validated['rejection_notes'],
                 'proof_of_payment' => null, // Hapus bukti yang ditolak
             ]);

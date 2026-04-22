@@ -51,6 +51,14 @@
                             <p style="color: #78716c; font-size: 14px; margin: 0; line-height: 1.6;">
                                 Order #{{ $order->order_number }}
                             </p>
+                            <p style="color: #78716c; font-size: 12px; margin: 10px 0 0 0; line-height: 1.6;">
+                                Please complete payment within <strong>3 days</strong>.
+                                @if(!empty($order->payment_due_at))
+                                    If payment is not received by <strong>{{ optional($order->payment_due_at)->format('M d, Y H:i') }}</strong>, your order will be automatically cancelled.
+                                @else
+                                    If payment is not received within 3 days, your order will be automatically cancelled.
+                                @endif
+                            </p>
                         </td>
                     </tr>
 
