@@ -295,12 +295,36 @@ class OrderController extends Controller
             'courier_name' => 'required|string',
             'tracking_number' => 'required|string',
         ]);
+
+        // Ensure shipment exists
+        if (!$order->shipment) {
+            return back()->with('error', 'Shipment record not found for this order.');
+        }
+
+        // Delivery SLA: domestic vs international
+        $deliveryDays = $order->shipment->country === 'Indonesia' ? 7 : 21;
+
+        $now = now();
+
+        // shipped_at: set once when transitioning PRODUCTION -> SHIPPED.
+        // If order is already SHIPPED, keep shipped_at stable (but backfill if missing).
+        $newShippedAt = $order->status === 'PRODUCTION'
+            ? $now
+            : ($order->shipment->shipped_at ?? $now);
+
+        // Reset auto-complete timer on every admin edit (as requested).
+        // - When shipping starts (PRODUCTION -> SHIPPED): due = shipped_at + SLA
+        // - When already shipped and admin edits courier/tracking: due = now + SLA
+        $newAutoCompleteDueAt = $order->status === 'PRODUCTION'
+            ? $newShippedAt->copy()->addDays($deliveryDays)
+            : $now->copy()->addDays($deliveryDays);
                 
         // UPDATE SHIPMENT
         $order->shipment->update([
             'courier_name' => $validated['courier_name'],
             'tracking_number' => $validated['tracking_number'],
-            'shipped_at' => $order->status === 'PRODUCTION' ? now() : $order->shipment->shipped_at,
+            'shipped_at' => $newShippedAt,
+            'auto_complete_due_at' => $newAutoCompleteDueAt,
         ]);
 
         // UPDATE ORDER STATUS jika masih PRODUCTION

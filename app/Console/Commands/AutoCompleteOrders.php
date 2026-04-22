@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Order\OrderCompletedMail;
+use Carbon\Carbon;
 
 class AutoCompleteOrders extends Command
 {
@@ -29,65 +30,63 @@ class AutoCompleteOrders extends Command
      */
     public function handle()
     {
-        $now = now();
-        
-        // ⬅️ LOAD SHIPMENT RELATION
-        $shippedOrders = Order::with('shipment')
-                              ->where('status', 'SHIPPED')
-                              ->whereHas('shipment', function($query) {
-                                  $query->whereNotNull('shipped_at');
-                              })
-                              ->get();
+        $now = Carbon::now();
 
         $completedCount = 0;
 
-        foreach ($shippedOrders as $order) {
-            // ⬅️ CEK SHIPMENT DULU
-            if (!$order->shipment || !$order->shipment->shipped_at) {
-                continue;
-            }
+        Order::query()
+            ->with('shipment')
+            ->where('status', 'SHIPPED')
+            ->whereHas('shipment', function ($query) use ($now) {
+                $query->whereNotNull('auto_complete_due_at')
+                    ->where('auto_complete_due_at', '<=', $now);
+            })
+            ->chunkById(200, function ($orders) use (&$completedCount, $now) {
+                foreach ($orders as $order) {
+                    if (!$order->shipment || !$order->shipment->auto_complete_due_at) {
+                        continue;
+                    }
 
-            // ⬅️ AMBIL COUNTRY DARI SHIPMENT
-            $deliveryDays = $order->shipment->country === 'Indonesia' ? 7 : 21;
-            
-            // ⬅️ HITUNG DEADLINE DARI shipment->shipped_at
-            $deadline = $order->shipment->shipped_at->addDays($deliveryDays);
-            
-            // Cek apakah sudah melewati deadline
-            if ($now->greaterThanOrEqualTo($deadline)) {
-                $order->update([
-                    'status' => 'COMPLETED',
-                    'completed_at' => now(),
-                ]);
-                
-                $completedCount++;
-                
-                Log::info('✅ Order auto-completed', [
-                    'order_number' => $order->order_number,
-                    'shipped_at' => $order->shipment->shipped_at->toDateTimeString(),
-                    'country' => $order->shipment->country,
-                    'delivery_days' => $deliveryDays,
-                    'completed_at' => now()->toDateTimeString(),
-                ]);
+                    // Idempotent update: only transition SHIPPED -> COMPLETED once
+                    $updated = Order::where('id', $order->id)
+                        ->where('status', 'SHIPPED')
+                        ->update([
+                            'status' => 'COMPLETED',
+                            'completed_at' => now(),
+                        ]);
 
-                // Send completion email to customer
-                $magicLink = route('order.track', $order->guest_token);
-                try {
-                    Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
-                    Log::info('✅ Auto-complete email sent to customer', [
+                    if ($updated !== 1) {
+                        continue;
+                    }
+
+                    $completedCount++;
+
+                    Log::info('✅ Order auto-completed', [
                         'order_number' => $order->order_number,
-                        'customer_email' => $order->contact_email
+                        'shipped_at' => optional($order->shipment->shipped_at)->toDateTimeString(),
+                        'auto_complete_due_at' => optional($order->shipment->auto_complete_due_at)->toDateTimeString(),
+                        'country' => $order->shipment->country,
+                        'completed_at' => now()->toDateTimeString(),
                     ]);
-                } catch (\Exception $e) {
-                    Log::error('Failed to send auto-complete email', [
-                        'order_number' => $order->order_number,
-                        'error' => $e->getMessage()
-                    ]);
+
+                    // Send completion email to customer
+                    $magicLink = route('order.track', $order->guest_token);
+                    try {
+                        Mail::to($order->contact_email)->queue(new OrderCompletedMail($order, $magicLink));
+                        Log::info('✅ Auto-complete email sent to customer', [
+                            'order_number' => $order->order_number,
+                            'customer_email' => $order->contact_email,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send auto-complete email', [
+                            'order_number' => $order->order_number,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+
+                    $this->info("✅ Order {$order->order_number} marked as COMPLETED & email queued");
                 }
-
-                $this->info("✅ Order {$order->order_number} marked as COMPLETED & email sent");
-            }
-        }
+            });
 
         if ($completedCount > 0) {
             Log::info("🎉 Auto-Complete Summary: {$completedCount} orders completed");

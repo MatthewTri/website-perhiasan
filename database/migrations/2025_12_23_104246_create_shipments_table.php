@@ -35,6 +35,9 @@ return new class extends Migration
             
             // Timestamps untuk tracking
             $table->timestamp('shipped_at')->nullable(); // Kapan dikirim
+
+            // Deadline untuk auto-complete order (7/21 hari dari mulai pengiriman)
+            $table->timestamp('auto_complete_due_at')->nullable()->index();
             
             $table->timestamps();
         });

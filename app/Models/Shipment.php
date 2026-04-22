@@ -10,6 +10,7 @@ class Shipment extends Model
 
     protected $casts = [
         'shipped_at' => 'datetime',
+        'auto_complete_due_at' => 'datetime',
     ];
 
     public function order()
