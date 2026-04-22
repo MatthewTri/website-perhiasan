@@ -44,6 +44,7 @@ return new class extends Migration
                 'COMPLETED',            // Selesai
                 'CANCELLED',            // Batal (Expired/Manual Cancel)
                 'REFUNDED',             // Refund selesai
+                'PENDING',              // Menunggu pembayaran (Jika paypal butuh validasi tambahan)
                 'DENIED',                // Tolak pembayaran
                 'REVERSED',               // Pembayaran dibalik (Chargeback)
                 'DISPUTED'                 // Sengketa pembayaran (Dispute)

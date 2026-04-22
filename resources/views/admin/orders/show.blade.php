@@ -21,6 +21,7 @@
                     @php
                     $statusColors = [
                         'PENDING_REVIEW' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
+                        'PENDING' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
                         'DENIED' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
                         'INVOICE_SENT' => 'bg-blue-50 text-blue-800 border-blue-200',
                         'WAITING_VERIFICATION' => 'bg-purple-50 text-purple-800 border-purple-200',
@@ -30,6 +31,8 @@
                         'COMPLETED' => 'bg-purple-50 text-purple-800 border-purple-200',
                         'CANCELLED' => 'bg-red-50 text-red-800 border-red-200',
                         'REFUNDED' => 'bg-orange-50 text-orange-800 border-orange-200',
+                        'REVERSED' => 'bg-red-50 text-red-800 border-red-200',
+                        'DISPUTED' => 'bg-red-50 text-red-800 border-red-200',
                     ];
                     @endphp
                     
@@ -75,6 +78,33 @@
     <div class="container mx-auto px-4 lg:px-12 py-4">
         <div class="bg-green-50 border-l-4 border-green-400 px-4 py-3">
             <p class="text-sm text-green-800">{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
+
+    {{-- PayPal Pending Notice --}}
+    @if($order->status === 'PENDING')
+    <div class="container mx-auto px-4 lg:px-12 py-4">
+        <div class="bg-yellow-50 border border-yellow-200 px-4 py-3">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-yellow-900">PayPal Verification</p>
+            <p class="mt-1 text-sm text-yellow-800">This order is currently being verified by PayPal. No action is needed yet—please wait for the next update (COMPLETED or DENIED).</p>
+        </div>
+    </div>
+    @endif
+
+    {{-- Status Notices (High-signal) --}}
+    @if(in_array($order->status, ['DENIED', 'DISPUTED', 'REVERSED'], true))
+    <div class="container mx-auto px-4 lg:px-12 py-4">
+        <div class="bg-red-50 border border-red-200 px-4 py-3">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-red-700">Attention</p>
+
+            @if($order->status === 'DENIED')
+                <p class="mt-1 text-sm text-red-800">Payment was denied by PayPal. Contact the customer and resend a fresh invoice link.</p>
+            @elseif($order->status === 'DISPUTED')
+                <p class="mt-1 text-sm text-red-800">This order is in <span class="font-semibold">DISPUTED</span> status. Review the PayPal dispute details and respond as needed before continuing fulfillment.</p>
+            @elseif($order->status === 'REVERSED')
+                <p class="mt-1 text-sm text-red-800">This order is in <span class="font-semibold">REVERSED</span> status (payment reversed/chargeback). Pause fulfillment and review the transaction in PayPal.</p>
+            @endif
         </div>
     </div>
     @endif

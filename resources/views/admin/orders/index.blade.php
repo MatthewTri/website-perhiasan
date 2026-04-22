@@ -24,9 +24,9 @@
         @endif
 
         {{-- Statistics Cards (Elegant Grid) --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending</p>
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Pending Review</p>
                 <p class="text-2xl font-semibold text-amber-600">{{ $stats->pending ?? 0 }}</p>
             </div>
 
@@ -38,6 +38,11 @@
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Verifying</p>
                 <p class="text-2xl font-semibold text-orange-500">{{ $stats->verifying ?? 0 }}</p>
+            </div>
+            
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">PayPal Pending</p>
+                <p class="text-2xl font-semibold text-amber-600">{{ $stats->paypal_pending ?? 0 }}</p>
             </div>
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
@@ -64,6 +69,22 @@
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Cancelled/Ref</p>
                 <p class="text-2xl font-semibold text-rose-500">{{ $stats->cancelled_or_ref ?? 0 }}</p>
             </div>
+            
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Denied</p>
+                <p class="text-2xl font-semibold text-rose-500">{{ $stats->denied ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Reversed</p>
+                <p class="text-2xl font-semibold text-rose-500">{{ $stats->reversed ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Disputed</p>
+                <p class="text-2xl font-semibold text-rose-500">{{ $stats->disputed ?? 0 }}</p>
+            </div>
+
         </div>
 
         {{-- Filters & Search Bar --}}
@@ -89,11 +110,15 @@
                             <option value="PENDING_REVIEW" {{ request('status') == 'PENDING_REVIEW' ? 'selected' : '' }}>Pending Review</option>
                             <option value="INVOICE_SENT" {{ request('status') == 'INVOICE_SENT' ? 'selected' : '' }}>Invoice Sent</option>
                             <option value="WAITING_VERIFICATION" {{ request('status') == 'WAITING_VERIFICATION' ? 'selected' : '' }}>Waiting Verification</option>
+                            <option value="PENDING" {{ request('status') == 'PENDING' ? 'selected' : '' }}>PayPal Pending</option>
                             <option value="PAID" {{ request('status') == 'PAID' ? 'selected' : '' }}>Paid</option>
                             <option value="PRODUCTION" {{ request('status') == 'PRODUCTION' ? 'selected' : '' }}>Production</option>
                             <option value="SHIPPED" {{ request('status') == 'SHIPPED' ? 'selected' : '' }}>Shipped</option>
                             <option value="COMPLETED" {{ request('status') == 'COMPLETED' ? 'selected' : '' }}>Completed</option>
                             <option value="CANCELLED" {{ request('status') == 'CANCELLED' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="DENIED" {{ request('status') == 'DENIED' ? 'selected' : '' }}>Denied</option>
+                            <option value="REVERSED" {{ request('status') == 'REVERSED' ? 'selected' : '' }}>Reversed</option>
+                            <option value="DISPUTED" {{ request('status') == 'DISPUTED' ? 'selected' : '' }}>Disputed</option>
                             <option value="REFUNDED" {{ request('status') == 'REFUNDED' ? 'selected' : '' }}>Refunded</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>

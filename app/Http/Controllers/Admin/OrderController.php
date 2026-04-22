@@ -73,8 +73,12 @@ class OrderController extends Controller
             $stats = Order::query()
                 ->selectRaw('COUNT(*) as total')
                 ->selectRaw("SUM(CASE WHEN status = 'PENDING_REVIEW' THEN 1 ELSE 0 END) as pending")
+                ->selectRaw("SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as paypal_pending")
                 ->selectRaw("SUM(CASE WHEN status = 'INVOICE_SENT' THEN 1 ELSE 0 END) as invoiced")
                 ->selectRaw("SUM(CASE WHEN status = 'WAITING_VERIFICATION' THEN 1 ELSE 0 END) as verifying")
+                ->selectRaw("SUM(CASE WHEN status = 'DENIED' THEN 1 ELSE 0 END) as denied")
+                ->selectRaw("SUM(CASE WHEN status = 'REVERSED' THEN 1 ELSE 0 END) as reversed")
+                ->selectRaw("SUM(CASE WHEN status = 'DISPUTED' THEN 1 ELSE 0 END) as disputed")
                 ->selectRaw("SUM(CASE WHEN status = 'PAID' THEN 1 ELSE 0 END) as paid")
                 ->selectRaw("SUM(CASE WHEN status = 'PRODUCTION' THEN 1 ELSE 0 END) as production")
                 ->selectRaw("SUM(CASE WHEN status = 'SHIPPED' THEN 1 ELSE 0 END) as shipped")
@@ -85,7 +89,7 @@ class OrderController extends Controller
         
         // Order by priority if no specific status filter
         if (!$request->has('status') || $request->status == '') {
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')");
+            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'PENDING', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'DENIED', 'DISPUTED', 'REVERSED', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')");
         }
         
         $orders = $query->latest()->paginate($perPage)->onEachSide(1)->withQueryString();

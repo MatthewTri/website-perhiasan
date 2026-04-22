@@ -280,6 +280,9 @@ class PaymentController extends Controller
             switch ($event['event_type']) {
                 case 'PAYMENT.CAPTURE.COMPLETED':
                     return $this->handlePaymentCompleted($event);
+
+                case 'PAYMENT.CAPTURE.PENDING':
+                    return $this->handlePaymentPending($event);
                     
                 case 'PAYMENT.CAPTURE.DENIED':
                     return $this->handlePaymentDenied($event);
@@ -468,6 +471,79 @@ class PaymentController extends Controller
         // PaymentService currently uses: order_number . '-' . time()
         // So invoice_id might be: INV-2025-00001-1712345678
         return preg_replace('/-\d+$/', '', $invoiceId) ?? $invoiceId;
+    }
+
+    /**
+     * Handle: Payment Pending (PayPal needs verification / review)
+     */
+    private function handlePaymentPending(array $event)
+    {
+        $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
+        $invoiceId = $event['resource']['invoice_id'] ?? null;
+
+        Log::warning('PayPal Webhook: Payment pending event received', [
+            'paypal_order_id_suffix' => $paypalOrderId ? substr($paypalOrderId, -6) : null,
+            'invoice_id' => $invoiceId,
+            'event_id' => $event['id'] ?? null,
+        ]);
+
+        // Find order (prefer PayPal order id, fallback to invoice_id)
+        $order = null;
+        if ($paypalOrderId) {
+            $order = Order::where('transaction_id', $paypalOrderId)->latest('id')->first();
+        }
+
+        if (!$order && $invoiceId) {
+            $baseInvoiceId = $this->extractBaseInvoiceId($invoiceId);
+            $order = Order::where('order_number', $baseInvoiceId)->latest('id')->first();
+
+            // If we found by invoice and have a PayPal order id, bind it for subsequent events.
+            if ($order && $paypalOrderId && empty($order->transaction_id)) {
+                $order->update(['transaction_id' => $paypalOrderId]);
+                Log::info('PayPal Webhook: Pending - transaction_id backfilled from webhook', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'paypal_order_id_suffix' => substr($paypalOrderId, -6),
+                ]);
+            }
+        }
+
+        if (!$order) {
+            Log::warning('PayPal Webhook: Order not found for pending payment', [
+                'paypal_order_id_suffix' => $paypalOrderId ? substr($paypalOrderId, -6) : null,
+                'invoice_id' => $invoiceId,
+            ]);
+            return response()->json(['status' => 'ignored', 'reason' => 'order_not_found'], 200);
+        }
+
+        // Idempotency - if order is already in a terminal/progress state, don't roll it back
+        if (in_array($order->status, ['PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED'], true)) {
+            Log::info('PayPal Webhook: Pending ignored due to current order status', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'status' => $order->status,
+            ]);
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        if ($order->status === 'PENDING') {
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        // Mark as pending; keep PayPal session identifiers (order might complete later).
+        $order->update([
+            'status' => 'PENDING',
+            'paid_at' => null,
+            'capture_id' => null,
+        ]);
+
+        Log::warning('PayPal Webhook: Payment pending, order marked as PENDING', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'previous_status' => $order->getOriginal('status'),
+        ]);
+
+        return response()->json(['status' => 'success'], 200);
     }
 
     /**

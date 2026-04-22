@@ -39,8 +39,12 @@
                             @php
                                 $statusStyles = [
                                     'PENDING_REVIEW' => 'bg-amber-50 text-amber-700 border-amber-100',
+                                    'PENDING' => 'bg-amber-50 text-amber-700 border-amber-100',
                                     'INVOICE_SENT' => 'bg-blue-50 text-blue-700 border-blue-100',
                                     'WAITING_VERIFICATION' => 'bg-orange-50 text-orange-700 border-orange-100',
+                                    'DENIED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                    'REVERSED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                    'DISPUTED' => 'bg-rose-50 text-rose-700 border-rose-100',
                                     'PAID' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
                                     'PRODUCTION' => 'bg-teal-50 text-teal-700 border-teal-100',
                                     'SHIPPED' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
@@ -91,8 +95,12 @@
                  @php
                     $statusStyles = [
                         'PENDING_REVIEW' => 'text-amber-600 bg-amber-50',
+                        'PENDING' => 'text-amber-600 bg-amber-50',
                         'INVOICE_SENT' => 'text-blue-600 bg-blue-50',
                         'WAITING_VERIFICATION' => 'text-orange-600 bg-orange-50',
+                        'DENIED' => 'text-rose-600 bg-rose-50',
+                        'REVERSED' => 'text-rose-600 bg-rose-50',
+                        'DISPUTED' => 'text-rose-600 bg-rose-50',
                         'PAID' => 'text-emerald-600 bg-emerald-50',
                         'PRODUCTION' => 'text-teal-600 bg-teal-50',
                         'SHIPPED' => 'text-indigo-600 bg-indigo-50',
