@@ -44,6 +44,9 @@ return new class extends Migration
                 'COMPLETED',            // Selesai
                 'CANCELLED',            // Batal (Expired/Manual Cancel)
                 'REFUNDED',             // Refund selesai
+                'DENIED',                // Tolak pembayaran
+                'REVERSED',               // Pembayaran dibalik (Chargeback)
+                'DISPUTED'                 // Sengketa pembayaran (Dispute)
             ])->default('PENDING_REVIEW')->index();
 
             $table->string('currency', 3)->default('IDR'); // 'IDR' atau 'USD'

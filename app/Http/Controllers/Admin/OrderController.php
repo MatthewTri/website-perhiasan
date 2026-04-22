@@ -142,7 +142,7 @@ class OrderController extends Controller
      */
     public function sendPaymentDetails(Request $request, Order $order)
     {
-        if ($order->status !== 'PENDING_REVIEW') {
+        if (!in_array($order->status, ['PENDING_REVIEW', 'DENIED'], true)) {
             return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 

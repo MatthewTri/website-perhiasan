@@ -286,7 +286,13 @@ class PaymentController extends Controller
                     
                 case 'PAYMENT.CAPTURE.REFUNDED':
                     return $this->handlePaymentRefunded($event);
-                    
+
+                case 'PAYMENT.CAPTURE.REVERSED':
+                    return $this->handlePaymentReversed($event);
+
+                case 'CUSTOMER.DISPUTE.CREATED':
+                    return $this->handleDisputeCreated($event);
+
                 default:
                     Log::info('PayPal Webhook: Unhandled event type', ['type' => $event['event_type']]);
             }
@@ -470,14 +476,137 @@ class PaymentController extends Controller
     private function handlePaymentDenied(array $event)
     {
         $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
+        $invoiceId = $event['resource']['invoice_id'] ?? null;
+
+        Log::warning('PayPal Webhook: Payment denied event received', [
+            'paypal_order_id_suffix' => $paypalOrderId ? substr($paypalOrderId, -6) : null,
+            'invoice_id' => $invoiceId,
+            'event_id' => $event['id'] ?? null,
+        ]);
+
+        // Find order (prefer PayPal order id, fallback to invoice_id)
+        $order = null;
+        if ($paypalOrderId) {
+            $order = Order::where('transaction_id', $paypalOrderId)->latest('id')->first();
+        }
+
+        if (!$order && $invoiceId) {
+            $baseInvoiceId = $this->extractBaseInvoiceId($invoiceId);
+            $order = Order::where('order_number', $baseInvoiceId)->latest('id')->first();
+
+            // If we found by invoice, keep a trace in logs; do NOT set transaction_id here because denied means the session is invalid.
+            if ($order) {
+                Log::info('PayPal Webhook: Denied - order found by invoice_id fallback', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'base_invoice_id' => $baseInvoiceId,
+                ]);
+            }
+        }
+
+        if (!$order) {
+            Log::warning('PayPal Webhook: Order not found for denied payment', [
+                'paypal_order_id_suffix' => $paypalOrderId ? substr($paypalOrderId, -6) : null,
+                'invoice_id' => $invoiceId,
+            ]);
+            return response()->json(['status' => 'ignored', 'reason' => 'order_not_found'], 200);
+        }
+
+        // Idempotency - if order is already in a terminal/progress state, don't roll it back
+        if (in_array($order->status, ['PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED'], true)) {
+            Log::info('PayPal Webhook: Denied ignored due to current order status', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'status' => $order->status,
+            ]);
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        // ✅ Business rule: if payment is denied, mark order as DENIED
+        // so admin must send a fresh invoice/link.
+        $order->update([
+            'status' => 'DENIED',
+
+            // Clear stale PayPal session identifiers/URLs
+            'transaction_id' => null,
+            'payment_url' => null,
+            'capture_id' => null,
+
+            // Clear payment timers/state (invoice will be re-sent by admin)
+            'payment_due_at' => null,
+            'paid_at' => null,
+        ]);
+
+        Log::warning('PayPal Webhook: Payment denied, order marked as DENIED', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'previous_status' => $order->getOriginal('status'),
+        ]);
+
+        // TODO (later): send admin notification email about denied payment
+
+        return response()->json(['status' => 'success'], 200);
+    }
+
+    /**
+     * Handle: Payment Reversed
+     */
+    private function handlePaymentReversed(array $event)
+    {
+        $paypalOrderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
         $order = Order::where('transaction_id', $paypalOrderId)->latest('id')->first();
-        
-        if ($order && $order->status !== 'CANCELLED') {
-            $order->update(['status' => 'CANCELLED']);
-            
-            Log::warning('PayPal Webhook: Payment denied', ['order_id' => $order->id]);
-            
-            // TODO: Kirim email payment failed
+
+        if (!$order) {
+            Log::error('PayPal Webhook: Order not found for reversal', [
+                'paypal_order_id' => $paypalOrderId
+            ]);
+            return response()->json(['status' => 'ignored', 'reason' => 'order_not_found'], 200);
+        }
+
+        if (in_array($order->status, ['REVERSED', 'CANCELLED'])) {
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
+        $order->update(['status' => 'REVERSED']);
+
+        Log::warning('PayPal Webhook: Payment reversed', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+        ]);
+
+        // TODO: Notify admin dan user customer bahwa ada reversal
+
+        return response()->json(['status' => 'success'], 200);
+    }
+
+    private function handleDisputeCreated(array $event)
+    {
+        $disputeId = $event['resource']['dispute_id'] ?? null;
+        $reason = $event['resource']['reason'] ?? 'UNKNOWN';
+        $amount = $event['resource']['dispute_amount']['value'] ?? null;
+
+        // Cari order dari disputed_transactions
+        $paypalOrderId = null;
+        foreach ($event['resource']['disputed_transactions'] ?? [] as $txn) {
+            $paypalOrderId = $txn['buyer_transaction_id'] ?? null;
+            if ($paypalOrderId) break;
+        }
+
+        $order = $paypalOrderId
+            ? Order::where('transaction_id', $paypalOrderId)->latest('id')->first()
+            : null;
+
+        Log::warning('⚠️ PayPal Webhook: Dispute created', [
+            'dispute_id' => $disputeId,
+            'reason' => $reason,
+            'amount' => $amount,
+            'order_id' => $order?->id,
+            'order_number' => $order?->order_number,
+        ]);
+
+        if ($order) {
+            $order->update(['status' => 'DISPUTED']);
+            // TODO: Notify admin segera — dispute harus direspon dalam 10 hari!
         }
 
         return response()->json(['status' => 'success'], 200);

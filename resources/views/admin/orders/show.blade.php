@@ -21,6 +21,7 @@
                     @php
                     $statusColors = [
                         'PENDING_REVIEW' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
+                        'DENIED' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
                         'INVOICE_SENT' => 'bg-blue-50 text-blue-800 border-blue-200',
                         'WAITING_VERIFICATION' => 'bg-purple-50 text-purple-800 border-purple-200',
                         'PAID' => 'bg-green-50 text-green-800 border-green-200',
@@ -292,7 +293,7 @@
                     @endif
 
                     {{-- Admin Notes Display --}}
-                    @if($order->admin_notes && $order->status !== 'PENDING_REVIEW')
+                    @if($order->admin_notes && !in_array($order->status, ['PENDING_REVIEW', 'DENIED']))
                     <div>
                         <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Admin Notes for Customer</label>
                         <div class="p-4 bg-purple-50 border border-purple-100">
@@ -302,8 +303,17 @@
                     @endif
                     
                     {{-- Payment Gateway Override (PENDING_REVIEW) --}}
-                    @if($order->status === 'PENDING_REVIEW')
+                    @if(in_array($order->status, ['PENDING_REVIEW', 'DENIED']))
                     <div class="bg-gray-50 border border-gray-200 p-6 mt-4">
+                        @if($order->status === 'DENIED')
+                        <div class="mb-5 p-4 bg-yellow-50 border border-yellow-200">
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-yellow-900 font-medium mb-1">Payment Denied</p>
+                            <p class="text-xs text-yellow-800 leading-relaxed">
+                                Contact the customer and resend a fresh invoice link after confirming the payment method.
+                            </p>
+                        </div>
+                        @endif
+
                         <div class="mb-5">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Customer Preference</p>
@@ -460,7 +470,7 @@
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Shipping</span>
                             
-                            @if($order->status === 'PENDING_REVIEW')
+                            @if(in_array($order->status, ['PENDING_REVIEW', 'DENIED']))
                             <div class="flex items-center space-x-2">
                                 <span class="text-xs text-gray-600" id="shipping-currency-label">{{ $order->currency }}</span>
                                 <input type="number" name="shipping_cost" id="shipping_cost_input" form="invoice-form"
@@ -478,7 +488,7 @@
                             @endif
                         </div>
 
-                        @if($order->status === 'PENDING_REVIEW')
+                        @if(in_array($order->status, ['PENDING_REVIEW', 'DENIED']))
                         <div class="flex justify-end flex-wrap gap-2">
                             <button type="button" onclick="setShippingCost(0)"
                                     class="px-3 py-1 text-xs bg-green-50 text-green-700 hover:bg-green-100 transition uppercase tracking-wider">
@@ -500,7 +510,7 @@
 
                     {{-- Action Buttons --}}
                     <div class="mt-8 space-y-3">
-                        @if($order->status === 'PENDING_REVIEW')
+                        @if(in_array($order->status, ['PENDING_REVIEW', 'DENIED']))
                         <button type="button" onclick="openInvoiceModal()"
                                 class="w-full cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-medium text-xs uppercase tracking-[0.2em] py-4 transition-all">
                             Create Invoice
