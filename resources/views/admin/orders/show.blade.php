@@ -239,7 +239,34 @@
                                 
                             @else
                                 <p class="text-sm font-medium text-gray-900">PayPal</p>
-                                <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->capture_id }}</p>
+                                @php
+                                    $paypalMode = strtolower((string) config('paypal.mode'));
+                                    $paypalBaseUrl = $paypalMode === 'sandbox'
+                                        ? 'https://www.sandbox.paypal.com'
+                                        : 'https://www.paypal.com';
+
+                                    // Prefer capture id (what PayPal dashboard usually recognizes as a transaction)
+                                    // Fallback to PayPal order id (stored as transaction_id in this project)
+                                    $paypalDashboardId = $order->capture_id ?: $order->transaction_id;
+                                    $paypalDashboardUrl = $paypalDashboardId
+                                        ? $paypalBaseUrl . '/activity/payment/' . urlencode($paypalDashboardId)
+                                        : null;
+                                @endphp
+
+                                <p class="text-xs text-gray-600 mt-1">Transaction ID: {{ $order->capture_id ?: $order->transaction_id }}</p>
+
+                                @if($paypalDashboardUrl)
+                                    <a href="{{ $paypalDashboardUrl }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="inline-flex items-center mt-3 text-[10px] uppercase tracking-[0.2em] text-blue-700 hover:text-blue-900 transition-colors">
+                                        View in PayPal Dashboard
+                                        <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 14L21 3m0 0h-7m7 0v7" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 14v6a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h6" />
+                                        </svg>
+                                    </a>
+                                @endif
                                 
                                 {{-- PayPal Status tetap sama seperti sebelumnya --}}
                                 @if(isset($paypalStatus) && $paypalStatus !== null && $paypalStatus['success'])
