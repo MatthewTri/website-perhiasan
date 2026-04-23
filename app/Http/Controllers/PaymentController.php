@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\PaymentReceivedNotification;
+use App\Mail\Admin\PaymentDeniedNotification;
+use App\Mail\Admin\PaymentDisputedNotification;
 use App\Mail\Order\RefundProcessedMail;
 
 class PaymentController extends Controller
@@ -598,6 +600,10 @@ class PaymentController extends Controller
             return response()->json(['status' => 'already_processed'], 200);
         }
 
+        if ($order->status === 'DENIED') {
+            return response()->json(['status' => 'already_processed'], 200);
+        }
+
         // ✅ Business rule: if payment is denied, mark order as DENIED
         // so admin must send a fresh invoice/link.
         $order->update([
@@ -619,7 +625,16 @@ class PaymentController extends Controller
             'previous_status' => $order->getOriginal('status'),
         ]);
 
-        // TODO (later): send admin notification email about denied payment
+        try {
+            Mail::to(config('mail.admin_email'))->queue(new PaymentDeniedNotification($order));
+        } catch (\Exception $e) {
+            Log::error('Failed to send admin denied notification email', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'admin_email' => config('mail.admin_email'),
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return response()->json(['status' => 'success'], 200);
     }
@@ -681,8 +696,25 @@ class PaymentController extends Controller
         ]);
 
         if ($order) {
+            if ($order->status === 'DISPUTED') {
+                return response()->json(['status' => 'already_processed'], 200);
+            }
+
             $order->update(['status' => 'DISPUTED']);
-            // TODO: Notify admin segera — dispute harus direspon dalam 10 hari!
+
+            try {
+                Mail::to(config('mail.admin_email'))->queue(
+                    new PaymentDisputedNotification($order, $disputeId, (string) $reason, $amount)
+                );
+            } catch (\Exception $e) {
+                Log::error('Failed to send admin dispute notification email', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'dispute_id' => $disputeId,
+                    'admin_email' => config('mail.admin_email'),
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return response()->json(['status' => 'success'], 200);
