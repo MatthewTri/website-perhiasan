@@ -61,15 +61,19 @@
                                 {{-- Elegant Status Indicator --}}
                                 @php
                                     $statusConfig = [
-                                        'PENDING_REVIEW' => ['color' => 'text-yellow-600', 'label' => 'Pending Review'],
+                                        'PENDING_REVIEW' => ['color' => 'text-yellow-800', 'label' => 'Pending Review'],
+                                        'PENDING' => ['color' => 'text-yellow-800', 'label' => 'PayPal Verification'],
+                                        'DENIED' => ['color' => 'text-yellow-800', 'label' => 'Payment Denied'],
+                                        'REVERSED' => ['color' => 'text-red-800', 'label' => 'Payment Reversed'],
+                                        'DISPUTED' => ['color' => 'text-red-800', 'label' => 'Payment Disputed'],
                                         'INVOICE_SENT' => ['color' => 'text-gray-900', 'label' => 'Payment Required'],
                                         'WAITING_VERIFICATION' => ['color' => 'text-purple-600', 'label' => 'Verifying Payment'],
                                         'PAID' => ['color' => 'text-green-700', 'label' => 'Paid'],
                                         'PRODUCTION' => ['color' => 'text-green-600', 'label' => 'In Production'],
                                         'SHIPPED' => ['color' => 'text-blue-600', 'label' => 'In Transit'],
                                         'COMPLETED' => ['color' => 'text-gray-900', 'label' => 'Completed'],
-                                        'CANCELLED' => ['color' => 'text-red-600', 'label' => 'Cancelled'],
-                                        'REFUNDED' => ['color' => 'text-orange-600', 'label' => 'Refunded'],
+                                        'CANCELLED' => ['color' => 'text-red-800', 'label' => 'Cancelled'],
+                                        'REFUNDED' => ['color' => 'text-orange-800', 'label' => 'Refunded'],
                                     ];
                                     $status = $statusConfig[$order->status] ?? ['color' => 'text-gray-500', 'label' => $order->status];
                                 @endphp

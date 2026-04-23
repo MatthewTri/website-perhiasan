@@ -34,15 +34,19 @@
                 <p class="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2">Current Status</p>
                 @php
                     $statusConfig = [
-                        'PENDING_REVIEW' => ['color' => 'bg-yellow-500 text-yellow-600', 'label' => 'Pending Review'],
+                        'PENDING_REVIEW' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'Pending Review'],
+                        'PENDING' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'PayPal Verification'],
+                        'DENIED' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'Payment Denied'],
+                        'REVERSED' => ['color' => 'bg-red-500 text-red-800', 'label' => 'Payment Reversed'],
+                        'DISPUTED' => ['color' => 'bg-red-500 text-red-800', 'label' => 'Payment Disputed'],
                         'INVOICE_SENT' => ['color' => 'bg-gray-900 text-gray-900', 'label' => 'Payment Required'],
                         'WAITING_VERIFICATION' => ['color' => 'bg-purple-500 text-purple-600', 'label' => 'Verifying Payment'],
                         'PAID' => ['color' => 'bg-emerald-600 text-emerald-700', 'label' => 'Paid'],
                         'PRODUCTION' => ['color' => 'bg-teal-500 text-teal-600', 'label' => 'In Production'],
                         'SHIPPED' => ['color' => 'bg-blue-500 text-blue-600', 'label' => 'Shipped'],
                         'COMPLETED' => ['color' => 'bg-green-600 text-green-700', 'label' => 'Completed'],
-                        'CANCELLED' => ['color' => 'bg-red-500 text-red-600', 'label' => 'Cancelled'],
-                        'REFUNDED' => ['color' => 'bg-orange-500 text-orange-600', 'label' => 'Refunded'],
+                        'CANCELLED' => ['color' => 'bg-red-500 text-red-800', 'label' => 'Cancelled'],
+                        'REFUNDED' => ['color' => 'bg-orange-500 text-orange-800', 'label' => 'Refunded'],
                     ];
                     
                     $currentStatus = $statusConfig[$order->status] ?? ['color' => 'bg-gray-400 text-gray-500', 'label' => 'Unknown'];
@@ -63,6 +67,41 @@
             
             {{-- LEFT COLUMN: Details --}}
             <div class="lg:col-span-2 space-y-12">
+
+                {{-- STATUS NOTICE (Buyer-facing) --}}
+                @if($order->status === 'PENDING')
+                <div class="bg-yellow-50/50 border border-yellow-200 p-6">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-yellow-700 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-1 1v3a1 1 0 102 0V7a1 1 0 00-1-1zm0 8a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="flex-1">
+                            <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-yellow-900 mb-2">PayPal Verification in Progress</h3>
+                            <p class="text-sm text-yellow-800">Your payment has been received, but PayPal is still verifying it. This is normal—please wait a moment for the next update.</p>
+                        </div>
+                    </div>
+                </div>
+                @elseif(in_array($order->status, ['DENIED', 'DISPUTED', 'REVERSED'], true))
+                <div class="bg-red-50/50 border border-red-200 p-6">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-red-700 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-1 1v3a1 1 0 102 0V7a1 1 0 00-1-1zm0 8a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="flex-1">
+                            @if($order->status === 'DENIED')
+                                <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Denied</h3>
+                                <p class="text-sm text-red-800">Your PayPal payment was denied. Please contact our admin so we can resend a fresh invoice link for payment.</p>
+                            @elseif($order->status === 'DISPUTED')
+                                <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Disputed</h3>
+                                <p class="text-sm text-red-800">This payment is currently under dispute. Our team will review and follow up with PayPal. Please wait for an update.</p>
+                            @elseif($order->status === 'REVERSED')
+                                <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Reversed</h3>
+                                <p class="text-sm text-red-800">This payment was reversed. Please contact our admin for the next steps.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
                 
                 {{-- REFUND NOTICE --}}
                 @if($order->status === 'REFUNDED')
@@ -541,8 +580,8 @@
 
                             {{-- Step 2: Payment --}}
                             <div class="relative pl-8">
-                                <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
-                                <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Payment</p>
+                                <div class="absolute left-[-4px] top-1.5 w-[15px] h-[15px] rounded-full border-2 border-white {{ in_array($order->status, ['PENDING','WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'bg-gray-900' : 'bg-gray-200' }} z-10"></div>
+                                <p class="text-xs uppercase tracking-widest {{ in_array($order->status, ['PENDING','WAITING_VERIFICATION','PAID','PRODUCTION','SHIPPED','COMPLETED']) ? 'text-gray-900' : 'text-gray-400' }} font-medium mb-1">Payment</p>
                                 @if($order->paid_at)
                                     <p class="text-[10px] text-gray-400">{{ $order->paid_at->format('M d, Y') }}</p>
                                 @else
