@@ -170,7 +170,7 @@
 
         <div class="relative group">
             <div class="overflow-hidden h-[350px] md:h-[450px]">
-                <img src="{{ asset('asset/aboutus/DD_06003.jpg') }}"
+                <img src="{{ asset('asset/aboutus/DD_05960.jpg') }}"
                      alt="Craftsmanship"
                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -256,7 +256,7 @@
                              class="w-full h-48 md:h-56 object-cover transition-transform duration-700 hover:scale-105">
                     </div>
                     <div class="overflow-hidden">
-                        <img src="{{ asset('asset/aboutus/DD_06001.jpg') }}"
+                        <img src="{{ asset('asset/aboutus/DD_06063.jpg') }}"
                              alt="Jewellery Detail"
                              class="w-full h-36 md:h-44 object-cover transition-transform duration-700 hover:scale-105">
                     </div>
@@ -392,9 +392,9 @@
 
         {{-- Final Image --}}
         <div class="relative overflow-hidden">
-            <img src="{{ asset('asset/aboutus/DD_06014.jpg') }}"
+            <img src="{{ asset('asset/aboutus/DD_05824.jpg') }}"
                  alt="Cecile Private Collection Studio"
-                 class="w-full h-[420px] md:h-[520px] object-cover">
+                 class="w-full h-[420px] md:h-[520px] object-cover object-center">
             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
     </div>
