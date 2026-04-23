@@ -26,6 +26,11 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+// About us Page
+Route::get('/about-us', function () {
+    return view('about-us');
+})->name('about-us');
+
 // Currency Switcher (Public Access)
 Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('currency.switch');
 

@@ -38,7 +38,7 @@
                 <h3 class="text-xs font-bold text-gray-900 uppercase tracking-[0.15em]">Shop</h3>
                 <ul class="space-y-4 text-xs text-gray-500 font-light tracking-wide">
                     <li><a href="{{ route('products.index') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">All Products</a></li>
-                    <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">New Arrivals</a></li>
+                    <li><a href="{{ route('about-us') }}" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">About us</a></li>
                     <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Best Sellers</a></li>
                     <li><a href="#" class="hover:text-gray-900 hover:underline underline-offset-4 transition-all">Collections</a></li>
                 </ul>
