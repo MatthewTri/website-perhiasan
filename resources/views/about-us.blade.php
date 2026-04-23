@@ -59,7 +59,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
             {{-- Floating credential badge --}}
-            <div class="absolute -bottom-6 -left-4 md:-left-8 bg-white shadow-xl px-6 py-5 max-w-[200px]">
+            <div class="absolute -bottom-6 -right-0 md:right-8 lg:-left-8 bg-white shadow-xl px-6 py-5 max-w-[200px]">
                 <p class="text-[9px] text-[#E3CFCF] tracking-[0.3em] uppercase font-medium mb-1">Certified by</p>
                 <p class="text-xs font-bold text-gray-900 tracking-wide uppercase leading-snug">GIA · NAFA · Birmingham City University</p>
             </div>
@@ -106,18 +106,14 @@
                 </div>
 
                 {{-- Stats --}}
-                <div class="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-[#E3CFCF]/50">
+                <div class="grid grid-cols-2 gap-6 mt-12 pt-12 border-t border-[#E3CFCF]/50">
                     <div class="text-center">
                         <p class="text-3xl md:text-4xl font-light text-gray-900 tracking-wider">2019</p>
                         <p class="text-[10px] text-gray-500 tracking-[0.25em] uppercase mt-1">Established</p>
                     </div>
-                    <div class="text-center border-x border-[#E3CFCF]/50">
+                    <div class="text-center border-l border-[#E3CFCF]/50">
                         <p class="text-3xl md:text-4xl font-light text-gray-900 tracking-wider">3+</p>
                         <p class="text-[10px] text-gray-500 tracking-[0.25em] uppercase mt-1">Certifications</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-3xl md:text-4xl font-light text-gray-900 tracking-wider">100%</p>
-                        <p class="text-[10px] text-gray-500 tracking-[0.25em] uppercase mt-1">Bespoke</p>
                     </div>
                 </div>
             </div>
