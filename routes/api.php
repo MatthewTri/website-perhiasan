@@ -6,7 +6,7 @@ use App\Http\Controllers\WebhookController;
 
 
 
-Route::post('/webhook/xendit', [WebhookController::class, 'handleXendit']);
+// Route::post('/webhook/xendit', [WebhookController::class, 'handleXendit']);
 
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/products/{product}/reviews', [ReviewController::class, 'productReviews']);

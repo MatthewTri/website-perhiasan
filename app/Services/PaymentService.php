@@ -284,10 +284,6 @@ class PaymentService
 
 
 
-
-
-
-
     // protected $apiInstance;
 
     // public function __construct()
