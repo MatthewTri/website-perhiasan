@@ -19,6 +19,30 @@ class CartController extends Controller
                         ->first();
 
             $cartItems = $cart ? $cart->cartItems : collect();
+
+            if ($cart) {
+                $lastCheckedAt = $cart->last_prices_checked_at;
+
+                $cartUpdated = $cartItems->contains(function ($item) use ($lastCheckedAt) {
+                    if (!$item->product || !$item->product->last_price_change_at) {
+                        return false;
+                    }
+
+                    $baseline = $lastCheckedAt ?: $item->created_at;
+                    if (!$baseline) {
+                        return false;
+                    }
+
+                    return $item->product->last_price_change_at->gt($baseline);
+                });
+
+                if ($cartUpdated && !session()->has('success')) {
+                    session()->flash('success', 'Cart updated');
+                }
+
+                $cart->last_prices_checked_at = now();
+                $cart->save();
+            }
             
             // ⬅️ CALCULATE BOTH IDR & USD TOTAL (di backend, bukan di view)
             $totalIdr = $cartItems->sum(function ($item) {
@@ -282,6 +306,10 @@ class CartController extends Controller
             'user_id' => Auth::id(),
             'items_migrated' => $migratedCount
         ]);
+
+        if ($migratedCount > 0 && !session()->has('success')) {
+            session()->flash('success', 'Cart updated');
+        }
 
         return response()->json([
             'success' => true,

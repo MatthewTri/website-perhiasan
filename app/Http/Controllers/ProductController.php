@@ -233,6 +233,9 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
+        $originalPriceIdr = $product->price_idr;
+        $originalPriceUsd = $product->price_usd;
+
         // Update product data
         $product->update([
             'name' => $request->name,
@@ -242,6 +245,13 @@ class ProductController extends Controller
             'price_usd' => $request->price_usd,
             'category_id' => $request->category_id,
         ]);
+
+        $priceIdrChanged = round((float) $originalPriceIdr, 2) !== round((float) $request->price_idr, 2);
+        $priceUsdChanged = round((float) $originalPriceUsd, 2) !== round((float) $request->price_usd, 2);
+        if ($priceIdrChanged || $priceUsdChanged) {
+            $product->last_price_change_at = now();
+            $product->save();
+        }
 
         // Handle deleted images (from frontend)
         if ($request->has('deleted_images') && $request->deleted_images) {

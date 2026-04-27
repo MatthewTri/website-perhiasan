@@ -12,6 +12,10 @@ class Cart extends Model
 
     protected $fillable = ['user_id'];
 
+    protected $casts = [
+        'last_prices_checked_at' => 'datetime',
+    ];
+
     // Relasi ke pemilik keranjang
     public function user()
     {

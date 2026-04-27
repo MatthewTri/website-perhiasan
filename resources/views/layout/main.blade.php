@@ -108,45 +108,6 @@
         }
     </script>
 
-    <!-- CART MIGRATION SCRIPT -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @auth
-        // User sudah login, cek apakah ada guest cart untuk dimigrasi
-        const guestCart = localStorage.getItem('guest_cart');
-        
-        if (guestCart) {
-            const cartData = JSON.parse(guestCart);
-            
-            if (Object.keys(cartData).length > 0) {
-                // Migrate guest cart ke user cart
-                fetch('/cart/migrate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(cartData)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        localStorage.removeItem('guest_cart');
-                        console.log('Cart migrated:', result.message);
-                        
-                        // Optional: Refresh halaman atau update cart display
-                        // window.location.reload();
-                    }
-                })
-                .catch(error => {
-                    console.error('Cart migration error:', error);
-                });
-            }
-        }
-        @endauth
-    });
-    </script>
-
     <script>
         // Clear guest cart after successful checkout
         @if(session('clear_guest_cart'))

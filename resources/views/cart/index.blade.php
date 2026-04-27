@@ -479,4 +479,39 @@
     window.migrateGuestCartToUser = migrateGuestCartToUser;
 </script>
 @endguest
+
+@auth
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const guestCartRaw = localStorage.getItem('guest_cart');
+        if (!guestCartRaw) return;
+
+        let cartData = null;
+        try {
+            cartData = JSON.parse(guestCartRaw);
+        } catch (e) {
+            return;
+        }
+
+        if (!cartData || Object.keys(cartData).length === 0) return;
+
+        fetch('/cart/migrate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(cartData)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result && result.success) {
+                localStorage.removeItem('guest_cart');
+                window.location.href = "{{ route('cart.index') }}";
+            }
+        })
+        .catch(() => {});
+    });
+</script>
+@endauth
 @endsection

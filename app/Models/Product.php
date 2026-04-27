@@ -14,6 +14,10 @@ class Product extends Model
     protected $fillable = ['name', 'slug', 'description', 'price_idr', 'price_usd', 'image', 'category_id',  'rating_avg', 'rating_count'];
     protected $with = ['category'];
 
+    protected $casts = [
+        'last_price_change_at' => 'datetime',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -107,10 +111,10 @@ class Product extends Model
         $currency = session('currency', 'IDR');
         
         if ($currency === 'USD') {
-            return '$' . number_format($this->price_usd, 2);
+            return 'USD ' . number_format((float) $this->price_usd, 2, '.', ',');
         }
         
-        return 'Rp ' . number_format($this->price_idr, 0, ',', '.');
+        return 'IDR ' . number_format((float) $this->price_idr, 2, ',', '.');
     }
 
     /**
