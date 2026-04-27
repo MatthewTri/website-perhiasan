@@ -95,7 +95,7 @@
                                             <tr>
                                                 <td style="padding: 20px 0 0 0;">
                                                     <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total Amount</span>
-                                                    <span style="font-size: 32px; color: #1c1917; font-weight: 400;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                                    <span style="font-size: 32px; color: #1c1917; font-weight: 400;">IDR {{ number_format($order->total_amount, 2, ',', '.') }}</span>
                                                 </td>
                                             </tr>
                                         </table>
@@ -128,7 +128,7 @@
                                         
                                         <p style="font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 8px 0;">Total Amount</p>
                                         <h2 style="font-size: 32px; color: #1c1917; margin: 0; font-weight: 400;">
-                                            ${{ number_format($order->total_amount, 2) }}
+                                            USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                         </h2>
                                     </td>
                                 </tr>

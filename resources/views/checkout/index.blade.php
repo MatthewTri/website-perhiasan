@@ -497,9 +497,9 @@
         
         const formatPrice = (priceIdr, priceUsd, currency) => {
             if (currency === 'USD') {
-                return '$' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(priceUsd);
+                return 'USD ' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(priceUsd);
             } else {
-                return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+                return 'IDR ' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(priceIdr);
             }
         };
         
@@ -570,9 +570,9 @@
     function updateOrderSummaryPrices(currency) {
         const formatPrice = (priceIdr, priceUsd, currency) => {
             if (currency === 'USD') {
-                return '$' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(priceUsd);
+                return 'USD ' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(priceUsd);
             } else {
-                return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+                return 'IDR ' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(priceIdr);
             }
         };
 

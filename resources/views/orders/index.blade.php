@@ -89,11 +89,11 @@
                         {{-- Total & Detail Link --}}
                         <div class="text-left md:text-right">
                             <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Total Amount</p>
-                            <p class="text-lg font-serif text-gray-900">
+                            <p class="text-lg font-semibold text-gray-900">
                                 @if($order->currency === 'USD')
-                                    ${{ number_format($order->total_amount, 2) }}
+                                    USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                 @else
-                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                    IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                 @endif
                             </p>
                         </div>

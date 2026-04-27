@@ -88,9 +88,9 @@
                                                 <td align="right" style="padding: 12px 0 12px 15px; border-bottom: 1px solid #f5f5f4; vertical-align: top;">
                                                     <span style="font-size: 14px; color: #1c1917; font-weight: 500; white-space: nowrap;">
                                                         @if($order->payment_preference === 'PAYPAL')
-                                                            ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                                            USD {{ number_format($item->price_usd * $item->quantity, 2, '.', ',') }}
                                                         @else
-                                                            Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                                            IDR {{ number_format($item->price_idr * $item->quantity, 2, ',', '.') }}
                                                         @endif
                                                     </span>
                                                 </td>
@@ -105,9 +105,9 @@
                                                 <td align="right" style="padding: 15px 0 8px 15px;">
                                                     <span style="font-size: 14px; color: #1c1917;">
                                                         @if($order->payment_preference === 'PAYPAL')
-                                                            ${{ number_format($order->subtotal_usd, 2) }}
+                                                            USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}
                                                         @else
-                                                            Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}
+                                                            IDR {{ number_format($order->subtotal_idr, 2, ',', '.') }}
                                                         @endif
                                                     </span>
                                                 </td>
@@ -131,9 +131,9 @@
                                                 <td align="right" style="padding: 15px 0 0 15px; border-top: 2px solid #E3CFCF;">
                                                     <span style="font-size: 18px; color: #1c1917; font-weight: 600;">
                                                         @if($order->payment_preference === 'PAYPAL')
-                                                            ${{ number_format($order->subtotal_usd, 2) }}+
+                                                            USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}+
                                                         @else
-                                                            Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}+
+                                                            IDR {{ number_format($order->subtotal_idr, 2, ',', '.') }}+
                                                         @endif
                                                     </span>
                                                 </td>

@@ -280,12 +280,15 @@
         // ⬅️ FORMAT PRICE BERDASARKAN CURRENCY
         formatPrice(priceIdr, priceUsd) {
             if (currentCurrency === 'USD') {
-                return '$' + new Intl.NumberFormat('en-US', {
+                return 'USD ' + new Intl.NumberFormat('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 }).format(priceUsd);
             } else {
-                return 'Rp ' + new Intl.NumberFormat('id-ID').format(priceIdr);
+                return 'IDR ' + new Intl.NumberFormat('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(priceIdr);
             }
         }
 

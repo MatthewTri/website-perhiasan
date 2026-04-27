@@ -152,9 +152,9 @@
                                     <td width="30%" valign="top" align="right">
                                         <span style="font-size: 14px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                                USD {{ number_format($item->price_usd * $item->quantity, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                                IDR {{ number_format($item->price_idr * $item->quantity, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>
@@ -171,9 +171,9 @@
                                     <td align="right" style="padding: 5px 0;">
                                         <span style="font-family: 'Georgia', serif; font-size: 18px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->subtotal_usd, 2) }}
+                                                USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}
+                                                IDR {{ number_format($order->subtotal_idr, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>

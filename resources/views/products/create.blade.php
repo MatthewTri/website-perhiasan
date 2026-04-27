@@ -116,7 +116,7 @@
                         <div class="group">
                             <label for="price_idr" class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 group-focus-within:text-gray-900">Price (IDR)</label>
                             <div class="flex items-center border-b border-gray-200 group-focus-within:border-gray-900 transition-colors">
-                                <span class="text-sm text-gray-400 mr-2">Rp</span>
+                                <span class="text-sm text-gray-400 mr-2">IDR</span>
                                 <input type="number" id="price_idr" name="price_idr" value="{{ old('price_idr') }}" step="0.01" required
                                        class="w-full bg-transparent border-none py-3 text-lg font-light text-gray-900 focus:ring-0 placeholder-gray-200"
                                        placeholder="0">
@@ -127,7 +127,7 @@
                         <div class="group">
                             <label for="price_usd" class="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 group-focus-within:text-gray-900">Price (USD)</label>
                             <div class="flex items-center border-b border-gray-200 group-focus-within:border-gray-900 transition-colors">
-                                <span class="text-sm text-gray-400 mr-2">$</span>
+                                <span class="text-sm text-gray-400 mr-2">USD</span>
                                 <input type="number" id="price_usd" name="price_usd" value="{{ old('price_usd') }}" step="0.01" required
                                        class="w-full bg-transparent border-none py-3 text-lg font-light text-gray-900 focus:ring-0 placeholder-gray-200"
                                        placeholder="0.00">

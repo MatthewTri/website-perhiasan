@@ -97,9 +97,9 @@
                                     <td width="30%" valign="top" align="right">
                                         <span style="font-size: 14px; color: #44403c;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($item->price * $item->quantity, 2) }}
+                                                USD {{ number_format($item->price * $item->quantity, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
+                                                IDR {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>
@@ -115,9 +115,9 @@
                                     <td align="right" style="padding: 5px 0;">
                                         <span style="font-size: 13px; color: #44403c;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->total_amount - $order->shipping_cost, 2) }}
+                                                USD {{ number_format($order->total_amount - $order->shipping_cost, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->total_amount - $order->shipping_cost, 0, ',', '.') }}
+                                                IDR {{ number_format($order->total_amount - $order->shipping_cost, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>
@@ -129,9 +129,9 @@
                                     <td align="right" style="padding: 5px 0;">
                                         <span style="font-size: 13px; color: #44403c;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->shipping_cost, 2) }}
+                                                USD {{ number_format($order->shipping_cost, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
+                                                IDR {{ number_format($order->shipping_cost, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>
@@ -143,9 +143,9 @@
                                     <td align="right" style="padding: 15px 0 0 0;">
                                         <span style="font-size: 16px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                                IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>

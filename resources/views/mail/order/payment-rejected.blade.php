@@ -111,7 +111,7 @@
                                     </td>
                                     <td class="mobile-stack" width="50%" valign="top" style="padding-bottom: 15px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Amount</span>
-                                        <span style="font-size: 16px; color: #1c1917; font-weight: 600;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                        <span style="font-size: 16px; color: #1c1917; font-weight: 600;">IDR {{ number_format($order->total_amount, 2, ',', '.') }}</span>
                                     </td>
                                 </tr>
                             </table>

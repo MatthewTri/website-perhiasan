@@ -66,18 +66,18 @@
                                         
                                         <h2 style="font-size: 36px; color: #1c1917; margin: 0; font-weight: 400;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->refund_amount, 2) }}
+                                                USD {{ number_format($order->refund_amount, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->refund_amount, 0, ',', '.') }}
+                                                IDR {{ number_format($order->refund_amount, 2, ',', '.') }}
                                             @endif
                                         </h2>
                                         
                                         <p style="font-size: 12px; color: #78716c; margin: 15px 0 0 0;">
                                             Original Order Total: 
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                                IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                             @endif
                                         </p>
                                     </td>

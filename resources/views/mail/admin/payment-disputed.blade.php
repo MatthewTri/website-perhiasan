@@ -100,7 +100,7 @@
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Amount</span>
                                         <span style="font-size: 14px; color: #1c1917; font-weight: 600;">
                                             @if($amount !== null && $amount !== '')
-                                                ${{ $amount }}
+                                                USD {{ is_numeric($amount) ? number_format((float) $amount, 2, '.', ',') : $amount }}
                                             @else
                                                 N/A
                                             @endif
@@ -140,9 +140,9 @@
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Amount</span>
                                         <span style="font-size: 16px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                                IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>

@@ -17,7 +17,8 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             // Ambil dari session, default IDR
             $currency = session('currency', 'IDR');
-            $currencySymbol = $currency === 'USD' ? '$' : 'Rp';
+            // NOTE: For UI display we use currency code (no symbol)
+            $currencySymbol = $currency === 'USD' ? 'USD' : 'IDR';
             
             $view->with([
                 'globalCurrency' => $currency,
@@ -30,9 +31,9 @@ class AppServiceProvider extends ServiceProvider
                 \$currency = session('currency', 'IDR');
                 \$prices = {$expression};
                 if (\$currency === 'USD') {
-                    echo '$' . number_format(\$prices['usd'], 2);
+                    echo 'USD ' . number_format(\$prices['usd'], 2, '.', ',');
                 } else {
-                    echo 'Rp ' . number_format(\$prices['idr'], 2, ',', '.');
+                    echo 'IDR ' . number_format(\$prices['idr'], 2, ',', '.');
                 }
             ?>";
         });
@@ -45,9 +46,9 @@ class AppServiceProvider extends ServiceProvider
                     ? \$data['usd'] * \$data['qty']
                     : \$data['idr'] * \$data['qty'];
                 if (\$currency === 'USD') {
-                    echo '$' . number_format(\$total, 2);
+                    echo 'USD ' . number_format(\$total, 2, '.', ',');
                 } else {
-                    echo 'Rp ' . number_format(\$total, 0, ',', '.');
+                    echo 'IDR ' . number_format(\$total, 2, ',', '.');
                 }
             ?>";
         });

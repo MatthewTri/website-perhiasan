@@ -381,7 +381,7 @@
                             </h3>
 
                             <p class="text-[11px] md:text-xs text-gray-500 tracking-widest font-medium mb-3">
-                                Rp {{ number_format($relatedProduct->price_idr, 0, ',', '.') }}
+                                @currency(['idr' => $relatedProduct->price_idr, 'usd' => $relatedProduct->price_usd])
                             </p>
 
                             @if($relatedProduct->colors && $relatedProduct->colors->count() > 0)

@@ -198,7 +198,12 @@
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="flex flex-col">
-                                        <span class="text-sm font-serif font-medium text-stone-900">{{ $order->currency }} {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                        <span class="text-sm font-medium text-stone-900">
+                                            {{ $order->currency === 'USD'
+                                                ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                                                : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                                            }}
+                                        </span>
                                         <span class="text-xs text-stone-400 font-light">{{ (int) ($order->items_quantity ?? 0) }} items</span>
                                     </div>
                                 </td>
@@ -281,7 +286,12 @@
                         </div>
                         <div class="text-right">
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest block">Total</span>
-                            <span class="text-sm font-serif font-bold text-stone-900">{{ $order->currency }} {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                            <span class="text-sm font-serif font-bold text-stone-900">
+                                {{ $order->currency === 'USD'
+                                    ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                                    : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                                }}
+                            </span>
                         </div>
                     </div>
 

@@ -116,7 +116,12 @@
                             @if($order->refund_amount && $order->payment_gateway === 'PAYPAL')
                             <div class="mt-4 pt-4 border-t border-orange-200 flex justify-between items-center">
                                 <span class="text-xs uppercase tracking-widest text-orange-700">Refund Amount</span>
-                                <span class="text-lg font-serif text-orange-900">${{ number_format($order->refund_amount, 2) }}</span>
+                                <span class="text-lg font-serif text-orange-900">
+                                    {{ $order->currency === 'USD'
+                                        ? 'USD ' . number_format($order->refund_amount, 2, '.', ',')
+                                        : 'IDR ' . number_format($order->refund_amount, 2, ',', '.')
+                                    }}
+                                </span>
                             </div>
                             <p class="text-[10px] text-orange-600 mt-2 uppercase tracking-wide">
                                 Refunded on {{ $order->refunded_at->format('M d, Y') }}
@@ -169,10 +174,12 @@
                                         @php
                                             $price = $order->currency === 'USD' ? $item->price_usd : $item->price_idr;
                                             $itemSubtotal = $price * $item->quantity;
-                                            $decimals = $order->currency === 'USD' ? 2 : 0;
+                                            $decimals = 2;
+                                            $decimalSeparator = $order->currency === 'USD' ? '.' : ',';
+                                            $thousandSeparator = $order->currency === 'USD' ? ',' : '.';
                                         @endphp
                                         <p class="text-sm font-medium text-gray-900">
-                                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($itemSubtotal, $decimals, ',', '.') }}
+                                            {{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($itemSubtotal, $decimals, $decimalSeparator, $thousandSeparator) }}
                                         </p>
                                     </div>
                                 </div>
@@ -184,20 +191,22 @@
                     {{-- Totals Summary --}}
                     <div class="pt-6 border-t border-gray-100 flex flex-col items-end space-y-3">
                         @php
-                            $decimals = $order->currency === 'USD' ? 2 : 0;
+                            $decimals = 2;
+                            $decimalSeparator = $order->currency === 'USD' ? '.' : ',';
+                            $thousandSeparator = $order->currency === 'USD' ? ',' : '.';
                             $subtotal = $order->currency === 'USD' ? $order->subtotal_usd : $order->subtotal_idr;
                         @endphp
                         <div class="w-full md:w-1/2 flex justify-between text-xs uppercase tracking-widest text-gray-500">
                             <span>Subtotal</span>
-                            <span>{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}</span>
+                            <span>{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($subtotal, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                         </div>
                         <div class="w-full md:w-1/2 flex justify-between text-xs uppercase tracking-widest text-gray-500">
                             <span>Shipping</span>
-                            <span>{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, $decimals, ',', '.') }}</span>
+                            <span>{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($order->shipping_cost, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                         </div>
-                        <div class="w-full md:w-1/2 flex justify-between text-base font-serif text-gray-900 pt-4 border-t border-gray-100 mt-2">
+                        <div class="w-full md:w-1/2 flex justify-between text-base font-semibold text-gray-900 pt-4 border-t border-gray-100 mt-2">
                             <span>Total</span>
-                            <span>{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
+                            <span>{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($order->total_amount, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                         </div>
                     </div>
                 </div>
@@ -309,7 +318,12 @@
                                 <div class="pt-6 border-t border-gray-200 mt-auto">
                                     <div class="flex justify-between items-end">
                                         <span class="text-xs text-gray-500 uppercase tracking-widest">Amount to Pay</span>
-                                        <span class="text-lg font-medium text-gray-900">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                        <span class="text-lg font-medium text-gray-900">
+                                            {{ $order->currency === 'USD'
+                                                ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                                                : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                                            }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -398,7 +412,12 @@
                     @elseif($order->payment_gateway === 'PAYPAL' && $order->status === 'INVOICE_SENT')
                         <div class="bg-[#FAFAFA] border border-gray-100 p-8 text-center max-w-lg mx-auto">
                             <p class="text-xs uppercase tracking-widest text-gray-500 mb-6">Total Payment</p>
-                            <p class="text-3xl font-serif text-gray-900 mb-8">${{ number_format($order->total_amount, 2) }}</p>
+                            <p class="text-3xl font-semibold text-gray-900 mb-8">
+                                {{ $order->currency === 'USD'
+                                    ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                                    : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                                }}
+                            </p>
                             
                             <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
                                class="inline-block w-full bg-[#E3CFCF] hover:bg-[#ddc8c8] text-white text-xs uppercase tracking-[0.2em] py-4 px-8 transition-all">
@@ -445,7 +464,12 @@
                             <div class="bg-white/60 backdrop-blur border border-emerald-100 p-6 max-w-sm mx-auto">
                                 <div class="flex justify-between items-center mb-3">
                                     <span class="text-[10px] uppercase tracking-widest text-gray-500">Amount Paid</span>
-                                    <span class="text-lg font-serif text-gray-900">${{ number_format($order->total_amount, 2) }}</span>
+                                    <span class="text-lg font-serif text-gray-900">
+                                        {{ $order->currency === 'USD'
+                                            ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                                            : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                                        }}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between items-center pt-3 border-t border-emerald-100">
                                     <span class="text-[10px] uppercase tracking-widest text-gray-500">Paid On</span>
@@ -495,7 +519,7 @@
                                 @endphp
                                 <div class="flex justify-between items-center mb-3">
                                     <span class="text-[10px] uppercase tracking-widest text-gray-500">Amount Paid</span>
-                                    <span class="text-lg font-serif text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
+                                    <span class="text-lg font-serif text-gray-900">{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
                                 </div>
                                 <div class="flex justify-between items-center pt-3 border-t border-teal-100">
                                     <span class="text-[10px] uppercase tracking-widest text-gray-500">Verified On</span>
@@ -686,7 +710,12 @@
 
             <div class="pt-4 border-t border-gray-100">
                 <p class="text-[10px] text-gray-500 text-center uppercase tracking-widest">
-                    Amount: <span class="font-bold text-gray-900">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                    Amount: <span class="font-bold text-gray-900">
+                        {{ $order->currency === 'USD'
+                            ? 'USD ' . number_format($order->total_amount, 2, '.', ',')
+                            : 'IDR ' . number_format($order->total_amount, 2, ',', '.')
+                        }}
+                    </span>
                 </p>
             </div>
         </div>

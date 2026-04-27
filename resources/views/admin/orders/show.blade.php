@@ -475,9 +475,9 @@
                             </div>
                             <div class="text-sm font-medium text-gray-900" id="item-price-{{ $item->id }}">
                                 @if($order->currency === 'USD')
-                                    ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                    USD {{ number_format($item->price_usd * $item->quantity, 2, '.', ',') }}
                                 @else
-                                    Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                    IDR {{ number_format($item->price_idr * $item->quantity, 2, ',', '.') }}
                                 @endif
                             </div>
                         </div>
@@ -490,9 +490,9 @@
                             <span class="text-sm text-gray-600">Subtotal</span>
                             <span class="text-sm font-medium text-gray-900" id="subtotal-display">
                                 @if($order->currency === 'USD')
-                                    ${{ number_format($order->subtotal_usd, 2) }}
+                                    USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}
                                 @else
-                                    Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}
+                                    IDR {{ number_format($order->subtotal_idr, 2, ',', '.') }}
                                 @endif
                             </span>
                         </div>
@@ -510,7 +510,10 @@
                             @else
                             <span class="text-sm font-medium text-gray-900">
                                 @if($order->shipping_cost > 0)
-                                    {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                    {{ $order->currency === 'USD'
+                                        ? 'USD ' . number_format($order->shipping_cost, 2, '.', ',')
+                                        : 'IDR ' . number_format($order->shipping_cost, 2, ',', '.')
+                                    }}
                                 @else
                                     <span class="text-green-600 text-xs uppercase tracking-wider">Free</span>
                                 @endif
@@ -533,7 +536,7 @@
                         <div class="flex justify-between items-center border-t border-gray-200 pt-6 mt-6">
                             <span class="text-base font-bold text-gray-900 uppercase tracking-widest">Total</span>
                             <span class="text-xl font-medium text-gray-900" id="total-display">
-                                {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}
+                                {{ $order->currency }} {{ number_format($order->total_amount, 2, $order->currency === 'USD' ? '.' : ',', $order->currency === 'USD' ? ',' : '.') }}
                             </span>
                         </div>
                     </div>
@@ -818,7 +821,7 @@
                                         <label class="absolute left-4 -top-2.5 bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:-top-2.5 peer-focus:text-xs">
                                             Refund Amount ({{ $order->currency }}) *
                                         </label>
-                                        <p class="text-xs text-gray-500 mt-1">Maximum: {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">Maximum: {{ $order->currency }} {{ number_format($order->total_amount, 2, $order->currency === 'USD' ? '.' : ',', $order->currency === 'USD' ? ',' : '.') }}</p>
                                     </div>
 
                                     <div class="bg-gray-100 border border-gray-200 p-3">
@@ -865,7 +868,7 @@
                     <div class="mt-4 p-4 bg-orange-50 border-l-4 border-orange-400">
                         <p class="text-xs font-medium text-orange-900">Order Refunded</p>
                         <p class="text-xs text-orange-700 mt-1">
-                            Amount: <strong>{{ $order->currency }} {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
+                            Amount: <strong>{{ $order->currency }} {{ number_format($order->refund_amount, 2, $order->currency === 'USD' ? '.' : ',', $order->currency === 'USD' ? ',' : '.') }}</strong>
                         </p>
                         <p class="text-xs text-orange-600 mt-1">Refunded on {{ $order->refunded_at->format('M d, Y') }}</p>
                     </div>
@@ -1025,14 +1028,14 @@
         if (subtotalDisplay) {
             const subtotal = isPaypal ? subtotalUsd : subtotalIdr;
             if (isPaypal) {
-                subtotalDisplay.textContent = '$' + subtotal.toLocaleString('en-US', {
+                subtotalDisplay.textContent = 'USD ' + subtotal.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
             } else {
-                subtotalDisplay.textContent = 'Rp ' + subtotal.toLocaleString('id-ID', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
+                subtotalDisplay.textContent = 'IDR ' + subtotal.toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 });
             }
         }
@@ -1043,14 +1046,14 @@
         if (itemPrice{{ $item->id }}) {
             const price = isPaypal ? itemPrices['{{ $item->id }}'].usd : itemPrices['{{ $item->id }}'].idr;
             if (isPaypal) {
-                itemPrice{{ $item->id }}.textContent = '$' + price.toLocaleString('en-US', {
+                itemPrice{{ $item->id }}.textContent = 'USD ' + price.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
             } else {
-                itemPrice{{ $item->id }}.textContent = 'Rp ' + price.toLocaleString('id-ID', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
+                itemPrice{{ $item->id }}.textContent = 'IDR ' + price.toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 });
             }
         }

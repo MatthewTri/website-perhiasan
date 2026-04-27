@@ -104,9 +104,9 @@
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Amount</span>
                                         <span style="font-size: 16px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                USD {{ number_format($order->total_amount, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                                IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>
@@ -132,9 +132,9 @@
                                     <td width="25%" valign="top" align="right">
                                         <span style="font-size: 13px; color: #44403c;">
                                             @if($order->currency === 'USD')
-                                                ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                                USD {{ number_format($item->price_usd * $item->quantity, 2, '.', ',') }}
                                             @else
-                                                Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                                IDR {{ number_format($item->price_idr * $item->quantity, 2, ',', '.') }}
                                             @endif
                                         </span>
                                     </td>

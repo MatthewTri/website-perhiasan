@@ -557,17 +557,17 @@
                                 
                                 <p class="text-sm text-gray-500 mt-1">
                                     @if($order->currency === 'USD')
-                                        ${{ number_format($item->price_usd, 2) }}
+                                        USD {{ number_format($item->price_usd, 2, '.', ',') }}
                                     @else
-                                        Rp {{ number_format($item->price_idr, 0, ',', '.') }}
+                                        IDR {{ number_format($item->price_idr, 2, ',', '.') }}
                                     @endif
                                 </p>
                             </div>
                             <div class="text-sm font-medium text-gray-900 text-right">
                                 @if($order->currency === 'USD')
-                                    ${{ number_format($item->price_usd * $item->quantity, 2) }}
+                                    USD {{ number_format($item->price_usd * $item->quantity, 2, '.', ',') }}
                                 @else
-                                    Rp {{ number_format($item->price_idr * $item->quantity, 0, ',', '.') }}
+                                    IDR {{ number_format($item->price_idr * $item->quantity, 2, ',', '.') }}
                                 @endif
                             </div>
                         </div>
@@ -580,9 +580,9 @@
                             <span class="text-gray-600">Subtotal</span>
                             <span class="font-medium text-gray-900" id="subtotal-display">
                                 @if($order->currency === 'USD')
-                                    ${{ number_format($order->subtotal_usd, 2) }}
+                                    USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}
                                 @else
-                                    Rp {{ number_format($order->subtotal_idr, 0, ',', '.') }}
+                                    IDR {{ number_format($order->subtotal_idr, 2, ',', '.') }}
                                 @endif
                             </span>
                         </div>
@@ -610,7 +610,7 @@
                                 <!-- Display only -->
                                 <span class="font-medium text-gray-900">
                                     @if($order->shipping_cost > 0)
-                                        {{ $order->currency }} {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                        {{ $order->currency }} {{ number_format($order->shipping_cost, 2, $order->currency === 'USD' ? '.' : ',', $order->currency === 'USD' ? ',' : '.') }}
                                     @else
                                         <span class="text-blue-600">Free</span>
                                     @endif
@@ -637,7 +637,7 @@
                             <div class="flex justify-between">
                                 <span class="text-base font-semibold text-gray-900">Total</span>
                                 <span class="text-xl font-bold text-gray-900" id="total-display">
-                                    {{ $order->currency }} {{ number_format($order->total_amount, 2, ',', '.') }}
+                                    {{ $order->currency }} {{ number_format($order->total_amount, 2, $order->currency === 'USD' ? '.' : ',', $order->currency === 'USD' ? ',' : '.') }}
                                 </span>
                             </div>
                         </div>
@@ -923,7 +923,7 @@
                                         </label>
                                         <div class="relative">
                                             <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
-                                                Rp
+                                                IDR
                                             </span>
                                             <input type="number" 
                                                 name="refund_amount" 
@@ -936,7 +936,7 @@
                                                 class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                                         </div>
                                         <p class="text-xs text-gray-500 mt-1">
-                                            Max: Rp {{ number_format($order->total_amount, 2, ',', '.') }}
+                                            Max: IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                                         </p>
                                     </div>
 
@@ -1006,11 +1006,11 @@
                                     <p class="text-sm font-semibold text-orange-900">Order Refunded</p>
                                     @if($order->refund_amount && $order->payment_method === 'PAYPAL')
                                     <p class="text-xs text-orange-700 mt-1">
-                                        Amount: <strong>${{ number_format($order->refund_amount, 2) }}</strong>
+                                        Amount: <strong>USD {{ number_format($order->refund_amount, 2, '.', ',') }}</strong>
                                     </p>
                                     @else
                                     <p class="text-xs text-orange-700 mt-1">
-                                        Amount: <strong>Rp {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
+                                        Amount: <strong>IDR {{ number_format($order->refund_amount, 2, ',', '.') }}</strong>
                                     </p>
                                     @endif
                                     <p class="text-xs text-orange-600 mt-1">
@@ -1051,20 +1051,15 @@
         const shipping = parseFloat(shippingInput.value) || 0;
         const total = subtotal + shipping;
         
-        // ⬅️ UPDATE DISPLAY SESUAI CURRENCY
-        if (currency === 'USD') {
-            subtotalDisplay.textContent = '$' + subtotal.toFixed(2);
-            totalDisplay.textContent = '$' + total.toFixed(2);
-        } else {
-            subtotalDisplay.textContent = 'Rp ' + subtotal.toLocaleString('id-ID', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-            totalDisplay.textContent = 'Rp ' + total.toLocaleString('id-ID', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-        }
+        const formattedSubtotal = currency === 'USD'
+            ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(subtotal)
+            : new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(subtotal);
+        const formattedTotal = currency === 'USD'
+            ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total)
+            : new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total);
+
+        subtotalDisplay.textContent = (currency === 'USD' ? 'USD ' : 'IDR ') + formattedSubtotal;
+        totalDisplay.textContent = (currency === 'USD' ? 'USD ' : 'IDR ') + formattedTotal;
     }
 
     // ⬅️ LISTEN PAYMENT GATEWAY CHANGE

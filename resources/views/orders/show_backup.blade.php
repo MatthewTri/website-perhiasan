@@ -167,13 +167,15 @@
                         @php
                             $price = $order->currency === 'USD' ? $item->price_usd : $item->price_idr;
                             $subtotal = $price * $item->quantity;
-                            $decimals = $order->currency === 'USD' ? 2 : 0;
+                            $decimals = 2;
+                            $decimalSeparator = $order->currency === 'USD' ? '.' : ',';
+                            $thousandSeparator = $order->currency === 'USD' ? ',' : '.';
                         @endphp
                         <p class="font-semibold text-gray-900">
-                            {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($price, $decimals, ',', '.') }}
+                            {{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($price, $decimals, $decimalSeparator, $thousandSeparator) }}
                         </p>
                         <p class="text-sm text-gray-500">
-                            Subtotal: {{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}
+                            Subtotal: {{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($subtotal, $decimals, $decimalSeparator, $thousandSeparator) }}
                         </p>
                     </div>
                 </div>
@@ -183,20 +185,22 @@
             <!-- Order Summary -->
             <div class="mt-6 pt-4 border-t space-y-2">
                 @php
-                    $decimals = $order->currency === 'USD' ? 2 : 0;
+                    $decimals = 2;
+                    $decimalSeparator = $order->currency === 'USD' ? '.' : ',';
+                    $thousandSeparator = $order->currency === 'USD' ? ',' : '.';
                     $subtotal = $order->currency === 'USD' ? $order->subtotal_usd : $order->subtotal_idr;
                 @endphp
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($subtotal, $decimals, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($subtotal, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Shipping Cost:</span>
-                    <span class="text-gray-900">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->shipping_cost, $decimals, ',', '.') }}</span>
+                    <span class="text-gray-900">{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($order->shipping_cost, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                 </div>
                 <div class="flex justify-between text-lg font-bold pt-2 border-t">
                     <span class="text-gray-900">Total:</span>
-                    <span class="text-blue-600">{{ $order->currency === 'USD' ? '$' : 'Rp ' }}{{ number_format($order->total_amount, $decimals, ',', '.') }}</span>
+                    <span class="text-blue-600">{{ $order->currency === 'USD' ? 'USD ' : 'IDR ' }}{{ number_format($order->total_amount, $decimals, $decimalSeparator, $thousandSeparator) }}</span>
                 </div>
             </div>
         </div>
@@ -255,7 +259,7 @@
                         <div class="flex justify-between border-t pt-2 mt-2">
                             <span class="text-gray-600">Total Amount:</span>
                             <span class="font-bold text-lg text-blue-900">
-                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                IDR {{ number_format($order->total_amount, 2, ',', '.') }}
                             </span>
                         </div>
                     </div>
@@ -328,7 +332,7 @@
                     <div class="space-y-2 text-sm mb-4">
                         <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-600">Total Amount:</span>
-                            <span class="font-bold text-lg text-blue-900">${{ number_format($order->total_amount, 2) }}</span>
+                            <span class="font-bold text-lg text-blue-900">USD {{ number_format($order->total_amount, 2, '.', ',') }}</span>
                         </div>
                     </div>
                     

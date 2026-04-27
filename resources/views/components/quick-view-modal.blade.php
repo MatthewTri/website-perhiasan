@@ -253,19 +253,17 @@
             },
         });
         
-        // Format price
-        const priceIdr = new Intl.NumberFormat('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(productData.price_idr);
-        
-        const priceUsd = new Intl.NumberFormat('en-US', { 
-            style: 'currency', 
-            currency: 'USD'
-        }).format(productData.price_usd);
-        
+        // Format price (no symbol, always 2 decimals)
+        const priceIdr = 'IDR ' + new Intl.NumberFormat('id-ID', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(Number(productData.price_idr || 0));
+
+        const priceUsd = 'USD ' + new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(Number(productData.price_usd || 0));
+
         document.getElementById('modalProductPrice').textContent = `${priceIdr} / ${priceUsd}`;
         
         // Rating
