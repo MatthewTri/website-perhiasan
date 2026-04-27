@@ -16,16 +16,13 @@
 
     {{-- Background Image --}}
     <div class="absolute inset-0">
-        <img src=""
+        <img src="{{ asset('asset/home/home.JPEG') }}"
              alt="Cecile Private Collection"
              loading="eager"
              fetchpriority="high"
              decoding="async"
              class="w-full h-full object-cover object-center gpu-img"
              onerror="this.style.display='none'">
-        {{-- Gradient overlay --}}
-        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/60"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
     </div>
 
     {{-- Decorative corner lines --}}
@@ -50,13 +47,11 @@
             Collection
         </h1>
 
-        {{-- Thin divider --}}
         <div class="hero-divider w-px h-12 bg-white/40 mx-auto mb-6 md:mb-8"></div>
 
-        {{-- Subline --}}
-        <p class="hero-sub font-jost font-light text-white/80 text-xs md:text-sm tracking-[0.3em] uppercase mb-10 md:mb-12">
+        {{-- <p class="hero-sub font-jost font-light text-white/80 text-xs md:text-sm tracking-[0.3em] uppercase mb-10 md:mb-12">
             Bespoke Jewellery &nbsp;·&nbsp; Crafted With Intention
-        </p>
+        </p> --}}
 
         {{-- CTAs --}}
         <div class="hero-cta flex flex-col sm:flex-row gap-4 items-center">
@@ -114,7 +109,7 @@
         {{-- Large left card --}}
         <a href="{{ route('products.index') }}"
            class="group relative overflow-hidden aspect-[4/5] md:aspect-auto md:row-span-2 bg-[#f0e8e4]">
-            <img src="" alt="Rings & Bands"
+            <img src="{{ asset('asset/product/rings/London-Blue-Topaz-Classic-Victorian-Ring.jpg') }}" alt="Rings & Bands"
                  loading="lazy" decoding="async"
                  class="w-full h-full object-cover gpu-img cat-img"
                  onerror="this.parentElement.classList.add('bg-[#e8d8d0]')">
@@ -132,7 +127,7 @@
         {{-- Top right --}}
         <a href="{{ route('products.index') }}"
            class="group relative overflow-hidden aspect-[4/3] bg-[#f0e8e4]">
-            <img src="" alt="Necklaces"
+            <img src="{{ asset('asset/product/necklaces/Green-Quartz-Pendant.jpg') }}" alt="Necklaces"
                  loading="lazy" decoding="async"
                  class="w-full h-full object-cover gpu-img cat-img"
                  onerror="this.parentElement.classList.add('bg-[#ede0db]')">
@@ -147,7 +142,7 @@
         <div class="grid grid-cols-2 gap-3 md:gap-4">
             <a href="{{ route('products.index') }}"
                class="group relative overflow-hidden aspect-square bg-[#f0e8e4]">
-                <img src="" alt="Earrings"
+                <img src="{{ asset('asset/product/earrings/Pink-Tourmaline-with-Drop-Diamond-Earrings.jpg') }}" alt="Earrings"
                      loading="lazy" decoding="async"
                      class="w-full h-full object-cover gpu-img cat-img"
                      onerror="this.parentElement.classList.add('bg-[#e8d8d0]')">
@@ -158,7 +153,7 @@
             </a>
             <a href="{{ route('products.index') }}"
                class="group relative overflow-hidden aspect-square bg-[#f0e8e4]">
-                <img src="" alt="Bracelets"
+                <img src="{{ asset('asset/product/bracelet/Red-Spinel-with-Diamonds-Chain-Bracelet.jpg') }}" alt="Bracelets"
                      loading="lazy" decoding="async"
                      class="w-full h-full object-cover gpu-img cat-img"
                      onerror="this.parentElement.classList.add('bg-[#ede0db]')">
@@ -535,7 +530,7 @@
                    placeholder="Your email address"
                    value="{{ old('email') }}"
                    required
-                   class="flex-1 px-6 py-4 bg-transparent text-white placeholder-white/30 font-jost font-light text-xs tracking-[0.2em] focus:outline-none border-r border-white/10">
+                   class="flex-1 px-6 py-4 bg-transparent text-white placeholder-white/30 font-jost font-light text-xs tracking-[0.2em] focus:outline-none focus:ring-1 focus:ring-[#E3CFCF] focus:border-transparent border-r border-white/10">
             <button type="submit"
                     class="px-8 py-4 bg-[#C9A89A] hover:bg-[#b89488] text-white font-jost font-medium text-[10px] tracking-[0.35em] uppercase transition-colors duration-300 whitespace-nowrap cursor-pointer">
                 Subscribe
