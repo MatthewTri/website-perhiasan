@@ -17,33 +17,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // Create Admin User
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('123123'),
-            'is_admin' => true,
+        $this->call([
+            ProductSeeder::class,
         ]);
 
-        // Create Regular User
-        User::create([
-            'name' => 'User',
-            'email' => 'user@gmail.com',
-            'password' => Hash::make('123123'),
-            'is_admin' => false,
-        ]);
+        User::firstOrCreate(
+        ['email' => 'admin@gmail.com'],
+        ['name' => 'Admin', 'password' => Hash::make('123123'), 'is_admin' => true]
+    );
 
-        // Create Parent Categories
-        $categories = [
-            ['name' => 'Rings', 'slug' => 'rings', 'parent_id' => null],
-            ['name' => 'Necklaces', 'slug' => 'necklaces', 'parent_id' => null],
-            ['name' => 'Bracelets', 'slug' => 'bracelets', 'parent_id' => null],
-            ['name' => 'Earrings', 'slug' => 'earrings', 'parent_id' => null],
-            ['name' => 'Stones', 'slug' => 'stones', 'parent_id' => null],
-        ];
+    User::firstOrCreate(
+        ['email' => 'user@gmail.com'],
+        ['name' => 'User', 'password' => Hash::make('123123'), 'is_admin' => false]
+    );
 
-        foreach ($categories as $category) {
-            \App\Models\Category::create($category);
-        }
     }
 }
