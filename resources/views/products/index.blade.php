@@ -479,6 +479,9 @@
                 pagination.innerHTML = nextPagination.innerHTML;
             }
 
+            // Re-apply grid layout (e.g., image-only mode) after DOM update
+            window.__productGridLayout?.reapply?.();
+
             if (push) history.pushState({}, '', url);
             else history.replaceState({}, '', url);
 
@@ -710,6 +713,15 @@
             if (isMobileLevel(level)) { currentMobileLevel = level; }
             else                      { currentDesktopLevel = level; }
         }
+
+        // Expose a tiny hook so other scripts (live search / pagination) can
+        // re-apply the current layout after the grid DOM is replaced.
+        window.__productGridLayout = {
+            reapply: function () {
+                // grid element stays, but cards change -> re-run info hide/show
+                applyGrid(isTabletPlus() ? currentDesktopLevel : currentMobileLevel);
+            }
+        };
 
         btns.forEach(function (btn) {
             btn.addEventListener('click', function () { applyGrid(this.dataset.level); });
