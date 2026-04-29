@@ -89,6 +89,7 @@ class ProductSeeder extends Seeder
 
             $product = Product::create([
                 'name'         => $name,
+                'slug'         => $this->makeUniqueProductSlug($name),
                 'description'  => $this->nullIfEmpty($row['Deskripsi'] ?? null),
                 'price_idr'    => $this->parseMoney($row['Harga_IDR'] ?? 0),
                 'price_usd'    => $this->parseMoney($row['Harga_USD'] ?? 0),
@@ -106,19 +107,32 @@ class ProductSeeder extends Seeder
 
     private function resolveCategory(string $parentName, string $childName): int
     {
-        if ($parentName === '') {
-            throw new \RuntimeException("Kolom Parent-Kategori kosong");
+        // Keduanya kosong = tidak bisa menentukan kategori
+        if ($parentName === '' && $childName === '') {
+            throw new \RuntimeException('Kolom Kategori dan Parent-Kategori kosong');
         }
 
+        // Parent kosong tapi child ada -> treat sebagai kategori root
+        if ($parentName === '' && $childName !== '') {
+            $root = Category::firstOrCreate(
+                ['slug' => Str::slug($childName)],
+                ['name' => $childName, 'parent_id' => null]
+            );
+            return $root->id;
+        }
+
+        // Parent ada
         $parent = Category::firstOrCreate(
             ['slug' => Str::slug($parentName)],
             ['name' => $parentName, 'parent_id' => null]
         );
 
+        // Tidak ada child -> pakai parent
         if ($childName === '') {
             return $parent->id;
         }
 
+        // Parent + child
         $child = Category::firstOrCreate(
             ['slug' => Str::slug($childName)],
             ['name' => $childName, 'parent_id' => $parent->id]
@@ -129,6 +143,22 @@ class ProductSeeder extends Seeder
         }
 
         return $child->id;
+    }
+
+    private function makeUniqueProductSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        if ($base === '') {
+            $base = Str::lower(Str::random(12));
+        }
+
+        $slug = $base;
+        $i = 2;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+
+        return $slug;
     }
 
     // ── Seed relasi ──────────────────────────────────────────────────────────
