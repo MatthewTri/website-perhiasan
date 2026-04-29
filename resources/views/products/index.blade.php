@@ -48,12 +48,13 @@
                         <input
                             type="text"
                             name="q"
+                            id="mobileProductSearch"
                             value="{{ request('q', $search ?? '') }}"
                             placeholder="Search product name..."
                             class="w-full h-10 px-4 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-transparent border-0 focus:ring-0 rounded-none"
                             autocomplete="off">
-                        <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" aria-label="Search">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <button type="button" id="mobileProductSearchClear" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer hidden" aria-label="Clear search">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
                 </form>
@@ -68,12 +69,13 @@
                             <input
                                 type="text"
                                 name="q"
+                                id="desktopProductSearch"
                                 value="{{ request('q', $search ?? '') }}"
                                 placeholder="Search product name..."
                                 class="w-full h-10 px-4 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-transparent border-0 focus:ring-0 rounded-none"
                                 autocomplete="off">
-                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" aria-label="Search">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <button type="button" id="desktopProductSearchClear" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer hidden" aria-label="Clear search">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
                     </form>
@@ -90,6 +92,8 @@
                         <div id="sortDropdown" class="hidden absolute top-full right-0 bg-white border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.12)] min-w-[220px] z-50 py-1">
                             @foreach($sortOptions as $value => $label)
                             <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                               data-sort-link
+                               data-sort="{{ $value }}"
                                class="flex items-center justify-between px-6 py-3 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-bold border-l-2 border-gray-900 pl-5' : 'text-gray-500' }}">
                                 <span>{{ $label }}</span>
                                 @if($currentSort === $value)
@@ -287,11 +291,13 @@
         @endforelse
     </div>
 
-    @if(method_exists($products, 'links'))
-        <div class="mt-14">
-            {{ $products->links('vendor.pagination.custom') }}
-        </div>
-    @endif
+    <div id="productPagination">
+        @if(method_exists($products, 'links'))
+            <div class="mt-14">
+                {{ $products->links('vendor.pagination.custom') }}
+            </div>
+        @endif
+    </div>
 </div>
 
 {{-- Mobile Sort Bottom Sheet --}}
@@ -306,6 +312,8 @@
     <div class="py-2">
         @foreach($sortOptions as $value => $label)
         <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+           data-sort-link
+           data-sort="{{ $value }}"
            class="flex items-center justify-between px-6 py-4 text-sm tracking-wide transition-colors hover:bg-gray-50 {{ $currentSort === $value ? 'text-gray-900 font-semibold' : 'text-gray-500' }}">
             <span>{{ $label }}</span>
             @if($currentSort === $value)
@@ -370,6 +378,193 @@
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') { closeDropdown(); closeSheet(); }
+    });
+})();
+</script>
+
+<script>
+(function () {
+    'use strict';
+
+    const desktopInput = document.getElementById('desktopProductSearch');
+    const mobileInput = document.getElementById('mobileProductSearch');
+    const desktopClear = document.getElementById('desktopProductSearchClear');
+    const mobileClear = document.getElementById('mobileProductSearchClear');
+    const grid = document.getElementById('productGrid');
+    const pagination = document.getElementById('productPagination');
+
+    if (!grid || (!desktopInput && !mobileInput)) return;
+
+    let debounceTimer = null;
+    let activeController = null;
+
+    function getActiveInput() {
+        // Prefer the one currently visible
+        const desktopVisible = desktopInput && window.getComputedStyle(desktopInput).display !== 'none';
+        const mobileVisible = mobileInput && window.getComputedStyle(mobileInput).display !== 'none';
+        if (desktopVisible) return desktopInput;
+        if (mobileVisible) return mobileInput;
+        return desktopInput || mobileInput;
+    }
+
+    function setAllInputsValue(value) {
+        if (desktopInput && desktopInput.value !== value) desktopInput.value = value;
+        if (mobileInput && mobileInput.value !== value) mobileInput.value = value;
+    }
+
+    function updateClearVisibility(value) {
+        const show = (value || '').trim().length > 0;
+        if (desktopClear) desktopClear.classList.toggle('hidden', !show);
+        if (mobileClear) mobileClear.classList.toggle('hidden', !show);
+    }
+
+    function syncSortLinks() {
+        const base = new URL(window.location.href);
+
+        // Use current input value (not just URL) so sort keeps what user typed
+        const q = (getActiveInput()?.value || '').trim();
+        if (q) base.searchParams.set('q', q);
+        else base.searchParams.delete('q');
+
+        // If query changes, always go back to page 1
+        base.searchParams.delete('page');
+
+        document.querySelectorAll('[data-sort-link][data-sort]').forEach(function (a) {
+            const sort = a.getAttribute('data-sort');
+            if (!sort) return;
+
+            const u = new URL(base.toString());
+            u.searchParams.set('sort', sort);
+            a.setAttribute('href', u.toString());
+        });
+    }
+
+    function buildUrl(nextQuery) {
+        const url = new URL(window.location.href);
+        const q = (nextQuery || '').trim();
+
+        if (q) url.searchParams.set('q', q);
+        else url.searchParams.delete('q');
+
+        // Reset pagination when query changes
+        url.searchParams.delete('page');
+
+        return url;
+    }
+
+    async function fetchAndUpdate(url, { push = false } = {}) {
+        if (activeController) activeController.abort();
+        activeController = new AbortController();
+
+        grid.setAttribute('aria-busy', 'true');
+
+        try {
+            const res = await fetch(url.toString(), {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: activeController.signal,
+            });
+
+            if (!res.ok) throw new Error('Request failed: ' + res.status);
+
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nextGrid = doc.getElementById('productGrid');
+            const nextPagination = doc.getElementById('productPagination');
+
+            if (nextGrid) {
+                grid.innerHTML = nextGrid.innerHTML;
+            }
+            if (pagination && nextPagination) {
+                pagination.innerHTML = nextPagination.innerHTML;
+            }
+
+            if (push) history.pushState({}, '', url);
+            else history.replaceState({}, '', url);
+
+            syncSortLinks();
+        } catch (e) {
+            if (e.name !== 'AbortError') {
+                // Fallback: if anything goes wrong, do a normal navigation
+                window.location.href = url.toString();
+            }
+        } finally {
+            grid.removeAttribute('aria-busy');
+        }
+    }
+
+    function scheduleSearch(value) {
+        const v = value ?? '';
+        setAllInputsValue(v);
+        updateClearVisibility(v);
+        syncSortLinks();
+
+        clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(function () {
+            fetchAndUpdate(buildUrl(v), { push: false });
+        }, 300);
+    }
+
+    function clearSearch() {
+        scheduleSearch('');
+        const input = getActiveInput();
+        input?.focus();
+    }
+
+    // Init state
+    updateClearVisibility((getActiveInput()?.value) || '');
+    syncSortLinks();
+
+    // Input listeners
+    [desktopInput, mobileInput].forEach(function (input) {
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+            scheduleSearch(this.value);
+        });
+
+        // Enter should not do a full submit (still works without JS)
+        input.form?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            scheduleSearch(input.value);
+        });
+    });
+
+    // Clear buttons
+    desktopClear?.addEventListener('click', clearSearch);
+    mobileClear?.addEventListener('click', clearSearch);
+
+    // ESC clears
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            const input = getActiveInput();
+            if (input && document.activeElement === input && input.value.trim()) {
+                e.preventDefault();
+                clearSearch();
+            }
+        }
+    });
+
+    // AJAX pagination (keeps the page feeling instant)
+    pagination?.addEventListener('click', function (e) {
+        const a = e.target.closest('a');
+        if (!a) return;
+        const href = a.getAttribute('href');
+        if (!href) return;
+        if (href.startsWith('#')) return;
+
+        e.preventDefault();
+        fetchAndUpdate(new URL(href, window.location.href), { push: true });
+    });
+
+    // Handle back/forward
+    window.addEventListener('popstate', function () {
+        const url = new URL(window.location.href);
+        const q = url.searchParams.get('q') || '';
+        setAllInputsValue(q);
+        updateClearVisibility(q);
+        syncSortLinks();
+        fetchAndUpdate(url, { push: false });
     });
 })();
 </script>
