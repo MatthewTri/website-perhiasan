@@ -40,9 +40,44 @@
 
     <div class="border-t border-gray-100">
         <div class="max-w-screen-2xl mx-auto">
+            {{-- Mobile Search (above controls) --}}
+            <div class="px-4 py-3 md:hidden border-b border-gray-100">
+                <form method="GET" action="{{ url()->current() }}" class="w-full">
+                    <input type="hidden" name="sort" value="{{ $currentSort }}">
+                    <div class="relative bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ request('q', $search ?? '') }}"
+                            placeholder="Search product name..."
+                            class="w-full h-10 px-4 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-transparent border-0 focus:ring-0 rounded-none"
+                            autocomplete="off">
+                        <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" aria-label="Search">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="flex items-stretch">
-                {{-- Left area intentionally empty --}}
-                <div class="flex-1"></div>
+                {{-- Desktop Search (left side) --}}
+                <div class="flex-1 hidden md:flex items-center justify-start px-6">
+                    <form method="GET" action="{{ url()->current() }}" class="w-full max-w-md">
+                        <input type="hidden" name="sort" value="{{ $currentSort }}">
+                        <div class="relative bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <input
+                                type="text"
+                                name="q"
+                                value="{{ request('q', $search ?? '') }}"
+                                placeholder="Search product name..."
+                                class="w-full h-10 px-4 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-transparent border-0 focus:ring-0 rounded-none"
+                                autocomplete="off">
+                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer" aria-label="Search">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
                 {{-- Right controls: Sort By + Grid toggle --}}
                 <div class="flex items-stretch divide-x divide-gray-100">
@@ -251,6 +286,12 @@
             </div>
         @endforelse
     </div>
+
+    @if(method_exists($products, 'links'))
+        <div class="mt-14">
+            {{ $products->links('vendor.pagination.custom') }}
+        </div>
+    @endif
 </div>
 
 {{-- Mobile Sort Bottom Sheet --}}

@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 
@@ -26,22 +25,38 @@ class ProductController extends Controller
     {
         $currentSort = $request->get('sort', 'featured');
 
+        $search = trim((string) $request->get('q', ''));
+
         $query = Product::with([
             'category',
             'featuredImage',
             'colors:id,product_id,name,hex_code,sort_order'
         ]);
 
-        if ($currentSort === 'featured') {
-            $products = $query->bestSellers(null, 16)->get(); // null = tidak ada filter rating , 16 = jumlah produk yang ditampilkan
-        } else {
-            $products = $this->applySortQuery($query, $currentSort)->get();
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $search . '%');
         }
+
+        if ($currentSort === 'featured') {
+            // Featured: prioritize best sellers but still show products with 0 sales
+            $query->withCount(['orderItems as total_sold' => function ($q) {
+                    $q->selectRaw('COALESCE(SUM(quantity), 0)')
+                      ->whereHas('order', function ($o) {
+                          $o->whereIn('status', ['COMPLETED', 'SHIPPED', 'PAID', 'PRODUCTION', 'DELIVERED', 'completed', 'shipped', 'paid', 'production', 'delivered']);
+                      });
+                }])
+                ->orderByDesc('total_sold')
+                ->orderBy('created_at');
+        } else {
+            $query = $this->applySortQuery($query, $currentSort);
+        }
+
+        $products = $query->paginate(36)->withQueryString();
 
         $pageTitle = 'Best Sellers';
         $pageSubtitle = 'Our most loved pieces';
 
-        return view('products.index', compact('products', 'pageTitle', 'pageSubtitle', 'currentSort'));
+        return view('products.index', compact('products', 'pageTitle', 'pageSubtitle', 'currentSort', 'search'));
     }
 
     /**

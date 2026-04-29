@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class CategoryController extends Controller
 {
@@ -49,26 +50,27 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Request $request, Category $category)
     {
         // Get products from this category AND all its sub-categories
+        $category->loadMissing('children');
         $categoryIds = [$category->id];
-        
-        // If category has children, include their IDs
-        if ($category->children()->count() > 0) {
-            $categoryIds = array_merge(
-                $categoryIds, 
-                $category->children()->pluck('id')->toArray()
-            );
+        if ($category->children->isNotEmpty()) {
+            $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->all());
         }
-        
-        $currentSort = request()->get('sort', 'featured');
 
-        $query = \App\Models\Product::with([
+        $currentSort = $request->get('sort', 'featured');
+        $search = trim((string) $request->get('q', ''));
+
+        $query = Product::with([
             'category',
             'featuredImage',
             'colors:id,product_id,name,hex_code,sort_order'
         ])->whereIn('category_id', $categoryIds);
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
 
         switch ($currentSort) {
             case 'best_selling':
@@ -98,14 +100,14 @@ class CategoryController extends Controller
                 $query->orderBy('created_at', 'desc');
         }
 
-        $products = $query->get();
+        $products = $query->paginate(36)->withQueryString();
 
         $pageTitle = $category->name;
         $pageSubtitle = $category->isParent()
             ? 'Explore our curated collection'
             : 'Discover timeless pieces';
 
-        return view('products.index', compact('products', 'category', 'pageTitle', 'pageSubtitle', 'currentSort'));
+        return view('products.index', compact('products', 'category', 'pageTitle', 'pageSubtitle', 'currentSort', 'search'));
     }
 
     /**

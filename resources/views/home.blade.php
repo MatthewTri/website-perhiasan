@@ -169,7 +169,7 @@
 {{-- ============================================================
      BEST SELLERS — Elegant minimal product grid
      ============================================================ --}}
-<section class="cv-section bg-[#FAF7F5] py-20 md:py-32">
+<section class="bg-[#FAF7F5] py-20 md:py-32">
     <div class="max-w-screen-2xl mx-auto px-6 lg:px-16">
 
         {{-- Section Header --}}
@@ -194,12 +194,32 @@
         {{-- Product Grid — style sama dengan halaman all products --}}
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
             @php
-                $bestSellers = \App\Models\Product::with(['images', 'colors'])
-                    ->orWhereHas('orderItems')
-                    ->withCount('orderItems')
-                    ->orderBy('order_items_count', 'desc')
-                    ->take(8)
+                $bestSellers = \App\Models\Product::query()
+                    ->with([
+                        'featuredImage',
+                        'colors:id,product_id,name,hex_code,sort_order',
+                        'sizes:id,product_id,size_name,sort_order',
+                    ])
+                    ->bestSellers(null, 8)
                     ->get();
+
+                $missing = 8 - $bestSellers->count();
+                if ($missing > 0) {
+                    $fallback = \App\Models\Product::query()
+                        ->with([
+                            'featuredImage',
+                            'colors:id,product_id,name,hex_code,sort_order',
+                            'sizes:id,product_id,size_name,sort_order',
+                        ])
+                        ->when(
+                            $bestSellers->isNotEmpty(),
+                            fn ($q) => $q->whereNotIn('id', $bestSellers->pluck('id'))
+                        )
+                        ->limit($missing)
+                        ->get();
+
+                    $bestSellers = $bestSellers->concat($fallback);
+                }
             @endphp
 
             @forelse($bestSellers as $product)
@@ -209,7 +229,6 @@
                         @if($product->featuredImage)
                             <img src="{{ asset('storage/' . $product->featuredImage->image) }}"
                                  alt="{{ $product->name }}"
-                                 loading="lazy"
                                  decoding="async"
                                  class="w-full h-full object-cover object-center gpu-img transition-transform duration-700 ease-in-out">
                         @else
