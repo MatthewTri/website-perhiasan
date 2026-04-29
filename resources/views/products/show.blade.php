@@ -17,13 +17,33 @@
     
     {{-- BREADCRUMB (Minimalist) --}}
     <div class="max-w-screen-2xl mx-auto px-4 lg:px-6 pt-6 pb-2">
-        <nav class="flex text-[10px] uppercase tracking-widest text-gray-400 font-medium">
-            <a href="/" class="hover:text-gray-900 transition-colors">Home</a>
-            <span class="mx-2">/</span>
-            <a href="{{ route('products.index') }}" class="hover:text-gray-900 transition-colors">Products</a>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900">{{ $product->name }}</span>
-        </nav>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <nav class="flex flex-wrap text-[10px] uppercase tracking-widest text-gray-400 font-medium flex-1 min-w-0">
+                <a href="/" class="hover:text-gray-900 transition-colors">Home</a>
+                <span class="mx-2">/</span>
+                <a href="{{ route('products.index') }}" class="hover:text-gray-900 transition-colors">Products</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900">{{ $product->name }}</span>
+            </nav>
+
+            @can('admin')
+                <div class="flex items-center justify-center sm:justify-end gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
+                    <a href="{{ route('products.edit', $product) }}"
+                        class="inline-flex items-center justify-center h-8 px-4 rounded-full border border-gray-200 bg-white text-[10px] uppercase tracking-widest text-gray-700 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+                        Edit Product
+                    </a>
+
+                    <form id="deleteProductForm" action="{{ route('products.destroy', $product) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" onclick="confirmDeleteProduct()"
+                            class="inline-flex items-center justify-center h-8 px-4 rounded-full border border-gray-200 bg-white text-[10px] uppercase tracking-widest text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            @endcan
+        </div>
     </div>
 
     {{-- MAIN PRODUCT SECTION --}}
@@ -445,6 +465,28 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    function confirmDeleteProduct() {
+        const form = document.getElementById('deleteProductForm');
+        if (!form) return;
+
+        Swal.fire({
+            title: 'DELETE PRODUCT?',
+            html: '<p class="text-sm text-gray-600">This action cannot be undone.</p>',
+            icon: 'warning',
+            color: '#111827',
+            confirmButtonColor: '#E3CFCF',
+            confirmButtonText: 'DELETE',
+            showCancelButton: true,
+            cancelButtonText: 'CANCEL',
+            cancelButtonColor: '#71717a',
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     // 1. Quantity Logic
     function updateQuantity(change) {
         const input = document.getElementById('quantity');

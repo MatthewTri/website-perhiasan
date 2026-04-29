@@ -148,7 +148,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
 
         {{-- ── Large hero card: Rings ── --}}
-        <a href="{{ route('products.index') }}"
+        <a href="{{ route('categories.show', 'rings') }}"
            class="group relative overflow-hidden
                   aspect-[3/2] sm:aspect-auto sm:row-span-2
                   bg-[#e4d0c8]">
@@ -176,7 +176,7 @@
         </a>
 
         {{-- ── Top right: Necklaces ── --}}
-        <a href="{{ route('products.index') }}"
+        <a href="{{ route('categories.show', 'necklace') }}"
            class="group relative overflow-hidden aspect-[4/3] bg-[#c8ddd6]">
             <img src="{{ asset('asset/product/necklaces/Green-Quartz-Pendant.jpg') }}"
                  alt="Necklaces"
@@ -200,7 +200,7 @@
         <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
 
             {{-- Earrings --}}
-            <a href="{{ route('products.index') }}"
+                <a href="{{ route('categories.show', 'earrings') }}"
                class="group relative overflow-hidden aspect-square bg-[#d8cfe0]">
                 <img src="{{ asset('asset/product/earrings/Pink-Tourmaline-with-Drop-Diamond-Earrings.jpg') }}"
                      alt="Earrings"
@@ -218,7 +218,7 @@
             </a>
 
             {{-- Bracelets --}}
-            <a href="{{ route('products.index') }}"
+                <a href="{{ route('categories.show', 'bracelet') }}"
                class="group relative overflow-hidden aspect-square bg-[#ddd6c2]">
                 <img src="{{ asset('asset/product/bracelet/Red-Spinel-with-Diamonds-Chain-Bracelet.jpg') }}"
                      alt="Bracelets"
@@ -236,7 +236,7 @@
             </a>
 
             {{-- Stones --}}
-            <a href="{{ route('products.index') }}"
+                <a href="{{ route('categories.show', 'stone') }}"
                class="group relative overflow-hidden aspect-square bg-[#c4d8e4]">
                 <img src="{{ asset('asset/product/stone/2.965-ct-London-Blue-Topaz.jpg') }}"
                      alt="Stones"
