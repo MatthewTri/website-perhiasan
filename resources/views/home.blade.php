@@ -17,63 +17,104 @@
     {{-- Background Image --}}
     <div class="absolute inset-0">
         <img src="{{ asset('asset/home/home.JPEG') }}"
-             alt="Cecile Private Collection"
-             loading="eager"
-             fetchpriority="high"
-             decoding="async"
-             class="w-full h-full object-cover object-center gpu-img"
-             onerror="this.style.display='none'">
+            alt="Cecile Private Collection"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-full object-cover object-center gpu-img"
+            onerror="this.style.display='none'">
+
+        {{-- Multi-layer overlay untuk kontras yang bersih --}}
+        {{-- Layer 1: darkening merata --}}
+        <div class="absolute inset-0 bg-black/45"></div>
+        {{-- Layer 2: vignette dari pinggir ke tengah --}}
+        <div class="absolute inset-0" style="background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%);"></div>
+        {{-- Layer 3: gradient bawah lebih gelap supaya CTA terbaca --}}
+        <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 35%, transparent 55%, rgba(0,0,0,0.35) 100%);"></div>
     </div>
 
     {{-- Decorative corner lines --}}
-    <div class="absolute top-8 left-8 w-16 h-16 border-t border-l border-white/30 hidden md:block" aria-hidden="true"></div>
-    <div class="absolute top-8 right-8 w-16 h-16 border-t border-r border-white/30 hidden md:block" aria-hidden="true"></div>
-    <div class="absolute bottom-8 left-8 w-16 h-16 border-b border-l border-white/30 hidden md:block" aria-hidden="true"></div>
-    <div class="absolute bottom-8 right-8 w-16 h-16 border-b border-r border-white/30 hidden md:block" aria-hidden="true"></div>
+    <div class="absolute top-8 left-8 w-12 h-12 border-t border-l border-white/25 hidden md:block" aria-hidden="true"></div>
+    <div class="absolute top-8 right-8 w-12 h-12 border-t border-r border-white/25 hidden md:block" aria-hidden="true"></div>
+    <div class="absolute bottom-8 left-8 w-12 h-12 border-b border-l border-white/25 hidden md:block" aria-hidden="true"></div>
+    <div class="absolute bottom-8 right-8 w-12 h-12 border-b border-r border-white/25 hidden md:block" aria-hidden="true"></div>
 
     {{-- Hero Content --}}
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
 
         {{-- Eyebrow --}}
-        <p class="hero-eyebrow text-white/60 font-jost font-light text-[10px] tracking-[0.5em] uppercase mb-6 md:mb-8">
+        <p class="hero-eyebrow font-jost font-light text-[9px] tracking-[0.52em] uppercase text-white/50 mb-10 md:mb-12">
             Est. 2019 &nbsp;·&nbsp; Surabaya, Indonesia
         </p>
 
-        {{-- Main Headline --}}
-        <h1 class="hero-title font-cormorant font-light text-white leading-[0.9] tracking-[0.08em] uppercase mb-6 md:mb-8"
-            style="font-size: clamp(3.5rem, 10vw, 8rem);">
-            Cecile<br>
-            <em class="italic font-extralight" style="font-size:0.85em;">Private</em><br>
-            Collection
-        </h1>
+        {{-- Quote — dominan, benar-benar centered --}}
+        <div class="hero-quote mb-8 md:mb-10 max-w-2xl lg:max-w-3xl w-full">
+            <p class="font-cormorant font-light italic text-white/90 leading-[1.32] tracking-[0.03em] text-center
+                    text-[clamp(1.75rem,3.8vw,2.7rem)]">
+                Jewellery is not mere
+                <em class="not-italic font-light text-[#C9A89A]">adornment</em>
+                <span class="block my-1 flex items-center justify-center">
+                    <svg width="120" height="20" viewBox="0 0 120 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="10" x2="45" y2="10" stroke="#C9A89A" stroke-width="0.5"/>
+                        <polygon points="60,4 64,10 60,16 56,10" fill="#C9A89A" opacity="0.8"/>
+                        <line x1="75" y1="10" x2="120" y2="10" stroke="#C9A89A" stroke-width="0.5"/>
+                    </svg>
+                </span>
+                it is the silent language of
+                <span class="block">
+                    <em class="not-italic font-light text-[#C9A89A]">who you are</em>.
+                </span>
+            </p>
+        </div>
 
-        <div class="hero-divider w-px h-12 bg-white/40 mx-auto mb-6 md:mb-8"></div>
+        {{-- Diamond divider — truly centered karena inline flow --}}
+        {{-- <div class="flex items-center justify-center gap-4 mb-7 md:mb-8 w-full">
+            <div class="w-10 h-px bg-[#C9A89A]/40"></div>
+            <div class="w-[5px] h-[5px] bg-[#C9A89A]/60 rotate-45 flex-shrink-0"></div>
+            <div class="w-10 h-px bg-[#C9A89A]/40"></div>
+        </div> --}}
 
-        {{-- <p class="hero-sub font-jost font-light text-white/80 text-xs md:text-sm tracking-[0.3em] uppercase mb-10 md:mb-12">
-            Bespoke Jewellery &nbsp;·&nbsp; Crafted With Intention
-        </p> --}}
+        {{-- Brand name --}}
+        <div class="hero-brand mb-10 mt-10 md:mb-12">
+            <p class="font-cormorant font-semibold uppercase tracking-[0.55em] text-white/45
+                    text-[clamp(0.72rem,1.2vw,0.95rem)] mb-2">
+                Cecile Private Collection
+            </p>
+            <p class="font-jost font-semibold text-[8px] tracking-[0.42em] uppercase text-[#C9A89A]/35">
+                Fine Jewellery &nbsp;·&nbsp; Curated with Intention
+            </p>
+        </div>
 
         {{-- CTAs --}}
-        <div class="hero-cta flex flex-col sm:flex-row gap-4 items-center">
+        <div class="hero-cta flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <a href="{{ route('products.index') }}"
-               class="cta-primary group inline-flex items-center justify-center px-10 py-4 border border-white text-white font-jost font-medium text-[10px] tracking-[0.3em] uppercase overflow-hidden relative">
-                <span class="cta-fill absolute inset-0 bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                <span class="relative group-hover:text-gray-900 transition-colors duration-500">Shop Collection</span>
+            class="cta-primary group inline-flex items-center justify-center
+                    px-9 py-3.5 border border-white/50
+                    text-white font-jost font-light text-[9px] tracking-[0.32em] uppercase
+                    relative overflow-hidden transition-colors duration-500 whitespace-nowrap">
+                <span class="absolute inset-0 bg-white -translate-x-full group-hover:translate-x-0
+                            transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
+                <span class="relative group-hover:text-[#1a1410] transition-colors duration-500">Shop Collection</span>
             </a>
+
             <a href="{{ route('consultation.index') }}"
-               class="cta-secondary group inline-flex items-center justify-center px-10 py-4 font-jost font-light text-white/80 text-[10px] tracking-[0.3em] uppercase hover:text-white transition-colors duration-300">
-                <span class="mr-3 w-6 h-px bg-current inline-block transition-all duration-300 group-hover:w-10"></span>
-                Book Consultation
+            class="group inline-flex items-center justify-center
+                    px-9 py-3.5 border border-white/50
+                    text-white font-jost font-light text-[9px] tracking-[0.32em] uppercase
+                    relative overflow-hidden transition-colors duration-500 whitespace-nowrap">
+                <span class="absolute inset-0 bg-white -translate-x-full group-hover:translate-x-0
+                            transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
+                <span class="relative group-hover:text-[#1a1410] transition-colors duration-500">Book Consultation</span>
             </a>
         </div>
     </div>
 
     {{-- Scroll Indicator --}}
-    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 scroll-hint">
-        <div class="w-px h-10 bg-white/30 relative overflow-hidden">
-            <div class="scroll-line absolute top-0 left-0 w-full h-1/2 bg-white/70"></div>
+    {{-- <div class="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center">
+        <div class="w-px h-9 bg-white/15 relative overflow-hidden">
+            <div class="scroll-line absolute top-0 left-0 w-full h-1/2 bg-[#C9A89A]/70"></div>
         </div>
-    </div>
+    </div> --}}
 </section>
 
 {{-- ============================================================
@@ -97,71 +138,127 @@
 {{-- ============================================================
      SHOP BY CATEGORY — Editorial grid
      ============================================================ --}}
-<section class="cv-section py-20 md:py-32 px-6 lg:px-16 max-w-screen-2xl mx-auto">
+<section class="cv-section py-14 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-16 max-w-screen-2xl mx-auto">
 
-    <div class="section-header flex items-center gap-6 mb-14 md:mb-20">
-        <div class="w-8 h-px bg-[#C9A89A]"></div>
-        <p class="font-jost font-light text-[10px] tracking-[0.5em] uppercase text-[#C9A89A]">Discover</p>
+    <div class="section-header flex items-center gap-5 mb-10 md:mb-16 lg:mb-20">
+        <div class="w-7 h-px bg-[#C9A89A]"></div>
+        <p class="font-jost font-light text-[9px] sm:text-[10px] tracking-[0.45em] uppercase text-[#C9A89A]">Discover</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
 
-        {{-- Large left card --}}
+        {{-- ── Large hero card: Rings ── --}}
         <a href="{{ route('products.index') }}"
-           class="group relative overflow-hidden aspect-[4/5] md:aspect-auto md:row-span-2 bg-[#f0e8e4]">
-            <img src="{{ asset('asset/product/rings/London-Blue-Topaz-Classic-Victorian-Ring.jpg') }}" alt="Rings & Bands"
+           class="group relative overflow-hidden
+                  aspect-[3/2] sm:aspect-auto sm:row-span-2
+                  bg-[#e4d0c8]">
+            <img src="{{ asset('asset/product/rings/London-Blue-Topaz-Classic-Victorian-Ring.jpg') }}"
+                 alt="Rings & Bands"
                  loading="lazy" decoding="async"
-                 class="w-full h-full object-cover gpu-img cat-img"
-                 onerror="this.parentElement.classList.add('bg-[#e8d8d0]')">
-            <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <p class="font-jost font-light text-[9px] text-[#C9A89A] tracking-[0.5em] uppercase mb-2">Signature</p>
-                <h3 class="font-cormorant font-light text-white text-3xl md:text-4xl tracking-[0.1em] uppercase mb-3">Rings &amp; Bands</h3>
-                <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <span class="w-6 h-px bg-[#C9A89A]"></span>
-                    <span class="font-jost text-white/70 text-[10px] tracking-[0.3em] uppercase">Explore</span>
+                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                 onerror="this.parentElement.classList.add('bg-[#d8c0b8]')">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/72 via-black/6 to-transparent
+                        opacity-65 group-hover:opacity-90 transition-opacity duration-500"></div>
+            <div class="absolute bottom-0 left-0 right-0
+                        p-5 sm:p-7 md:p-9 lg:p-10
+                        translate-y-[3px] group-hover:translate-y-0 transition-transform duration-500">
+                <p class="font-jost font-light text-[8px] sm:text-[9px] text-[#C9A89A]
+                           tracking-[0.45em] uppercase mb-1 sm:mb-1.5">Signature</p>
+                <h3 class="font-cormorant font-light text-white uppercase leading-[1.05]
+                            tracking-[0.1em]
+                            text-[1.6rem] sm:text-[2rem] md:text-[2.25rem] lg:text-[2.6rem]
+                            mb-2 sm:mb-2.5">Rings &amp; Bands</h3>
+                <div class="flex items-center gap-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <span class="w-5 h-px bg-[#C9A89A]"></span>
+                    <span class="font-jost text-white/70 text-[9px] tracking-[0.3em] uppercase">Explore</span>
                 </div>
             </div>
         </a>
 
-        {{-- Top right --}}
+        {{-- ── Top right: Necklaces ── --}}
         <a href="{{ route('products.index') }}"
-           class="group relative overflow-hidden aspect-[4/3] bg-[#f0e8e4]">
-            <img src="{{ asset('asset/product/necklaces/Green-Quartz-Pendant.jpg') }}" alt="Necklaces"
+           class="group relative overflow-hidden aspect-[4/3] bg-[#c8ddd6]">
+            <img src="{{ asset('asset/product/necklaces/Green-Quartz-Pendant.jpg') }}"
+                 alt="Necklaces"
                  loading="lazy" decoding="async"
-                 class="w-full h-full object-cover gpu-img cat-img"
-                 onerror="this.parentElement.classList.add('bg-[#ede0db]')">
-            <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <p class="font-jost font-light text-[9px] text-[#C9A89A] tracking-[0.5em] uppercase mb-1">Delicate</p>
-                <h3 class="font-cormorant font-light text-white text-2xl md:text-3xl tracking-[0.1em] uppercase">Necklaces</h3>
+                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                 onerror="this.parentElement.classList.add('bg-[#b8d0c8]')">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/72 via-black/6 to-transparent
+                        opacity-65 group-hover:opacity-90 transition-opacity duration-500"></div>
+            <div class="absolute bottom-0 left-0 right-0
+                        p-4 sm:p-5 md:p-6 lg:p-8
+                        translate-y-[3px] group-hover:translate-y-0 transition-transform duration-500">
+                <p class="font-jost font-light text-[8px] sm:text-[9px] text-[#C9A89A]
+                           tracking-[0.45em] uppercase mb-1">Delicate</p>
+                <h3 class="font-cormorant font-light text-white uppercase leading-[1.05]
+                            tracking-[0.1em]
+                            text-[1.4rem] sm:text-[1.55rem] md:text-[1.75rem] lg:text-[1.9rem]">Necklaces</h3>
             </div>
         </a>
 
-        {{-- Bottom right (2 cols) --}}
-        <div class="grid grid-cols-2 gap-3 md:gap-4">
+        {{-- ── Bottom right: 3 small cards ── --}}
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+
+            {{-- Earrings --}}
             <a href="{{ route('products.index') }}"
-               class="group relative overflow-hidden aspect-square bg-[#f0e8e4]">
-                <img src="{{ asset('asset/product/earrings/Pink-Tourmaline-with-Drop-Diamond-Earrings.jpg') }}" alt="Earrings"
+               class="group relative overflow-hidden aspect-square bg-[#d8cfe0]">
+                <img src="{{ asset('asset/product/earrings/Pink-Tourmaline-with-Drop-Diamond-Earrings.jpg') }}"
+                     alt="Earrings"
                      loading="lazy" decoding="async"
-                     class="w-full h-full object-cover gpu-img cat-img"
-                     onerror="this.parentElement.classList.add('bg-[#e8d8d0]')">
-                <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500"></div>
-                <div class="absolute bottom-0 left-0 p-4 md:p-5">
-                    <h3 class="font-cormorant font-light text-white text-xl md:text-2xl tracking-[0.08em] uppercase">Earrings</h3>
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                     onerror="this.parentElement.classList.add('bg-[#ccbfd8]')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/72 via-black/6 to-transparent
+                            opacity-65 group-hover:opacity-90 transition-opacity duration-500"></div>
+                <div class="absolute bottom-0 left-0 right-0
+                            p-2.5 sm:p-3 md:p-4 lg:p-5">
+                    <h3 class="font-cormorant font-light text-white uppercase leading-tight
+                                tracking-[0.07em]
+                                text-[.85rem] sm:text-[.95rem] md:text-[1.05rem] lg:text-[1.2rem]">Earrings</h3>
                 </div>
             </a>
+
+            {{-- Bracelets --}}
             <a href="{{ route('products.index') }}"
-               class="group relative overflow-hidden aspect-square bg-[#f0e8e4]">
-                <img src="{{ asset('asset/product/bracelet/Red-Spinel-with-Diamonds-Chain-Bracelet.jpg') }}" alt="Bracelets"
+               class="group relative overflow-hidden aspect-square bg-[#ddd6c2]">
+                <img src="{{ asset('asset/product/bracelet/Red-Spinel-with-Diamonds-Chain-Bracelet.jpg') }}"
+                     alt="Bracelets"
                      loading="lazy" decoding="async"
-                     class="w-full h-full object-cover gpu-img cat-img"
-                     onerror="this.parentElement.classList.add('bg-[#ede0db]')">
-                <div class="cat-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500"></div>
-                <div class="absolute bottom-0 left-0 p-4 md:p-5">
-                    <h3 class="font-cormorant font-light text-white text-xl md:text-2xl tracking-[0.08em] uppercase">Bracelets</h3>
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                     onerror="this.parentElement.classList.add('bg-[#d0c8b0]')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/72 via-black/6 to-transparent
+                            opacity-65 group-hover:opacity-90 transition-opacity duration-500"></div>
+                <div class="absolute bottom-0 left-0 right-0
+                            p-2.5 sm:p-3 md:p-4 lg:p-5">
+                    <h3 class="font-cormorant font-light text-white uppercase leading-tight
+                                tracking-[0.07em]
+                                text-[.85rem] sm:text-[.95rem] md:text-[1.05rem] lg:text-[1.2rem]">Bracelets</h3>
                 </div>
             </a>
+
+            {{-- Stones --}}
+            <a href="{{ route('products.index') }}"
+               class="group relative overflow-hidden aspect-square bg-[#c4d8e4]">
+                <img src="{{ asset('asset/product/stone/2.965-ct-London-Blue-Topaz.jpg') }}"
+                     alt="Stones"
+                     loading="lazy" decoding="async"
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                     onerror="this.parentElement.classList.add('bg-[#b4ccd8]')">
+                <div class="absolute inset-0 bg-gradient-to-t from-[rgba(20,50,70,0.80)] via-black/4 to-transparent
+                            opacity-65 group-hover:opacity-90 transition-opacity duration-500"></div>
+                {{-- Badge "New" --}}
+                {{-- <div class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5">
+                    <span class="font-jost font-light text-[7px] sm:text-[8px] tracking-[0.4em]
+                                 uppercase text-[#C9A89A] border border-[#C9A89A]/55
+                                 px-1.5 py-0.5 sm:px-2 sm:py-1">New</span>
+                </div> --}}
+                <div class="absolute bottom-0 left-0 right-0
+                            p-2.5 sm:p-3 md:p-4 lg:p-5">
+                    <h3 class="font-cormorant font-light text-white uppercase leading-tight
+                                tracking-[0.07em]
+                                text-[.85rem] sm:text-[.95rem] md:text-[1.05rem] lg:text-[1.2rem]">Stones</h3>
+                </div>
+            </a>
+
         </div>
     </div>
 </section>
@@ -481,11 +578,11 @@
 </section>
 
 {{-- ============================================================
-     INSTAGRAM FEED — Grid mosaic
+     INSTAGRAM FEED — Grid mosaic redesign
      ============================================================ --}}
 <section class="cv-section py-20 md:py-32 px-6 lg:px-16 max-w-screen-2xl mx-auto">
 
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 md:mb-16 gap-5">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-5">
         <div>
             <div class="flex items-center gap-6 mb-5">
                 <div class="w-8 h-px bg-[#C9A89A]"></div>
@@ -498,26 +595,35 @@
         </div>
         <a href="https://www.instagram.com/cecileprivatecollection" target="_blank"
            class="group inline-flex items-center gap-3 font-jost font-light text-[10px] tracking-[0.4em] uppercase text-gray-500 hover:text-[#C9A89A] transition-colors duration-300 self-start md:self-auto">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
             @cecileprivatecollection
         </a>
     </div>
 
-    {{-- Asymmetric Instagram grid --}}
-    <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+    {{-- Grid: foto 1 jadi hero (2x2), sisanya mengisi asimetris --}}
+    <div class="ig-mosaic-grid">
         @for($i = 1; $i <= 6; $i++)
         <a href="https://www.instagram.com/cecileprivatecollection/" target="_blank"
-           class="group relative overflow-hidden {{ $i == 1 ? 'col-span-2 row-span-2 aspect-square' : 'aspect-square' }} bg-[#F3EDEA]">
+           class="ig-mosaic-item ig-item-{{ $i }} group relative overflow-hidden bg-[#F3EDEA]">
             <img src="{{ asset('asset/instagram-home/' . $i . '.jpg') }}"
                  alt="Instagram {{ $i }}"
                  loading="lazy" decoding="async"
-                 class="w-full h-full object-cover gpu-img ig-img">
-            <div class="absolute inset-0 bg-[#C9A89A]/0 group-hover:bg-[#C9A89A]/70 transition-all duration-400 flex items-center justify-center">
-                <svg class="w-7 h-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-400 scale-75 group-hover:scale-100 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 flex items-center justify-center transition-all duration-300"
+                 style="background: rgba(201,168,154,0); transition: background 0.35s ease;"
+                 onmouseenter="this.style.background='rgba(201,168,154,0.65)'"
+                 onmouseleave="this.style.background='rgba(201,168,154,0)'">
+                <svg class="w-7 h-7 text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300"
+                     fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
             </div>
         </a>
         @endfor
     </div>
+
 </section>
 
 {{-- ============================================================
@@ -642,6 +748,40 @@
             radial-gradient(ellipse 50% 70% at 0% 50%, rgba(201,168,154,0.06) 0%, transparent 60%),
             radial-gradient(ellipse 50% 70% at 100% 50%, rgba(201,168,154,0.04) 0%, transparent 60%);
         pointer-events: none;
+    }
+
+    .ig-mosaic-grid {
+        display: grid;
+        gap: 6px;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 1fr;
+    }
+
+    .ig-mosaic-item {
+        aspect-ratio: 1 / 1;
+    }
+
+    /* Mobile: 3 foto sejajar */
+    .ig-item-1 { grid-column: 1 / 2; grid-row: 1 / 2; }
+    .ig-item-2 { grid-column: 2 / 3; grid-row: 1 / 2; }
+    .ig-item-3 { grid-column: 3 / 4; grid-row: 1 / 2; }
+    .ig-item-4 { display: none; }
+    .ig-item-5 { display: none; }
+    .ig-item-6 { display: none; }
+
+    /* Tablet & Desktop: besar kiri | 4 kecil tengah | besar kanan */
+    @media (min-width: 640px) {
+        .ig-mosaic-grid {
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .ig-item-1 { grid-column: 1 / 2; grid-row: 1 / 3; }
+        .ig-item-2 { grid-column: 2 / 3; grid-row: 1 / 2; }
+        .ig-item-3 { grid-column: 3 / 4; grid-row: 1 / 2; }
+        .ig-item-4 { display: block; grid-column: 2 / 3; grid-row: 2 / 3; }
+        .ig-item-5 { display: block; grid-column: 3 / 4; grid-row: 2 / 3; }
+        .ig-item-6 { display: block; grid-column: 4 / 5; grid-row: 1 / 3; }
     }
 
     /* ─── Scroll reveal ─── */
