@@ -293,4 +293,99 @@ class PaypalWebhookTest extends TestCase
         $this->assertEquals(10.00, (float) $order->refund_amount);
         $this->assertNotNull($order->refunded_at);
     }
+
+    public function test_paypal_webhook_capture_pending_marks_order_pending(): void
+    {
+        $order = Order::create([
+            'order_number' => 'INV-2026-00005',
+            'order_type' => 'CATALOG',
+            'user_id' => null,
+            'contact_email' => 'buyer@gmail.com',
+            'guest_token' => Str::random(64),
+
+            'status' => 'PENDING_REVIEW',
+            'currency' => 'USD',
+
+            'subtotal_idr' => 0,
+            'subtotal_usd' => 10.00,
+            'shipping_cost' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 10.00,
+
+            'payment_preference' => 'PAYPAL',
+            'payment_gateway' => 'PAYPAL',
+            'transaction_id' => 'PAYPAL-ORDER-PENDING-1',
+            'capture_id' => 'CAPTURE-OLD',
+            'paid_at' => now(),
+        ]);
+
+        $event = [
+            'id' => 'WH-TEST-PENDING-1',
+            'event_type' => 'PAYMENT.CAPTURE.PENDING',
+            'resource' => [
+                'invoice_id' => $order->order_number . '-1712345678',
+                'supplementary_data' => [
+                    'related_ids' => [
+                        'order_id' => $order->transaction_id,
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/webhook/paypal', $event);
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'success');
+
+        $order->refresh();
+        $this->assertSame('PENDING', $order->status);
+        $this->assertNull($order->paid_at);
+        $this->assertNull($order->capture_id);
+    }
+
+    public function test_paypal_webhook_capture_reversed_marks_order_reversed(): void
+    {
+        $order = Order::create([
+            'order_number' => 'INV-2026-00006',
+            'order_type' => 'CATALOG',
+            'user_id' => null,
+            'contact_email' => 'buyer@gmail.com',
+            'guest_token' => Str::random(64),
+
+            'status' => 'PAID',
+            'currency' => 'USD',
+
+            'subtotal_idr' => 0,
+            'subtotal_usd' => 10.00,
+            'shipping_cost' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 10.00,
+
+            'payment_preference' => 'PAYPAL',
+            'payment_gateway' => 'PAYPAL',
+            'transaction_id' => 'PAYPAL-ORDER-REVERSED-1',
+            'capture_id' => 'CAPTURE-REVERSED-1',
+            'paid_at' => now(),
+        ]);
+
+        $event = [
+            'id' => 'WH-TEST-REVERSED-1',
+            'event_type' => 'PAYMENT.CAPTURE.REVERSED',
+            'resource' => [
+                'supplementary_data' => [
+                    'related_ids' => [
+                        'order_id' => $order->transaction_id,
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/webhook/paypal', $event);
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'success');
+
+        $order->refresh();
+        $this->assertSame('REVERSED', $order->status);
+    }
 }
