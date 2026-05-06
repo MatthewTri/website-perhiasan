@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $hasHistory = auth()->check() && isset($history) && $history->isNotEmpty();
+    $isQuotaExceeded = isset($quotaInfo) && ($quotaInfo['is_exceeded'] ?? false);
+@endphp
+
 @if(isset($isGuest) && $isGuest)
 {{-- GUEST VIEW: Login Required --}}
 <div class="flex flex-col h-screen bg-gradient-to-br from-white via-stone-50 to-stone-100">
@@ -206,8 +211,8 @@
                                     </div>
                                 </div>
                                 
-                                {{-- Consultation Button --}}
-                                <div class="px-4 pb-4 pt-2">
+                                {{-- Consult (Full Width) --}}
+                                <div class="px-4 pb-2 pt-3">
                                     <a href="{{ route('consultation.index') }}" 
                                        class="block w-full bg-[#E3CFCF] hover:bg-[#E3CFCF] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
                                         <div class="flex items-center justify-center gap-2">
@@ -217,6 +222,21 @@
                                             <span class="uppercase tracking-wide text-xs font-bold">Consult with this Design</span>
                                         </div>
                                     </a>
+                                </div>
+
+                                {{-- Actions (Two Buttons Side-by-Side) --}}
+                                <div class="px-4 pb-4 pt-2">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button type="button" onclick="window.aiChat.startModify({{ $chat->id }})"
+                                                {{ $isQuotaExceeded ? 'disabled' : '' }}
+                                                class="w-full border border-stone-300 text-stone-700 text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm hover:border-stone-900 hover:text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <span class="uppercase tracking-wide text-xs font-bold">Modify this Design</span>
+                                        </button>
+                                        <button type="button" onclick="window.aiChat.createNewDesign()"
+                                                class="w-full border border-stone-300 text-stone-700 text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm hover:border-stone-900 hover:text-stone-900">
+                                            <span class="uppercase tracking-wide text-xs font-bold">Create new Design</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI Cecile &bull; {{ $chat->created_at->format('H:i') }}</span>
@@ -255,7 +275,7 @@
                     </div>
                 @else
                     {{-- Normal Welcome Message --}}
-                <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
+                <div class="flex items-start gap-4 animate-fade-in-up {{ $hasHistory ? 'hidden' : '' }}" id="welcomeMessage">
                     <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
                         <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                     </div>
@@ -374,6 +394,10 @@
             this.sendIcon = document.getElementById('sendIcon');
             this.loadingSpinner = document.getElementById('loadingSpinner');
             this.charCount = document.getElementById('charCount');
+            this.defaultPlaceholder = this.promptInput?.getAttribute('placeholder') || '';
+            this.welcomeMessage = document.getElementById('welcomeMessage');
+            this.hasHistory = {{ $hasHistory ? 'true' : 'false' }};
+            this.inputLocked = false;
             
             // Guided conversation state
             this.guidedMode = true;
@@ -389,6 +413,10 @@
             
             // Quota state
             this.quotaExceeded = {{ isset($quotaInfo) && $quotaInfo['is_exceeded'] ? 'true' : 'false' }};
+
+            // Modify flow state
+            this.modifyMode = false;
+            this.modifyChatId = null;
             
             this.init();
             
@@ -397,6 +425,12 @@
         }
 
         init() {
+            // When quota exceeded, the input form is not rendered.
+            if (!this.promptInput || !this.chatForm || !this.sendButton) {
+                this.scrollToBottom();
+                return;
+            }
+
             this.promptInput.addEventListener('input', () => {
                 this.handleInputChange();
                 this.autoResize();
@@ -417,6 +451,62 @@
             
             this.toggleSendButton();
             this.scrollToBottom();
+
+            // If the user already has history, lock input until they choose Modify/Create new.
+            if (this.hasHistory) {
+                this.setWelcomeVisible(false);
+                this.setInputLocked(true);
+            }
+        }
+
+        setWelcomeVisible(visible) {
+            if (!this.welcomeMessage) return;
+            this.welcomeMessage.classList.toggle('hidden', !visible);
+        }
+
+        setInputLocked(locked) {
+            this.inputLocked = locked;
+            if (!this.promptInput || !this.sendButton) return;
+
+            this.promptInput.disabled = locked;
+            this.sendButton.disabled = locked;
+            this.promptInput.classList.toggle('opacity-60', locked);
+            this.promptInput.classList.toggle('cursor-not-allowed', locked);
+
+            if (locked) {
+                this.promptInput.value = '';
+                if (this.charCount) this.charCount.textContent = '0';
+                this.promptInput.style.height = 'auto';
+            }
+
+            this.toggleSendButton();
+        }
+
+        createNewDesign() {
+            if (this.quotaExceeded) return;
+            if (!this.promptInput) return;
+
+            // Exit modify mode
+            this.modifyMode = false;
+            this.modifyChatId = null;
+
+            // Reset guided state
+            this.guidedMode = true;
+            this.currentStep = 1;
+            this.userSelections = {
+                category: null,
+                material: null,
+                gemstone: null,
+                cut: null,
+                style: null,
+                customNote: null
+            };
+
+            this.setPlaceholder(this.defaultPlaceholder);
+            this.setInputLocked(false);
+            this.setWelcomeVisible(true);
+            this.scrollToBottom();
+            this.promptInput.focus();
         }
 
         selectOption(stepName, value) {
@@ -814,8 +904,30 @@
         }
 
         async sendMessage() {
+            if (this.inputLocked) return;
+            if (this.quotaExceeded) return;
+            if (!this.promptInput) return;
             const prompt = this.promptInput.value.trim();
             if (!prompt) return;
+
+            // Modify mode: send instruction to edit endpoint
+            if (this.modifyMode && this.modifyChatId) {
+                const instruction = prompt;
+                this.addUserMessage(instruction);
+
+                this.promptInput.value = '';
+                this.charCount.textContent = '0';
+                this.promptInput.style.height = 'auto';
+                this.toggleSendButton();
+
+                const chatId = this.modifyChatId;
+                this.modifyMode = false;
+                this.modifyChatId = null;
+                this.setPlaceholder(this.defaultPlaceholder);
+
+                await this.submitEdit(chatId, instruction);
+                return;
+            }
 
             // ✅ FIX: Langsung submit ke AI tanpa guided mode complexity
             if (this.guidedMode && this.currentStep <= 5) {
@@ -869,6 +981,7 @@
                 const response = await fetch('{{ route("gemma.generate") }}' + (useMock ? '?mock=1' : ''), {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
@@ -880,13 +993,18 @@
                 console.log('🔍 Response data:', data);
 
                 if (data.success) {
-                    this.addAIImageMessage(data.image_url);
+                    this.addAIImageMessage(data.image_url, data.chat_id);
+                    this.setWelcomeVisible(false);
+                    this.setInputLocked(true);
+                    this.modifyMode = false;
+                    this.modifyChatId = null;
                     this.resetConversation();
                 } else {
                     console.error('❌ Error response:', data);
                     
                     // ✅ Special handling for quota exceeded
                     if (data.error === 'quota_exceeded') {
+                        this.quotaExceeded = true;
                         this.addQuotaExceededMessage(data.quota_limit, data.message);
                     } else {
                         const errorMessage = this.getUserFriendlyErrorMessage(data.error);
@@ -903,34 +1021,98 @@
             }
         }
 
+        async submitEdit(chatId, instruction) {
+            this.setLoading(true);
+
+            try {
+                const response = await fetch('{{ route("gemma.edit") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ chat_id: chatId, instruction })
+                });
+
+                const data = await response.json();
+                console.log('🔍 Edit response data:', data);
+
+                if (data.success) {
+                    this.addAIImageMessage(data.image_url, data.chat_id);
+                    this.setWelcomeVisible(false);
+                    this.setInputLocked(true);
+                    this.modifyMode = false;
+                    this.modifyChatId = null;
+                    this.resetConversation();
+                } else {
+                    if (data.error === 'quota_exceeded') {
+                        this.quotaExceeded = true;
+                        this.addQuotaExceededMessage(data.quota_limit, data.message);
+                    } else {
+                        const errorMessage = this.getUserFriendlyErrorMessage(data.error);
+                        this.addAIMessage(errorMessage);
+                        // Keep user in Modify flow and ask again
+                        this.startModify(chatId);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Edit fetch error:', error);
+                this.addAIMessage('Sorry, something went wrong. Please try again.');
+                // Keep user in Modify flow and ask again
+                this.startModify(chatId);
+            } finally {
+                this.setLoading(false);
+            }
+        }
+
+        startModify(chatId) {
+            if (this.quotaExceeded) return;
+            if (!this.promptInput) return;
+
+            this.setWelcomeVisible(false);
+            this.setInputLocked(false);
+            this.modifyMode = true;
+            this.modifyChatId = chatId;
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
+            messageElement.setAttribute('data-session', 'current');
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
+                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                </div>
+                <div class="flex-1 max-w-lg">
+                    <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
+                        <p class="text-stone-700 text-sm leading-relaxed font-light mb-3">
+                            What would you like to enhance or change in this design?
+                        </p>
+                        <p class="text-stone-500 text-xs leading-relaxed font-light">
+                            Example: “change the leaf motif to an animal style”, “add small diamonds on the band”, “change the gemstone to emerald”.
+                        </p>
+                    </div>
+                    <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageElement);
+            this.scrollToBottom();
+
+            this.setPlaceholder('Describe what you want to change...');
+            this.promptInput.value = '';
+            if (this.charCount) this.charCount.textContent = '0';
+            this.promptInput.focus();
+        }
+
+        setPlaceholder(text) {
+            if (!this.promptInput) return;
+            this.promptInput.setAttribute('placeholder', text);
+        }
+
         resetConversation() {
             // Convert current session messages to history (remove the "current" session marker)
             const currentSessionMessages = this.chatContainer.querySelectorAll('[data-session="current"]');
             currentSessionMessages.forEach(msg => msg.removeAttribute('data-session'));
-            
-            setTimeout(() => {
-                const messageElement = document.createElement('div');
-                messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
-                messageElement.innerHTML = `
-                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
-                    </div>
-                    <div class="flex-1 max-w-lg">
-                        <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
-                            <p class="text-stone-700 text-sm leading-relaxed font-light mb-3">
-                                Magnificent! Your design has been created. Would you like to create another piece?
-                            </p>
-                            <button onclick="window.aiChat.startNewDesign()" 
-                                    class="w-full px-6 py-3 border border-stone-300 text-stone-700 text-sm font-medium uppercase tracking-wider hover:border-stone-900 hover:text-stone-900 transition-all duration-200">
-                                Start New Design
-                            </button>
-                        </div>
-                        <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">CECILE AI &bull; ${this.getCurrentTime()}</span>
-                    </div>
-                `;
-                this.chatContainer.appendChild(messageElement);
-                this.scrollToBottom();
-            }, 1000);
+            this.scrollToBottom();
         }
 
         resetAfterError() {
@@ -997,21 +1179,15 @@
         }
 
         startNewDesign() {
-            this.guidedMode = true;
-            this.currentStep = 1;
-            this.userSelections = {
-                category: null,
-                material: null,
-                gemstone: null,
-                cut: null,
-                style: null,
-                customNote: null
-            };
-            
-            location.reload(); // Simplest way to reset
+            this.createNewDesign();
         }
 
         getUserFriendlyErrorMessage(error) {
+            if (typeof error === 'string') {
+                if (error.includes("Invalid file 'image'") || error.includes('unsupported mimetype')) {
+                    return 'Modify failed: the server received an invalid image format. Please try again.';
+                }
+            }
             const errorMap = {
                 'Prompt cannot be empty.': 'Please provide a description.',
                 'Your prompt contains inappropriate content.': 'Please use appropriate language.',
@@ -1117,7 +1293,7 @@
             this.scrollToBottom();
         }
 
-        addAIImageMessage(imageUrl) {
+        addAIImageMessage(imageUrl, chatId = null) {
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
             messageElement.setAttribute('data-session', 'current');
@@ -1140,9 +1316,9 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        <!-- Consultation Button -->
-                        <div class="px-4 pb-4 pt-2">
+
+                        <!-- Consult (Full Width) -->
+                        <div class="px-4 pb-2 pt-3">
                             <a href="{{ route('consultation.index') }}" 
                                class="block w-full bg-[#E3CFCF] hover:bg-[#E3CFCF] text-white text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md group">
                                 <div class="flex items-center justify-center gap-2">
@@ -1152,6 +1328,21 @@
                                     <span class="uppercase tracking-wide text-xs font-bold">Consult with this Design</span>
                                 </div>
                             </a>
+                        </div>
+
+                        <!-- Actions (Two Buttons Side-by-Side) -->
+                        <div class="px-4 pb-4 pt-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="window.aiChat.startModify(${chatId})"
+                                        ${chatId ? '' : 'disabled'}
+                                        class="w-full border border-stone-300 text-stone-700 text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm hover:border-stone-900 hover:text-stone-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span class="uppercase tracking-wide text-xs font-bold">Modify this Design</span>
+                                </button>
+                                <button type="button" onclick="window.aiChat.createNewDesign()"
+                                        class="w-full border border-stone-300 text-stone-700 text-center py-3 px-4 rounded-lg transition-all duration-300 font-medium text-sm hover:border-stone-900 hover:text-stone-900">
+                                    <span class="uppercase tracking-wide text-xs font-bold">Create new Design</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <span class="text-[10px] text-stone-400 mt-2 ml-2 block font-mono">AI CECILE &bull; ${this.getCurrentTime()}</span>
@@ -1198,11 +1389,13 @@
                 this.loadingSpinner.classList.remove('hidden');
             } else {
                 this.removeLoadingMessage();
-                this.sendButton.disabled = false;
-                this.promptInput.disabled = false;
+                this.sendButton.disabled = this.inputLocked;
+                this.promptInput.disabled = this.inputLocked;
                 this.sendIcon.classList.remove('hidden');
                 this.loadingSpinner.classList.add('hidden');
-                this.promptInput.focus();
+                if (!this.inputLocked) {
+                    this.promptInput.focus();
+                }
             }
         }
 
