@@ -103,7 +103,7 @@
                     </tr>
 
                     <!-- Additional Note (if admin_notes exists) -->
-                    @if($order->admin_notes)
+                    {{-- @if($order->admin_notes)
                     <tr>
                         <td class="inner-padding" style="padding: 0 50px 30px 50px;">
                             <div style="background-color: #faf7f7; padding: 20px; border-left: 2px solid #E3CFCF;">
@@ -114,7 +114,7 @@
                             </div>
                         </td>
                     </tr>
-                    @endif
+                    @endif --}}
 
                     <!-- CTA Button -->
                     <tr>

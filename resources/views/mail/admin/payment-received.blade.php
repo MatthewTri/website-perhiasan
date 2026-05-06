@@ -140,11 +140,11 @@
                                         </span>
                                     </td>
                                 </tr>
-                                @if($paymentType === 'paypal' && $order->transaction_id)
+                                @if($paymentType === 'paypal' && $order->capture_id)
                                 <tr>
                                     <td colspan="2" style="padding-top: 10px;">
                                         <span style="display: block; font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">PayPal Transaction ID</span>
-                                        <code style="font-size: 12px; color: #1c1917; background-color: #f5f5f4; padding: 6px 10px; border-radius: 2px; display: inline-block;">{{ $order->transaction_id }}</code>
+                                        <code style="font-size: 12px; color: #1c1917; background-color: #f5f5f4; padding: 6px 10px; border-radius: 2px; display: inline-block;">{{ $order->capture_id }}</code>
                                     </td>
                                 </tr>
                                 @endif
