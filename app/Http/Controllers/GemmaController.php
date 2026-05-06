@@ -77,10 +77,19 @@ class GemmaController extends Controller
         }
 
         if ($user->ai_prompt_count >= $quotaLimit) {
+            $used = (int) $user->ai_prompt_count;
+            $remaining = max($quotaLimit - $used, 0);
+
             return response()->json([
                 'success'     => false,
                 'error'       => 'quota_exceeded',
                 'quota_limit' => $quotaLimit,
+                'quota'       => [
+                    'used'        => $used,
+                    'limit'       => (int) $quotaLimit,
+                    'remaining'   => (int) $remaining,
+                    'is_exceeded' => true,
+                ],
                 'message'     => "You have reached your daily limit of {$quotaLimit} AI generations. Please try again tomorrow.",
             ], 403);
         }
@@ -130,6 +139,10 @@ class GemmaController extends Controller
                 ]);
 
                 $user->increment('ai_prompt_count');
+                $user->refresh();
+
+                $used = (int) $user->ai_prompt_count;
+                $remaining = max($quotaLimit - $used, 0);
 
                 return response()->json([
                     'success'         => true,
@@ -137,6 +150,12 @@ class GemmaController extends Controller
                     'image_url'       => $permanentUrl,
                     'chat_id'         => $chatHistory->id,
                     'remaining_quota' => $quotaLimit - $user->ai_prompt_count,
+                    'quota'           => [
+                        'used'        => $used,
+                        'limit'       => (int) $quotaLimit,
+                        'remaining'   => (int) $remaining,
+                        'is_exceeded' => $used >= $quotaLimit,
+                    ],
                 ]);
 
             } else {
@@ -198,10 +217,19 @@ class GemmaController extends Controller
         }
 
         if ($user->ai_prompt_count >= $quotaLimit) {
+            $used = (int) $user->ai_prompt_count;
+            $remaining = max($quotaLimit - $used, 0);
+
             return response()->json([
                 'success'     => false,
                 'error'       => 'quota_exceeded',
                 'quota_limit' => $quotaLimit,
+                'quota'       => [
+                    'used'        => $used,
+                    'limit'       => (int) $quotaLimit,
+                    'remaining'   => (int) $remaining,
+                    'is_exceeded' => true,
+                ],
                 'message'     => "You have reached your daily limit of {$quotaLimit} AI generations. Please try again tomorrow.",
             ], 403);
         }
@@ -284,6 +312,10 @@ class GemmaController extends Controller
                 ]);
 
                 $user->increment('ai_prompt_count');
+                $user->refresh();
+
+                $used = (int) $user->ai_prompt_count;
+                $remaining = max($quotaLimit - $used, 0);
 
                 return response()->json([
                     'success'         => true,
@@ -291,6 +323,12 @@ class GemmaController extends Controller
                     'image_url'       => $permanentUrl,
                     'chat_id'         => $chatHistory->id,
                     'remaining_quota' => $quotaLimit - $user->ai_prompt_count,
+                    'quota'           => [
+                        'used'        => $used,
+                        'limit'       => (int) $quotaLimit,
+                        'remaining'   => (int) $remaining,
+                        'is_exceeded' => $used >= $quotaLimit,
+                    ],
                 ]);
 
             } else {
