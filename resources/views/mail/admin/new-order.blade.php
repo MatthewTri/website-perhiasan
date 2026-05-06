@@ -169,7 +169,7 @@
                                         <span style="font-size: 14px; color: #1c1917; font-weight: 600;">Subtotal</span>
                                     </td>
                                     <td align="right" style="padding: 5px 0;">
-                                        <span style="font-family: 'Georgia', serif; font-size: 18px; color: #1c1917; font-weight: 600;">
+                                        <span style="font-size: 18px; color: #1c1917; font-weight: 600;">
                                             @if($order->currency === 'USD')
                                                 USD {{ number_format($order->subtotal_usd, 2, '.', ',') }}
                                             @else
