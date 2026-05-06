@@ -111,11 +111,11 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'cecileprivatecollection@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
     // TAMBAHKAN INI
-    'admin_email' => env('MAIL_ADMIN_EMAIL', 'matthew.tricahyo2@gmail.com'),
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'cecileprivatecollection@gmail.com'),
 
 ];
