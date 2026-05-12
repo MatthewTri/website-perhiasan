@@ -9,9 +9,43 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class GemmaController extends Controller
 {
+    private function imageBytesFromAiPayload(array $data): string
+    {
+        // Preferred: explicit base64 payload
+        if (!empty($data['image_b64'])) {
+            $bytes = base64_decode((string) $data['image_b64'], true);
+            if ($bytes === false) {
+                throw new \RuntimeException('Failed to decode image_b64 from AI service');
+            }
+            return $bytes;
+        }
+
+        $imageUrl = (string) ($data['image_url'] ?? '');
+        if ($imageUrl === '') {
+            throw new \RuntimeException('No image_url/image_b64 returned by AI service');
+        }
+
+        // Support data URLs: data:image/png;base64,....
+        if (preg_match('/^data:image\/(png|jpe?g|webp);base64,(.+)$/is', $imageUrl, $m)) {
+            $bytes = base64_decode($m[2], true);
+            if ($bytes === false) {
+                throw new \RuntimeException('Failed to decode base64 data URL from AI service');
+            }
+            return $bytes;
+        }
+
+        // Treat as remote URL
+        $imageResponse = Http::timeout(30)->get($imageUrl);
+        if (!$imageResponse->successful()) {
+            throw new \RuntimeException('Failed to download image from AI service URL');
+        }
+        return $imageResponse->body();
+    }
+
     public function index()
     {
         $aiEnabled = Setting::getBoolValue('ai_enabled', false);
@@ -107,28 +141,15 @@ class GemmaController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                if (!isset($data['image_url'])) {
-                    return response()->json([
-                        'success' => false,
-                        'error'   => 'No image URL received from AI service.',
-                    ], 500);
-                }
-
-                // Download & simpan gambar ke storage
-                $imageResponse = Http::timeout(30)->get($data['image_url']);
-                if (!$imageResponse->successful()) {
-                    return response()->json([
-                        'success' => false,
-                        'error'   => 'Failed to download generated image.',
-                    ], 500);
-                }
+                // Download / decode & simpan gambar ke storage
+                $imageBytes = $this->imageBytesFromAiPayload(is_array($data) ? $data : []);
 
                 if (!Storage::disk('public')->exists('ai_generations')) {
                     Storage::disk('public')->makeDirectory('ai_generations');
                 }
 
                 $fileName = 'ai_generations/' . Str::uuid() . '.png';
-                Storage::disk('public')->put($fileName, $imageResponse->body());
+                Storage::disk('public')->put($fileName, $imageBytes);
                 $permanentUrl = asset('storage/' . $fileName);
 
                 $chatHistory = ChatHistory::create([
@@ -168,6 +189,9 @@ class GemmaController extends Controller
             }
 
         } catch (\Exception $e) {
+            Log::error('GemmaController@generate failed', [
+                'message' => $e->getMessage(),
+            ]);
             if (str_contains($e->getMessage(), 'Connection refused') ||
                 str_contains($e->getMessage(), 'cURL error 7')) {
                 return response()->json([
@@ -263,34 +287,8 @@ class GemmaController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Node.js bisa return image_url atau image_b64
-                $imageContents = null;
-
-                if (!empty($data['image_url'])) {
-                    $imageResponse = Http::timeout(30)->get($data['image_url']);
-                    if (!$imageResponse->successful()) {
-                        return response()->json([
-                            'success' => false,
-                            'error'   => 'Failed to download edited image.',
-                        ], 500);
-                    }
-                    $imageContents = $imageResponse->body();
-
-                } elseif (!empty($data['image_b64'])) {
-                    $imageContents = base64_decode($data['image_b64']);
-                    if ($imageContents === false) {
-                        return response()->json([
-                            'success' => false,
-                            'error'   => 'Failed to decode edited image.',
-                        ], 500);
-                    }
-
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'error'   => 'No edited image received from AI service.',
-                    ], 502);
-                }
+                // Node.js bisa return image_url (remote URL / data URL) atau image_b64
+                $imageContents = $this->imageBytesFromAiPayload(is_array($data) ? $data : []);
 
                 // Simpan gambar hasil edit
                 if (!Storage::disk('public')->exists('ai_generations')) {
@@ -341,6 +339,9 @@ class GemmaController extends Controller
             }
 
         } catch (\Exception $e) {
+            Log::error('GemmaController@edit failed', [
+                'message' => $e->getMessage(),
+            ]);
             if (str_contains($e->getMessage(), 'Connection refused') ||
                 str_contains($e->getMessage(), 'cURL error 7')) {
                 return response()->json([
