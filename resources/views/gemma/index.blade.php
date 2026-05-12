@@ -668,7 +668,14 @@
             this.setPlaceholder(this.defaultPlaceholder);
             this.setInputLocked(false);
             this.setWelcomeVisible(true);
-            this.scrollToBottom();
+
+            // Ensure the welcome prompt is actually visible to the user.
+            // After a successful generate/modify we scroll to the very bottom (image card),
+            // so simply unhiding the welcome card can look like it "didn't appear".
+            if (this.chatContainer && this.welcomeMessage) {
+                this.chatContainer.appendChild(this.welcomeMessage);
+            }
+            this.scrollToWelcome();
             this.promptInput.focus();
         }
 
@@ -1597,6 +1604,19 @@
 
         scrollToBottom() {
             this.scrollArea.scrollTop = this.scrollArea.scrollHeight;
+        }
+
+        scrollToWelcome() {
+            if (!this.welcomeMessage || this.welcomeMessage.classList.contains('hidden')) {
+                this.scrollToBottom();
+                return;
+            }
+
+            try {
+                this.welcomeMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            } catch (e) {
+                this.scrollToBottom();
+            }
         }
 
         getCurrentTime() {
