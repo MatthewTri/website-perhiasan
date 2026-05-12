@@ -25,7 +25,8 @@ class ProductSeeder extends Seeder
         $rows = $this->readFile($file);
 
         $total   = count($rows);
-        $success = 0;
+        $created = 0;
+        $updated = 0;
         $skipped = 0;
 
         $this->command->info("Memproses {$total} baris dari: " . basename($file));
@@ -40,18 +41,16 @@ class ProductSeeder extends Seeder
                 continue;
             }
 
-            // Skip duplikat — sudah ada di DB, tidak perlu diulang
-            if (Product::whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->exists()) {
-                $this->command->line("  [SKIP] Baris {$lineNumber}: \"{$name}\" sudah ada di database");
-                $skipped++;
-                continue;
-            }
-
             // Proses row — kalau error, skip baris ini saja, tidak crash semua
             try {
-                $this->processRow($row, $name);
-                $success++;
-                $this->command->line("  [OK]   Baris {$lineNumber}: \"{$name}\"");
+                $action = $this->processRow($row, $name);
+                if ($action === 'created') {
+                    $created++;
+                    $this->command->line("  [NEW]  Baris {$lineNumber}: \"{$name}\"");
+                } else {
+                    $updated++;
+                    $this->command->line("  [UPD]  Baris {$lineNumber}: \"{$name}\"");
+                }
             } catch (\Throwable $e) {
                 $skipped++;
                 $message = "Baris {$lineNumber} (\"{$name}\"): {$e->getMessage()}";
@@ -63,7 +62,7 @@ class ProductSeeder extends Seeder
 
         // Summary
         $this->command->newLine();
-        $this->command->info("Selesai. Berhasil: {$success} | Dilewati/Error: {$skipped} | Total: {$total}");
+        $this->command->info("Selesai. Baru: {$created} | Update: {$updated} | Dilewati/Error: {$skipped} | Total: {$total}");
 
         if (!empty($this->errors)) {
             $this->command->newLine();
@@ -79,29 +78,46 @@ class ProductSeeder extends Seeder
 
     // ── Proses satu row ──────────────────────────────────────────────────────
 
-    private function processRow(array $row, string $name): void
+    private function processRow(array $row, string $name): string
     {
-        DB::transaction(function () use ($row, $name) {
+        return DB::transaction(function () use ($row, $name) {
             $categoryId = $this->resolveCategory(
                 $this->clean($row['Parent-Kategori'] ?? ''),
                 $this->clean($row['Kategori'] ?? ''),
             );
 
-            $product = Product::create([
-                'name'         => $name,
-                'slug'         => $this->makeUniqueProductSlug($name),
-                'description'  => $this->nullIfEmpty($row['Deskripsi'] ?? null),
-                'price_idr'    => $this->parseMoney($row['Harga_IDR'] ?? 0),
-                'price_usd'    => $this->parseMoney($row['Harga_USD'] ?? 0),
-                'category_id'  => $categoryId,
-                'rating_avg'   => 0,
-                'rating_count' => 0,
-            ]);
+            // Upsert produk berdasarkan name (case-insensitive).
+            // Catatan: kita TIDAK mengubah slug/rating agar aman untuk production.
+            $product = Product::whereRaw('LOWER(name) = ?', [mb_strtolower($name)])
+                ->lockForUpdate()
+                ->first();
+
+            $payload = [
+                'name'        => $name,
+                'description' => $this->nullIfEmpty($row['Deskripsi'] ?? null),
+                'price_idr'   => $this->parseMoney($row['Harga_IDR'] ?? 0),
+                'price_usd'   => $this->parseMoney($row['Harga_USD'] ?? 0),
+                'category_id' => $categoryId,
+            ];
+
+            if ($product) {
+                $product->update($payload);
+                $action = 'updated';
+            } else {
+                $product = Product::create($payload + [
+                    'slug'         => $this->makeUniqueProductSlug($name),
+                    'rating_avg'   => 0,
+                    'rating_count' => 0,
+                ]);
+                $action = 'created';
+            }
 
             $this->seedImages($product->id, $row['Photos'] ?? null);
             $this->seedColors($product->id, $row['Colors'] ?? null);
             $this->seedSizes($product->id, $row['Sizes'] ?? null);
             $this->seedSpecifications($product->id, $row['Specifications'] ?? null);
+
+            return $action;
         });
     }
 
@@ -166,7 +182,19 @@ class ProductSeeder extends Seeder
     private function seedImages(int $productId, mixed $photosCell): void
     {
         $raw = $this->clean($photosCell ?? '');
-        if ($raw === '' || mb_strtolower($raw) === 'none') return;
+        if ($raw === '') {
+            // Kosong = jangan ubah data existing
+            return;
+        }
+
+        if (mb_strtolower($raw) === 'none') {
+            // none = hapus semua relasi
+            ProductImage::where('product_id', $productId)->delete();
+            return;
+        }
+
+        // Replace total sesuai file
+        ProductImage::where('product_id', $productId)->delete();
 
         foreach ($this->splitList($raw, '|') as $i => $path) {
             ProductImage::create([
@@ -181,7 +209,18 @@ class ProductSeeder extends Seeder
     private function seedColors(int $productId, mixed $colorsCell): void
     {
         $raw = $this->clean($colorsCell ?? '');
-        if ($raw === '' || mb_strtolower($raw) === 'none') return;
+        if ($raw === '') {
+            // Kosong = jangan ubah data existing
+            return;
+        }
+
+        if (mb_strtolower($raw) === 'none') {
+            ProductColor::where('product_id', $productId)->delete();
+            return;
+        }
+
+        // Replace total sesuai file
+        ProductColor::where('product_id', $productId)->delete();
 
         if (mb_strtolower($raw) === 'default') {
             $defaults = [
@@ -224,7 +263,18 @@ class ProductSeeder extends Seeder
     private function seedSizes(int $productId, mixed $sizesCell): void
     {
         $raw = $this->clean($sizesCell ?? '');
-        if ($raw === '' || mb_strtolower($raw) === 'none') return;
+        if ($raw === '') {
+            // Kosong = jangan ubah data existing
+            return;
+        }
+
+        if (mb_strtolower($raw) === 'none') {
+            ProductSize::where('product_id', $productId)->delete();
+            return;
+        }
+
+        // Replace total sesuai file
+        ProductSize::where('product_id', $productId)->delete();
 
         if (mb_strtolower($raw) === 'default') {
             $defaults = [
@@ -262,7 +312,18 @@ class ProductSeeder extends Seeder
     private function seedSpecifications(int $productId, mixed $specCell): void
     {
         $raw = $this->clean($specCell ?? '');
-        if ($raw === '' || mb_strtolower($raw) === 'none') return;
+        if ($raw === '') {
+            // Kosong = jangan ubah data existing
+            return;
+        }
+
+        if (mb_strtolower($raw) === 'none') {
+            ProductSpecification::where('product_id', $productId)->delete();
+            return;
+        }
+
+        // Replace total sesuai file
+        ProductSpecification::where('product_id', $productId)->delete();
 
         $sort = 0;
         foreach (preg_split('/\s*;\s*/', $raw) ?: [] as $section) {
