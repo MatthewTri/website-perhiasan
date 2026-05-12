@@ -19,6 +19,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\CalendarSettingController;
+use App\Http\Controllers\SitemapController;
 
 
 // Home Page
@@ -30,6 +31,9 @@ Route::get('/', function () {
 Route::get('/about-us', function () {
     return view('about-us');
 })->name('about-us');
+
+// Sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Currency Switcher (Public Access)
 Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('currency.switch');

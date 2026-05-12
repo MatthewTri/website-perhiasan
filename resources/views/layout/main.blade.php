@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    @php
+        $defaultTitle = 'Cecile Private Collection';
+        $seoTitle = trim($__env->yieldContent('title'));
+        $seoTitle = $seoTitle !== '' ? $seoTitle . ' | ' . $defaultTitle : $defaultTitle;
+        $seoDescription = trim($__env->yieldContent('meta_description'));
+        $seoDescription = $seoDescription !== ''
+            ? $seoDescription
+            : 'Discover fine jewelry collections, crafted with premium materials and timeless design.';
+        $canonicalUrl = url()->current();
+        $ogImage = trim($__env->yieldContent('meta_image'));
+        $ogImage = $ogImage !== '' ? $ogImage : asset('asset/img/logo.png');
+    @endphp
+
+    <title>{{ $seoTitle }}</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
     <link rel="icon" type="image/png" href="{{ asset('asset/img/logo.png') }}?v=1">
 
@@ -22,7 +51,30 @@
 
     @vite('resources/css/app.css')
 
-    <title>Cecile Private Collection</title>
+    {{-- Optional per-page extra <head> content --}}
+    @stack('head')
+
+    {{-- Basic JSON-LD for better SEO --}}
+    <script type="application/ld+json">
+        @php
+            $schema = [
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'Organization',
+                    'name' => $defaultTitle,
+                    'url' => url('/'),
+                    'logo' => asset('asset/img/logo.png'),
+                ],
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'WebSite',
+                    'name' => $defaultTitle,
+                    'url' => url('/'),
+                ],
+            ];
+        @endphp
+        {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 </head>
 @php
     $tawkEnabled = \App\Models\Setting::getBoolValue('tawk_enabled', true);
