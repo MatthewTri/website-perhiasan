@@ -9,7 +9,7 @@
         {{-- Logo --}}
         <div class="flex justify-center">
             <a href="/" class="block">
-                <img src="{{ asset('img/logo.png') }}" alt="Cecile Private Collection" class="h-16 w-auto hover:opacity-80 transition-opacity">
+                <img src="{{ asset('asset/img/logo.png') }}" alt="Cecile Private Collection" class="h-16 w-auto hover:opacity-80 transition-opacity">
             </a>
         </div>
         

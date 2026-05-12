@@ -16,7 +16,7 @@
 
             <div class="absolute left-1/2 transform -translate-x-1/2">
                 <a href="/" class="flex items-center">
-                    <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection Logo" class="h-8 md:h-12 object-contain">
+                    <img src="{{ asset('asset/img/text1.png') }}" alt="Cecile Private Collection Logo" class="h-8 md:h-12 object-contain">
                 </a>
             </div>
 
@@ -137,7 +137,7 @@
     {{-- Main Menu (Level 1) --}}
     <div id="main-menu" class="h-full overflow-y-auto p-4 transition-transform duration-300 ease-in-out">
         <div class="mb-6 mt-2">
-            <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
+            <img src="{{ asset('asset/img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
         </div>
 
         <ul class="space-y-0 font-medium text-sm tracking-wide text-gray-900">
@@ -218,7 +218,7 @@
         @if($category->children->count() > 0)
         <div id="submenu-{{ $category->slug }}" class="absolute top-0 left-0 w-full h-full bg-white p-4 overflow-y-auto transform translate-x-full transition-transform duration-300 ease-in-out">
             <div class="mb-6 mt-2">
-                <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
+                <img src="{{ asset('asset/img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
             </div>
             <button type="button" 
                     onclick="closeSubmenu('{{ $category->slug }}')"

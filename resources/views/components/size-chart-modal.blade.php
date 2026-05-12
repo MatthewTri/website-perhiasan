@@ -23,7 +23,7 @@
                 <img src="{{ asset('asset/size-chart.png') }}" 
                      alt="Ring Size Chart" 
                      class="w-full max-w-lg object-contain"
-                     onerror="this.src='{{ asset('img/no-image.jpg') }}'">
+                     onerror="this.src='{{ asset('asset/img/no-image.jpg') }}'">
             </div>
 
             {{-- Description --}}

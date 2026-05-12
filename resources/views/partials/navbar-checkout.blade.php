@@ -24,7 +24,7 @@
             {{-- Centered, responsive logo --}}
             <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <a href="{{ route('home') }}" class="flex items-center">
-                    <img src="{{ asset('img/text1.png') }}"
+                    <img src="{{ asset('asset/img/text1.png') }}"
                          alt="Cecile Private Collection"
                          class="h-8 sm:h-10 md:h-12 w-auto object-contain max-w-[200px] sm:max-w-[240px]">
                 </a>
@@ -91,7 +91,7 @@
 
             <div class="h-full overflow-y-auto p-4 flex flex-col">
                 <div class="mb-6 mt-2">
-                    <img src="{{ asset('img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
+                    <img src="{{ asset('asset/img/text1.png') }}" alt="Cecile Private Collection" class="h-6">
                 </div>
 
                 <div id="checkout-admin-drawer-label" class="px-2 pb-4 pt-8 text-xs font-bold text-gray-400 tracking-wider uppercase">Admin Panel</div>

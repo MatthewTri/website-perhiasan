@@ -8,7 +8,7 @@
     }
     
     if(empty($lightboxImages)) {
-        $lightboxImages[] = asset('img/no-image.jpg');
+        $lightboxImages[] = asset('asset/img/no-image.jpg');
     }
 @endphp
 
@@ -366,7 +366,7 @@
                                          alt="{{ $relatedProduct->name }}" 
                                          class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/image:scale-105">
                                 @else
-                                    <img src="{{ asset('img/no-image.jpg') }}" 
+                                    <img src="{{ asset('asset/img/no-image.jpg') }}" 
                                          alt="No Image" 
                                          class="w-full h-full object-cover opacity-30">
                                 @endif

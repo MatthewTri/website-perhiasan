@@ -134,7 +134,7 @@
                 {{-- AI Icon + Title --}}
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white rounded-sm flex items-center justify-center shadow-lg border border-stone-100 overflow-hidden">
-                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI Logo" class="w-full h-full object-contain">
+                        <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-serif text-stone-900 tracking-tight">Cecile AI</h1>
@@ -189,7 +189,7 @@
                     {{-- AI Response --}}
                     <div class="flex items-start gap-4 animate-fade-in-up">
                         <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                            <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                            <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                         </div>
                         <div class="flex-1 max-w-lg">
                             <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none p-2 shadow-[0_2px_15px_rgb(0,0,0,0.04)] overflow-hidden">
@@ -253,7 +253,7 @@
                     {{-- Quota Exceeded Message --}}
                     <div class="flex items-start gap-4 animate-fade-in-up" id="quotaExceededMessage">
                         <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                            <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                            <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                         </div>
                         <div class="flex-1 max-w-lg">
                             <div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-sm">
@@ -279,7 +279,7 @@
                     {{-- Normal Welcome Message --}}
                 <div class="flex items-start gap-4 animate-fade-in-up {{ $hasHistory ? 'hidden' : '' }}" id="welcomeMessage">
                     <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                        <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                     </div>
                     <div class="flex-1">
                         <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -319,7 +319,7 @@
                 {{-- Guest view welcome message --}}
                 <div class="flex items-start gap-4 animate-fade-in-up" id="welcomeMessage">
                     <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                        <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                        <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                     </div>
                     <div class="flex-1">
                         <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -547,7 +547,7 @@
 
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-sm">
@@ -755,7 +755,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -809,7 +809,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -863,7 +863,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -922,7 +922,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -990,7 +990,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-gradient-to-br from-white to-stone-50 border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -1275,7 +1275,7 @@
             messageElement.setAttribute('data-chat-id', String(chatId));
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -1334,7 +1334,7 @@
                     messageElement.setAttribute('data-session', 'current');
                     messageElement.innerHTML = `
                         <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                            <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                            <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                         </div>
                         <div class="flex-1">
                             <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -1401,7 +1401,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none px-6 py-5 shadow-sm">
@@ -1476,7 +1476,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgb(0,0,0,0.04)]">
@@ -1495,7 +1495,7 @@
             messageElement.setAttribute('data-session', 'current');
             messageElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="flex-1 max-w-lg">
                     <div class="bg-white border border-stone-100 rounded-2xl rounded-tl-none p-2 shadow-[0_2px_15px_rgb(0,0,0,0.04)] overflow-hidden">
@@ -1554,7 +1554,7 @@
             loadingElement.id = 'loading-message';
             loadingElement.innerHTML = `
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-stone-200 overflow-hidden">
-                    <img src="{{ asset('img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
+                    <img src="{{ asset('asset/img/logo.PNG') }}" alt="Cecile AI" class="w-full h-full object-contain">
                 </div>
                 <div class="bg-white rounded-2xl rounded-tl-none px-6 py-4 shadow-sm border border-stone-100">
                     <div class="flex items-center gap-3">
