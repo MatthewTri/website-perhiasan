@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" type="image/png" href="{{ asset('asset/img/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('asset/img/logo.png') }}?v=1">
 
     {{-- CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
