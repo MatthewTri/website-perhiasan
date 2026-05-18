@@ -22,9 +22,10 @@
 
             <div class="flex items-center space-x-3 md:space-x-5 ml-auto">
                 
-                <button type="button" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer">
+                {{-- Search icon --}}
+                {{-- <button type="button" class="p-1 text-gray-900 hover:text-gray-600 cursor-pointer">
                     <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
+                </button> --}}
 
                 @auth
                 @can('admin')

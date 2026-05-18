@@ -288,25 +288,45 @@
                             </p>
                             {{-- Category Buttons --}}
                             <div class="grid grid-cols-2 gap-2 mt-4">
-                                <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                    Ring
+                                <button type="button" onclick="window.aiChat.selectOption('category', 'Ring', 'ring')" 
+                                        class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                    <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('asset/ai-options/category/ring.jpg') }}" alt="Ring" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                    </div>
+                                    <div class="px-4 py-3 text-left">
+                                        <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                        Ring
+                                    </div>
                                 </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                    Necklace / Pendant
+                                <button type="button" onclick="window.aiChat.selectOption('category', 'Necklace', 'necklace-pendant')" 
+                                        class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                    <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('asset/ai-options/category/necklace-pendant.jpg') }}" alt="Necklace" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                    </div>
+                                    <div class="px-4 py-3 text-left">
+                                        <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                        Necklace
+                                    </div>
                                 </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                    Earrings
+                                <button type="button" onclick="window.aiChat.selectOption('category', 'Earrings', 'earrings')" 
+                                        class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                    <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('asset/ai-options/category/earrings.jpg') }}" alt="Earrings" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                    </div>
+                                    <div class="px-4 py-3 text-left">
+                                        <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                        Earrings
+                                    </div>
                                 </button>
-                                <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                        class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                    <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                    Bracelet
+                                <button type="button" onclick="window.aiChat.selectOption('category', 'Bracelet', 'bracelet')" 
+                                        class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                    <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('asset/ai-options/category/bracelet.jpg') }}" alt="Bracelet" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                    </div>
+                                    <div class="px-4 py-3 text-left">
+                                        <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                        Bracelet
+                                    </div>
                                 </button>
                             </div>
                             <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
@@ -399,6 +419,8 @@
 <x-image-lightbox modalId="ai-image-modal" alt="AI Generated Jewelry Design" />
 
 <script>
+    const AI_OPTION_ASSET_BASE = @json(asset('asset/ai-options'));
+
     class AIChat {
         constructor() {
             this.chatContainer = document.getElementById('chatContainer');
@@ -413,6 +435,11 @@
             this.welcomeMessage = document.getElementById('welcomeMessage');
             this.hasHistory = {{ $hasHistory ? 'true' : 'false' }};
             this.inputLocked = false;
+
+            // Options catalog (data-driven images per step + per category)
+            this.optionAssetBase = AI_OPTION_ASSET_BASE;
+            this.optionCatalog = this.buildOptionCatalog();
+            this.selectedCategoryKey = null;
 
             // Quota UI elements
             this.quotaRemainingEl = document.getElementById('quotaRemaining');
@@ -445,6 +472,166 @@
             
             // Make instance globally accessible
             window.aiChat = this;
+        }
+
+        buildOptionCatalog() {
+            // Template: replace these image files with your own photos in public/asset/ai-options/**
+            return {
+                steps: {
+                    category: {
+                        gridClass: 'grid-cols-2',
+                        imageHeightClass: 'h-28 sm:h-32 md:h-36',
+                        options: [
+                            { key: 'ring', value: 'Ring', label: 'Ring', image: `${this.optionAssetBase}/category/ring.jpg` },
+                            { key: 'necklace-pendant', value: 'Necklace', label: 'Necklace', image: `${this.optionAssetBase}/category/necklace-pendant.jpg` },
+                            { key: 'earrings', value: 'Earrings', label: 'Earrings', image: `${this.optionAssetBase}/category/earrings.jpg` },
+                            { key: 'bracelet', value: 'Bracelet', label: 'Bracelet', image: `${this.optionAssetBase}/category/bracelet.jpg` }
+                        ]
+                    },
+                    material: {
+                        gridClass: 'grid-cols-2',
+                        imageHeightClass: 'h-24 sm:h-28 md:h-32',
+                        byCategory: {
+                            ring: [
+                                { value: '18k Yellow Gold', label: '18k Yellow Gold', description: 'Classic, Luxurious', image: `${this.optionAssetBase}/ring/yellow-gold.png` },
+                                { value: '18k White Gold / Platinum', label: '18k White Gold / Platinum', description: 'Modern, Clean', image: `${this.optionAssetBase}/ring/white-gold.png` },
+                                { value: '18k Rose Gold', label: '18k Rose Gold', description: 'Romantic, Feminine', image: `${this.optionAssetBase}/ring/rose-gold.png` },
+                                { value: 'Mixed Metals', label: 'Mixed Metals', description: 'Unique, Combination', image: `${this.optionAssetBase}/ring/mixed.png` }
+                            ],
+                            bracelet: [
+                                { value: '18k Yellow Gold', label: '18k Yellow Gold', description: 'Warm, Classic', image: `${this.optionAssetBase}/bracelet/yellow-gold.png` },
+                                { value: '18k White Gold / Platinum', label: '18k White Gold / Platinum', description: 'Modern, Clean', image: `${this.optionAssetBase}/bracelet/white-gold.png` },
+                                { value: '18k Rose Gold', label: '18k Rose Gold', description: 'Soft, Romantic', image: `${this.optionAssetBase}/bracelet/rose-gold.png` },
+                                { value: 'Mixed Metals', label: 'Mixed Metals', description: 'Two-tone', image: `${this.optionAssetBase}/bracelet/mixed.png` }
+                            ],
+                            earrings: [
+                                { value: '18k Yellow Gold', label: '18k Yellow Gold', description: 'Warm, Classic', image: `${this.optionAssetBase}/earrings/yellow-gold.png` },
+                                { value: '18k White Gold / Platinum', label: '18k White Gold / Platinum', description: 'Modern, Clean', image: `${this.optionAssetBase}/earrings/white-gold.png` },
+                                { value: '18k Rose Gold', label: '18k Rose Gold', description: 'Soft, Romantic', image: `${this.optionAssetBase}/earrings/rose-gold.png` },
+                                { value: 'Mixed Metals', label: 'Mixed Metals', description: 'Two-tone', image: `${this.optionAssetBase}/earrings/mixed.png` }
+                            ],
+                            'necklace-pendant': [
+                                { value: '18k Yellow Gold', label: '18k Yellow Gold', description: 'Warm, Classic', image: `${this.optionAssetBase}/necklace-pendant/yellow-gold.png` },
+                                { value: '18k White Gold / Platinum', label: '18k White Gold / Platinum', description: 'Modern, Clean', image: `${this.optionAssetBase}/necklace-pendant/white-gold.png` },
+                                { value: '18k Rose Gold', label: '18k Rose Gold', description: 'Soft, Romantic', image: `${this.optionAssetBase}/necklace-pendant/rose-gold.png` },
+                                { value: 'Mixed Metals', label: 'Mixed Metals', description: 'Two-tone', image: `${this.optionAssetBase}/necklace-pendant/mixed.png` }
+                            ]
+                        },
+                        default: [
+                            { value: '18k Yellow Gold', label: '18k Yellow Gold', description: 'Classic, Luxurious', image: `${this.optionAssetBase}/default/yellow-gold.png` },
+                            { value: '18k White Gold / Platinum', label: '18k White Gold / Platinum', description: 'Modern, Clean', image: `${this.optionAssetBase}/default/white-gold.png` },
+                            { value: '18k Rose Gold', label: '18k Rose Gold', description: 'Romantic, Feminine', image: `${this.optionAssetBase}/default/rose-gold.png` },
+                            { value: 'Mixed Metals', label: 'Mixed Metals', description: 'Unique, Combination', image: `${this.optionAssetBase}/default/mixed.png` }
+                        ]
+                    },
+                    gemstone: {
+                        gridClass: 'grid-cols-2',
+                        imageHeightClass: 'h-24 sm:h-28 md:h-32',
+                        default: [
+                            { value: 'Classic Diamond', label: 'Classic Diamond', image: `${this.optionAssetBase}/default/gemstone/diamond.png` },
+                            { value: 'Blue Sapphire', label: 'Blue Sapphire', image: `${this.optionAssetBase}/default/gemstone/sapphire.png` },
+                            { value: 'Ruby', label: 'Ruby', image: `${this.optionAssetBase}/default/gemstone/ruby.png` },
+                            { value: 'Emerald', label: 'Emerald', image: `${this.optionAssetBase}/default/gemstone/emerald.png` },
+                            { value: 'No Gemstone / Plain Metal', label: 'No Gemstone / Plain Metal', colSpan: 2, image: `${this.optionAssetBase}/default/gemstone/no-gemstone.png` }
+                        ]
+                    },
+                    cut: {
+                        gridClass: 'grid-cols-2',
+                        imageHeightClass: 'h-24 sm:h-28 md:h-32',
+                        default: [
+                            { value: 'Round Brilliant', label: 'Round Brilliant', description: 'Most Popular Cut', image: `${this.optionAssetBase}/default/cut/round.png` },
+                            { value: 'Oval Cut', label: 'Oval Cut', description: 'Elegant & Elongated', image: `${this.optionAssetBase}/default/cut/oval.png` },
+                            { value: 'Emerald Cut', label: 'Emerald Cut', description: 'Rectangular, Vintage Style', image: `${this.optionAssetBase}/default/cut/emerald.png` },
+                            { value: 'Pear Shape', label: 'Pear Shape', description: 'Teardrop, Unique', image: `${this.optionAssetBase}/default/cut/pear.png` },
+                            { value: 'Princess Cut', label: 'Princess Cut', description: 'Square, Sharp & Modern', image: `${this.optionAssetBase}/default/cut/princess.png` }
+                        ]
+                    },
+                    style: {
+                        gridClass: 'grid-cols-1',
+                        imageHeightClass: 'h-28 sm:h-32 md:h-36',
+                        default: [
+                            { value: 'Minimalist & Modern', label: 'Minimalist & Modern', description: 'Simple, Clean, Sleek', image: `${this.optionAssetBase}/default/style/minimalist.png` },
+                            { value: 'Art Deco / Vintage', label: 'Art Deco / Vintage', description: 'Intricate Details, 1920s Style', image: `${this.optionAssetBase}/default/style/vintage.png` },
+                            { value: 'Nature Inspired', label: 'Nature Inspired', description: 'Floral, Leaves, Organic', image: `${this.optionAssetBase}/default/style/nature.png` },
+                            { value: 'Royal & Luxurious', label: 'Royal & Luxurious', description: 'Halo Setting, Ornate, Regal', image: `${this.optionAssetBase}/default/style/royal.png` }
+                        ]
+                    }
+                }
+            };
+        }
+
+        escapeJsString(text) {
+            return String(text)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        slugify(text) {
+            return String(text)
+                .toLowerCase()
+                .replace(/\s*\/\s*/g, '-')
+                .replace(/[^a-z0-9-]/g, '')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        inferCategoryKeyFromValue(value) {
+            const catalog = this.optionCatalog?.steps?.category?.options || [];
+            const cleaned = String(value || '').trim().toLowerCase();
+            const found = catalog.find(o => String(o.value || '').trim().toLowerCase() === cleaned);
+            return found?.key || this.slugify(value);
+        }
+
+        getStepOptions(stepName) {
+            const step = this.optionCatalog?.steps?.[stepName];
+            if (!step) return [];
+
+            if (stepName === 'category') {
+                return step.options || [];
+            }
+
+            const byCategory = step.byCategory || null;
+            if (byCategory && this.selectedCategoryKey && Array.isArray(byCategory[this.selectedCategoryKey])) {
+                return byCategory[this.selectedCategoryKey];
+            }
+
+            return step.default || [];
+        }
+
+        renderOptionCard(stepName, option) {
+            const value = option.value ?? option.label ?? '';
+            const label = option.label ?? option.value ?? '';
+            const description = option.description ? `<span class="block text-xs text-stone-500 mt-0.5">${this.escapeHtml(option.description)}</span>` : '';
+            const imageHeightClass = this.optionCatalog?.steps?.[stepName]?.imageHeightClass || 'h-28 sm:h-32 md:h-36';
+            const image = option.image
+                ? `<img src="${option.image}" alt="${this.escapeHtml(label)}" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">`
+                : '';
+            const colSpanClass = option.colSpan === 2 ? 'col-span-2' : '';
+            const escapedValue = this.escapeJsString(value);
+            const escapedKey = this.escapeJsString(option.key || '');
+
+            return `
+                <button type="button" onclick="window.aiChat.selectOption('${stepName}', '${escapedValue}', '${escapedKey}')"
+                        class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200 group overflow-hidden ${colSpanClass}">
+                    <div class="w-full ${imageHeightClass} bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                        ${image}
+                    </div>
+                    <div class="px-4 py-3">
+                        <span class="font-medium">${this.escapeHtml(label)}</span>
+                        ${description}
+                    </div>
+                </button>
+            `;
+        }
+
+        renderOptionsGrid(stepName) {
+            const step = this.optionCatalog?.steps?.[stepName];
+            const gridClass = step?.gridClass || 'grid-cols-2';
+            const options = this.getStepOptions(stepName);
+            const items = options.map(o => this.renderOptionCard(stepName, o)).join('');
+            return `<div class="grid ${gridClass} gap-2 mt-4">${items}</div>`;
         }
 
         clearCurrentSessionMessages() {
@@ -656,6 +843,7 @@
             // Reset guided state
             this.guidedMode = true;
             this.currentStep = 1;
+            this.selectedCategoryKey = null;
             this.userSelections = {
                 category: null,
                 material: null,
@@ -679,8 +867,11 @@
             this.promptInput.focus();
         }
 
-        selectOption(stepName, value) {
+        selectOption(stepName, value, key = null) {
             this.userSelections[stepName] = value;
+            if (stepName === 'category') {
+                this.selectedCategoryKey = key || this.inferCategoryKeyFromValue(value);
+            }
             this.addUserMessage(value);
             this.currentStep++;
             this.askNextQuestion();
@@ -711,6 +902,10 @@
             // Clear the selection for current step
             const stepNames = ['', 'category', 'material', 'gemstone', 'cut', 'style'];
             this.userSelections[stepNames[this.currentStep]] = null;
+
+            if (stepNames[this.currentStep] === 'category') {
+                this.selectedCategoryKey = null;
+            }
             
             this.scrollToBottom();
         }
@@ -719,6 +914,7 @@
             // Reset all state
             this.guidedMode = true;
             this.currentStep = 1;
+            this.selectedCategoryKey = null;
             this.userSelections = {
                 category: null,
                 material: null,
@@ -757,6 +953,7 @@
         }
 
         askMaterial() {
+            const optionsHtml = this.renderOptionsGrid('material');
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
             messageElement.setAttribute('data-session', 'current');
@@ -769,28 +966,7 @@
                         <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
                             Excellent choice. Now, which precious metal speaks to your personal style?
                         </p>
-                        <div class="grid grid-cols-1 gap-2 mt-4">
-                            <button onclick="window.aiChat.selectOption('material', '18k Yellow Gold')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">18k Yellow Gold</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Classic, Luxurious</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('material', '18k White Gold / Platinum')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">18k White Gold / Platinum</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Modern, Clean</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('material', '18k Rose Gold')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">18k Rose Gold</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Romantic, Feminine</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('material', 'Mixed Metals')" 
-                                    class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Mixed Metals</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Unique, Combination</span>
-                            </button>
-                        </div>
+                        ${optionsHtml}
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice...</p>
                         <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
                             <button onclick="window.aiChat.goBack()" 
@@ -811,6 +987,7 @@
         }
 
         askGemstone() {
+            const optionsHtml = this.renderOptionsGrid('gemstone');
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
             messageElement.setAttribute('data-session', 'current');
@@ -823,28 +1000,7 @@
                         <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
                             Every piece has a heart. What gemstone should take center stage?
                         </p>
-                        <div class="grid grid-cols-2 gap-2 mt-4">
-                            <button onclick="window.aiChat.selectOption('gemstone', 'Classic Diamond')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
-                                Classic Diamond
-                            </button>
-                            <button onclick="window.aiChat.selectOption('gemstone', 'Blue Sapphire')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
-                                Blue Sapphire
-                            </button>
-                            <button onclick="window.aiChat.selectOption('gemstone', 'Ruby')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
-                                Ruby
-                            </button>
-                            <button onclick="window.aiChat.selectOption('gemstone', 'Emerald')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200">
-                                Emerald
-                            </button>
-                            <button onclick="window.aiChat.selectOption('gemstone', 'No Gemstone / Plain Metal')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm transition-all duration-200 col-span-2">
-                                No Gemstone / Plain Metal
-                            </button>
-                        </div>
+                        ${optionsHtml}
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own (e.g., Amethyst, Opal)...</p>
                         <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
                             <button onclick="window.aiChat.goBack()" 
@@ -865,6 +1021,7 @@
         }
 
         askCut() {
+            const optionsHtml = this.renderOptionsGrid('cut');
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
             messageElement.setAttribute('data-session', 'current');
@@ -877,33 +1034,7 @@
                         <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
                             How should the gemstone be cut to capture the light?
                         </p>
-                        <div class="grid grid-cols-1 gap-2 mt-4">
-                            <button onclick="window.aiChat.selectOption('cut', 'Round Brilliant')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Round Brilliant</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Most Popular Cut</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('cut', 'Oval Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Oval Cut</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Elegant & Elongated</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('cut', 'Emerald Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Emerald Cut</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Rectangular, Vintage Style</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('cut', 'Pear Shape')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Pear Shape</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Teardrop, Unique</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('cut', 'Princess Cut')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Princess Cut</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Square, Sharp & Modern</span>
-                            </button>
-                        </div>
+                        ${optionsHtml}
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred cut...</p>
                         <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
                             <button onclick="window.aiChat.goBack()" 
@@ -924,6 +1055,7 @@
         }
 
         askStyle() {
+            const optionsHtml = this.renderOptionsGrid('style');
             const messageElement = document.createElement('div');
             messageElement.className = 'flex items-start gap-4 animate-fade-in-up';
             messageElement.setAttribute('data-session', 'current');
@@ -936,28 +1068,7 @@
                         <p class="text-stone-700 text-sm leading-relaxed font-light mb-4">
                             Final touch. What is the aesthetic or era that inspires this piece?
                         </p>
-                        <div class="grid grid-cols-1 gap-2 mt-4">
-                            <button onclick="window.aiChat.selectOption('style', 'Minimalist & Modern')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Minimalist & Modern</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Simple, Clean, Sleek</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('style', 'Art Deco / Vintage')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Art Deco / Vintage</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Intricate Details, 1920s Style</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('style', 'Nature Inspired')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Nature Inspired</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Floral, Leaves, Organic</span>
-                            </button>
-                            <button onclick="window.aiChat.selectOption('style', 'Royal & Luxurious')" 
-                                    class="px-4 py-2.5 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-left text-stone-700 text-sm transition-all duration-200">
-                                <span class="font-medium">Royal & Luxurious</span>
-                                <span class="block text-xs text-stone-500 mt-0.5">Halo Setting, Ornate, Regal</span>
-                            </button>
-                        </div>
+                        ${optionsHtml}
                         <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your preferred style...</p>
                         <div class="flex gap-2 mt-4 pt-4 border-t border-stone-100">
                             <button onclick="window.aiChat.goBack()" 
@@ -1103,8 +1214,11 @@
             if (this.guidedMode && this.currentStep <= 5) {
                 const stepNames = ['', 'category', 'material', 'gemstone', 'cut', 'style'];
                 const currentStepName = stepNames[this.currentStep];
-                
+
                 this.userSelections[currentStepName] = prompt;
+                if (currentStepName === 'category') {
+                    this.selectedCategoryKey = this.inferCategoryKeyFromValue(prompt);
+                }
                 this.addUserMessage(prompt);
                 
                 this.promptInput.value = '';
@@ -1322,6 +1436,7 @@
                 // Reset state
                 this.guidedMode = true;
                 this.currentStep = 1;
+                this.selectedCategoryKey = null;
                 this.userSelections = {
                     category: null,
                     material: null,
@@ -1349,25 +1464,45 @@
                                     Let's try again. What type of masterpiece would you like to create?
                                 </p>
                                 <div class="grid grid-cols-2 gap-2 mt-4">
-                                    <button onclick="window.aiChat.selectOption('category', 'Ring')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                        Ring
+                                    <button type="button" onclick="window.aiChat.selectOption('category', 'Ring', 'ring')" 
+                                            class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                        <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                            <img src="{{ asset('asset/ai-options/category/ring.jpg') }}" alt="Ring" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                        </div>
+                                        <div class="px-4 py-3 text-left">
+                                            <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                            Ring
+                                        </div>
                                     </button>
-                                    <button onclick="window.aiChat.selectOption('category', 'Necklace / Pendant')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                        Necklace / Pendant
+                                    <button type="button" onclick="window.aiChat.selectOption('category', 'Necklace', 'necklace-pendant')" 
+                                            class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                        <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                            <img src="{{ asset('asset/ai-options/category/necklace-pendant.jpg') }}" alt="Necklace" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                        </div>
+                                        <div class="px-4 py-3 text-left">
+                                            <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                            Necklace
+                                        </div>
                                     </button>
-                                    <button onclick="window.aiChat.selectOption('category', 'Earrings')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                        Earrings
+                                    <button type="button" onclick="window.aiChat.selectOption('category', 'Earrings', 'earrings')" 
+                                            class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                        <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                            <img src="{{ asset('asset/ai-options/category/earrings.jpg') }}" alt="Earrings" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                        </div>
+                                        <div class="px-4 py-3 text-left">
+                                            <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                            Earrings
+                                        </div>
                                     </button>
-                                    <button onclick="window.aiChat.selectOption('category', 'Bracelet')" 
-                                            class="px-4 py-3 bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group">
-                                        <span class="block text-xs uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]"></span>
-                                        Bracelet
+                                    <button type="button" onclick="window.aiChat.selectOption('category', 'Bracelet', 'bracelet')" 
+                                            class="bg-stone-50 border border-stone-200 hover:border-[#E3CFCF] hover:bg-[#E3CFCF]/5 text-stone-700 text-sm font-medium transition-all duration-200 group overflow-hidden">
+                                        <div class="w-full h-28 sm:h-32 md:h-36 bg-white border-b border-stone-200 overflow-hidden flex items-center justify-center">
+                                            <img src="{{ asset('asset/ai-options/category/bracelet.jpg') }}" alt="Bracelet" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='{{ asset('img/logo.PNG') }}'">
+                                        </div>
+                                        <div class="px-4 py-3 text-left">
+                                            <span class="block text-[10px] uppercase tracking-wider text-stone-500 group-hover:text-[#E3CFCF]">Category</span>
+                                            Bracelet
+                                        </div>
                                     </button>
                                 </div>
                                 <p class="text-[10px] text-stone-400 italic mt-3 text-center">Or type your own choice below...</p>
