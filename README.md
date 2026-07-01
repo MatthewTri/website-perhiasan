@@ -1,61 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cecile Private Collection — Laravel Web App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website e-commerce perhiasan dengan fitur personalisasi desain menggunakan Generative AI.
 
-## About Laravel
+> **Skripsi:** Pengembangan Website E-Commerce Perhiasan dengan Fitur Personalisasi Desain Menggunakan Generative AI
+> **Penulis:** Matthew Tricahyo (C14220080) — Universitas Kristen Petra
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirement
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Software | Versi |
+|----------|-------|
+| [Laragon](https://laragon.org/download/) | Latest |
+| PHP | ^8.3 |
+| Composer | ^2.8 |
+| MySQL | ^8.0 |
+| Node.js | ^22.x LTS |
+| NPM | Included with Node.js |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Instalasi
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 1. Clone Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone https://github.com/MatthewTri/website-perhiasan.git
+cd website-perhiasan
+```
 
-## Laravel Sponsors
+### 2. Install Dependency PHP
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+### 3. Install Dependency JavaScript
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+npm install
+```
 
-## Contributing
+### 4. Konfigurasi Environment
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Salin file `.env.example` menjadi `.env`:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Lalu buka file `.env` dan isi variabel berikut:
 
-## Security Vulnerabilities
+```dotenv
+# Database (sesuaikan dengan konfigurasi Laragon kamu)
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database_kamu
+DB_USERNAME=root
+DB_PASSWORD=
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Email (gunakan Gmail SMTP)
+MAIL_USERNAME=emailkamu@gmail.com
+MAIL_PASSWORD=app_password_gmail_kamu
+MAIL_FROM_ADDRESS=emailkamu@gmail.com
+MAIL_ADMIN_EMAIL=email_admin@gmail.com
 
-## License
+# AI Microservice (jalankan repo microservice dulu, lalu isi URL-nya)
+AI_SERVICE_URL=http://localhost:PORT_MICROSERVICE
+INTERNAL_AI_KEY=isi_dengan_key_yang_sama_di_microservice
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# PayPal (gunakan sandbox untuk development)
+PAYPAL_MODE=sandbox
+PAYPAL_SANDBOX_CLIENT_ID=client_id_dari_developer_paypal
+PAYPAL_SANDBOX_CLIENT_SECRET=client_secret_dari_developer_paypal
+```
+
+> 💡 Untuk `MAIL_PASSWORD`, gunakan **App Password** dari Google (bukan password Gmail biasa).
+> Buat di: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+
+> 💡 Untuk PayPal sandbox, daftar di [developer.paypal.com](https://developer.paypal.com)
+
+### 5. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 6. Buat Database
+
+Buka **phpMyAdmin** di Laragon (atau Laragon → Database), lalu buat database baru sesuai nama yang kamu isi di `DB_DATABASE`.
+
+### 7. Jalankan Migration & Seeder
+
+```bash
+php artisan migrate --seed
+```
+
+### 8. Buat Storage Link
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## Menjalankan Aplikasi
+
+Pastikan **Laragon sudah aktif** (Apache + MySQL menyala), lalu buka **3 terminal terpisah**:
+
+**Terminal 1 — Laravel Server:**
+```bash
+php artisan serve
+```
+
+**Terminal 2 — Tailwind CSS (Vite):**
+```bash
+npm run dev
+```
+
+**Terminal 3 — Queue Worker** *(diperlukan untuk fitur kirim email):*
+```bash
+php artisan queue:work
+```
+
+Akses aplikasi di browser: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## Catatan Tambahan
+
+- Pastikan repo **AI Microservice** juga sudah berjalan sebelum menggunakan fitur Generative AI.
+- Fitur email (notifikasi order, dll) membutuhkan **Terminal 3** (`queue:work`) aktif.
+- Untuk mode production, ubah `APP_ENV=production` dan `APP_DEBUG=false` di `.env`.
+
+---
+
+## Lisensi
+
+Proyek ini dibuat untuk keperluan Tugas Akhir (Skripsi) di Universitas Kristen Petra Surabaya.
