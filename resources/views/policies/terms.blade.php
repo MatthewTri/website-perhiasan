@@ -22,7 +22,7 @@
                 <li><span class="font-medium">All items are pre-order / custom-made</span> and typically take <span class="font-medium">2–8 weeks</span> to produce (estimate).</li>
                 <li><span class="font-medium">Strict no-refund policy</span> applies because items are made-to-order, except where required by law or for verified defects/damage (see Refund Policy).</li>
                 <li><span class="font-medium">International shipping</span> may be subject to duties/taxes and customs delays.</li>
-                <li><span class="font-medium">Payments</span> can be made via <span class="font-medium">Bank Transfer (BCA)</span> or <span class="font-medium">PayPal</span>; disputes/chargebacks can affect fulfillment.</li>
+                <li><span class="font-medium">Payments</span> can be made via <span class="font-medium">Bank Transfer (BCA)</span>@if($paypalEnabled) or <span class="font-medium">PayPal</span>@endif; disputes/chargebacks can affect fulfillment.</li>
             </ul>
         </div>
 
@@ -74,7 +74,11 @@
             <section>
                 <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">6. Pricing, Currency & Taxes</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>Prices are displayed in available currencies on the Site. For PayPal transactions, your charge may be processed in <span class="font-medium">USD</span> and your bank/PayPal may apply exchange rates and fees.</p>
+                    @if($paypalEnabled)
+                        <p>Prices are displayed in available currencies on the Site. For PayPal transactions, your charge may be processed in <span class="font-medium">USD</span> and your bank/PayPal may apply exchange rates and fees.</p>
+                    @else
+                        <p>Prices are displayed in IDR only while PayPal is disabled.</p>
+                    @endif
                     <p>Depending on your location, taxes, customs duties, import VAT/GST, brokerage fees, and other charges may apply and are typically collected by the carrier or local authorities. Unless otherwise stated, these charges are <span class="font-medium">your responsibility</span>.</p>
                 </div>
             </section>
@@ -100,7 +104,7 @@
                 <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">9. Refunds, Returns & Defects</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>Because items are made-to-order, we do not generally accept returns or offer refunds for change-of-mind. If an item is defective or arrives damaged, we will work with you on a fair resolution after verification.</p>
-                    <p class="text-xs text-gray-500">For the complete process (evidence, inspection, international shipping considerations, and PayPal-related disputes), see our <a href="{{ route('policies.refund') }}" class="text-gray-900 border-b border-gray-300 hover:border-gray-900 transition-colors">Refund Policy</a>.</p>
+                    <p class="text-xs text-gray-500">For the complete process (evidence, inspection, international shipping considerations{{ $paypalEnabled ? ', and PayPal-related disputes' : '' }}), see our <a href="{{ route('policies.refund') }}" class="text-gray-900 border-b border-gray-300 hover:border-gray-900 transition-colors">Refund Policy</a>.</p>
                 </div>
             </section>
 
@@ -131,14 +135,20 @@
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">13. Payment Methods (BCA Bank Transfer & PayPal)</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">13. Payment Methods (BCA Bank Transfer{{ $paypalEnabled ? ' & PayPal' : '' }})</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p><span class="font-medium">Bank Transfer (BCA):</span> If you pay via BCA bank transfer, you are responsible for ensuring the transfer is completed correctly and for providing any proof of payment if requested. Orders may be confirmed after our team verifies the payment.</p>
-                    <p><span class="font-medium">PayPal:</span> If you choose PayPal, your payment is processed by PayPal and is subject to PayPal’s user agreement, privacy policy, and applicable policies. We do not control PayPal’s systems or decisions.</p>
-                    <p><span class="font-medium">Authorization and capture:</span> We may authorize and then capture your PayPal payment. Orders may not be considered fully confirmed until payment is successfully captured and verified.</p>
-                    <p><span class="font-medium">Currency:</span> PayPal may process charges in USD and apply currency conversion. Your bank/PayPal may charge fees. You are responsible for these fees.</p>
-                    <p><span class="font-medium">Disputes and chargebacks:</span> If you open a PayPal dispute/claim/chargeback, we may pause production and/or shipment until the issue is resolved. You agree to cooperate and provide information promptly if requested.</p>
-                    <p><span class="font-medium">Refund method:</span> If a refund is approved, it will be issued to the original payment method where possible. PayPal refunds are processed back via PayPal. For BCA transfers, refunds (if approved) are typically processed by our admin/seller via transfer to your BCA bank account after verification.</p>
+                    @if($paypalEnabled)
+                        <p><span class="font-medium">PayPal:</span> If you choose PayPal, your payment is processed by PayPal and is subject to PayPal’s user agreement, privacy policy, and applicable policies. We do not control PayPal’s systems or decisions.</p>
+                        <p><span class="font-medium">Authorization and capture:</span> We may authorize and then capture your PayPal payment. Orders may not be considered fully confirmed until payment is successfully captured and verified.</p>
+                        <p><span class="font-medium">Currency:</span> PayPal may process charges in USD and apply currency conversion. Your bank/PayPal may charge fees. You are responsible for these fees.</p>
+                        <p><span class="font-medium">Disputes and chargebacks:</span> If you open a PayPal dispute/claim/chargeback, we may pause production and/or shipment until the issue is resolved. You agree to cooperate and provide information promptly if requested.</p>
+                        <p><span class="font-medium">Refund method:</span> If a refund is approved, it will be issued to the original payment method where possible. PayPal refunds are processed back via PayPal. For BCA transfers, refunds (if approved) are typically processed by our admin/seller via transfer to your BCA bank account after verification.</p>
+                    @else
+                        <p><span class="font-medium">Payment verification:</span> Orders paid by bank transfer are confirmed after our team verifies the payment details.</p>
+                        <p><span class="font-medium">Currency:</span> When PayPal is disabled, the site uses IDR only.</p>
+                        <p><span class="font-medium">Refund method:</span> If a refund is approved, it is typically processed by our admin/seller via transfer to your BCA bank account after verification.</p>
+                    @endif
                 </div>
             </section>
 

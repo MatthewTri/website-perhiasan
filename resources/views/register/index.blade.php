@@ -119,7 +119,7 @@
 
 <script>
     // Toggle password visibility
-    function togglePassword(field Id) {
+    function togglePassword(fieldId) {
         const field = document.getElementById(fieldId);
         const eyeIcon = document.getElementById(fieldId + '-eye');
         

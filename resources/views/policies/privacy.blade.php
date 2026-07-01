@@ -16,7 +16,7 @@
                 By using the Site, you consent to the practices described in this Privacy Policy.
             </p>
             <p class="mt-3 text-xs text-gray-500 leading-relaxed">
-                If you are using PayPal to pay, PayPal processes your payment data under its own privacy policy. If you pay by bank transfer (e.g., BCA), we may process payment confirmation details you provide. We generally do not store full payment card details on our servers.
+                {{ $paypalEnabled ? 'If you are using PayPal to pay, PayPal processes your payment data under its own privacy policy.' : 'Payments are processed via bank transfer (e.g., BCA).' }} If you pay by bank transfer (e.g., BCA), we may process payment confirmation details you provide. We generally do not store full payment card details on our servers.
             </p>
         </div>
 
@@ -46,9 +46,8 @@
 
                     <div>
                         <p class="font-medium text-gray-900">Payment information</p>
-                        <p class="mt-2">
-                            When you pay via PayPal, PayPal collects and processes your payment details (such as funding source and transaction identifiers). We may receive limited information such as your PayPal transaction ID, payment status, and payer details that PayPal shares with merchants.
-                            When you pay via bank transfer (e.g., BCA), we may receive or record limited confirmation details (such as transfer reference, amount, date/time, and proof of payment) for verification and bookkeeping.
+                            <p class="mt-2">
+                            {{ $paypalEnabled ? 'When you pay via PayPal, PayPal collects and processes your payment details (such as funding source and transaction identifiers). We may receive limited information such as your PayPal transaction ID, payment status, and payer details that PayPal shares with merchants.' : 'When you pay via bank transfer (e.g., BCA), we may receive or record limited confirmation details (such as transfer reference, amount, date/time, and proof of payment) for verification and bookkeeping.' }}
                         </p>
                     </div>
                 </div>
@@ -89,7 +88,7 @@
                 <div class="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
                     <p>We may share information with:</p>
                     <ul class="mt-2 list-disc pl-5 space-y-2">
-                        <li><span class="font-medium">Payment processors</span> (e.g., PayPal) to process payments, manage fraud, and handle disputes.</li>
+                        <li><span class="font-medium">Payment processors</span>{{ $paypalEnabled ? ' (e.g., PayPal)' : '' }} to process payments, manage fraud, and handle disputes.</li>
                         <li><span class="font-medium">Shipping and logistics providers</span> to deliver your purchases, including international shipping.</li>
                         <li><span class="font-medium">Service providers</span> who help operate the Site (hosting, analytics, customer support tools), under contractual obligations to protect your data.</li>
                         <li><span class="font-medium">Legal and compliance</span> when required by law or to protect rights, safety, and security.</li>
@@ -110,7 +109,7 @@
             <section>
                 <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">7. Data Retention</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>We retain personal information for as long as needed to fulfill the purposes described in this policy, including to comply with legal, accounting, and tax obligations, resolve disputes (including PayPal disputes), and enforce agreements.</p>
+                    <p>We retain personal information for as long as needed to fulfill the purposes described in this policy, including to comply with legal, accounting, and tax obligations, resolve disputes{{ $paypalEnabled ? ' (including PayPal disputes)' : '' }}, and enforce agreements.</p>
                     <p>When information is no longer required, we take reasonable steps to delete, anonymize, or securely store it.</p>
                 </div>
             </section>

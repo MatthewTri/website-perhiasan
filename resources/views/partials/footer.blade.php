@@ -58,30 +58,35 @@
             {{-- COLUMN 4: CURRENCY --}}
             <div class="flex flex-col space-y-6">
                 <h3 class="text-xs font-bold text-gray-900 uppercase tracking-[0.15em]">Currency</h3>
-                
-                {{-- Clean Custom Dropdown --}}
-                <form action="{{ route('currency.switch') }}" method="POST" id="footer-currency-form" class="relative max-w-[150px]">
-                    @csrf
-                    <input type="hidden" name="currency" id="currency-input" value="{{ $globalCurrency }}">
-                    <div class="relative group" tabindex="0">
-                        <div class="w-full bg-transparent border-b border-gray-300 text-xs text-gray-600 font-medium py-2 pl-0 pr-8 cursor-pointer flex items-center tracking-widest uppercase transition-colors hover:border-gray-900 outline-none">
-                            <span>{{ $globalCurrency === 'IDR' ? 'IDR' : 'USD' }}</span>
-                            <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400 group-focus:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                @if($paypalEnabled)
+                    {{-- Clean Custom Dropdown --}}
+                    <form action="{{ route('currency.switch') }}" method="POST" id="footer-currency-form" class="relative max-w-[150px]">
+                        @csrf
+                        <input type="hidden" name="currency" id="currency-input" value="{{ $globalCurrency }}">
+                        <div class="relative group" tabindex="0">
+                            <div class="w-full bg-transparent border-b border-gray-300 text-xs text-gray-600 font-medium py-2 pl-0 pr-8 cursor-pointer flex items-center tracking-widest uppercase transition-colors hover:border-gray-900 outline-none">
+                                <span>{{ $globalCurrency === 'IDR' ? 'IDR' : 'USD' }}</span>
+                                <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400 group-focus:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                            </div>
+                            
+                            {{-- Dropdown Menu (Opens Upward) --}}
+                            <div class="absolute left-0 bottom-full mb-1 w-full bg-white border border-gray-100 shadow-lg opacity-0 invisible group-focus:opacity-100 group-focus:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                                <button type="button" onclick="switchCurrency('IDR')" class="w-full text-left px-3 py-2.5 text-xs text-gray-600 font-medium tracking-widest uppercase hover:bg-[#e3cfcf] hover:text-gray-900 transition-colors {{ $globalCurrency === 'IDR' ? 'bg-gray-50' : '' }}">
+                                    IDR
+                                </button>
+                                <button type="button" onclick="switchCurrency('USD')" class="w-full text-left px-3 py-2.5 text-xs text-gray-600 font-medium tracking-widest uppercase hover:bg-[#e3cfcf] hover:text-gray-900 transition-colors {{ $globalCurrency === 'USD' ? 'bg-gray-50' : '' }}">
+                                    USD
+                                </button>
                             </div>
                         </div>
-                        
-                        {{-- Dropdown Menu (Opens Upward) --}}
-                        <div class="absolute left-0 bottom-full mb-1 w-full bg-white border border-gray-100 shadow-lg opacity-0 invisible group-focus:opacity-100 group-focus:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
-                            <button type="button" onclick="switchCurrency('IDR')" class="w-full text-left px-3 py-2.5 text-xs text-gray-600 font-medium tracking-widest uppercase hover:bg-[#e3cfcf] hover:text-gray-900 transition-colors {{ $globalCurrency === 'IDR' ? 'bg-gray-50' : '' }}">
-                                IDR
-                            </button>
-                            <button type="button" onclick="switchCurrency('USD')" class="w-full text-left px-3 py-2.5 text-xs text-gray-600 font-medium tracking-widest uppercase hover:bg-[#e3cfcf] hover:text-gray-900 transition-colors {{ $globalCurrency === 'USD' ? 'bg-gray-50' : '' }}">
-                                USD
-                            </button>
-                        </div>
+                    </form>
+                @else
+                    <div class="text-xs text-gray-600 font-medium py-2 tracking-widest uppercase border-b border-gray-300 max-w-[150px]">
+                        IDR
                     </div>
-                </form>
+                @endif
                 
                 <p class="text-[10px] text-gray-400 font-light leading-relaxed">
                     Prices are shown in {{ $globalCurrency }}. <br>
@@ -99,8 +104,10 @@
 
             {{-- Payment Icons (Pure CSS/SVG placeholders or Images) --}}
             <div class="flex items-center space-x-3 transition-all duration-300">
-                {{-- PayPal --}}
-                <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-8 w-auto" loading="lazy">
+                @if($paypalEnabled)
+                    {{-- PayPal --}}
+                    <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-8 w-auto" loading="lazy">
+                @endif
                 {{-- BCA --}}
                 <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-12 w-auto" loading="lazy">
             </div>

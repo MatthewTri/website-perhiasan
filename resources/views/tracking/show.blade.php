@@ -35,7 +35,7 @@
                 @php
                     $statusConfig = [
                         'PENDING_REVIEW' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'Pending Review'],
-                        'PENDING' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'PayPal Verification'],
+                        'PENDING' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => $paypalEnabled ? 'PayPal Verification' : 'Payment Verification'],
                         'DENIED' => ['color' => 'bg-yellow-500 text-yellow-800', 'label' => 'Payment Denied'],
                         'REVERSED' => ['color' => 'bg-red-500 text-red-800', 'label' => 'Payment Reversed'],
                         'DISPUTED' => ['color' => 'bg-red-500 text-red-800', 'label' => 'Payment Disputed'],
@@ -76,8 +76,8 @@
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-1 1v3a1 1 0 102 0V7a1 1 0 00-1-1zm0 8a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
                         </svg>
                         <div class="flex-1">
-                            <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-yellow-900 mb-2">PayPal Verification in Progress</h3>
-                            <p class="text-sm text-yellow-800">Your payment has been received, but PayPal is still verifying it. This is normal—please wait a moment for the next update.</p>
+                            <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-yellow-900 mb-2">{{ $paypalEnabled ? 'PayPal Verification in Progress' : 'Payment Verification in Progress' }}</h3>
+                            <p class="text-sm text-yellow-800">{{ $paypalEnabled ? 'Your payment has been received, but PayPal is still verifying it. This is normal—please wait a moment for the next update.' : 'Your payment has been received and is being verified. This is normal—please wait a moment for the next update.' }}</p>
                         </div>
                     </div>
                 </div>
@@ -90,10 +90,10 @@
                         <div class="flex-1">
                             @if($order->status === 'DENIED')
                                 <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Denied</h3>
-                                <p class="text-sm text-red-800">Your PayPal payment was denied. Please contact our admin so we can resend a fresh invoice link for payment.</p>
+                                <p class="text-sm text-red-800">{{ $paypalEnabled ? 'Your PayPal payment was denied. Please contact our admin so we can resend a fresh invoice link for payment.' : 'Your payment was denied. Please contact our admin for the next steps.' }}</p>
                             @elseif($order->status === 'DISPUTED')
                                 <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Disputed</h3>
-                                <p class="text-sm text-red-800">This payment is currently under dispute. Our team will review and follow up with PayPal. Please wait for an update.</p>
+                                <p class="text-sm text-red-800">{{ $paypalEnabled ? 'This payment is currently under dispute. Our team will review and follow up with PayPal. Please wait for an update.' : 'This payment is currently under review. Our team will follow up with the next update.' }}</p>
                             @elseif($order->status === 'REVERSED')
                                 <h3 class="text-xs font-bold uppercase tracking-[0.15em] text-red-900 mb-2">Payment Reversed</h3>
                                 <p class="text-sm text-red-800">This payment was reversed. Please contact our admin for the next steps.</p>
@@ -409,7 +409,7 @@
                         </div>
                     
                     {{-- CASE 2: PAYPAL --}}
-                    @elseif($order->payment_gateway === 'PAYPAL' && $order->status === 'INVOICE_SENT')
+                    @elseif($paypalEnabled && $order->payment_gateway === 'PAYPAL' && $order->status === 'INVOICE_SENT')
                         <div class="bg-[#FAFAFA] border border-gray-100 p-8 text-center max-w-lg mx-auto">
                             <p class="text-xs uppercase tracking-widest text-gray-500 mb-6">Total Payment</p>
                             <p class="text-3xl font-semibold text-gray-900 mb-8">
@@ -434,7 +434,7 @@
                         </div>
 
                     {{-- CASE 2B: PAYPAL PAID (NEW) --}}
-                    @elseif($order->payment_gateway === 'PAYPAL' && $order->status === 'PAID')
+                    @elseif($paypalEnabled && $order->payment_gateway === 'PAYPAL' && $order->status === 'PAID')
                         <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-10 text-center max-w-2xl mx-auto">
                             {{-- Success Icon --}}
                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-6">

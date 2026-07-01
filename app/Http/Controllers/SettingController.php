@@ -12,6 +12,9 @@ class SettingController extends Controller
     {
         // Ambil semua settings yang diperlukan
         $settings = [
+            // Payment Settings
+            'paypal_enabled' => Setting::getBoolValue('paypal_enabled', true),
+
             // AI Settings
             'ai_enabled' => Setting::getBoolValue('ai_enabled', false),
             'ai_quota_limit' => Setting::getNumericValue('ai_quota_limit', 3),
@@ -26,6 +29,8 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
+            'paypal_enabled' => 'required|boolean',
+
             'ai_enabled' => 'required|boolean',
             'ai_quota_limit' => 'required|integer|min:1|max:1000',
 
@@ -33,6 +38,8 @@ class SettingController extends Controller
         ]);
 
         // Update semua settings
+        Setting::setValue('paypal_enabled', $request->paypal_enabled);
+
         Setting::setValue('ai_enabled', $request->ai_enabled);
         Setting::setValue('ai_quota_limit', $request->ai_quota_limit);
 

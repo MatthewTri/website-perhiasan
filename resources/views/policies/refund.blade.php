@@ -100,16 +100,20 @@
                 <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">9. Refund Method & Processing Time</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
                     <p>Approved refunds are issued to the original payment method where possible. Processing times depend on inspection completion and your payment provider’s settlement timelines.</p>
-                    <p>If you paid via PayPal, refunds are processed through PayPal. PayPal may take additional time to reflect the refund in your account and may handle currency conversion according to its policies.</p>
+                    @if($paypalEnabled)
+                        <p>If you paid via PayPal, refunds are processed through PayPal. PayPal may take additional time to reflect the refund in your account and may handle currency conversion according to its policies.</p>
+                    @else
+                        <p>Refunds are processed through bank transfer (BCA) after verification and may take additional time to reflect in your account.</p>
+                    @endif
                     <p>If you paid via <span class="font-medium">Bank Transfer (BCA)</span>, refunds (if approved) are typically processed by our admin/seller via transfer to your BCA bank account after verification of recipient details.</p>
                     <p>Shipping fees are generally non-refundable unless required by law or due to our error.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">10. Disputes, Chargebacks & PayPal Claims</h2>
+                <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900">10. Disputes, Chargebacks{{ $paypalEnabled ? ' & PayPal Claims' : '' }}</h2>
                 <div class="mt-4 space-y-3 text-sm text-gray-700 leading-relaxed">
-                    <p>If you open a dispute/chargeback/PayPal claim, we may pause production (for bespoke items) and/or shipment while the case is reviewed. You agree to cooperate and provide information promptly.</p>
+                    <p>{{ $paypalEnabled ? 'If you open a dispute/chargeback/PayPal claim, we may pause production (for bespoke items) and/or shipment while the case is reviewed.' : 'If you open a dispute/chargeback, we may pause production (for bespoke items) and/or shipment while the case is reviewed.' }} You agree to cooperate and provide information promptly.</p>
                     <p>Using a chargeback as a substitute for our return process may delay resolution and may affect our ability to provide time-sensitive solutions (e.g., carrier claims).</p>
                 </div>
             </section>

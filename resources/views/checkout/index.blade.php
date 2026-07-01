@@ -143,7 +143,7 @@
                     {{-- 3. Payment Method --}}
                     <div>
                         <h2 class="text-sm font-bold uppercase tracking-[0.15em] text-gray-900 mb-4">Payment</h2>
-                        <p class="text-xs text-gray-500 mb-4 font-light">Select your preferred payment method. Details will be sent via email.</p>
+                        <p class="text-xs text-gray-500 mb-4 font-light">{{ $paypalEnabled ? 'Select your preferred payment method. Details will be sent via email.' : 'Bank transfer payment is available via BCA.' }}</p>
                         
                         <div class="space-y-3">
                             {{-- BCA --}}
@@ -159,17 +159,19 @@
                                 <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none transition-colors"></div>
                             </label>
 
-                            {{-- PayPal --}}
-                            <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all duration-200 payment-option group">
-                                <input type="radio" name="payment_gateway" value="paypal" required class="peer sr-only" {{ old('payment_gateway') == 'paypal' ? 'checked' : '' }}>
-                                <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400 transition-colors"></div>
-                                <div class="flex-1">
-                                    <span class="block text-sm font-medium text-gray-900">PayPal</span>
-                                    <span class="block text-xs text-gray-500">International payment in USD</span>
-                                </div>
-                                <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-6 opacity-60 grayscale group-hover:grayscale-0 transition-all">
-                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none transition-colors"></div>
-                            </label>
+                            @if($paypalEnabled)
+                                {{-- PayPal --}}
+                                <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all duration-200 payment-option group">
+                                    <input type="radio" name="payment_gateway" value="paypal" required class="peer sr-only" {{ old('payment_gateway') == 'paypal' ? 'checked' : '' }}>
+                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400 transition-colors"></div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900">PayPal</span>
+                                        <span class="block text-xs text-gray-500">International payment in USD</span>
+                                    </div>
+                                    <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-6 opacity-60 grayscale group-hover:grayscale-0 transition-all">
+                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none transition-colors"></div>
+                                </label>
+                            @endif
                         </div>
                         @error('payment_gateway') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
                     </div>

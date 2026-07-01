@@ -197,8 +197,8 @@
                                         <p class="text-base font-semibold text-gray-900">BCA Bank Transfer (Indonesia)</p>
                                         <p class="text-sm text-gray-600">Manual bank transfer to BCA account</p>
                                         @else
-                                        <p class="text-base font-semibold text-gray-900">PayPal (International)</p>
-                                        <p class="text-sm text-gray-600">PayPal invoice payment</p>
+                                        <p class="text-base font-semibold text-gray-900">{{ $paypalEnabled ? 'PayPal (International)' : 'BCA Bank Transfer (Indonesia)' }}</p>
+                                        <p class="text-sm text-gray-600">{{ $paypalEnabled ? 'PayPal invoice payment' : 'Manual bank transfer to BCA account' }}</p>
                                         @endif
                                         <p class="text-xs text-gray-500 mt-1">Currency: <span class="font-medium">{{ $order->currency }}</span></p>
                                     </div>
@@ -225,6 +225,7 @@
                                             <p class="text-sm text-gray-500">Account: {{ config('services.bca.account_number') ?? 'XXX-XXXX-XXXX' }}</p>
                                             <p class="text-sm text-gray-500">Name: {{ config('services.bca.account_name') ?? 'Your Company' }}</p>
                                         @else
+                                            @if($paypalEnabled)
                                             <p class="text-base font-medium text-gray-900">PayPal</p>
                                             <p class="text-sm text-gray-500">Transaction ID: {{ $order->transaction_id }}</p>
                                             
@@ -266,13 +267,18 @@
                                                 </div>
                                             @endif
 
+                                            @else
+                                            <p class="text-base font-medium text-gray-900">BCA Bank Transfer</p>
+                                            <p class="text-sm text-gray-500">This order is handled as a local payment.</p>
+                                            @endif
+
                                         @endif
                                     </div>
                                 </div>
                             </div>
 
                             {{-- ⬅️ INFO BOX: Customer akan terima email --}}
-                            @if($order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
+                            @if($paypalEnabled && $order->status === 'INVOICE_SENT' && $order->payment_gateway === 'PAYPAL')
                             <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
                                 <div class="flex">
                                     <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -330,6 +336,7 @@
                                                 <span class="ml-3 text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</span>
                                             </label>
                                             
+                                            @if($paypalEnabled)
                                             <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
                                                 <input type="radio" 
                                                     name="payment_gateway_override" 
@@ -338,6 +345,7 @@
                                                     class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500">
                                                 <span class="ml-3 text-sm font-medium text-gray-900">PayPal (International)</span>
                                             </label>
+                                            @endif
                                         </div>
 
                                         <!-- Admin Notes -->

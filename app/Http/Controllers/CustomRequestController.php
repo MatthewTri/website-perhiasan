@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
 use App\Models\CustomRequestImage;
+use App\Models\Setting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Consultation\NewConsultationMail;
@@ -21,19 +22,21 @@ class CustomRequestController extends Controller
     {
         return view('consultation.index');
     }
+
     /**
      * TUGAS USER: Menampilkan form "Book a Consultation".
      */
     public function create(Request $request)
     {
-        $type = $request->query('type', 'short'); // default: short
-        
-        // Validasi type
-        if (!in_array($type, ['short', 'design'])) {
+        $type = $request->query('type', 'short');
+
+        if (!in_array($type, ['short', 'design'], true)) {
             $type = 'short';
         }
 
-        return view('consultation.select-datetime', compact('type'));
+        $weeklyHours = Setting::getConsultationWeeklyHours();
+
+        return view('consultation.select-datetime', compact('type', 'weeklyHours'));
     }
 
     /**
@@ -43,12 +46,21 @@ class CustomRequestController extends Controller
     {
         $date = $request->query('date');
         $type = $request->query('type', 'short');
-        
+
         if (!$date) {
             return response()->json(['error' => 'Date is required'], 400);
         }
 
-        // Check full day disabled first
+        $dateObj = Carbon::parse($date);
+        $schedule = $this->getWeeklyScheduleForDate($dateObj);
+
+        if (!$this->isScheduleOpen($schedule)) {
+            return response()->json([
+                'booked_slots' => [],
+                'is_unavailable' => true,
+            ]);
+        }
+
         $isFullDayDisabled = \App\Models\DisabledSlot::where('date', $date)
             ->whereNull('time_slot')
             ->exists();
@@ -56,98 +68,78 @@ class CustomRequestController extends Controller
         if ($isFullDayDisabled) {
             return response()->json([
                 'booked_slots' => [],
-                'is_unavailable' => true
+                'is_unavailable' => true,
             ]);
         }
 
-        // Get all bookings for this date
         $bookings = CustomRequest::whereDate('appointment_date', $date)
             ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
             ->get(['appointment_time', 'consultation_type']);
 
-        // Get disabled slots
         $disabledSlots = \App\Models\DisabledSlot::where('date', $date)
             ->whereNotNull('time_slot')
             ->pluck('time_slot')
-            ->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'))
+            ->map(fn ($t) => Carbon::parse($t)->format('H:i'))
             ->toArray();
 
         $bookedSlots = [];
-        
-        // Process bookings
+
         foreach ($bookings as $booking) {
             $time = Carbon::parse($booking->appointment_time);
             $duration = $booking->consultation_type === 'design' ? 60 : 30;
-            
+
             $startMinutes = $time->hour * 60 + $time->minute;
             $endMinutes = $startMinutes + $duration;
-            
+
             if ($type === 'short') {
-                // Block setiap 30 menit slot yang overlap
                 $currentMinute = $startMinutes;
                 while ($currentMinute < $endMinutes) {
                     $hour = floor($currentMinute / 60);
                     $minute = $currentMinute % 60;
-                    $timeSlot = sprintf('%02d:%02d', $hour, $minute);
-                    $bookedSlots[] = $timeSlot;
+                    $bookedSlots[] = sprintf('%02d:%02d', $hour, $minute);
                     $currentMinute += 30;
                 }
             } else {
-                // DESIGN: Block setiap jam penuh yang overlap
                 $currentMinute = $startMinutes;
                 while ($currentMinute < $endMinutes) {
                     $hour = floor($currentMinute / 60);
-                    $timeSlot = sprintf('%02d:00', $hour);
-                    if (!in_array($timeSlot, $bookedSlots)) {
-                        $bookedSlots[] = $timeSlot;
+                    $slot = sprintf('%02d:00', $hour);
+                    if (!in_array($slot, $bookedSlots, true)) {
+                        $bookedSlots[] = $slot;
                     }
                     $currentMinute += 60;
                 }
             }
         }
 
-        // ✅ Process disabled slots based on consultation type
         if ($type === 'design') {
-            // Untuk DESIGN (1 jam), cek semua jam yang akan overlap dengan disabled slot
             foreach ($disabledSlots as $disabledTime) {
-                list($disabledHour, $disabledMinute) = explode(':', $disabledTime);
-                $disabledMinutes = (int)$disabledHour * 60 + (int)$disabledMinute;
-                
-                // Cari semua hourly slot yang akan overlap dengan disabled slot ini
-                // Range: dari (disabledMinutes - 59) sampai disabledMinutes
-                // Contoh: jika disabled = 16:30 (990 min)
-                // - Check dari 931 min (15:31) sampai 990 min (16:30)
-                // - Jam yang overlap: 16:00 (karena 16:00+60min=17:00 melewati 16:30)
-                
-                $rangeStart = $disabledMinutes - 59; // 59 menit sebelumnya
-                
-                // Cari semua jam penuh (XX:00) dalam range ini
+                [$disabledHour, $disabledMinute] = explode(':', $disabledTime);
+                $disabledMinutes = (int) $disabledHour * 60 + (int) $disabledMinute;
+                $rangeStart = $disabledMinutes - 59;
+
                 for ($min = 0; $min <= $disabledMinutes; $min += 60) {
-                    // Cek apakah jam ini + 60 menit akan melewati disabled slot
                     if ($min >= $rangeStart && $min <= $disabledMinutes) {
                         $hour = floor($min / 60);
                         $slot = sprintf('%02d:00', $hour);
-                        if (!in_array($slot, $bookedSlots)) {
+                        if (!in_array($slot, $bookedSlots, true)) {
                             $bookedSlots[] = $slot;
                         }
                     }
                 }
-                
-                // ✅ PERBAIKAN: Langsung block jam dari disabled slot juga
-                // Contoh: disabled 16:30 → block 16:00
+
                 $blockHour = floor($disabledMinutes / 60);
                 $blockSlot = sprintf('%02d:00', $blockHour);
-                if (!in_array($blockSlot, $bookedSlots)) {
+                if (!in_array($blockSlot, $bookedSlots, true)) {
                     $bookedSlots[] = $blockSlot;
                 }
             }
         } else {
-            // Untuk SHORT (30 menit), langsung tambahkan disabled slots
             $bookedSlots = array_merge($bookedSlots, $disabledSlots);
         }
-        
+
         return response()->json([
-            'booked_slots' => array_unique($bookedSlots)
+            'booked_slots' => array_unique($bookedSlots),
         ]);
     }
 
@@ -155,18 +147,33 @@ class CustomRequestController extends Controller
     {
         $year = $request->query('year');
         $month = $request->query('month');
-        
+
         if (!$year || !$month) {
             return response()->json(['unavailable_dates' => []]);
         }
 
-        // Fetch full day disabled slots untuk bulan tertentu
-        $dates = \App\Models\DisabledSlot::whereYear('date', $year)
-            ->whereMonth('date', $month)
-            ->whereNull('time_slot') // hanya full day
-            ->pluck('date')
-            ->map(fn($d) => $d->format('Y-m-d'))
-            ->toArray();
+        $weeklyHours = Setting::getConsultationWeeklyHours();
+        $dates = [];
+        $daysInMonth = Carbon::create((int) $year, (int) $month, 1)->daysInMonth;
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::create((int) $year, (int) $month, $day);
+            $dateKey = $date->format('Y-m-d');
+            $schedule = $this->getWeeklyScheduleForDate($date, $weeklyHours);
+
+            if (!$this->isScheduleOpen($schedule)) {
+                $dates[] = $dateKey;
+                continue;
+            }
+
+            $isFullDayDisabled = \App\Models\DisabledSlot::where('date', $dateKey)
+                ->whereNull('time_slot')
+                ->exists();
+
+            if ($isFullDayDisabled) {
+                $dates[] = $dateKey;
+            }
+        }
 
         return response()->json(['unavailable_dates' => $dates]);
     }
@@ -183,8 +190,6 @@ class CustomRequestController extends Controller
         $endTime = $startTime->copy()->addMinutes($duration);
 
         $timeDisplay = $startTime->format('g:i A') . ' – ' . $endTime->format('g:i A');
-
-
         $appointmentDisplay = $dateObj->format('l, F j, Y') . ' at ' . $timeDisplay;
 
         return view('consultation.details', compact('type', 'date', 'time', 'appointmentDisplay'));
@@ -195,7 +200,6 @@ class CustomRequestController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'consultation_type' => 'required|in:short,design',
             'meeting_type' => 'required|in:offline,online',
@@ -210,7 +214,24 @@ class CustomRequestController extends Controller
             'reference_images' => 'nullable|array|max:6',
         ]);
 
-        // Double check: Cek apakah slot sudah terbooked
+        $appointmentDate = Carbon::parse($validated['appointment_date']);
+        $schedule = $this->getWeeklyScheduleForDate($appointmentDate);
+
+        if (!$this->isScheduleOpen($schedule)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Selected date is not available for consultation.');
+        }
+
+        $duration = $validated['consultation_type'] === 'design' ? 60 : 30;
+        $allowedSlots = $this->generateTimeSlotsForSchedule($schedule['start'], $schedule['end'], $duration);
+
+        if (!in_array($validated['appointment_time'], $allowedSlots, true)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Selected time is outside the available schedule.');
+        }
+
         $existingBooking = CustomRequest::whereDate('appointment_date', $validated['appointment_date'])
             ->whereTime('appointment_time', $validated['appointment_time'])
             ->whereNotIn('status', ['CANCELLED', 'COMPLETED'])
@@ -222,25 +243,20 @@ class CustomRequestController extends Controller
                 ->with('error', 'This time slot is already booked. Please select another time.');
         }
 
-        // Tambahkan user_id jika login
         $validated['user_id'] = Auth::id();
 
-        // Simpan custom request ke database
         $customRequest = CustomRequest::create($validated);
 
-        // Handle multiple image uploads
         if ($request->hasFile('reference_images')) {
             foreach ($request->file('reference_images') as $image) {
-                // Store image to public disk
-                $imagePath = $image->storeAs('consultation_images', 
-                    Str::uuid() . '.' . $image->getClientOriginalExtension(), 
+                $imagePath = $image->storeAs(
+                    'consultation_images',
+                    Str::uuid() . '.' . $image->getClientOriginalExtension(),
                     'public'
                 );
-                
-                // Create permanent URL
+
                 $imageUrl = asset('storage/' . $imagePath);
-                
-                // Save image reference to database
+
                 CustomRequestImage::create([
                     'custom_request_id' => $customRequest->id,
                     'image_url' => $imageUrl,
@@ -248,50 +264,75 @@ class CustomRequestController extends Controller
             }
         }
 
-        // ✅ PERBAIKAN: Load relasi images sebelum kirim email
         $customRequestWithImages = $customRequest->load('images');
 
-        // Kirim email ke admin
         try {
             $adminEmail = config('mail.admin_email', 'admin@yoursite.com');
-            
-            // ✅ PERBAIKAN: Kirim object yang sudah di-load dengan images
             Mail::to($adminEmail)->queue(new NewConsultationMail($customRequestWithImages));
-            
+
             Log::info('Consultation email sent successfully', [
                 'request_id' => $customRequest->id,
                 'admin_email' => $adminEmail,
-                'images_count' => $customRequestWithImages->images->count() // ✅ Pakai yang sudah di-load
+                'images_count' => $customRequestWithImages->images->count(),
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Failed to send consultation email: ' . $e->getMessage(), [
                 'request_id' => $customRequest->id,
-                'error' => $e->getTraceAsString()
+                'error' => $e->getTraceAsString(),
             ]);
         }
 
-        // Email konfirmasi ke client
         try {
-            $customRequestWithImages = $customRequest->load('images');
-            
             Mail::to($customRequest->user_email)->queue(new \App\Mail\Consultation\ConsultationConfirmationMail($customRequestWithImages));
-            
+
             Log::info('Client confirmation email sent', [
                 'request_id' => $customRequest->id,
                 'client_email' => $customRequest->user_email,
-                'images_count' => $customRequestWithImages->images->count()
+                'images_count' => $customRequestWithImages->images->count(),
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Failed to send client confirmation email: ' . $e->getMessage(), [
                 'request_id' => $customRequest->id,
-                'error' => $e->getTraceAsString()
+                'error' => $e->getTraceAsString(),
             ]);
         }
 
         return redirect()->route('consultation.index')->with('success', 'Your consultation request has been submitted successfully! Our team will contact you in due time.');
     }
 
+    protected function getWeeklyScheduleForDate(Carbon $date, ?array $weeklyHours = null): array
+    {
+        $weeklyHours = $weeklyHours ?? Setting::getConsultationWeeklyHours();
+        $dayKey = strtolower($date->format('l'));
 
+        return $weeklyHours[$dayKey] ?? ['start' => null, 'end' => null];
+    }
+
+    protected function isScheduleOpen(array $schedule): bool
+    {
+        if (empty($schedule['start']) || empty($schedule['end'])) {
+            return false;
+        }
+
+        return Carbon::createFromFormat('H:i', $schedule['end'])->greaterThan(Carbon::createFromFormat('H:i', $schedule['start']));
+    }
+
+    protected function generateTimeSlotsForSchedule(?string $startTime, ?string $endTime, int $duration): array
+    {
+        if (!$startTime || !$endTime) {
+            return [];
+        }
+
+        $start = Carbon::createFromFormat('H:i', $startTime);
+        $end = Carbon::createFromFormat('H:i', $endTime);
+        $slots = [];
+        $current = $start->copy();
+
+        while ($current->copy()->addMinutes($duration)->lessThanOrEqualTo($end)) {
+            $slots[] = $current->format('H:i');
+            $current->addMinutes($duration);
+        }
+
+        return $slots;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Models\Order;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
@@ -28,6 +29,10 @@ class PaymentController extends Controller
      */
     public function paypalSuccess(Request $request)
     {
+        if (!Setting::isPaypalEnabled()) {
+            return redirect()->route('home')->with('error', 'PayPal payment is currently disabled.');
+        }
+
         $orderId = $request->query('order');
         $paypalToken = $request->query('token'); // PayPal Order ID
 
@@ -253,6 +258,10 @@ class PaymentController extends Controller
      */
     public function paypalWebhook(Request $request)
     {
+        if (!Setting::isPaypalEnabled()) {
+            return response()->json(['status' => 'ignored', 'reason' => 'paypal_disabled'], 200);
+        }
+
         try {
             $body = $request->getContent();
             $event = json_decode($body, true);

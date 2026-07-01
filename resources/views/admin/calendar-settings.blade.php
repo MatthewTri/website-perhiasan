@@ -19,6 +19,86 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div class="mb-6 bg-emerald-50 border border-emerald-200 px-6 py-4 text-sm text-emerald-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 bg-rose-50 border border-rose-200 px-6 py-4 text-sm text-rose-800">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @php
+            $weekDays = [
+                'monday' => 'Monday',
+                'tuesday' => 'Tuesday',
+                'wednesday' => 'Wednesday',
+                'thursday' => 'Thursday',
+                'friday' => 'Friday',
+                'saturday' => 'Saturday',
+                'sunday' => 'Sunday',
+            ];
+        @endphp
+
+        <div class="bg-white rounded-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 p-6 md:p-8 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6 pb-6 border-b border-stone-100">
+                <div>
+                    <h2 class="text-xl font-serif text-stone-900 tracking-wide">Weekly Availability</h2>
+                    <p class="text-sm text-stone-500 mt-2">Set start and end hours for each day. Leave both fields empty to close the day. Times are limited to :00 and :30.</p>
+                </div>
+                <div class="text-xs uppercase tracking-widest text-stone-400">Consultation slots</div>
+            </div>
+
+            <form action="{{ route('admin.calendar.settings.weeklyHours') }}" method="POST" class="space-y-4">
+                @csrf
+                <div class="grid gap-4">
+                    @foreach($weekDays as $dayKey => $dayLabel)
+                        @php
+                            $daySchedule = $weeklyHours[$dayKey] ?? ['start' => null, 'end' => null];
+                        @endphp
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center border border-stone-100 rounded-sm p-4 bg-stone-50/40">
+                            <div class="lg:col-span-3">
+                                <p class="text-sm font-semibold text-stone-900">{{ $dayLabel }}</p>
+                                <p class="text-[10px] uppercase tracking-widest text-stone-400 mt-1">{{ ($daySchedule['start'] && $daySchedule['end']) ? ($daySchedule['start'] . ' - ' . $daySchedule['end']) : 'Closed' }}</p>
+                            </div>
+                            <div class="lg:col-span-4">
+                                <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Start</label>
+                                <input type="time"
+                                       name="weekly_hours[{{ $dayKey }}][start]"
+                                       value="{{ old('weekly_hours.' . $dayKey . '.start', $daySchedule['start']) }}"
+                                       step="1800"
+                                       class="w-full bg-white border border-stone-200 px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-400">
+                            </div>
+                            <div class="lg:col-span-4">
+                                <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">End</label>
+                                <input type="time"
+                                       name="weekly_hours[{{ $dayKey }}][end]"
+                                       value="{{ old('weekly_hours.' . $dayKey . '.end', $daySchedule['end']) }}"
+                                       step="1800"
+                                       class="w-full bg-white border border-stone-200 px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-stone-400">
+                            </div>
+                            <div class="lg:col-span-1 text-right">
+                                <button type="button"
+                                        class="text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-900"
+                                        onclick="this.closest('.grid').querySelectorAll('input[type=\'time\']').forEach(input => input.value = '')">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-stone-800 transition-colors rounded-sm">
+                        Save Weekly Hours
+                    </button>
+                </div>
+            </form>
+        </div>
+
         {{-- Main Grid --}}
         <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
             
@@ -157,6 +237,23 @@ function isWeekend(date) {
     return day === 0 || day === 6;
 }
 
+const weeklyHours = @json($weeklyHours);
+const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+function getScheduleForDate(date) {
+    return weeklyHours[dayKeys[date.getDay()]] || { start: null, end: null };
+}
+
+function isScheduleOpen(schedule) {
+    return !!(schedule && schedule.start && schedule.end);
+}
+
+function timeToMinutes(time) {
+    if (!time) return null;
+    const [hour, minute] = time.split(':').map(Number);
+    return (hour * 60) + minute;
+}
+
 // ===================================
 // API CALLS (with caching)
 // ===================================
@@ -254,6 +351,8 @@ function renderCalendar(date) {
         const dateStr = formatDateStr(dateObj);
         const isPast = dateObj < today;
         const isUnavailable = state.unavailableDates.includes(dateStr);
+        const daySchedule = getScheduleForDate(dateObj);
+        const isClosed = !isScheduleOpen(daySchedule);
         const isSelected = state.selectedDate && formatDateStr(state.selectedDate) === dateStr;
         
         const dayCell = document.createElement('button');
@@ -264,14 +363,14 @@ function renderCalendar(date) {
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
             isPast 
                 ? 'text-stone-300 cursor-not-allowed bg-transparent' 
-                : isUnavailable
+                : (isUnavailable || isClosed)
                     ? 'bg-[#E3CFCF] text-white font-bold shadow-md cursor-pointer hover:bg-[#ddc8c8]'
                     : isSelected
                         ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                         : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
         }`;
         
-        if (!isPast) {
+        if (!isPast && !isClosed && !isUnavailable) {
             dayCell.onclick = () => selectDate(dateObj);
         } else {
             dayCell.disabled = true;
@@ -338,6 +437,14 @@ function renderTimeSlots() {
     timeSlots.innerHTML = '';
     
     const isFullDayDisabled = state.disabledSlots.includes('full_day');
+    const selectedSchedule = state.selectedDate ? getScheduleForDate(state.selectedDate) : { start: null, end: null };
+    const isClosed = !isScheduleOpen(selectedSchedule);
+
+    if (isClosed) {
+        timeSlots.innerHTML = `<div class="text-center py-8 text-stone-500 font-medium text-sm">This day is closed based on the weekly schedule.</div>`;
+        fullDayBtn.classList.add('hidden');
+        return;
+    }
     
     if (isFullDayDisabled) {
         timeSlots.innerHTML = `<div class="text-center py-8 text-[#8B5A3C] font-bold text-sm">All time slots disabled for this day.</div>`;
@@ -351,10 +458,7 @@ function renderTimeSlots() {
     }
     
     // Generate slots based on weekend/weekday
-    const isWeekendDay = isWeekend(state.selectedDate);
-    const endHour = isWeekendDay ? config.businessHours.weekendEnd : config.businessHours.weekdayEnd;
-    
-    const slots = generateTimeSlots(config.businessHours.start, endHour, config.slotInterval);
+    const slots = generateTimeSlots(selectedSchedule.start, selectedSchedule.end, config.slotInterval);
     
     const morning = slots.filter(s => s.hour < 12);
     const afternoon = slots.filter(s => s.hour >= 12 && s.hour < 17);
@@ -364,26 +468,27 @@ function renderTimeSlots() {
     if (afternoon.length > 0) timeSlots.appendChild(createTimeSection('Afternoon', afternoon));
     if (evening.length > 0) timeSlots.appendChild(createTimeSection('Evening', evening));
     
-    // Weekend info
-    if (isWeekendDay) {
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'mt-4 p-3 bg-[#F6EDE7] border border-[#E3CFCF] rounded-sm';
-        infoDiv.innerHTML = `
-            <p class="text-xs text-[#8B5A3C] text-center font-medium">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Weekend hours: 9:00 AM - 12:00 PM only
-            </p>
-        `;
-        timeSlots.appendChild(infoDiv);
-    }
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'mt-4 p-3 bg-[#F6EDE7] border border-[#E3CFCF] rounded-sm';
+    infoDiv.innerHTML = `
+        <p class="text-xs text-[#8B5A3C] text-center font-medium">
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Working hours: ${selectedSchedule.start} - ${selectedSchedule.end}
+        </p>
+    `;
+    timeSlots.appendChild(infoDiv);
 }
 
-function generateTimeSlots(startHour, endHour, interval) {
+function generateTimeSlots(startTime, endTime, interval) {
     const slots = [];
-    let currentMinutes = startHour * 60;
-    const endMinutes = endHour * 60;
+    if (!startTime || !endTime) {
+        return slots;
+    }
+
+    let currentMinutes = timeToMinutes(startTime);
+    const endMinutes = timeToMinutes(endTime);
     
-    while (currentMinutes < endMinutes) {
+    while (currentMinutes + interval <= endMinutes) {
         const hour = Math.floor(currentMinutes / 60);
         const minute = currentMinutes % 60;
         const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;

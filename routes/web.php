@@ -202,6 +202,7 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/calendar-settings', [CalendarSettingController::class, 'index'])->name('calendar.settings');
+    Route::post('/calendar-settings/weekly-hours', [CalendarSettingController::class, 'updateWeeklyHours'])->name('calendar.settings.weeklyHours');
     Route::get('/calendar-settings/booked', [CalendarSettingController::class, 'getBookedSlots'])->name('calendar.settings.booked');
     Route::get('/calendar-settings/disabled', [CalendarSettingController::class, 'getDisabledSlots'])->name('calendar.settings.disabled');
     Route::get('/calendar-settings/unavailable-dates', [CalendarSettingController::class, 'getUnavailableDates'])->name('calendar.settings.unavailableDates');

@@ -62,7 +62,7 @@
                                 @php
                                     $statusConfig = [
                                         'PENDING_REVIEW' => ['color' => 'text-yellow-800', 'label' => 'Pending Review'],
-                                        'PENDING' => ['color' => 'text-yellow-800', 'label' => 'PayPal Verification'],
+                                        'PENDING' => ['color' => 'text-yellow-800', 'label' => $paypalEnabled ? 'PayPal Verification' : 'Payment Verification'],
                                         'DENIED' => ['color' => 'text-yellow-800', 'label' => 'Payment Denied'],
                                         'REVERSED' => ['color' => 'text-red-800', 'label' => 'Payment Reversed'],
                                         'DISPUTED' => ['color' => 'text-red-800', 'label' => 'Payment Disputed'],
@@ -163,7 +163,7 @@
                                        class="w-full text-center border border-[#E3CFCF] bg-[#E3CFCF] hover:bg-[#dcc8c8] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
                                         Confirm Payment
                                     </a>
-                                @elseif($order->payment_gateway === 'PAYPAL')
+                                @elseif($paypalEnabled && $order->payment_gateway === 'PAYPAL')
                                     <a href="{{ route('order.track.paypal.checkout', $order->guest_token) }}" 
                                        class="w-full text-center bg-[#E3CFCF] hover:bg-[#dcc5c5] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-3 px-4 transition-all duration-300">
                                         Pay with PayPal
