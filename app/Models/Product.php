@@ -9,7 +9,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 class Product extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductFactory> */
-    use Sluggable;
+    use HasFactory, Sluggable;
 
     protected $fillable = ['name', 'slug', 'description', 'price_idr', 'price_usd', 'image', 'category_id',  'rating_avg', 'rating_count'];
     protected $with = ['category'];
@@ -108,7 +108,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        $currency = session('currency', 'IDR');
+        $currency = Setting::isPaypalEnabled() ? session('currency', 'IDR') : 'IDR';
         
         if ($currency === 'USD') {
             return 'USD ' . number_format((float) $this->price_usd, 2, '.', ',');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Product;
@@ -22,6 +23,10 @@ class CheckoutController extends Controller
     public function index()
     {
         session()->forget('currency');
+
+        if (!Setting::isPaypalEnabled()) {
+            session(['currency' => 'IDR']);
+        }
 
         if (Auth::check()) {
             // Authenticated user - get cart from database
@@ -57,6 +62,8 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
+        $paypalEnabled = Setting::isPaypalEnabled();
+
         $validated = $request->validate([
             'contact_email' => 'required|email',
             'shipping_first_name' => 'required|string|max:100',
@@ -67,7 +74,7 @@ class CheckoutController extends Controller
             'shipping_province' => 'nullable|string|max:100',
             'shipping_postal_code' => 'nullable|string|max:20',
             'shipping_country' => 'required|string|max:100',
-            'payment_gateway' => 'required|in:manual,paypal',
+            'payment_gateway' => 'required|' . ($paypalEnabled ? 'in:manual,paypal' : 'in:manual'),
             'order_notes' => 'nullable|string',
             'cart_data' => 'nullable|json',
         ]);
@@ -81,7 +88,7 @@ class CheckoutController extends Controller
 
             // ⬅️ TENTUKAN CURRENCY DARI PAYMENT PREFERENCE
             $paymentPreference = strtoupper($validated['payment_gateway']); // 'MANUAL' atau 'PAYPAL'
-            $selectedCurrency = $paymentPreference === 'PAYPAL' ? 'USD' : 'IDR';
+            $selectedCurrency = $paymentPreference === 'PAYPAL' && $paypalEnabled ? 'USD' : 'IDR';
 
             // Ambil cart items
             if (Auth::check()) {

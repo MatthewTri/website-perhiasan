@@ -11,6 +11,8 @@ class Setting extends Model
 
     protected $fillable = ['key', 'value'];
 
+    public const PAYPAL_ENABLED_KEY = 'paypal_enabled';
+
     // Helper method untuk get setting value
     public static function getValue($key, $default = null)
     {
@@ -36,5 +38,10 @@ class Setting extends Model
     {
         $value = self::getValue($key, $default);
         return is_numeric($value) ? (float)$value : $default;
+    }
+
+    public static function isPaypalEnabled(): bool
+    {
+        return self::getBoolValue(self::PAYPAL_ENABLED_KEY, true);
     }
 }

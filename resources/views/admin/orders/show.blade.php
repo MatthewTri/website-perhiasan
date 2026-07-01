@@ -86,8 +86,8 @@
     @if($order->status === 'PENDING')
     <div class="container mx-auto px-4 lg:px-12 py-4">
         <div class="bg-yellow-50 border border-yellow-200 px-4 py-3">
-            <p class="text-xs font-bold uppercase tracking-[0.2em] text-yellow-900">PayPal Verification</p>
-            <p class="mt-1 text-sm text-yellow-800">This order is currently being verified by PayPal. No action is needed yet—please wait for the next update (COMPLETED or DENIED).</p>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-yellow-900">{{ $paypalEnabled ? 'PayPal Verification' : 'Payment Verification' }}</p>
+            <p class="mt-1 text-sm text-yellow-800">{{ $paypalEnabled ? 'This order is currently being verified by PayPal. No action is needed yet—please wait for the next update (COMPLETED or DENIED).' : 'This order is currently being verified. No action is needed yet—please wait for the next update (COMPLETED or DENIED).' }}</p>
         </div>
     </div>
     @endif
@@ -99,11 +99,11 @@
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-red-700">Attention</p>
 
             @if($order->status === 'DENIED')
-                <p class="mt-1 text-sm text-red-800">Payment was denied by PayPal. Contact the customer and resend a fresh invoice link.</p>
+                <p class="mt-1 text-sm text-red-800">{{ $paypalEnabled ? 'Payment was denied by PayPal. Contact the customer and resend a fresh invoice link.' : 'Payment was denied. Contact the customer and resend a fresh invoice link.' }}</p>
             @elseif($order->status === 'DISPUTED')
-                <p class="mt-1 text-sm text-red-800">This order is in <span class="font-semibold">DISPUTED</span> status. Review the PayPal dispute details and respond as needed before continuing fulfillment.</p>
+                <p class="mt-1 text-sm text-red-800">{{ $paypalEnabled ? 'This order is in DISPUTED status. Review the PayPal dispute details and respond as needed before continuing fulfillment.' : 'This order is in DISPUTED status. Review the details and respond as needed before continuing fulfillment.' }}</p>
             @elseif($order->status === 'REVERSED')
-                <p class="mt-1 text-sm text-red-800">This order is in <span class="font-semibold">REVERSED</span> status (payment reversed/chargeback). Pause fulfillment and review the transaction in PayPal.</p>
+                <p class="mt-1 text-sm text-red-800">{{ $paypalEnabled ? 'This order is in REVERSED status (payment reversed/chargeback). Pause fulfillment and review the transaction in PayPal.' : 'This order is in REVERSED status (payment reversed/chargeback). Pause fulfillment and review the transaction.' }}</p>
             @endif
         </div>
     </div>
@@ -216,8 +216,8 @@
                                     <p class="text-sm font-medium text-gray-900">BCA Bank Transfer (Indonesia)</p>
                                     <p class="text-xs text-gray-600 mt-1">Manual bank transfer to BCA account</p>
                                     @else
-                                    <p class="text-sm font-medium text-gray-900">PayPal (International)</p>
-                                    <p class="text-xs text-gray-600 mt-1">PayPal invoice payment</p>
+                                    <p class="text-sm font-medium text-gray-900">{{ $paypalEnabled ? 'PayPal (International)' : 'BCA Bank Transfer (Indonesia)' }}</p>
+                                    <p class="text-xs text-gray-600 mt-1">{{ $paypalEnabled ? 'PayPal invoice payment' : 'Manual bank transfer to BCA account' }}</p>
                                     @endif
                                     <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Currency: {{ $order->currency }}</p>
                                 </div>
@@ -269,6 +269,7 @@
                                 @endif
                                 
                             @else
+                                @if($paypalEnabled)
                                 <p class="text-sm font-medium text-gray-900">PayPal</p>
                                 @php
                                     $paypalMode = strtolower((string) config('paypal.mode'));
@@ -317,6 +318,10 @@
                                     </div>
                                 </div>
                                 @endif
+                                @else
+                                    <p class="text-sm font-medium text-gray-900">BCA Bank Transfer</p>
+                                    <p class="text-xs text-gray-600 mt-1">This order is handled as a local payment.</p>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -352,9 +357,9 @@
                                 </span>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <span class="text-sm font-medium text-gray-900">{{ $order->payment_preference === 'MANUAL' ? 'BCA Bank Transfer' : 'PayPal' }}</span>
+                                <span class="text-sm font-medium text-gray-900">{{ $order->payment_preference === 'MANUAL' || !$paypalEnabled ? 'BCA Bank Transfer' : 'PayPal' }}</span>
                                 <span class="text-xs text-gray-500">•</span>
-                                <span class="text-xs text-gray-600">You can override if requested</span>
+                                <span class="text-xs text-gray-600">{{ $paypalEnabled ? 'You can override if requested' : 'PayPal override is disabled' }}</span>
                             </div>
                         </div>
 
@@ -376,17 +381,19 @@
                                     <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none"></div>
                                 </label>
                                 
-                                <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all group">
-                                    <input type="radio" name="payment_gateway_override" value="PAYPAL"
-                                        {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
-                                        class="peer sr-only payment-radio">
-                                    <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400"></div>
-                                    <div class="flex-1">
-                                        <span class="block text-sm font-medium text-gray-900">PayPal (International)</span>
-                                        <span class="block text-xs text-gray-500 mt-0.5">International payment in USD</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none"></div>
-                                </label>
+                                @if($paypalEnabled)
+                                    <label class="relative flex items-center p-4 border border-gray-200 cursor-pointer hover:border-gray-400 transition-all group">
+                                        <input type="radio" name="payment_gateway_override" value="PAYPAL"
+                                            {{ $order->payment_preference === 'PAYPAL' ? 'checked' : '' }}
+                                            class="peer sr-only payment-radio">
+                                        <div class="w-4 h-4 border border-gray-300 rounded-full mr-4 peer-checked:border-[#454545] peer-checked:bg-[#454545] group-hover:border-gray-400"></div>
+                                        <div class="flex-1">
+                                            <span class="block text-sm font-medium text-gray-900">PayPal (International)</span>
+                                            <span class="block text-xs text-gray-500 mt-0.5">International payment in USD</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-transparent peer-checked:border-[#454545] pointer-events-none"></div>
+                                    </label>
+                                @endif
                             </div>
 
                             <div class="relative">
@@ -982,6 +989,7 @@
 
 <script>
     // Shipping Cost Calculator & Currency Switcher
+    const paypalEnabled = {{ $paypalEnabled ? 'true' : 'false' }};
     const subtotalIdr = {{ $order->subtotal_idr }};
     const subtotalUsd = {{ $order->subtotal_usd }};
 
@@ -1003,7 +1011,7 @@
         if (!shippingInput) return;
         
         const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
-        const isPaypal = selectedGateway && selectedGateway.value === 'PAYPAL';
+        const isPaypal = paypalEnabled && selectedGateway && selectedGateway.value === 'PAYPAL';
         const currency = isPaypal ? 'USD' : 'IDR';
         const subtotal = isPaypal ? subtotalUsd : subtotalIdr;
         
@@ -1020,7 +1028,7 @@
 
     function updateCurrency() {
         const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
-        const isPaypal = selectedGateway && selectedGateway.value === 'PAYPAL';
+        const isPaypal = paypalEnabled && selectedGateway && selectedGateway.value === 'PAYPAL';
         const currency = isPaypal ? 'USD' : 'IDR';
         
         // Update subtotal display
@@ -1123,7 +1131,7 @@
 
 <script>
     // Override Indicator Logic
-    const customerPreference = '{{ $order->payment_preference }}';
+    const customerPreference = '{{ $paypalEnabled ? $order->payment_preference : 'MANUAL' }}';
     const paymentRadios = document.querySelectorAll('.payment-radio');
     const overrideIndicator = document.getElementById('override-indicator');
 
@@ -1160,7 +1168,7 @@
         
         const selectedGateway = document.querySelector('input[name="payment_gateway_override"]:checked');
         const gateway = selectedGateway ? selectedGateway.value : customerPreference;
-        const isPaypal = gateway === 'PAYPAL';
+        const isPaypal = paypalEnabled && gateway === 'PAYPAL';
         const currency = isPaypal ? 'USD' : 'IDR';
         
         // Payment Method

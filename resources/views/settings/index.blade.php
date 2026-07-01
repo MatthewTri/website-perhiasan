@@ -51,6 +51,57 @@
             @csrf
             @method('PUT')
 
+            {{-- Payment Settings Card --}}
+            <div class="bg-white border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-md">
+                <div class="px-6 sm:px-8 py-6 border-b border-gray-100 bg-[#FAFAFA]">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#e3cfcf] to-[#D4A088] rounded-full flex items-center justify-center mr-4 shadow-sm">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M296 88C296 74.7 306.7 64 320 64C333.3 64 344 74.7 344 88L344 128L400 128C417.7 128 432 142.3 432 160C432 177.7 417.7 192 400 192L285.1 192C260.2 192 240 212.2 240 237.1C240 259.6 256.5 278.6 278.7 281.8L370.3 294.9C424.1 302.6 464 348.6 464 402.9C464 463.2 415.1 512 354.9 512L344 512L344 552C344 565.3 333.3 576 320 576C306.7 576 296 565.3 296 552L296 512L224 512C206.3 512 192 497.7 192 480C192 462.3 206.3 448 224 448L354.9 448C379.8 448 400 427.8 400 402.9C400 380.4 383.5 361.4 361.3 358.2L269.7 345.1C215.9 337.5 176 291.4 176 237.1C176 176.9 224.9 128 285.1 128L296 128L296 88z"/></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-serif text-gray-900 mb-1">Payment Settings</h2>
+                            <p class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-gray-400">
+                                Control available payment gateways
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 sm:px-8 py-8 sm:py-10">
+                    <div class="space-y-4">
+                        <label class="block">
+                            <span class="text-xs uppercase tracking-[0.1em] text-gray-500 font-medium mb-3 block">
+                                PayPal Gateway
+                            </span>
+                            <div class="bg-gray-50 border border-gray-200 px-6 py-5 transition-all duration-200 hover:border-[#e3cfcf]/50">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1 mr-4">
+                                        <label for="paypal_enabled" class="text-sm text-gray-900 font-medium cursor-pointer block mb-1">
+                                            Enable PayPal Payment
+                                        </label>
+                                        <p class="text-xs text-gray-500 leading-relaxed">
+                                            Show PayPal payment options and USD pricing across the website.
+                                        </p>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <input type="hidden" name="paypal_enabled" value="0">
+                                        <label for="paypal_enabled" class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox"
+                                                   id="paypal_enabled"
+                                                   name="paypal_enabled"
+                                                   value="1"
+                                                   {{ $settings['paypal_enabled'] ? 'checked' : '' }}
+                                                   class="sr-only peer">
+                                            <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#e3cfcf]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#e3cfcf] shadow-inner"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             {{-- AI Settings Card --}}
             <div class="bg-white border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-md">
                 
@@ -240,12 +291,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         const saveButton = document.getElementById('save-button');
+        const paypalEnabledCheckbox = document.getElementById('paypal_enabled');
         const aiEnabledCheckbox = document.getElementById('ai_enabled');
         const aiQuotaInput = document.getElementById('ai_quota_limit');
         const tawkEnabledCheckbox = document.getElementById('tawk_enabled');
         
         // Store initial values
         const initialValues = {
+            paypal_enabled: paypalEnabledCheckbox ? paypalEnabledCheckbox.checked : true,
             ai_enabled: aiEnabledCheckbox.checked,
             ai_quota_limit: aiQuotaInput.value,
             tawk_enabled: tawkEnabledCheckbox ? tawkEnabledCheckbox.checked : true
@@ -254,6 +307,7 @@
         // Function to check if form has changes
         function checkFormChanges() {
             const hasChanges = 
+                (paypalEnabledCheckbox ? (paypalEnabledCheckbox.checked !== initialValues.paypal_enabled) : false) ||
                 aiEnabledCheckbox.checked !== initialValues.ai_enabled ||
                 aiQuotaInput.value !== initialValues.ai_quota_limit ||
                 (tawkEnabledCheckbox ? (tawkEnabledCheckbox.checked !== initialValues.tawk_enabled) : false);
@@ -269,6 +323,9 @@
         }
         
         // Listen for changes on both inputs
+        if (paypalEnabledCheckbox) {
+            paypalEnabledCheckbox.addEventListener('change', checkFormChanges);
+        }
         aiEnabledCheckbox.addEventListener('change', checkFormChanges);
         aiQuotaInput.addEventListener('input', checkFormChanges);
         if (tawkEnabledCheckbox) {

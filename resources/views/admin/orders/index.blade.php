@@ -40,10 +40,12 @@
                 <p class="text-2xl font-semibold text-orange-500">{{ $stats->verifying ?? 0 }}</p>
             </div>
             
-            <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
-                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">PayPal Pending</p>
-                <p class="text-2xl font-semibold text-amber-600">{{ $stats->paypal_pending ?? 0 }}</p>
-            </div>
+            @if($paypalEnabled)
+                <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
+                    <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">PayPal Pending</p>
+                    <p class="text-2xl font-semibold text-amber-600">{{ $stats->paypal_pending ?? 0 }}</p>
+                </div>
+            @endif
 
             <div class="bg-white p-5 rounded-sm border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md transition-shadow group">
                 <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1 group-hover:text-stone-600 transition-colors">Paid</p>
@@ -110,7 +112,9 @@
                             <option value="PENDING_REVIEW" {{ request('status') == 'PENDING_REVIEW' ? 'selected' : '' }}>Pending Review</option>
                             <option value="INVOICE_SENT" {{ request('status') == 'INVOICE_SENT' ? 'selected' : '' }}>Invoice Sent</option>
                             <option value="WAITING_VERIFICATION" {{ request('status') == 'WAITING_VERIFICATION' ? 'selected' : '' }}>Waiting Verification</option>
-                            <option value="PENDING" {{ request('status') == 'PENDING' ? 'selected' : '' }}>PayPal Pending</option>
+                            @if($paypalEnabled)
+                                <option value="PENDING" {{ request('status') == 'PENDING' ? 'selected' : '' }}>PayPal Pending</option>
+                            @endif
                             <option value="PAID" {{ request('status') == 'PAID' ? 'selected' : '' }}>Paid</option>
                             <option value="PRODUCTION" {{ request('status') == 'PRODUCTION' ? 'selected' : '' }}>Production</option>
                             <option value="SHIPPED" {{ request('status') == 'SHIPPED' ? 'selected' : '' }}>Shipped</option>
@@ -132,7 +136,9 @@
                         <select name="payment_gateway" class="w-full bg-stone-50 border-b-2 border-stone-200 px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-0 transition-colors appearance-none cursor-pointer">
                             <option value="">All Methods</option>
                             <option value="MANUAL" {{ request('payment_gateway') == 'MANUAL' ? 'selected' : '' }}>Bank Transfer (BCA)</option>
-                            <option value="PAYPAL" {{ request('payment_gateway') == 'PAYPAL' ? 'selected' : '' }}>PayPal</option>
+                            @if($paypalEnabled)
+                                <option value="PAYPAL" {{ request('payment_gateway') == 'PAYPAL' ? 'selected' : '' }}>PayPal</option>
+                            @endif
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>

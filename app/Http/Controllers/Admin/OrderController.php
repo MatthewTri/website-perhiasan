@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Setting;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Mail\Order\PaymentDetailsMail;
@@ -33,6 +34,8 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        $paypalEnabled = Setting::isPaypalEnabled();
+
         $allowedPerPage = [5, 10, 20];
         $perPage = (int) $request->input('per_page', session('admin.orders.per_page', 10));
         if (!in_array($perPage, $allowedPerPage, true)) {
@@ -73,7 +76,10 @@ class OrderController extends Controller
             $stats = Order::query()
                 ->selectRaw('COUNT(*) as total')
                 ->selectRaw("SUM(CASE WHEN status = 'PENDING_REVIEW' THEN 1 ELSE 0 END) as pending")
-                ->selectRaw("SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as paypal_pending")
+                ->selectRaw($paypalEnabled
+                    ? "SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as paypal_pending"
+                    : "0 as paypal_pending"
+                )
                 ->selectRaw("SUM(CASE WHEN status = 'INVOICE_SENT' THEN 1 ELSE 0 END) as invoiced")
                 ->selectRaw("SUM(CASE WHEN status = 'WAITING_VERIFICATION' THEN 1 ELSE 0 END) as verifying")
                 ->selectRaw("SUM(CASE WHEN status = 'DENIED' THEN 1 ELSE 0 END) as denied")
@@ -89,7 +95,10 @@ class OrderController extends Controller
         
         // Order by priority if no specific status filter
         if (!$request->has('status') || $request->status == '') {
-            $query->orderByRaw("FIELD(status, 'PENDING_REVIEW', 'PENDING', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'DENIED', 'DISPUTED', 'REVERSED', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')");
+            $query->orderByRaw($paypalEnabled
+                ? "FIELD(status, 'PENDING_REVIEW', 'PENDING', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'DENIED', 'DISPUTED', 'REVERSED', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')"
+                : "FIELD(status, 'PENDING_REVIEW', 'WAITING_VERIFICATION', 'INVOICE_SENT', 'DENIED', 'DISPUTED', 'REVERSED', 'PAID', 'PRODUCTION', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED')"
+            );
         }
         
         $orders = $query->latest()->paginate($perPage)->onEachSide(1)->withQueryString();
@@ -105,7 +114,7 @@ class OrderController extends Controller
             ]);
         }
 
-        return view('admin.orders.index', compact('orders', 'stats', 'perPage'));
+        return view('admin.orders.index', compact('orders', 'stats', 'perPage', 'paypalEnabled'));
     }
 
     /**
@@ -114,10 +123,11 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('user', 'orderItems.product','shipment');
+        $paypalEnabled = Setting::isPaypalEnabled();
         $paypalStatus = null;
         
         // ⬅️ HANYA FETCH PAYPAL STATUS JIKA ADA TRANSACTION_ID
-        if ($order->payment_gateway === 'PAYPAL' && $order->transaction_id) {
+        if ($paypalEnabled && $order->payment_gateway === 'PAYPAL' && $order->transaction_id) {
             try {
                 $paypalStatus = $this->paymentService->getPaypalOrderStatus($order->transaction_id);
                 
@@ -138,7 +148,7 @@ class OrderController extends Controller
             }
         }
         
-        return view('admin.orders.show', compact('order', 'paypalStatus'));
+        return view('admin.orders.show', compact('order', 'paypalStatus', 'paypalEnabled'));
     }
 
     /**
@@ -146,12 +156,14 @@ class OrderController extends Controller
      */
     public function sendPaymentDetails(Request $request, Order $order)
     {
+        $paypalEnabled = Setting::isPaypalEnabled();
+
         if (!in_array($order->status, ['PENDING_REVIEW', 'DENIED'], true)) {
             return back()->with('error', 'Payment details already sent or order status invalid!');
         }
 
         $validated = $request->validate([
-            'payment_gateway_override' => 'required|in:MANUAL,PAYPAL',
+            'payment_gateway_override' => 'required|' . ($paypalEnabled ? 'in:MANUAL,PAYPAL' : 'in:MANUAL'),
             'admin_notes' => 'nullable|string|max:1000',
             'shipping_cost' => 'required|numeric|min:0',
         ]);
@@ -160,7 +172,7 @@ class OrderController extends Controller
         $shippingCost = $validated['shipping_cost'];
 
         // ⬅️ TENTUKAN CURRENCY BERDASARKAN PAYMENT GATEWAY
-        $newCurrency = $paymentGateway === 'PAYPAL' ? 'USD' : 'IDR';
+        $newCurrency = $paymentGateway === 'PAYPAL' && $paypalEnabled ? 'USD' : 'IDR';
         
         // ⬅️ AMBIL SUBTOTAL SESUAI CURRENCY BARU
         $subtotal = $newCurrency === 'USD' ? $order->subtotal_usd : $order->subtotal_idr;
@@ -170,7 +182,7 @@ class OrderController extends Controller
 
         $order->update([
             'payment_gateway' => $paymentGateway,
-            'payment_method' => $paymentGateway === 'PAYPAL' ? 'PAYPAL' : 'BCA',
+            'payment_method' => $paymentGateway === 'PAYPAL' && $paypalEnabled ? 'PAYPAL' : 'BCA',
             'admin_notes' => $validated['admin_notes'],
             
             // ⬅️ UPDATE CURRENCY & AMOUNTS
@@ -187,7 +199,7 @@ class OrderController extends Controller
         try {
             Mail::to($order->contact_email)->queue(new PaymentDetailsMail($order, $magicLink));
             
-            $message = $paymentGateway === 'PAYPAL' 
+            $message = $paymentGateway === 'PAYPAL' && $paypalEnabled
                 ? 'PayPal invoice sent to ' . $order->contact_email 
                 : 'BCA payment details sent to ' . $order->contact_email;
             

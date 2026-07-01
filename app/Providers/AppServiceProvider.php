@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
@@ -15,20 +16,23 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         View::composer('*', function ($view) {
-            // Ambil dari session, default IDR
-            $currency = session('currency', 'IDR');
+            $paypalEnabled = Setting::isPaypalEnabled();
+
+            // Ambil dari session, paksa IDR saat PayPal dimatikan
+            $currency = $paypalEnabled ? session('currency', 'IDR') : 'IDR';
             // NOTE: For UI display we use currency code (no symbol)
             $currencySymbol = $currency === 'USD' ? 'USD' : 'IDR';
             
             $view->with([
                 'globalCurrency' => $currency,
                 'globalCurrencySymbol' => $currencySymbol,
+                'paypalEnabled' => $paypalEnabled,
             ]);
         });
 
         Blade::directive('currency', function ($expression) {
             return "<?php 
-                \$currency = session('currency', 'IDR');
+                \$currency = \\App\\Models\\Setting::isPaypalEnabled() ? session('currency', 'IDR') : 'IDR';
                 \$prices = {$expression};
                 if (\$currency === 'USD') {
                     echo 'USD ' . number_format(\$prices['usd'], 2, '.', ',');
@@ -40,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::directive('currencyTotal', function ($expression) {
             return "<?php 
-                \$currency = session('currency', 'IDR');
+                \$currency = \\App\\Models\\Setting::isPaypalEnabled() ? session('currency', 'IDR') : 'IDR';
                 \$data = {$expression};
                 \$total = \$currency === 'USD' 
                     ? \$data['usd'] * \$data['qty']

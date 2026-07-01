@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Services\PaymentService;
@@ -99,6 +100,11 @@ class OrderTrackingController extends Controller
 
     public function createPaypalCheckout($guestToken)
     {
+        if (!Setting::isPaypalEnabled()) {
+            return redirect()->route('order.track', $guestToken)
+                           ->with('error', 'PayPal payment is currently disabled. Please use BCA bank transfer.');
+        }
+
         $order = Order::where('guest_token', $guestToken)->firstOrFail();
 
         if (!in_array($order->status, ['INVOICE_SENT', 'WAITING_VERIFICATION'])) {
