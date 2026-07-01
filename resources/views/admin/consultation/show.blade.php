@@ -408,11 +408,22 @@
     const appointmentDateStr = '{{ $consultation->appointment_date->format("Y-m-d") }}';
     const appointmentTimeStr = '{{ \Carbon\Carbon::parse($consultation->appointment_time)->format("H:i") }}';
     const currentAppointmentDate = new Date(appointmentDateStr);
+    const weeklyHours = @json($weeklyHours);
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-    const businessHours = {
-        weekday: { start: 9, end: 17 },
-        weekend: { start: 9, end: 12 }
-    };
+    function getScheduleForDate(date) {
+        return weeklyHours[dayKeys[date.getDay()]] || { start: null, end: null };
+    }
+
+    function isScheduleOpen(schedule) {
+        return !!(schedule && schedule.start && schedule.end);
+    }
+
+    function timeToMinutes(time) {
+        if (!time) return null;
+        const [hour, minute] = time.split(':').map(Number);
+        return (hour * 60) + minute;
+    }
 
     // ===================================
     // UTILITY FUNCTIONS
@@ -554,6 +565,8 @@
             const dateStr = formatDateStr(dateObj);
             const isPastOrToday = dateObj <= today;
             const isUnavailable = state.unavailableDates.includes(dateStr);
+            const daySchedule = getScheduleForDate(dateObj);
+            const isClosed = !isScheduleOpen(daySchedule);
             
             const isCurrentAppointment = dateObj.getDate() === currentAppointmentDate.getDate() &&
                 dateObj.getMonth() === currentAppointmentDate.getMonth() &&
@@ -570,7 +583,7 @@
             
             // ✅ UPDATED: Tambahkan handling untuk unavailable dates
             dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-xs font-medium transition-all ${
-                isPastOrToday || isUnavailable
+                isPastOrToday || isUnavailable || isClosed
                     ? 'text-stone-300 cursor-not-allowed bg-transparent line-through' 
                     : isCurrentAppointment
                         ? 'bg-[#E3CFCF] text-white border-[#E3CFCF] font-bold shadow-md hover:bg-[#ddc8c8] hover:border-[#ddc8c8] cursor-pointer'
@@ -579,7 +592,7 @@
                             : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
             }`;
             
-            if (!isPastOrToday && !isUnavailable) {
+            if (!isPastOrToday && !isUnavailable && !isClosed) {
                 dayCell.onclick = () => selectDate(dateObj);
             } else {
                 dayCell.disabled = true;
@@ -619,9 +632,7 @@
     }
 
     function renderTimeSlots(date) {
-        const dayOfWeek = date.getDay();
-        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
+        const hours = getScheduleForDate(date);
         
         const selectedDateHeader = document.getElementById('selected-date-header');
         const timeSlots = document.getElementById('time-slots');
@@ -642,6 +653,11 @@
         today.setHours(0,0,0,0);
 
         let isTodayOrPast = selected.getTime() <= today.getTime();
+        if (!isScheduleOpen(hours)) {
+            timeSlots.innerHTML = '<p class="text-xs text-stone-400 text-center py-4">This day is closed.</p>';
+            return;
+        }
+
         const slots = generateTimeSlots(hours.start, hours.end, state.duration);
 
         let availableSlots = slots.filter(slot => {
@@ -676,16 +692,31 @@
         const slots = [];
         
         if (duration === 60) {
-            for (let hour = startHour; hour < endHour; hour++) {
-                const time24 = `${hour.toString().padStart(2, '0')}:00`;
+            const startMinutes = timeToMinutes(startHour);
+            const endMinutes = timeToMinutes(endHour);
+
+            if (startMinutes === null || endMinutes === null) {
+                return slots;
+            }
+
+            for (let currentMinutes = startMinutes; currentMinutes + 60 <= endMinutes; currentMinutes += 60) {
+                const hour = Math.floor(currentMinutes / 60);
+                const minute = currentMinutes % 60;
+                const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 const period = hour >= 12 ? 'PM' : 'AM';
                 const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                const time12 = `${hour12}:00 ${period}`;
-                slots.push({ hour, minute: 0, time24, time12 });
+                const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+                slots.push({ hour, minute, time24, time12 });
             }
         } else {
-            let currentMinutes = startHour * 60;
-            const endMinutes = endHour * 60;
+            const startMinutes = timeToMinutes(startHour);
+            const endMinutes = timeToMinutes(endHour);
+
+            if (startMinutes === null || endMinutes === null) {
+                return slots;
+            }
+
+            let currentMinutes = startMinutes;
             while (currentMinutes + duration <= endMinutes) {
                 const hour = Math.floor(currentMinutes / 60);
                 const minute = currentMinutes % 60;

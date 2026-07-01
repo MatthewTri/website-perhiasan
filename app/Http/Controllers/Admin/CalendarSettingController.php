@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DisabledSlot;
 use App\Models\CustomRequest;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -12,7 +13,46 @@ class CalendarSettingController extends Controller
 {
     public function index()
     {
-        return view('admin.calendar-settings');
+        $weeklyHours = Setting::getConsultationWeeklyHours();
+
+        return view('admin.calendar-settings', compact('weeklyHours'));
+    }
+
+    public function updateWeeklyHours(Request $request)
+    {
+        $validated = $request->validate([
+            'weekly_hours' => 'required|array',
+            'weekly_hours.monday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.monday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.tuesday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.tuesday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.wednesday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.wednesday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.thursday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.thursday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.friday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.friday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.saturday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.saturday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.sunday.start' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+            'weekly_hours.sunday.end' => ['nullable', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+        ]);
+
+        $weeklyHours = Setting::normalizeConsultationWeeklyHours($validated['weekly_hours']);
+
+        foreach ($weeklyHours as $day => $schedule) {
+            if (($schedule['start'] === null) xor ($schedule['end'] === null)) {
+                return back()->withInput()->with('error', ucfirst($day) . ' must have both start and end time, or leave both empty to close the day.');
+            }
+
+            if ($schedule['start'] !== null && Carbon::createFromFormat('H:i', $schedule['end'])->lessThanOrEqualTo(Carbon::createFromFormat('H:i', $schedule['start']))) {
+                return back()->withInput()->with('error', ucfirst($day) . ' end time must be later than the start time.');
+            }
+        }
+
+        Setting::setValue(Setting::CONSULTATION_WEEKLY_HOURS_KEY, json_encode($weeklyHours));
+
+        return back()->with('success', 'Weekly consultation hours updated successfully.');
     }
 
     // Fetch booked slots (sama seperti consultation availability)

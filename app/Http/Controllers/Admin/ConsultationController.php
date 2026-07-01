@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CustomRequest;
+use App\Models\Setting;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Consultation\ConsultationRescheduledMail;
@@ -98,7 +99,9 @@ class ConsultationController extends Controller
     public function show(CustomRequest $consultation)
     {
         $consultation->load(['user', 'images']);
-        return view('admin.consultation.show', compact('consultation'));
+        $weeklyHours = Setting::getConsultationWeeklyHours();
+
+        return view('admin.consultation.show', compact('consultation', 'weeklyHours'));
     }
 
     public function updateStatus(Request $request, CustomRequest $consultation)
@@ -142,6 +145,23 @@ class ConsultationController extends Controller
             'appointment_time' => 'required'
         ]);
 
+        $appointmentDate = Carbon::parse($request->appointment_date);
+        $schedule = $this->getWeeklyScheduleForDate($appointmentDate);
+
+        if (!$this->isScheduleOpen($schedule)) {
+            return redirect()->back()->with('error', 'Selected date is not available for consultation.');
+        }
+
+        $allowedSlots = $this->generateTimeSlotsForSchedule(
+            $schedule['start'],
+            $schedule['end'],
+            $consultation->consultation_type === 'design' ? 60 : 30
+        );
+
+        if (!in_array($request->appointment_time, $allowedSlots, true)) {
+            return redirect()->back()->with('error', 'Selected time is outside the available schedule.');
+        }
+
         $existingBooking = CustomRequest::whereDate('appointment_date', $request->appointment_date)
             ->whereTime('appointment_time', $request->appointment_time)
             ->where('id', '!=', $consultation->id)
@@ -163,6 +183,42 @@ class ConsultationController extends Controller
 
         return redirect()->route('admin.consultation.show', $consultation)->with('success', 'Consultation rescheduled successfully.');
 
+    }
+
+    protected function getWeeklyScheduleForDate(Carbon $date, ?array $weeklyHours = null): array
+    {
+        $weeklyHours = $weeklyHours ?? Setting::getConsultationWeeklyHours();
+        $dayKey = strtolower($date->format('l'));
+
+        return $weeklyHours[$dayKey] ?? ['start' => null, 'end' => null];
+    }
+
+    protected function isScheduleOpen(array $schedule): bool
+    {
+        if (empty($schedule['start']) || empty($schedule['end'])) {
+            return false;
+        }
+
+        return Carbon::createFromFormat('H:i', $schedule['end'])->greaterThan(Carbon::createFromFormat('H:i', $schedule['start']));
+    }
+
+    protected function generateTimeSlotsForSchedule(?string $startTime, ?string $endTime, int $duration): array
+    {
+        if (!$startTime || !$endTime) {
+            return [];
+        }
+
+        $start = Carbon::createFromFormat('H:i', $startTime);
+        $end = Carbon::createFromFormat('H:i', $endTime);
+        $slots = [];
+        $current = $start->copy();
+
+        while ($current->copy()->addMinutes($duration)->lessThanOrEqualTo($end)) {
+            $slots[] = $current->format('H:i');
+            $current->addMinutes($duration);
+        }
+
+        return $slots;
     }
 
     public function bulkAction(Request $request)

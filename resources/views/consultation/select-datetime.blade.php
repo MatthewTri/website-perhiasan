@@ -132,10 +132,22 @@ let selectedTime = null;
 let bookedSlots = [];
 let unavailableDates = []; // ✅ Global state
 
-const businessHours = {
-    weekday: { start: 9, end: 17 },
-    weekend: { start: 9, end: 12 }
-};
+const weeklyHours = @json($weeklyHours);
+const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+function getScheduleForDate(date) {
+    return weeklyHours[dayKeys[date.getDay()]] || { start: null, end: null };
+}
+
+function isScheduleOpen(schedule) {
+    return !!(schedule && schedule.start && schedule.end);
+}
+
+function timeToMinutes(time) {
+    if (!time) return null;
+    const [hour, minute] = time.split(':').map(Number);
+    return (hour * 60) + minute;
+}
 
 function getTodayWIB() {
     const now = new Date();
@@ -186,6 +198,8 @@ function renderCalendar(date) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const isPastOrToday = dateObj <= today;
         const isUnavailable = unavailableDates.includes(dateStr); // ✅ Pakai state global
+        const daySchedule = getScheduleForDate(dateObj);
+        const isClosed = !isScheduleOpen(daySchedule);
         const isSelected = selectedDate && 
             dateObj.getDate() === selectedDate.getDate() &&
             dateObj.getMonth() === selectedDate.getMonth() &&
@@ -196,14 +210,14 @@ function renderCalendar(date) {
         dayCell.textContent = day;
         
         dayCell.className = `aspect-square flex items-center justify-center rounded-sm text-sm font-medium transition-all duration-200 ${
-            isPastOrToday || isUnavailable
+            isPastOrToday || isUnavailable || isClosed
                 ? 'text-stone-300 cursor-not-allowed bg-transparent line-through' 
                 : isSelected
                     ? 'bg-stone-900 text-white shadow-md transform scale-105 cursor-pointer'
                     : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'
         }`;
         
-        if (!isPastOrToday && !isUnavailable) {
+        if (!isPastOrToday && !isUnavailable && !isClosed) {
             dayCell.onclick = () => selectDate(dateObj);
         } else {
             dayCell.disabled = true;
@@ -275,12 +289,15 @@ async function fetchAvailability(date) {
 }
 
 function renderTimeSlots(date) {
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const hours = isWeekend ? businessHours.weekend : businessHours.weekday;
+    const hours = getScheduleForDate(date);
     
     const timeSlots = document.getElementById('time-slots');
     timeSlots.innerHTML = '';
+
+    if (!isScheduleOpen(hours)) {
+        timeSlots.innerHTML = '<div class="text-center py-8 text-stone-500 text-sm font-medium">This day is closed.</div>';
+        return;
+    }
     
     const slots = generateTimeSlots(hours.start, hours.end, duration);
     
@@ -303,18 +320,33 @@ function generateTimeSlots(startHour, endHour, duration) {
     
     if (duration === 60) {
         // ✅ DESIGN: Generate hourly slots (09:00, 10:00, 11:00, ...)
-        for (let hour = startHour; hour < endHour; hour++) {
+        const startMinutes = timeToMinutes(startHour);
+        const endMinutes = timeToMinutes(endHour);
+
+        if (startMinutes === null || endMinutes === null) {
+            return slots;
+        }
+
+        for (let currentMinutes = startMinutes; currentMinutes + 60 <= endMinutes; currentMinutes += 60) {
+            const hour = Math.floor(currentMinutes / 60);
+            const minute = currentMinutes % 60;
             const time24 = `${hour.toString().padStart(2, '0')}:00`;
             const period = hour >= 12 ? 'PM' : 'AM';
             const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-            const time12 = `${hour12}:00 ${period}`;
+            const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
             
-            slots.push({ hour, minute: 0, time24, time12 });
+            slots.push({ hour, minute, time24, time12 });
         }
     } else {
         // ✅ SHORT: Generate 30-min slots (existing logic)
-        let currentMinutes = startHour * 60;
-        const endMinutes = endHour * 60;
+        const startMinutes = timeToMinutes(startHour);
+        const endMinutes = timeToMinutes(endHour);
+
+        if (startMinutes === null || endMinutes === null) {
+            return slots;
+        }
+
+        let currentMinutes = startMinutes;
         
         while (currentMinutes + duration <= endMinutes) {
             const hour = Math.floor(currentMinutes / 60);
