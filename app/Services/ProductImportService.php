@@ -289,18 +289,21 @@ class ProductImportService
             return [];
         }
 
-        $namespace = $relations->getNamespaces(true)[''] ?? 'http://schemas.openxmlformats.org/package/2006/relationships';
-        $relations->registerXPathNamespace('rel', $namespace);
-
         $map = [];
 
-        foreach ($relations->xpath('//rel:Relationship') ?: [] as $relationship) {
+        foreach ($relations->xpath('//*[local-name()="Relationship"]') ?: [] as $relationship) {
             $attributes = $relationship->attributes();
             $id = (string) ($attributes['Id'] ?? '');
             $target = (string) ($attributes['Target'] ?? '');
 
             if ($id !== '' && $target !== '') {
-                $map[$id] = 'xl/' . ltrim($target, '/');
+                $normalizedTarget = ltrim($target, '/');
+
+                if (!str_starts_with($normalizedTarget, 'xl/')) {
+                    $normalizedTarget = 'xl/' . $normalizedTarget;
+                }
+
+                $map[$id] = $normalizedTarget;
             }
         }
 
@@ -313,21 +316,18 @@ class ProductImportService
             return null;
         }
 
-        $namespace = $workbook->getNamespaces(true)[''] ?? 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
-        $workbook->registerXPathNamespace('main', $namespace);
-
-        $relationshipsNamespace = $workbook->getNamespaces(true)['r'] ?? 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-        $workbook->registerXPathNamespace('r', $relationshipsNamespace);
-
-        $sheets = $workbook->xpath('//main:sheets/main:sheet') ?: [];
+        $sheets = $workbook->xpath('//*[local-name()="sheets"]/*[local-name()="sheet"]') ?: [];
         $firstSheet = $sheets[0] ?? null;
 
         if ($firstSheet === null) {
             return null;
         }
 
-        $attributes = $firstSheet->attributes('r', true);
-        $relationshipId = (string) ($attributes['id'] ?? '');
+        // r:id is in the relationships namespace, not the default namespace,
+        // so ->attributes() alone won't see it. Query the namespace directly.
+        $relNamespace = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+        $relAttributes = $firstSheet->attributes($relNamespace);
+        $relationshipId = isset($relAttributes['id']) ? (string) $relAttributes['id'] : '';
 
         if ($relationshipId === '' || !isset($relations[$relationshipId])) {
             return null;
@@ -344,12 +344,9 @@ class ProductImportService
             return [];
         }
 
-        $namespace = $sharedStringsXml->getNamespaces(true)[''] ?? 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
-        $sharedStringsXml->registerXPathNamespace('main', $namespace);
-
         $strings = [];
 
-        foreach ($sharedStringsXml->xpath('//main:si') ?: [] as $node) {
+        foreach ($sharedStringsXml->xpath('//*[local-name()="si"]') ?: [] as $node) {
             $strings[] = trim($this->extractText($node));
         }
 
@@ -358,15 +355,12 @@ class ProductImportService
 
     private function worksheetToRows(SimpleXMLElement $worksheet, array $sharedStrings): array
     {
-        $namespace = $worksheet->getNamespaces(true)[''] ?? 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
-        $worksheet->registerXPathNamespace('main', $namespace);
-
         $rows = [];
 
-        foreach ($worksheet->xpath('//main:sheetData/main:row') ?: [] as $rowNode) {
+        foreach ($worksheet->xpath('//*[local-name()="sheetData"]/*[local-name()="row"]') ?: [] as $rowNode) {
             $row = [];
 
-            foreach ($rowNode->xpath('./main:c') ?: [] as $cell) {
+            foreach ($rowNode->xpath('./*[local-name()="c"]') ?: [] as $cell) {
                 $attributes = $cell->attributes();
                 $reference = (string) ($attributes['r'] ?? '');
 
