@@ -8,6 +8,7 @@ use App\Models\ProductColor;
 use App\Models\ProductSize;
 use App\Models\ProductSpecification;
 use App\Models\ProductImage;
+use App\Services\ProductImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -57,6 +58,39 @@ class ProductController extends Controller
         $pageSubtitle = 'Our most loved pieces';
 
         return view('products.index', compact('products', 'pageTitle', 'pageSubtitle', 'currentSort', 'search'));
+    }
+
+    /**
+     * Show the bulk import page for admin users.
+     */
+    public function importForm()
+    {
+        return view('admin.products.import');
+    }
+
+    /**
+     * Import products from an uploaded CSV or XLSX file.
+     */
+    public function importStore(Request $request, ProductImportService $importService)
+    {
+        $validated = $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx|max:10240',
+        ]);
+
+        try {
+            $result = $importService->importUploadedFile($validated['file']);
+
+            return redirect()
+                ->route('admin.products.import')
+                ->with('success', 'Bulk import completed successfully.')
+                ->with('importSummary', $result);
+        } catch (\Throwable $e) {
+            Log::error('Product bulk import failed: ' . $e->getMessage());
+
+            return back()
+                ->withErrors(['file' => 'Failed to import products: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**

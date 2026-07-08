@@ -52,6 +52,11 @@ Route::resource('categories', CategoryController::class);
 Route::get('/products/checkSlug', [ProductController::class, 'checkSlug']);
 Route::resource('products', ProductController::class);
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/products/import', [ProductController::class, 'importForm'])->name('products.import');
+    Route::post('/products/import', [ProductController::class, 'importStore'])->name('products.import.store');
+});
+
 // Register (Guest only - redirect to home if already logged in)
 Route::get('/register', [RegisterController::class, 'index'])->middleware('guest')->name('register');
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.store');
