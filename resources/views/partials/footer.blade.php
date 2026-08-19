@@ -106,7 +106,7 @@
             <div class="flex items-center space-x-3 transition-all duration-300">
                 @if($paypalEnabled)
                     {{-- PayPal --}}
-                    <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-8 w-auto" loading="lazy">
+                    {{-- <img src="{{ asset('asset/paypal.png') }}" alt="PayPal" class="h-8 w-auto" loading="lazy"> --}}
                 @endif
                 {{-- BCA --}}
                 <img src="{{ asset('asset/bca-logo.png') }}" alt="BCA" class="h-12 w-auto" loading="lazy">

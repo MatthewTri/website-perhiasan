@@ -42,7 +42,7 @@
                             <li><a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Orders</a></li>
                             <li><a href="{{ route('admin.consultation.index') }}" class="block px-4 py-2 hover:bg-gray-50">Customer Consultations</a></li>
                             <li><a href="{{ route('settings.index') }}" class="block px-4 py-2 hover:bg-gray-50">Admin Settings</a></li>
-                            <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li>
+                            {{-- <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li> --}}
                             <li><a href="{{ route('admin.subscribers.index') }}" class="block px-4 py-2 hover:bg-gray-50">Subscribers</a></li>
 
                         </ul>
@@ -58,9 +58,9 @@
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     </button>
                     <div id="userDropdown" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-none shadow-lg w-44 border border-gray-100">
-                        <ul class="py-2 text-sm text-gray-700">
+                        <ul class="text-sm text-gray-700">
                             {{-- <li><a href="#" class="block px-4 py-2 hover:bg-gray-50">My Account</a></li> --}}
-                            <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li>
+                            {{-- <li><a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-50">My Orders</a></li> --}}
                         </ul>
                         <div class="py-1">
                             <form action="{{ route('logout') }}" method="POST">
@@ -84,10 +84,10 @@
             </div>
             @endauth
 
-                <a href="{{ route('cart.index') }}" class="p-1 text-gray-900 hover:text-gray-600 relative">
+            {{-- Cart icon --}}
+                {{-- <a href="{{ route('cart.index') }}" class="p-1 text-gray-900 hover:text-gray-600 relative">
                     <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    {{-- <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">1</span> --}}
-                </a>
+                </a> --}}
 
             </div>
         </div>
