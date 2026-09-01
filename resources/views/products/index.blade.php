@@ -490,6 +490,19 @@
             // Re-apply grid layout (e.g., image-only mode) after DOM update
             window.__productGridLayout?.reapply?.();
 
+            // Scroll to top of product grid (account for sticky header if present)
+            (function () {
+                try {
+                    var header = document.querySelector('.sticky');
+                    var headerHeight = header ? header.getBoundingClientRect().height : 0;
+                    var gridRect = grid.getBoundingClientRect();
+                    var scrollY = window.pageYOffset + gridRect.top - headerHeight - 8;
+                    window.scrollTo({ top: Math.max(0, scrollY), behavior: 'smooth' });
+                } catch (err) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            })();
+
             if (push) history.pushState({}, '', url);
             else history.replaceState({}, '', url);
 
