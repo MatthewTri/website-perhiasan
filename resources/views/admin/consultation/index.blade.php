@@ -218,12 +218,12 @@
                                                class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
                                                 Manage
                                             </a>
-                                            <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline delete-consultation-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
                                                         class="inline-block px-4 py-2 border border-rose-200 text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:text-white hover:border-rose-600 hover:bg-rose-600 rounded-sm transition-all bg-white"
-                                                        onclick="return confirm('Delete this consultation and all related data? This action cannot be undone.')">
+                                                        title="Delete consultation">
                                                     Delete
                                                 </button>
                                             </form>
@@ -338,6 +338,40 @@ function attachPaginationHandlers() {
         });
     });
 }
+
+document.addEventListener('submit', function(event) {
+    const form = event.target.closest('.delete-consultation-form');
+
+    if (!form || form.dataset.confirmed === 'true') {
+        return;
+    }
+
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Delete Consultation?',
+        html: '<p class="text-sm text-gray-600">This will permanently delete the consultation and all related data, including reference images.</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#78716c',
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+            popup: 'rounded-sm',
+            title: 'font-serif text-stone-900',
+            confirmButton: 'uppercase tracking-widest text-xs',
+            cancelButton: 'uppercase tracking-widest text-xs'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.dataset.confirmed = 'true';
+            form.submit();
+        }
+    });
+});
 
 // Real-time search
 document.querySelector('input[name="search"]').addEventListener('input', function() {
