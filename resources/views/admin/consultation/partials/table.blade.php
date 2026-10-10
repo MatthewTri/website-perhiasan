@@ -3,7 +3,12 @@
         <table class="w-full text-left border-collapse">
             <thead class="bg-stone-50 border-b border-stone-100">
                 <tr>
-                    <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Client Profile</th>
+                    <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">
+                        <label class="inline-flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="select-all-consultations" class="consultation-checkbox w-4 h-4 accent-stone-700 cursor-pointer" style="accent-color: #44403c;">
+                            <span>Client Profile</span>
+                        </label>
+                    </th>
                     <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Service Type</th>
                     <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Schedule (WIB)</th>
                     <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Status</th>
@@ -17,7 +22,8 @@
                         {{-- Customer --}}
                         <td class="px-6 py-5">
                             <div class="flex items-center">
-                                <div class="ml-4">
+                                <input type="checkbox" name="consultation_ids[]" value="{{ $consultation->id }}" class="consultation-checkbox consultation-row-checkbox w-4 h-4 accent-stone-700 cursor-pointer mr-4" style="accent-color: #44403c;" aria-label="Select {{ $consultation->full_name }}">
+                                <div>
                                     <div class="text-sm font-bold text-stone-900 group-hover:text-stone-600 transition-colors">{{ $consultation->full_name }}</div>
                                     <div class="text-xs text-stone-400 mt-0.5">{{ $consultation->user_email }}</div>
                                 </div>
@@ -89,10 +95,21 @@
 
                         {{-- Actions --}}
                         <td class="px-6 py-5 text-right">
-                            <a href="{{ route('admin.consultation.show', $consultation) }}" 
-                               class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
-                                Manage
-                            </a>
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{{ route('admin.consultation.show', $consultation) }}"
+                                   class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
+                                    Manage
+                                </a>
+                                <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline delete-consultation-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-block px-4 py-2 border border-rose-200 text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:text-white hover:border-rose-600 hover:bg-rose-600 rounded-sm transition-all bg-white"
+                                            title="Delete consultation">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

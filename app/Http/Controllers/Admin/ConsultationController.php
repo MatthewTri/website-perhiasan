@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\CustomRequest;
 use App\Models\Setting;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Mail\Consultation\ConsultationRescheduledMail;
 use App\Mail\Consultation\ConsultationCancelledMail;
 
@@ -50,8 +53,9 @@ class ConsultationController extends Controller
             });
         }
         
-        $consultations = $query->orderBy('appointment_date', 'asc')
-                             ->orderBy('appointment_time', 'asc')
+        $consultations = $query->orderByRaw("CASE WHEN status IN ('SCHEDULED', 'RESCHEDULED') THEN 0 ELSE 1 END")
+                     ->orderByDesc('created_at')
+                     ->orderByDesc('id')
                              ->paginate($perPage)->onEachSide(1)->withQueryString();
 
         // Stats only needed for full page render (AJAX only updates the table)
@@ -102,6 +106,55 @@ class ConsultationController extends Controller
         $weeklyHours = Setting::getConsultationWeeklyHours();
 
         return view('admin.consultation.show', compact('consultation', 'weeklyHours'));
+    }
+
+    public function destroy(CustomRequest $consultation)
+    {
+        $this->deleteConsultations(collect([$consultation]));
+
+        return redirect()->route('admin.consultation.index')
+            ->with('success', 'Consultation and all related data deleted successfully.');
+    }
+
+    protected function deleteConsultations($consultations): void
+    {
+        $imagePaths = collect();
+
+        DB::transaction(function () use ($consultations, $imagePaths) {
+            foreach ($consultations as $consultation) {
+                $consultation->load('images');
+
+                foreach ($consultation->images as $image) {
+                    $imagePath = $this->getStoredImagePath($image->image_url);
+                    if ($imagePath) {
+                        $imagePaths->push($imagePath);
+                    }
+                }
+
+                $consultation->images()->delete();
+                $consultation->delete();
+            }
+        });
+
+        foreach ($imagePaths->unique() as $imagePath) {
+            Storage::disk('public')->delete($imagePath);
+        }
+    }
+
+    protected function getStoredImagePath(string $imageUrl): ?string
+    {
+        $path = parse_url($imageUrl, PHP_URL_PATH);
+
+        if (!$path) {
+            return null;
+        }
+
+        $storageMarker = '/storage/';
+        if (!Str::contains($path, $storageMarker)) {
+            return null;
+        }
+
+        return Str::after($path, $storageMarker);
     }
 
     public function updateStatus(Request $request, CustomRequest $consultation)
@@ -239,6 +292,10 @@ class ConsultationController extends Controller
             case 'cancel':
                 $consultations->update(['status' => 'CANCELLED']);
                 return redirect()->back()->with('success', 'Selected consultations cancelled.');
+
+            case 'delete':
+                $this->deleteConsultations($consultations->get());
+                return redirect()->back()->with('success', 'Selected consultations and all related data deleted successfully.');
         }
     }
 }

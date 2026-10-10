@@ -119,6 +119,19 @@
             </form>
         </div>
 
+        <form id="bulk-delete-form" action="{{ route('admin.consultation.bulkAction') }}" method="POST" class="hidden mb-6 bg-rose-50 border border-rose-100 rounded-sm px-5 py-4 items-center justify-between gap-4">
+            @csrf
+            <input type="hidden" name="action" value="delete">
+            <div>
+                <p class="text-sm font-bold text-rose-900"><span id="selected-consultations-count">0</span> consultations selected</p>
+                <p class="text-xs text-rose-700 mt-1">All selected data and reference images will be permanently deleted.</p>
+            </div>
+            <div id="bulk-delete-ids"></div>
+            <button type="submit" class="shrink-0 cursor-pointer inline-flex items-center px-4 py-2 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-rose-700 transition-colors">
+                Delete
+            </button>
+        </form>
+
         {{-- Consultations Table --}}
         <div class="bg-white rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100 overflow-hidden">
             <div id="consultationsTableContainer">
@@ -127,7 +140,12 @@
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-stone-50 border-b border-stone-100">
                             <tr>
-                                <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Client Profile</th>
+                                <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">
+                                    <label class="inline-flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" id="select-all-consultations" class="consultation-checkbox">
+                                        <span>Client Profile</span>
+                                    </label>
+                                </th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Service Type</th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Schedule (WIB)</th>
                                 <th class="px-6 py-5 text-xs font-bold text-stone-400 uppercase tracking-[0.15em]">Status</th>
@@ -141,7 +159,8 @@
                                     {{-- Customer --}}
                                     <td class="px-6 py-5">
                                         <div class="flex items-center">
-                                            <div class="ml-4">
+                                            <input type="checkbox" name="consultation_ids[]" value="{{ $consultation->id }}" class="consultation-checkbox consultation-row-checkbox mr-4" aria-label="Select {{ $consultation->full_name }}">
+                                            <div>
                                                 <div class="text-sm font-bold text-stone-900 group-hover:text-stone-600 transition-colors">{{ $consultation->full_name }}</div>
                                                 <div class="text-xs text-stone-400 mt-0.5">{{ $consultation->user_email }}</div>
                                             </div>
@@ -213,10 +232,21 @@
 
                                     {{-- Actions --}}
                                     <td class="px-6 py-5 text-right">
-                                        <a href="{{ route('admin.consultation.show', $consultation) }}" 
-                                           class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
-                                            Manage
-                                        </a>
+                                        <div class="inline-flex items-center gap-2">
+                                            <a href="{{ route('admin.consultation.show', $consultation) }}"
+                                               class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
+                                                Manage
+                                            </a>
+                                            <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline delete-consultation-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="inline-block cursor-pointer px-4 py-2 border border-rose-200 text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:text-white hover:border-rose-600 hover:bg-rose-600 rounded-sm transition-all bg-white"
+                                                        title="Delete consultation">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -248,6 +278,7 @@
 <script>
 // AJAX Filter untuk Consultation
 let filterTimeout;
+const selectedConsultationIds = new Set();
 
 function applyFilters(url = null) {
     const formData = {
@@ -306,8 +337,9 @@ function applyFilters(url = null) {
         // Update URL without page reload
         window.history.pushState({}, '', requestUrl);
 
-        // Re-attach pagination click handlers
+        // Re-attach pagination click handlers and restore selections on the new page
         attachPaginationHandlers();
+        syncVisibleConsultationSelection();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -327,6 +359,141 @@ function attachPaginationHandlers() {
         });
     });
 }
+
+function getSelectedConsultationIds() {
+    return Array.from(selectedConsultationIds);
+}
+
+function syncVisibleConsultationSelection() {
+    document.querySelectorAll('.consultation-row-checkbox').forEach(checkbox => {
+        checkbox.checked = selectedConsultationIds.has(checkbox.value);
+    });
+
+    updateBulkDeleteState();
+}
+
+function updateBulkDeleteState() {
+    const selectedIds = getSelectedConsultationIds();
+    const bulkForm = document.getElementById('bulk-delete-form');
+    const idsContainer = document.getElementById('bulk-delete-ids');
+    const count = document.getElementById('selected-consultations-count');
+    const selectAll = document.getElementById('select-all-consultations');
+    const rowCheckboxes = document.querySelectorAll('.consultation-row-checkbox');
+    const visibleSelectedCount = Array.from(rowCheckboxes)
+        .filter(checkbox => selectedConsultationIds.has(checkbox.value)).length;
+
+    count.textContent = selectedIds.length;
+    idsContainer.innerHTML = selectedIds.map(id => `<input type="hidden" name="consultation_ids[]" value="${id}">`).join('');
+    bulkForm.classList.toggle('hidden', selectedIds.length === 0);
+    bulkForm.classList.toggle('flex', selectedIds.length > 0);
+
+    if (selectAll) {
+        selectAll.checked = rowCheckboxes.length > 0 && visibleSelectedCount === rowCheckboxes.length;
+        selectAll.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < rowCheckboxes.length;
+    }
+}
+
+function clearConsultationSelection() {
+    selectedConsultationIds.clear();
+    document.querySelectorAll('.consultation-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.indeterminate = false;
+    });
+    updateBulkDeleteState();
+}
+
+document.addEventListener('change', function(event) {
+    if (event.target.matches('#select-all-consultations')) {
+        document.querySelectorAll('.consultation-row-checkbox').forEach(checkbox => {
+            if (event.target.checked) {
+                selectedConsultationIds.add(checkbox.value);
+            } else {
+                selectedConsultationIds.delete(checkbox.value);
+            }
+        });
+        updateBulkDeleteState();
+    }
+
+    if (event.target.matches('.consultation-row-checkbox')) {
+        if (event.target.checked) {
+            selectedConsultationIds.add(event.target.value);
+        } else {
+            selectedConsultationIds.delete(event.target.value);
+        }
+        updateBulkDeleteState();
+    }
+});
+
+document.addEventListener('submit', function(event) {
+    const bulkForm = event.target.closest('#bulk-delete-form');
+    const form = event.target.closest('.delete-consultation-form');
+
+    if (bulkForm) {
+        const selectedCount = getSelectedConsultationIds().length;
+
+        if (selectedCount === 0 || bulkForm.dataset.confirmed === 'true') {
+            return;
+        }
+
+        event.preventDefault();
+
+        Swal.fire({
+            title: `Delete ${selectedCount} Consultations?`,
+            html: '<p class="text-sm text-gray-600">This will permanently delete all selected consultations and their related reference images.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#78716c',
+            confirmButtonText: 'Yes, Delete All',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true,
+            customClass: {
+                popup: 'rounded-sm',
+                title: 'font-serif text-stone-900',
+                confirmButton: 'uppercase tracking-widest text-xs',
+                cancelButton: 'uppercase tracking-widest text-xs'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                bulkForm.dataset.confirmed = 'true';
+                bulkForm.submit();
+            }
+        });
+
+        return;
+    }
+
+    if (!form || form.dataset.confirmed === 'true') {
+        return;
+    }
+
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Delete Consultation?',
+        html: '<p class="text-sm text-gray-600">This will permanently delete the consultation and all related data, including reference images.</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#78716c',
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+            popup: 'rounded-sm',
+            title: 'font-serif text-stone-900',
+            confirmButton: 'uppercase tracking-widest text-xs',
+            cancelButton: 'uppercase tracking-widest text-xs'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.dataset.confirmed = 'true';
+            form.submit();
+        }
+    });
+});
 
 // Real-time search
 document.querySelector('input[name="search"]').addEventListener('input', function() {
@@ -371,6 +538,32 @@ attachPaginationHandlers();
     }
     .animate-fade-in-up {
         animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    input.consultation-checkbox {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid #a8a29e !important;   /* stone-400 */
+        border-radius: 3px;
+        background-color: #fff !important;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    input.consultation-checkbox:checked {
+        background-color: #44403c !important;   /* stone-700 */
+        border-color: #44403c !important;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.2 5.3a1 1 0 0 0-1.4-1.4L6.5 8.2 5.2 6.9a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l5-5z'/%3E%3C/svg%3E") !important;
+    }
+
+    input.consultation-checkbox:focus-visible {
+        box-shadow: 0 0 0 2px #d6d3d1 !important; /* stone-300 */
     }
 </style>
 @endsection
