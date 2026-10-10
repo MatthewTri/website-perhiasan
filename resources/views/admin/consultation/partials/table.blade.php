@@ -89,10 +89,21 @@
 
                         {{-- Actions --}}
                         <td class="px-6 py-5 text-right">
-                            <a href="{{ route('admin.consultation.show', $consultation) }}" 
-                               class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
-                                Manage
-                            </a>
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{{ route('admin.consultation.show', $consultation) }}"
+                                   class="inline-block px-4 py-2 border border-stone-200 text-[10px] font-bold text-stone-500 uppercase tracking-widest hover:text-stone-900 hover:border-stone-400 hover:bg-white rounded-sm transition-all bg-stone-50">
+                                    Manage
+                                </a>
+                                <form action="{{ route('admin.consultation.destroy', $consultation) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-block px-4 py-2 border border-rose-200 text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:text-white hover:border-rose-600 hover:bg-rose-600 rounded-sm transition-all bg-white"
+                                            onclick="return confirm('Delete this consultation and all related data? This action cannot be undone.')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
