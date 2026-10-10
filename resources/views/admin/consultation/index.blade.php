@@ -372,6 +372,20 @@ function syncVisibleConsultationSelection() {
     updateBulkDeleteState();
 }
 
+function setVisibleConsultationSelection(shouldSelect) {
+    document.querySelectorAll('.consultation-row-checkbox').forEach(checkbox => {
+        checkbox.checked = shouldSelect;
+
+        if (shouldSelect) {
+            selectedConsultationIds.add(checkbox.value);
+        } else {
+            selectedConsultationIds.delete(checkbox.value);
+        }
+    });
+
+    syncVisibleConsultationSelection();
+}
+
 function updateBulkDeleteState() {
     const selectedIds = getSelectedConsultationIds();
     const bulkForm = document.getElementById('bulk-delete-form');
@@ -404,14 +418,7 @@ function clearConsultationSelection() {
 
 document.addEventListener('change', function(event) {
     if (event.target.matches('#select-all-consultations')) {
-        document.querySelectorAll('.consultation-row-checkbox').forEach(checkbox => {
-            if (event.target.checked) {
-                selectedConsultationIds.add(checkbox.value);
-            } else {
-                selectedConsultationIds.delete(checkbox.value);
-            }
-        });
-        updateBulkDeleteState();
+        setVisibleConsultationSelection(event.target.checked);
     }
 
     if (event.target.matches('.consultation-row-checkbox')) {
