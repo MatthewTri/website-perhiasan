@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\CustomRequest;
 use App\Models\Setting;
 use App\Http\Controllers\Controller;
-use App\Models\CustomRequestImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -111,22 +110,35 @@ class ConsultationController extends Controller
 
     public function destroy(CustomRequest $consultation)
     {
-        $imagePaths = $consultation->images
-            ->map(fn (CustomRequestImage $image) => $this->getStoredImagePath($image->image_url))
-            ->filter()
-            ->values();
-
-        DB::transaction(function () use ($consultation) {
-            $consultation->images()->delete();
-            $consultation->delete();
-        });
-
-        foreach ($imagePaths as $imagePath) {
-            Storage::disk('public')->delete($imagePath);
-        }
+        $this->deleteConsultations(collect([$consultation]));
 
         return redirect()->route('admin.consultation.index')
             ->with('success', 'Consultation and all related data deleted successfully.');
+    }
+
+    protected function deleteConsultations($consultations): void
+    {
+        $imagePaths = collect();
+
+        DB::transaction(function () use ($consultations, $imagePaths) {
+            foreach ($consultations as $consultation) {
+                $consultation->load('images');
+
+                foreach ($consultation->images as $image) {
+                    $imagePath = $this->getStoredImagePath($image->image_url);
+                    if ($imagePath) {
+                        $imagePaths->push($imagePath);
+                    }
+                }
+
+                $consultation->images()->delete();
+                $consultation->delete();
+            }
+        });
+
+        foreach ($imagePaths->unique() as $imagePath) {
+            Storage::disk('public')->delete($imagePath);
+        }
     }
 
     protected function getStoredImagePath(string $imageUrl): ?string
@@ -280,6 +292,10 @@ class ConsultationController extends Controller
             case 'cancel':
                 $consultations->update(['status' => 'CANCELLED']);
                 return redirect()->back()->with('success', 'Selected consultations cancelled.');
+
+            case 'delete':
+                $this->deleteConsultations($consultations->get());
+                return redirect()->back()->with('success', 'Selected consultations and all related data deleted successfully.');
         }
     }
 }
